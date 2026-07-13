@@ -1,0 +1,21 @@
+MARUFIA LATIO — PACOTE VISUAL V8 COM ABAS SUPERIORES
+
+Esta versão altera apenas a aparência da ficha.
+
+Arquivos de mecânica preservados:
+- app.js
+- data.js
+- styles.css original mantido como base
+
+Arquivo visual adicionado:
+- marufia-latio-design.css
+
+Ajuste desta versão:
+- No desktop, as abas ficam na área superior, abaixo do cabeçalho, em formato horizontal e fixo durante a rolagem.
+- No celular, as abas continuam na parte inferior para facilitar o uso em tela pequena.
+- Nenhuma regra, cálculo, magia, perícia, inventário, Mundo, salvamento, importação ou exportação foi alterado.
+
+Como usar:
+1. Extraia o ZIP.
+2. Abra index.html no navegador.
+3. Mantenha todos os arquivos na mesma pasta.

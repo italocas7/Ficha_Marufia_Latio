@@ -1,0 +1,50 @@
+
+
+===== PAGE 1 =====
+PERSONAGEM: ATRIBUTOS:
+NOME: ________________________________ FOR APA INT
+ANTECEDENTE F.:________________________
+ANTECEDENTE P.:________________________
+DES CAR POD
+CULTURA:_____________________________
+IDADE:_____________SEXO:______________
+NASCIMENTO:__________________________ CON SAB
+VIDA MAXIMA: VIDA ATUAL: PONTOS DE MAGIA
+CA
+ATUAL MAX
+LESÃO INCONSIENTE TESTES CONTRA MORTE
+GRAVE: MORRENDO
+SUCESSO
+FRACASSO
+PERÍCIAS
+Arremessar (20%) Diplomacia (05%) Intuição (05%) Medicina (01%)
+Arte/Ofício (05%) Direito (01%) Lábia (05%) Natureza (10%)
+Atletismo (20%) Disfarce (01%) L. Animais (05%) Navegação (10%)
+Atuação (05%) Encontrar (25%) Lutar (Brigar) (25%) Persuasão (10%)
+Avaliação (05%) Escutar (20%) Lutar (Cult.) (15%) Presti. (10%)
+Blefar (05%) Esquivar (DES÷2) Rastrear (10%)
+Cavalgar (05%) Furtividade (20%) Religião (15%)
+Charme (05%) História (05%) Sobrev. (10%)
+Conta. (05%) Intimidação (15%) Tática (01%)
+CHECK DE PERICIAS
+NOME BONUS DANO
+L CORPO
+D BONÛS
+X ESQUIVA
+ARMAS EQUIPAMENTOS DINHEIRO
+
+===== PAGE 2 =====
+ANTECEDENTES
+TRAÇOS DE PERSONALIDADE OLHOS IDADE ALTURA
+CABELOS PELE PESO
+APARENCIA:
+IDEAL
+DEFEITOS ALIADOS E ORGANIZAÇÕES
+LIGAÇÕES
+HISTÓRIA
+PATRONO PESSOAL
+OUTRAS CARACTERÍSTICAS
+
+===== PAGE 3 =====
+PATRIMÔNIO
+EQUIPAMENTOS

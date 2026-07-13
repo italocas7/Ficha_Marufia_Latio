@@ -1,0 +1,162 @@
+[
+  {
+    "name": "Adepto Marcial",
+    "description": "Você tem +10 em Brigar e em Esquiva. Sua esquiva agora só precisa ser igual ao sucesso do oponente para esquivar. Você pode usar Esquiva para gerar um Contra-Ataque."
+  },
+  {
+    "name": "Alerta",
+    "description": "Sua percepção é aumentada em +15, Encontrar e Escutar em +10."
+  },
+  {
+    "name": "Amado Pela Magia",
+    "description": "Seu valor de PM aumenta em 5. Esse talento pode ser escolhido várias vezes."
+  },
+  {
+    "name": "Ambidestro",
+    "description": "Você ganha +5 de CA se estiver empunhando uma arma corpo-a-corpo em cada mão. Pode usar duas armas mesmo que a arma de uma mão que você está empunhando não seja leve. O ataque com a segunda arma é feito utilizando uma ação bônus."
+  },
+  {
+    "name": "Arremesso Múltiplo",
+    "description": "Uma vez por rodada, quando faz um ataque com uma arma arremessável, você pode gastar sua ação bônus para fazer um ataque adicional contra o mesmo alvo, arremessando outra arma arremessáveis. Da mesma forma você pode fazer a mesma coisa com arco e flecha. Esse talento dá +5 em Arremessar e +5 em Lutar (Armas de Arremesso)."
+  },
+  {
+    "name": "Atacante Agressivo",
+    "description": "Todo golpe dá 1d4 de dano a mais; quando em formação, a formação dá +2 de dano."
+  },
+  {
+    "name": "Atacante Furioso",
+    "description": "Uma vez por turno, quando você rolar o dano para um ataque, você pode jogar novamente o dado de dano de arma e usar qualquer dos valores. Você pode decidir ter -8 de C.A. para causar +1d6 de dano."
+  },
+  {
+    "name": "Atirador Aguçado",
+    "description": "Você dominou armas à distância, ao atacar alvos além da distância normal, você não recebe desvantagem, seus ataques à distância ignoram meia cobertura. Você pode ter uma penalidade de +20 para adicionar +10 de dano no ataque."
+  },
+  {
+    "name": "Atleta",
+    "description": "Aumenta FOR e DES em +5 (Até o max de 99). Quando caído você levanta apenas usando 1,5m de deslocamento, +15 em testes de Atletismo."
+  },
+  {
+    "name": "Cavaleiro de Justas",
+    "description": "Ao combater montado, você ganha +10 em acertos e +10 em Cavalgar."
+  },
+  {
+    "name": "Curandeiro",
+    "description": "+10 de medicina, pode estabilizar um alvo sem kit de primeiros-socorros, mas se usar o alvo recupera +1d6+3 de vida."
+  },
+  {
+    "name": "Duelista",
+    "description": "Usando apenas uma arma de uma mão, você ganha +5 em acertos, +10 em Esquivar e +5 de CA."
+  },
+  {
+    "name": "Especialista em Armadura Pesada",
+    "description": "Você recebe metade das penalidades utilizando armaduras acima de cota de malha."
+  },
+  {
+    "name": "Especialista em Besta",
+    "description": "Recarrega a besta com uma ação bônus ou ação de movimento, não tem desvantagem se o alvo estiver próximo de mais. Quando você usa a ação de Ataque e ataca com uma arma de uma mão, você pode usar sua ação bônus para atacar com a besta de mão carregada que você esteja empunhando."
+  },
+  {
+    "name": "Especialista em Concussão",
+    "description": "Ao utilizar uma arma que causa dano contundente, você causa +4 de dano que não pode ser bloqueado."
+  },
+  {
+    "name": "Especialista em Cortes",
+    "description": "Ao utilizar uma arma que causa dano cortante você causa +4 cortante em armaduras abaixo de cota de malha, e +1 de dano perfurante em armaduras acima de cota de malha. Esses danos não põem ser bloqueados."
+  },
+  {
+    "name": "Especialista em Perfuração",
+    "description": "Ao utilizar uma arma que causa dano perfurante você causa +4 de dano em armaduras até armadura de escama, e causa +2 de dano perfurante em armaduras de placa. Não pode ser bloqueado."
+  },
+  {
+    "name": "Inexpugnável",
+    "description": "Se estiver utilizando uma armadura de cota ou peitoral, recebe +2 de CA e +1 de bloqueio, se estiver usando armadura de escamas ou placas recebe +4 de CA e +2 de bloqueio."
+  },
+  {
+    "name": "Investida Aprimorada",
+    "description": "Ao realizar uma ação de investida, seu movimento aumenta em 3 metros durante ela. Seu teste e ataque contra esse alvo recebe +10 e caso acerte o ataque pode fazer um teste de atletismo para tentar derrubar o oponente. Para resistir é necessário CON. O resultado do atacante deve ser no mínimo igual ao do oponente para derruba-lo."
+  },
+  {
+    "name": "Líder",
+    "description": "Você recebe +20 em tática e +10 em Charme, Persuasão e Diplomacia."
+  },
+  {
+    "name": "Lobo Solitário",
+    "description": "Voce recebe +5 de CA e +10 em todos os ataques que fizer se não estiver com nenhum aliado dentro de 6 metros, caso esteja acompanhado, recebe -5 de CA  e -5 em testes de ataque."
+  },
+  {
+    "name": "Mestre de Escudo",
+    "description": "Ao usar escudos você toma -2 de dano. Você pode imbuir (1 PM) sua mana no escudo e com isso você pode “Bloquear” magias usando seu bloqueio."
+  },
+  {
+    "name": "Mestre em Armas Grandes",
+    "description": "Se você acertar um Extremo com uma arma grande e reduzir a vida de uma criatura a 0, você pode realizar um ataque corpo-a-corpo com uma ação bônus. Pode escolher receber uma penalidade de +15 no ataque para adicionar 2d6 ao dano."
+  },
+  {
+    "name": "Mobilidade",
+    "description": "Seu deslocamento aumenta em 3m, quando você ataca uma criatura, você não toma ataque de oportunidade dela pelo resto do turno. Terreno difícil não reduz seu movimento."
+  },
+  {
+    "name": "Perito",
+    "description": "+15 em três pericias a sua escolha."
+  },
+  {
+    "name": "Piqueiro",
+    "description": "Uma vez por rodada, se estiver empunhando uma arma de haste e um inimigo entrar voluntariamente em seu alcance corpo a corpo, você recebe +10 para fazer um ataque corpo a corpo contra este oponente com esta arma, nesta rodada. Se o oponente tiver se aproximado fazendo uma investida, seu ataque causa +1d8 de dano do mesmo tipo."
+  },
+  {
+    "name": "Resiliente",
+    "description": "Vantagem em testes de CON e SAB. Só ficam exaustos ao tirar falha crítica no dado e toda condição de exaustão é reduzido em um passo. Pode despertar de um atordoamento com um sucesso em CON ou SAB."
+  },
+  {
+    "name": "Retalhador",
+    "description": "Ao tirar Extremo com uma arma cortante você reduz o movimento da criatura em 3 metros e deixa o alvo sangrando, caso sua arma já cause sangramento, o dano dele é aumentado para 1d6."
+  },
+  {
+    "name": "Robusto",
+    "description": "Sua vida soma o valor de CON÷8 em toda evolução de nível."
+  },
+  {
+    "name": "Sorrateiro",
+    "description": "Você tem +15 em Furtividade. Quando estiver escondido atacar e errar um ataque à distância não revela sua posição."
+  },
+  {
+    "name": "Técnicas Agressivas de Escudo",
+    "description": "Ao atacar no seu turno você pode usar sua ação de movimento para atacar com seu escudo, causando 2+ o seu corpo de dano."
+  },
+  {
+    "name": "Técnicas do Sentinela",
+    "description": "Quando uma criatura a 1,5 metros de você faz um ataque contra um alvo além de você, você pode como uma reação realizar um ataque contra essa criatura."
+  },
+  {
+    "name": "Trespassar",
+    "description": "Quando você faz um ataque corpo a corpo e reduz os pontos de vida do alvo para 0 ou menos, pode gastar a sua reação para fazer um ataque adicional contra outra criatura dentro do seu alcance. O ataque adicional usa os mesmos valores de ataque e dano."
+  },
+  {
+    "name": "Rho Aias",
+    "description": "Consegue usar sua Magia Forte usando mais 8 PM para formar um escudo em área de 3m de raio, protegendo todos atrás de magia ou ataques físicos, ele quebra se a vida dele sair de 80 e chegar a 0, essa habilidade pode ser guardada em objetos como pingentes, esse escudo pode ter duas aparências:"
+  },
+  {
+    "name": "Ungido pela Magia",
+    "description": "Vantagem em jogadas de ataques, +20 de PM; capaz de utilizar a Dança Perfeita (+2d6 de dano) em Extremos."
+  },
+  {
+    "name": "Mana Residual",
+    "description": "Você pode imbuir mais mana em suas armas, sua arma pode estocar o total de 6 PM de mana, cada ataque que utilize a espada e energia, será retirado da mana estocada da espada. Você pode escolher o quanto está estocando, fazer isso gasta a ação bônus e a cada 1 PM de mana estocada você perde 1 PM. (Nenhum modificador reduz ou aumenta o gasto.)"
+  },
+  {
+    "name": "Fissura Celeste",
+    "description": "Ao tirar um crítico sua mana é restaurada em +10 PM, além de seus dados de dano serem triplicados. Após acertar o primeiro ataque, toda Fissura Celeste vem com um Extremo."
+  },
+  {
+    "name": "Forja Divina",
+    "description": "Consumindo 8PM você pode criar uma arma feita de magia, ela dá 1d10+6 de dano e assume a forma que preferir, tem a duração de 10 minutos."
+  },
+  {
+    "name": "Mundo Extensivo",
+    "description": "Seu Mundo tem a área aumentada em 20m e gasta menos 2 P.M. para usar."
+  },
+  {
+    "name": "Veia Densa",
+    "description": "Seu corpo possui uma energia tão densa e tem uma eficiência energética grande. Sua energia densa dá +1d10 de penalidade e 3d8 de dano. Usa menos 1 P.M. em qualquer magia."
+  }
+]
