@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#100b18">
+    <title>Ficha de Marufia (Latio)</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="marufia_latio_design.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">L</div>
+        <div>
+          <h1>Ficha de Marufia (Latio)</h1>
+          <p id="statusLine">Sistema Mundo de Marufia</p>
+        </div>
+      </div>
+      <button class="icon-button settings-button" type="button" data-action="open-settings" title="Configurações" aria-label="Configurações">⚙</button>
+    </header>
+
+    <nav id="tabs" class="tabs" aria-label="Abas da ficha"></nav>
+    <main id="app" class="app"></main>
+
+    <div id="modalRoot"></div>
+    <div id="toastRoot" class="toast-root"></div>
+
+    <script src="data.js"></script>
+    <script src="item_descriptions.js"></script>
+    <script src="magic_cores.js"></script>
+    <script src="vendor/pdf_file_loader.js"></script>
+    <script src="pdf_import.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
