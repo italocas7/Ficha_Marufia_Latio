@@ -155,7 +155,7 @@ function createDefaultState() {
       useIntForSkillPoints: false,
     },
     attributes: { FOR: 50, DES: 50, CON: 50, APA: 50, POD: 50, INT: 50, CAR: 50, SAB: 50 },
-    resources: { hpCurrent: null, pmCurrent: null, injury: false, unconscious: false, dying: false, deathSuccess: 0, deathFail: 0 },
+    resources: { hpCurrent: null, pmCurrent: null, hpMaxBonus: 0, pmMaxBonus: 0, injury: false, unconscious: false, dying: false, deathSuccess: 0, deathFail: 0 },
     settings: { theme: "light", skillLimit: 70 },
     skills: skillState,
     skillExtraPoints: 0,
@@ -437,19 +437,30 @@ function aptitudeCost(type, level) {
   return base + 2;
 }
 
-function aptitudeUpgradeCost(type, fromLevel, toLevel = fromLevel + 1) {
+function aptitudeUpgradeCost(type, fromLevel, toLevel = fromLevel + 1, options = {}) {
   let total = 0;
   const start = clamp(fromLevel, 0, 10);
   const end = clamp(toLevel, 0, 10);
   for (let level = start + 1; level <= end; level += 1) {
-    if (level > 1) total += aptitudeCost(type, level);
+    if (options.freeFirstLevel && level === 1) continue;
+    total += aptitudeCost(type, level);
   }
   return total;
 }
 
-function spellCostTotal(type, level) {
+function spellCostTotal(type, level, options = {}) {
   let total = 0;
-  for (let current = 1; current <= level; current += 1) total += aptitudeUpgradeCost(type, current - 1, current);
+  for (let current = 1; current <= level; current += 1) total += aptitudeUpgradeCost(type, current - 1, current, options);
+  return total;
+}
+
+function extraSpellUpgradeCost(type, fromLevel, toLevel = fromLevel + 1) {
+  return aptitudeUpgradeCost(type, fromLevel, toLevel, { freeFirstLevel: true });
+}
+
+function extraSpellCostTotal(type, level) {
+  let total = 0;
+  for (let current = 1; current <= level; current += 1) total += extraSpellUpgradeCost(type, current - 1, current);
   return total;
 }
 
@@ -461,7 +472,7 @@ function aptitudeTotal() {
 function aptitudeSpent() {
   let total = 0;
   for (const type of MAGIC_TYPES) total += spellCostTotal(type, num(state.magic.baseLevels[type], 0));
-  for (const spell of state.magic.knownExtras) total += spellCostTotal(spell.type, num(spell.level, 0));
+  for (const spell of state.magic.knownExtras) total += extraSpellCostTotal(spell.type, num(spell.level, 0));
   return total;
 }
 
@@ -480,7 +491,7 @@ function worldTier() {
   return 1;
 }
 
-function maxHp() {
+function calculatedMaxHp() {
   const con = attr("CON");
   const level = Math.max(1, num(state.character.level, 1));
   let hp = Math.floor(con / 10) + 12;
@@ -490,7 +501,11 @@ function maxHp() {
   return Math.max(1, hp);
 }
 
-function maxPm() {
+function maxHp() {
+  return Math.max(1, calculatedMaxHp() + num(state.resources.hpMaxBonus, 0));
+}
+
+function calculatedMaxPm() {
   const pod = attr("POD");
   const level = Math.max(1, num(state.character.level, 1));
   let pm = Math.floor(pod / 3) + (level - 1) * Math.floor(pod / 10);
@@ -498,6 +513,10 @@ function maxPm() {
   for (const talent of activeTalents()) pm += num(talent.resourceMods?.pm, 0);
   pm -= corePermanentPmPenalty();
   return Math.max(0, pm);
+}
+
+function maxPm() {
+  return Math.max(0, calculatedMaxPm() + num(state.resources.pmMaxBonus, 0));
 }
 
 function resourceCurrent(key, maxValue) {
@@ -521,6 +540,49 @@ function adjustResource(key, delta) {
   const next = clamp(current + delta, 0, maxValue);
   state.resources[key] = next;
   state.combat.log.unshift(`${label} ${delta > 0 ? "+" : ""}${delta}: ${next}/${maxValue}.`);
+  render();
+}
+
+function resourceMaxBonusKey(key) {
+  return key === "hpCurrent" ? "hpMaxBonus" : "pmMaxBonus";
+}
+
+function resourceCalculatedMax(key) {
+  return key === "hpCurrent" ? calculatedMaxHp() : calculatedMaxPm();
+}
+
+function resourceMaxLabel(key) {
+  return key === "hpCurrent" ? "Vida" : "PM";
+}
+
+function openResourceMaxModal(key) {
+  if (!["hpCurrent", "pmCurrent"].includes(key)) return;
+  const bonusKey = resourceMaxBonusKey(key);
+  const label = resourceMaxLabel(key);
+  const calculated = resourceCalculatedMax(key);
+  const bonus = num(state.resources[bonusKey], 0);
+  const total = key === "hpCurrent" ? maxHp() : maxPm();
+  openModal(`Ajustar ${label} máximo`, `
+    <div class="grid three">
+      ${miniStat("Calculado", calculated)}
+      ${miniStat("Bônus manual", bonus)}
+      ${miniStat("Total", total)}
+    </div>
+    <div class="field">
+      <label>Bônus no máximo</label>
+      <input id="resourceMaxBonus" type="number" value="${esc(bonus)}">
+    </div>
+    <p class="muted small">Este valor soma ao máximo calculado. O valor atual continua sendo alterado pelos botões rápidos.</p>
+  `, `<button class="button" type="button" data-action="save-resource-max" data-resource="${esc(key)}">Salvar</button><button class="ghost" type="button" data-action="close-modal">Cancelar</button>`);
+}
+
+function saveResourceMaxBonus(key) {
+  if (!["hpCurrent", "pmCurrent"].includes(key)) return;
+  const bonusKey = resourceMaxBonusKey(key);
+  state.resources[bonusKey] = num($("#resourceMaxBonus")?.value, 0);
+  const maxValue = key === "hpCurrent" ? maxHp() : maxPm();
+  state.resources[key] = resourceCurrent(key, maxValue);
+  closeModal();
   render();
 }
 
@@ -1075,7 +1137,9 @@ function resourceControl(label, key, maxValue) {
   const pct = maxValue ? clamp((value / maxValue) * 100, 0, 100) : 0;
   const deltas = [1, -1, 5, -5, 10, -10];
   return `<div class="resource-card">
-    <div class="resource-head"><strong>${esc(label)}</strong><span class="big-val">${esc(value)}/${esc(maxValue)}</span></div>
+    <button class="resource-head resource-max-button" type="button" data-action="open-resource-max" data-resource="${esc(key)}" title="Ajustar ${esc(label.replace(" atual", ""))} máximo">
+      <strong>${esc(label)}</strong><span class="big-val">${esc(value)}/${esc(maxValue)}</span>
+    </button>
     <div class="meter ${key === "pmCurrent" ? "mana" : ""}" aria-hidden="true"><i style="width:${pct}%"></i></div>
     <div class="field"><label>Alterar valor</label><input type="number" min="0" max="${maxValue}" data-path="${path}" value="${esc(value)}"></div>
     <div class="resource-adjust" aria-label="Ajustar ${esc(label)}">
@@ -1100,9 +1164,26 @@ function bestAttackSkill() {
   }, { name: "Lutar (Brigar)", value: skillFinal("Lutar (Brigar)") });
 }
 
+function normalizedSpellLevels(spell) {
+  const source = spell?.levels ?? [];
+  const levels = [];
+  for (const entry of source) {
+    const level = num(entry.level, 0);
+    const text = compact(entry.text ?? "");
+    const previous = levels.at(-1);
+    const alreadySeen = levels.some((item) => item.level === level);
+    if (previous && (level <= previous.level || alreadySeen)) {
+      previous.text = compact(`${previous.text} ${text}`);
+      continue;
+    }
+    levels.push({ ...entry, level, text });
+  }
+  return levels;
+}
+
 function currentLevelText(spell, level) {
   if (!level) return "Nenhum nível ativo ainda.";
-  return spell?.levels?.find((entry) => entry.level === level)?.text ?? "Nível ainda não cadastrado.";
+  return normalizedSpellLevels(spell).find((entry) => entry.level === level)?.text ?? "Nível ainda não cadastrado.";
 }
 
 function magicFallbackPmCost(type, level) {
@@ -1267,8 +1348,9 @@ function spellLevelCard(type) {
 }
 
 function renderLevels(spell, activeLevel = 0) {
-  if (!spell?.levels?.length) return `<div class="empty">Trilha ainda não cadastrada.</div>`;
-  return `<ol class="level-list">${spell.levels.map((level) => {
+  const levels = normalizedSpellLevels(spell);
+  if (!levels.length) return `<div class="empty">Trilha ainda não cadastrada.</div>`;
+  return `<ol class="level-list">${levels.map((level) => {
     const isActive = level.level <= activeLevel;
     const isCurrent = level.level === activeLevel;
     return `<li class="${isActive ? "active" : ""} ${isCurrent ? "current" : ""}">
@@ -1280,7 +1362,7 @@ function renderLevels(spell, activeLevel = 0) {
 
 function extraSpellCard(known) {
   const spell = getSpell(known.type, known.regionCode);
-  const next = known.level < 10 ? aptitudeUpgradeCost(known.type, known.level, known.level + 1) : 0;
+  const next = known.level < 10 ? extraSpellUpgradeCost(known.type, known.level, known.level + 1) : 0;
   return `<div class="spell-card">
     <header><div><strong>${esc(known.name)}</strong><br><span class="muted">${esc(spell?.name ?? known.type)}</span></div><span class="tag">N${known.level}</span></header>
     <p>${esc(spell?.description ?? "")}</p>
@@ -1303,7 +1385,7 @@ function spellCombatCard(item) {
   const active = activeSpellFor(item);
   return `<div class="spell-card">
     <header><div><strong>${esc(item.spell?.name ?? item.type)}</strong><br><span class="muted">Nível ${item.level}</span></div><span class="tag">${esc(item.type)}</span></header>
-    <p>${esc(item.spell?.levels?.find((level) => level.level === item.level)?.text ?? item.spell?.description ?? "")}</p>
+    <p>${esc(currentLevelText(item.spell, item.level) || item.spell?.description || "")}</p>
     <div class="inline">
       <span class="tag warn">${pmCost} PM</span>
       ${prepared ? `<span class="tag ok">${esc(prepared.preparedLabel)}</span>` : ""}
@@ -1843,6 +1925,8 @@ function handleClick(event) {
     "core-reduce-damage": coreReduceDamage,
     "recover-core-rest": recoverCoreRest,
     "recover-core-flat": recoverCoreFlat,
+    "open-resource-max": () => openResourceMaxModal(button.dataset.resource),
+    "save-resource-max": () => saveResourceMaxBonus(button.dataset.resource),
     "adjust-resource": () => adjustResource(button.dataset.resource, num(button.dataset.delta, 0)),
     "pass-turn": passTurn,
     "finish-combat": finishCombat,
@@ -1969,7 +2053,7 @@ function addExtraMagic() {
 function evolveExtraMagic(id) {
   const known = state.magic.knownExtras.find((spell) => spell.id === id);
   if (!known || known.level >= 10) return;
-  const cost = aptitudeUpgradeCost(known.type, known.level, known.level + 1);
+  const cost = extraSpellUpgradeCost(known.type, known.level, known.level + 1);
   if (aptitudeTotal() - aptitudeSpent() < cost) return addError("LAT-MAG-001", known.name);
   known.level += 1;
   render();
@@ -2106,11 +2190,34 @@ function openWeaponDescription(index) {
 }
 
 function parseCulturalWeapons(text) {
-  return text.split(";").map((part) => {
-    const name = part.split("–")[0].split("-")[0].trim();
-    const damage = part.match(/\d+d\d+(?:[+-]\d+)?\s*[A-Za-zÀ-ÿ]*/)?.[0] ?? "";
-    return { name, damage, weight: "", property: compact(part.replace(name, "")), description: part };
-  }).filter((weapon) => weapon.name);
+  const weapons = [];
+  for (const rawPart of String(text ?? "").split(";")) {
+    const part = compact(rawPart);
+    if (!part) continue;
+    if (!weapons.length || looksLikeCulturalWeapon(part)) {
+      weapons.push(culturalWeaponFromText(part));
+      continue;
+    }
+    const previous = weapons.at(-1);
+    previous.property = compact(`${previous.property} ${part}`);
+    previous.description = compact(`${previous.description} ${part}`);
+  }
+  return weapons.filter((weapon) => weapon.name && weapon.damage);
+}
+
+function looksLikeCulturalWeapon(text) {
+  const hasDamage = /\d+d\d+(?:[+-]\d+)?\s*[A-Za-zÀ-ÿ]*/i.test(text);
+  const hasWeaponCategory = /\([^)]*(?:Arma|Arco|Besta|Haste|Curta|Longa|Grande|Cultural)[^)]*\)/i.test(text);
+  const hasNameSeparator = /\s+[–-]\s+/.test(text);
+  return hasDamage && hasWeaponCategory && hasNameSeparator;
+}
+
+function culturalWeaponFromText(text) {
+  const separator = text.search(/\s+[–-]\s+/);
+  const name = separator >= 0 ? text.slice(0, separator).trim() : text.trim();
+  const details = separator >= 0 ? text.slice(separator).trim() : compact(text.replace(name, ""));
+  const damage = text.match(/\d+d\d+(?:[+-]\d+)?\s*[A-Za-zÀ-ÿ]*/i)?.[0] ?? "";
+  return { name, damage, weight: "", property: details, description: text };
 }
 
 function addWeaponFromModal(index) {

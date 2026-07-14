@@ -482,6 +482,24 @@ tr:hover td {
   box-shadow: none;
 }
 
+.resource-max-button {
+  width: 100%;
+  border: 0;
+  border-radius: 14px;
+  padding: 4px 6px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.resource-max-button:hover,
+.resource-max-button:focus-visible {
+  background: color-mix(in srgb, var(--accent-2) 14%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--accent-2) 42%, transparent);
+  outline-offset: 2px;
+}
+
 .big-val {
   color: #fff;
   font-size: clamp(1.9rem, 3vw, 2.45rem);
