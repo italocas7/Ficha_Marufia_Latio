@@ -160,7 +160,7 @@ function createDefaultState() {
     skills: skillState,
     skillExtraPoints: 0,
     effects: [],
-    inventory: { money: { X: 0, D: 0, L: 0 }, patrimonio: "", weapons: [], equipment: [], armorId: "", shield: false, selectedWeaponId: "" },
+    inventory: { money: { X: 0, D: 0, L: 0 }, patrimonio: "", weapons: [], equipment: [], armorId: "", customArmors: [], shield: false, selectedWeaponId: "" },
     magic: { extraAptitudes: 0, baseLevels: Object.fromEntries(MAGIC_TYPES.map((type) => [type, 0])), knownExtras: [] },
     magicCore: { selectedId: "", preparedBoost: "", caBoostTurns: 0 },
     combat: { actions: { standard: true, bonus: true, movement: true, reaction: true }, log: [], activeSpells: [], defenseAdjustments: { ca: 0, block: 0 } },
@@ -603,8 +603,65 @@ function worldCosts(level = worldLevel()) {
   return { activation, maintenance };
 }
 
+function ensureCustomArmors() {
+  state.inventory.customArmors ??= [];
+  return state.inventory.customArmors;
+}
+
+function customArmorKey(id) {
+  return `custom:${id}`;
+}
+
+function isCustomArmorKey(id = "") {
+  return String(id).startsWith("custom:");
+}
+
+function armorSelectId(armor) {
+  return armor?.custom ? customArmorKey(armor.id) : armor?.name ?? "";
+}
+
+function selectedArmor() {
+  const armorId = state.inventory.armorId;
+  if (!armorId) return null;
+  if (isCustomArmorKey(armorId)) {
+    const id = armorId.slice("custom:".length);
+    return ensureCustomArmors().find((item) => item.id === id) ?? null;
+  }
+  return DB.armors.find((item) => item.name === armorId && item.category !== "Escudo") ?? null;
+}
+
+function armorIconPreset(armor) {
+  if (armor?.custom && armor.iconPreset) return armor.iconPreset;
+  const text = fold(`${armor?.name ?? ""} ${armor?.category ?? ""}`);
+  if (text.includes("ESCAMA")) return "scale";
+  if (text.includes("PLACA")) return "plate";
+  if (text.includes("MALHA")) return "chain";
+  if (text.includes("COURO")) return "leather";
+  if (text.includes("PEITORAL")) return "breastplate";
+  return armor?.iconPreset ?? "plate";
+}
+
+function armorIconColor(armor) {
+  const fallbackByPreset = {
+    plate: "#b8c0cc",
+    scale: "#8f6b3d",
+    chain: "#9aa4b2",
+    leather: "#8b5a35",
+    breastplate: "#c39a52",
+  };
+  const preset = armorIconPreset(armor);
+  const color = armor?.iconColor || fallbackByPreset[preset] || "#b8c0cc";
+  return /^#[0-9a-f]{6}$/i.test(color) ? color : "#b8c0cc";
+}
+
+function armorIcon(armor, extraClass = "") {
+  const preset = armorIconPreset(armor);
+  const color = armorIconColor(armor);
+  return `<span class="armor-icon armor-${esc(preset)} ${extraClass}" style="--armor-color:${esc(color)}" aria-hidden="true"><i></i></span>`;
+}
+
 function armorPieces() {
-  const armor = DB.armors.find((item) => item.name === state.inventory.armorId);
+  const armor = selectedArmor();
   const shield = state.inventory.shield ? DB.armors.find((item) => item.category === "Escudo") : null;
   return [armor, shield].filter(Boolean);
 }
@@ -825,6 +882,8 @@ function renderCombate() {
       </div>
     </section>
     ${renderCorePanel("combat")}
+    ${combatQuickSkillsPanel()}
+    ${combatExtrasPanel()}
     <section class="panel">
       <div class="section-title"><h2>Magias em combate</h2></div>
       <div class="grid three">
@@ -881,7 +940,6 @@ function renderMagia() {
 }
 
 function renderInventario() {
-  const armorOptions = DB.armors.filter((item) => item.category !== "Escudo").map((item) => [item.name, `${item.name} (+${item.ca} CA)`]);
   const shieldOn = Boolean(state.inventory.shield);
   return `
     <section class="panel">
@@ -898,7 +956,7 @@ function renderInventario() {
         <div class="card defense-card">
           <h3>Proteção</h3>
           <div class="defense-grid">
-            ${selectField("Armadura", "inventory.armorId", armorOptions, "Sem armadura")}
+            ${armorEquipCard()}
             <button class="shield-toggle ${shieldOn ? "on" : ""}" type="button" role="switch" aria-checked="${shieldOn}" data-action="toggle-shield">
               <span class="shield-glyph" aria-hidden="true"></span>
               <span><strong>Escudo</strong><small>${shieldOn ? "Equipado" : "Guardado"}</small></span>
@@ -1126,6 +1184,34 @@ function miniStat(label, value) {
   return `<div class="stat"><span class="muted">${esc(label)}</span><strong>${esc(value)}</strong></div>`;
 }
 
+function armorBlockLabel(armor) {
+  const block = armor?.block ?? {};
+  return `C ${num(block.cortante, 0)} · P ${num(block.perfurante, 0)} · Cn ${num(block.contundente, 0)}`;
+}
+
+function armorEquipCard() {
+  const armor = selectedArmor();
+  return `<button class="armor-equip-card" type="button" data-action="open-armor-picker">
+    ${armor ? armorIcon(armor, "large") : `<span class="armor-icon armor-empty large" aria-hidden="true"><i></i></span>`}
+    <span class="armor-equip-copy">
+      <span class="muted small">Armadura</span>
+      <strong>${esc(armor?.name ?? "Sem armadura")}</strong>
+      <small>${armor ? `CA +${esc(armor.ca)} · ${esc(armorBlockLabel(armor))}` : "Clique para escolher ou criar"}</small>
+    </span>
+  </button>`;
+}
+
+function armorInfoGrid(armor) {
+  return `<div class="grid three">
+    ${miniStat("Nome do Item", armor?.name ?? "Sem armadura")}
+    ${miniStat("Bônus CA", armor?.ca ?? 0)}
+    ${miniStat("Peso", armor?.weight || "-")}
+    ${miniStat("Bloqueio C", armor?.block?.cortante ?? 0)}
+    ${miniStat("Bloqueio P", armor?.block?.perfurante ?? 0)}
+    ${miniStat("Bloqueio Cn", armor?.block?.contundente ?? 0)}
+  </div>`;
+}
+
 function defenseMiniStat(label, value, kind, adjustment) {
   const note = adjustment ? `Ajuste ${adjustment > 0 ? "+" : ""}${adjustment}` : "Clique para ajustar";
   return `<button class="stat" type="button" data-action="open-defense-adjust" data-defense="${esc(kind)}" aria-label="Ajustar ${esc(label)}"><span class="muted">${esc(label)}</span><strong>${esc(value)}</strong><small>${esc(note)}</small></button>`;
@@ -1162,6 +1248,55 @@ function bestAttackSkill() {
     const value = skillFinal(name);
     return value > best.value ? { name, value } : best;
   }, { name: "Lutar (Brigar)", value: skillFinal("Lutar (Brigar)") });
+}
+
+function topFightSkills(limit = 2) {
+  return DB.skills
+    .filter((skill) => /^Lutar\s*\(/i.test(skill.name))
+    .map((skill) => ({ name: skill.name, value: skillFinal(skill.name) }))
+    .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name))
+    .slice(0, limit);
+}
+
+function combatQuickSkillNames() {
+  const fixed = [
+    { label: "Arremesso", name: "Arremessar" },
+    { label: "Arte/Ofício", name: "Arte/Ofício" },
+    { label: "Atletismo", name: "Atletismo" },
+    { label: "Esquivar", name: "Esquivar" },
+    { label: "Percepção", name: "Percepção" },
+    { label: "Tática", name: "Tática" },
+  ];
+  return [...fixed.map((skill) => ({ ...skill, value: skillFinal(skill.name) })), ...topFightSkills().map((skill) => ({ ...skill, label: skill.name }))];
+}
+
+function skillRollButtons(name) {
+  return `<div class="roll-buttons">
+    <button class="ghost" type="button" data-action="roll-skill" data-skill="${esc(name)}" data-mode="normal" title="Rolar d100">N</button>
+    <button class="ghost" type="button" data-action="roll-skill" data-skill="${esc(name)}" data-mode="adv" title="Rolar com vantagem">V</button>
+    <button class="ghost" type="button" data-action="roll-skill" data-skill="${esc(name)}" data-mode="dis" title="Rolar com desvantagem">D</button>
+  </div>`;
+}
+
+function combatQuickSkillsPanel() {
+  return `<section class="panel combat-quick-panel">
+    <div class="section-title"><h2>Perícias de combate</h2><span class="muted small">N · V · D</span></div>
+    <div class="combat-skill-grid">
+      ${combatQuickSkillNames().map((skill) => `<div class="combat-skill-card">
+        <button class="ghost" type="button" data-action="open-skill" data-skill="${esc(skill.name)}"><strong>${esc(skill.label)}</strong><span>${esc(skill.value)}</span></button>
+        ${skillRollButtons(skill.name)}
+      </div>`).join("")}
+    </div>
+  </section>`;
+}
+
+function combatExtrasPanel() {
+  return `<section class="panel combat-extras-panel">
+    <div class="grid two">
+      <div>${summaryChips("Habilidades Extra", state.abilities, "open-ability")}</div>
+      <div>${summaryChips("Talentos", allKnownTalents(), "open-talent")}</div>
+    </div>
+  </section>`;
 }
 
 function normalizedSpellLevels(spell) {
@@ -1546,6 +1681,116 @@ function openSkillModal(name) {
 function openModifiersModal(name) {
   const mods = skillModifiers(name);
   openModal(`Modificadores: ${name}`, `<div class="stack">${mods.map((mod) => `<div class="card"><strong>${esc(mod.detail)}</strong><p class="muted">${esc(mod.source)}</p></div>`).join("") || `<div class="empty">Nenhum modificador automático.</div>`}</div>`);
+}
+
+function armorIconOptions() {
+  return [
+    ["plate", "Armadura de Placas"],
+    ["scale", "Armadura de Escamas"],
+    ["chain", "Cota de Malha"],
+    ["leather", "Couro"],
+    ["breastplate", "Peitoral"],
+  ];
+}
+
+function armorPickerCard(armor) {
+  const id = armorSelectId(armor);
+  const selected = state.inventory.armorId === id;
+  return `<div class="armor-picker-card ${selected ? "selected" : ""}">
+    <button class="armor-picker-main" type="button" data-action="select-armor" data-armor-id="${esc(id)}">
+      ${armorIcon(armor)}
+      <span>
+        <strong>${esc(armor.name)}</strong>
+        <small>${esc(armor.category || (armor.custom ? "Personalizada" : "Armadura"))}</small>
+      </span>
+    </button>
+    ${armorInfoGrid(armor)}
+    <p class="muted">${esc(armor.property || armor.description || "Sem propriedade cadastrada.")}</p>
+    <div class="inline">
+      <button class="${selected ? "button" : "ghost"}" type="button" data-action="select-armor" data-armor-id="${esc(id)}">${selected ? "Selecionada" : "Selecionar"}</button>
+      ${armor.custom ? `<button class="ghost" type="button" data-action="open-custom-armor" data-id="${esc(armor.id)}">Editar</button><button class="danger" type="button" data-action="remove-custom-armor" data-id="${esc(armor.id)}">Remover</button>` : ""}
+    </div>
+  </div>`;
+}
+
+function openArmorPicker() {
+  const official = DB.armors.filter((item) => item.category !== "Escudo");
+  const custom = ensureCustomArmors();
+  openModal("Armaduras", `
+    <div class="armor-picker-actions">
+      <button class="ghost" type="button" data-action="select-armor" data-armor-id="">Sem armadura</button>
+      <button class="button" type="button" data-action="open-custom-armor">Armadura personalizada</button>
+    </div>
+    <h3>Armaduras oficiais</h3>
+    <div class="armor-picker-grid">${official.map((armor) => armorPickerCard(armor)).join("")}</div>
+    <h3>Armaduras personalizadas</h3>
+    <div class="armor-picker-grid">${custom.map((armor) => armorPickerCard(armor)).join("") || `<div class="empty">Nenhuma armadura personalizada criada.</div>`}</div>
+  `, `<button class="ghost" type="button" data-action="close-modal">Fechar</button>`);
+}
+
+function openCustomArmorModal(id = "") {
+  const existing = ensureCustomArmors().find((armor) => armor.id === id);
+  const iconPreset = existing?.iconPreset ?? "plate";
+  const iconColor = armorIconColor(existing ?? { custom: true, iconPreset });
+  const iconOptions = armorIconOptions().map(([value, label]) => `<option value="${esc(value)}" ${iconPreset === value ? "selected" : ""}>${esc(label)}</option>`).join("");
+  openModal(existing ? "Editar armadura personalizada" : "Armadura personalizada", `
+    <div class="armor-custom-preview">
+      ${armorIcon({ custom: true, iconPreset, iconColor }, "large")}
+      <div><strong>${esc(existing?.name ?? "Nova armadura")}</strong><p class="muted">A cor abaixo altera o ícone visual da armadura.</p></div>
+    </div>
+    <div class="grid two">
+      <div class="field"><label>Nome</label><input id="customArmorName" value="${esc(existing?.name ?? "")}"></div>
+      <div class="field"><label>Ícone</label><select id="customArmorIconPreset">${iconOptions}</select></div>
+      <div class="field"><label>CA</label><input id="customArmorCa" type="number" value="${esc(existing?.ca ?? 0)}"></div>
+      <div class="field"><label>Cor do ícone</label><input id="customArmorIconColor" type="color" value="${esc(iconColor)}"></div>
+      <div class="field"><label>Bloqueio Cortante</label><input id="customArmorBlockCortante" type="number" value="${esc(existing?.block?.cortante ?? 0)}"></div>
+      <div class="field"><label>Bloqueio Perfurante</label><input id="customArmorBlockPerfurante" type="number" value="${esc(existing?.block?.perfurante ?? 0)}"></div>
+      <div class="field"><label>Bloqueio Contundente</label><input id="customArmorBlockContundente" type="number" value="${esc(existing?.block?.contundente ?? 0)}"></div>
+    </div>
+    <div class="field"><label>Descrição</label><textarea id="customArmorDescription">${esc(existing?.description ?? "")}</textarea></div>
+  `, `<button class="button" type="button" data-action="save-custom-armor" data-id="${esc(existing?.id ?? "")}">Salvar</button><button class="ghost" type="button" data-action="open-armor-picker">Voltar</button>`);
+}
+
+function selectArmor(id = "") {
+  state.inventory.armorId = id;
+  closeModal();
+  render();
+}
+
+function saveCustomArmor(id = "") {
+  const name = $("#customArmorName")?.value.trim();
+  if (!name) return addError("LAT-UI-002", "Nome da armadura vazio.");
+  const armor = {
+    id: id || uid(),
+    custom: true,
+    name,
+    description: $("#customArmorDescription")?.value.trim() ?? "",
+    property: $("#customArmorDescription")?.value.trim() ?? "",
+    ca: num($("#customArmorCa")?.value, 0),
+    weight: "Personalizada",
+    category: "Personalizada",
+    block: {
+      cortante: num($("#customArmorBlockCortante")?.value, 0),
+      perfurante: num($("#customArmorBlockPerfurante")?.value, 0),
+      contundente: num($("#customArmorBlockContundente")?.value, 0),
+    },
+    iconPreset: $("#customArmorIconPreset")?.value || "plate",
+    iconColor: $("#customArmorIconColor")?.value || "#b8c0cc",
+  };
+  const custom = ensureCustomArmors();
+  const index = custom.findIndex((item) => item.id === armor.id);
+  if (index >= 0) custom[index] = armor;
+  else custom.push(armor);
+  state.inventory.armorId = customArmorKey(armor.id);
+  closeModal();
+  render();
+}
+
+function removeCustomArmor(id = "") {
+  state.inventory.customArmors = ensureCustomArmors().filter((armor) => armor.id !== id);
+  if (state.inventory.armorId === customArmorKey(id)) state.inventory.armorId = "";
+  saveState();
+  openArmorPicker();
 }
 
 function ensureDefenseAdjustments() {
@@ -1934,6 +2179,11 @@ function handleClick(event) {
     "toggle-action": () => { const key = button.dataset.actionKey; state.combat.actions[key] = !state.combat.actions[key]; render(); },
     "clear-combat-log": () => { state.combat.log = []; render(); },
     "remove-active-spell": () => removeActiveSpell(button.dataset.id),
+    "open-armor-picker": openArmorPicker,
+    "select-armor": () => selectArmor(button.dataset.armorId ?? ""),
+    "open-custom-armor": () => openCustomArmorModal(button.dataset.id ?? ""),
+    "save-custom-armor": () => saveCustomArmor(button.dataset.id ?? ""),
+    "remove-custom-armor": () => removeCustomArmor(button.dataset.id ?? ""),
     "toggle-shield": () => { state.inventory.shield = !state.inventory.shield; render(); },
     "open-weapon-picker": () => openWeaponPicker(button.dataset.kind),
     "open-custom-weapon": () => openCustomWeapon(),
@@ -1982,6 +2232,13 @@ function handleClick(event) {
 
 function handleChange(event) {
   const target = event.target;
+  if (target.id === "customArmorIconPreset") {
+    const icon = $(".armor-custom-preview .armor-icon");
+    if (icon) {
+      for (const [preset] of armorIconOptions()) icon.classList.remove(`armor-${preset}`);
+      icon.classList.add(`armor-${target.value || "plate"}`);
+    }
+  }
   if (target.dataset.path) {
     let value = target.type === "checkbox" ? target.checked : target.value;
     if (target.type === "number") value = num(value, 0);
@@ -2012,6 +2269,9 @@ function handleChange(event) {
 
 function handleInput(event) {
   const target = event.target;
+  if (target.id === "customArmorIconColor") {
+    $(".armor-custom-preview .armor-icon")?.style.setProperty("--armor-color", target.value);
+  }
   if (target.dataset.path && target.dataset.live) {
     setPath(target.dataset.path, target.value);
     saveState();
@@ -2191,8 +2451,7 @@ function openWeaponDescription(index) {
 
 function parseCulturalWeapons(text) {
   const weapons = [];
-  for (const rawPart of String(text ?? "").split(";")) {
-    const part = compact(rawPart);
+  for (const part of splitCulturalWeaponEntries(text)) {
     if (!part) continue;
     if (!weapons.length || looksLikeCulturalWeapon(part)) {
       weapons.push(culturalWeaponFromText(part));
@@ -2205,19 +2464,32 @@ function parseCulturalWeapons(text) {
   return weapons.filter((weapon) => weapon.name && weapon.damage);
 }
 
+function splitCulturalWeaponEntries(text) {
+  const value = compact(text);
+  if (!value) return [];
+  const starts = [...value.matchAll(/[A-ZÀ-Ý][^;.]*?\([^)]*(?:Arma|Arco|Besta|Haste|Curta|Longa|Grande|Cultural|Espada)[^)]*\)\s*(?:[–-]\s*)?(?=(?:Causa\s+)?\d+d\d+)/g)];
+  if (starts.length <= 1) return value.split(";").map((part) => compact(part));
+  return starts.map((match, index) => {
+    const next = starts[index + 1]?.index ?? value.length;
+    return compact(value.slice(match.index, next).replace(/^;\s*/, "").replace(/;\s*$/, ""));
+  });
+}
+
 function looksLikeCulturalWeapon(text) {
   const hasDamage = /\d+d\d+(?:[+-]\d+)?\s*[A-Za-zÀ-ÿ]*/i.test(text);
   const hasWeaponCategory = /\([^)]*(?:Arma|Arco|Besta|Haste|Curta|Longa|Grande|Cultural)[^)]*\)/i.test(text);
-  const hasNameSeparator = /\s+[–-]\s+/.test(text);
+  const hasNameSeparator = /\s+[–-]\s+/.test(text) || /\)\s*(?:Causa\s+)?\d+d\d+/i.test(text);
   return hasDamage && hasWeaponCategory && hasNameSeparator;
 }
 
 function culturalWeaponFromText(text) {
   const separator = text.search(/\s+[–-]\s+/);
   const name = separator >= 0 ? text.slice(0, separator).trim() : text.trim();
-  const details = separator >= 0 ? text.slice(separator).trim() : compact(text.replace(name, ""));
+  const fallbackName = text.match(/^[^(]+\([^)]*\)/)?.[0]?.trim() ?? name;
+  const finalName = separator >= 0 ? name : fallbackName;
+  const details = separator >= 0 ? text.slice(separator).trim() : compact(text.replace(finalName, ""));
   const damage = text.match(/\d+d\d+(?:[+-]\d+)?\s*[A-Za-zÀ-ÿ]*/i)?.[0] ?? "";
-  return { name, damage, weight: "", property: details, description: text };
+  return { name: finalName, damage, weight: "", property: details, description: text };
 }
 
 function addWeaponFromModal(index) {
