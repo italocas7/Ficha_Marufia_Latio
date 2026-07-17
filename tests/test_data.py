@@ -31,6 +31,30 @@ class DatabaseIntegrityTests(unittest.TestCase):
         siphon = next(law for law in self.database["worldLaws"] if law["ID"] == "UTI-29")
         self.assertIn("POD", siphon["Resistência sugerida"].upper())
 
+    def test_escalar_is_replaced_and_background_bonuses_are_structured(self):
+        skill_names = {skill["name"] for skill in self.database["skills"]}
+        self.assertEqual(len(skill_names), 37)
+        self.assertNotIn("Escalar", skill_names)
+
+        family = {item["name"]: item for item in self.database["backgrounds"]["family"]}
+        personal = {item["name"]: item for item in self.database["backgrounds"]["personal"]}
+        self.assertEqual((len(family), len(personal)), (12, 12))
+        self.assertEqual(family["Construtor de Fortalezas"]["bonuses"], [
+            {"skill": "Atletismo", "value": 5},
+            {"skill": "Tática", "value": 5},
+        ])
+        self.assertEqual(personal["Peregrino Devoto"]["bonuses"], [
+            {"skill": "Religião", "value": 5},
+            {"skill": "Sobrevivência", "value": 5},
+            {"skill": "Atletismo", "value": 5},
+        ])
+        for background in [*family.values(), *personal.values()]:
+            self.assertTrue(background["bonuses"])
+            self.assertTrue(all(bonus["skill"] in skill_names for bonus in background["bonuses"]))
+
+        lapimes = next(culture for region in self.database["regions"] for culture in region["cultures"] if culture["name"] == "Lapimeš")
+        self.assertIn({"skill": "Atletismo", "value": 5}, lapimes["skillBonuses"])
+
     def test_pdf_fixture_is_a_real_form_pdf(self):
         payload = (ROOT / "tests" / "fixtures" / "Ficha_Marufia_Automatica.pdf").read_bytes()
         self.assertTrue(payload.startswith(b"%PDF-"))

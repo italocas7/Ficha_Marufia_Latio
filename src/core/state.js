@@ -125,6 +125,26 @@
     return Number.isFinite(parsed) ? Math.min(max, Math.max(min, parsed)) : fallback;
   }
 
+  function migrateEscalarToAtletismo(state) {
+    const skills = state?.skills;
+    if (!isPlainObject(skills) || !isPlainObject(skills.Escalar)) return state;
+    const source = skills.Escalar;
+    const target = isPlainObject(skills.Atletismo)
+      ? skills.Atletismo
+      : { added: 0, checked: false, evolutions: [] };
+    const sourceAdded = Number(source.added);
+    const targetAdded = Number(target.added);
+    target.added = (Number.isFinite(targetAdded) ? targetAdded : 0) + (Number.isFinite(sourceAdded) ? sourceAdded : 0);
+    target.checked = Boolean(target.checked || source.checked);
+    target.evolutions = [
+      ...(Array.isArray(target.evolutions) ? target.evolutions : []),
+      ...(Array.isArray(source.evolutions) ? source.evolutions : []),
+    ];
+    skills.Atletismo = target;
+    delete skills.Escalar;
+    return state;
+  }
+
   function normalizeDomain(state, appId, schemaVersion) {
     state.meta.appId = appId;
     state.meta.schemaVersion = schemaVersion;
@@ -209,6 +229,7 @@
         safe.combat.activeSpells = safe.combat.activeSpells.filter((spell) => spell?.type !== "Mundo");
       }
     }
+    migrateEscalarToAtletismo(safe);
     delete safe.ui;
     const state = normalizeDomain(mergeKnown(defaults, safe), options.appId, options.schemaVersion);
     return { state, incoming: safe, sourceVersion, migrated: sourceVersion !== options.schemaVersion };

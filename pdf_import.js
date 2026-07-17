@@ -65,6 +65,60 @@
     other: ["Outras Caracter\u00edsticas", "Outras Caracteristicas"],
   };
 
+  const IMPORT_PATH_LABELS = {
+    "character.name": "Nome do personagem",
+    "character.familyBackgroundName": "Antecedente familiar",
+    "character.personalBackgroundName": "Antecedente pessoal",
+    "character.cultureName": "Cultura",
+    "character.gender": "Gênero",
+    "character.birth": "Nascimento",
+    "character.age": "Idade",
+    "resources.hpCurrent": "Vida atual",
+    "resources.pmCurrent": "Pontos de Magia atuais",
+    "calculated.hpMax": "Vida máxima",
+    "calculated.pmMax": "Pontos de Magia máximos",
+    "calculated.ca": "Classe de Armadura (CA)",
+    "calculated.body": "Corpo",
+    "calculated.bonus": "Bônus",
+    "calculated.dodge": "Esquiva",
+    "notes.traits": "Traços de personalidade",
+    "notes.ideal": "Ideal",
+    "notes.flaws": "Defeitos",
+    "notes.bonds": "Ligações",
+    "notes.eyes": "Olhos",
+    "notes.age": "Idade da aparência",
+    "notes.height": "Altura",
+    "notes.hair": "Cabelos",
+    "notes.skin": "Pele",
+    "notes.weight": "Peso",
+    "notes.appearance": "Aparência geral",
+    "notes.history": "História",
+    "notes.allies": "Aliados e organizações",
+    "notes.patron": "Patrono pessoal",
+    "notes.other": "Outras características",
+  };
+
+  const ATTRIBUTE_LABELS = {
+    FOR: "Força (FOR)",
+    DES: "Destreza (DES)",
+    CON: "Constituição (CON)",
+    APA: "Aparência (APA)",
+    CAR: "Carisma (CAR)",
+    SAB: "Sabedoria (SAB)",
+    INT: "Inteligência (INT)",
+    POD: "Poder (POD)",
+  };
+
+  function importFieldLabel(path) {
+    if (IMPORT_PATH_LABELS[path]) return IMPORT_PATH_LABELS[path];
+    if (path.startsWith("attributes.")) return ATTRIBUTE_LABELS[path.slice("attributes.".length)] ?? "Atributo";
+    if (path.startsWith("skills.")) return `Perícia: ${path.slice("skills.".length)}`;
+    if (path.startsWith("inventory.money.")) return `Dinheiro ${path.slice("inventory.money.".length)}`;
+    if (path.startsWith("inventory.weapons.")) return "Arma importada";
+    if (path.startsWith("inventory.equipment.")) return "Equipamento importado";
+    return "Informação da ficha";
+  }
+
   const STRUCTURE_FIELDS = [
     "Nome",
     "For.Atr",
@@ -201,6 +255,7 @@
       "LUTAR (ARMA LONGA)": "Lutar (Armas Longas)",
       "LUTAR (ARMAS LONGA)": "Lutar (Armas Longas)",
       "LUTAR (ARMA CURTA)": "Lutar (Armas Curtas)",
+      ESCALAR: "Atletismo",
       PERCEPCAO: "Percepcao",
       PRESTIDIGITACAO: "Prestidigitacao",
       RELIGIAO: "Religiao",
@@ -414,7 +469,7 @@
       const hasForm = useful(formValue);
       const hasText = useful(textValue);
       if (hasForm && hasText && !sameImportedValue(formValue, textValue)) {
-        conflicts.push({ path, formValue, textValue });
+        conflicts.push({ path, label: importFieldLabel(path), formValue, textValue });
       }
       return hasForm ? formValue : hasText ? textValue : formValue ?? textValue ?? "";
     };
@@ -427,35 +482,35 @@
 
   function missingFields(data) {
     const required = [
-      ["Nome", "character.name"],
-      ["Antecedente Familiar", "character.familyBackgroundName"],
-      ["Antecedente Pessoal", "character.personalBackgroundName"],
+      ["Nome do personagem", "character.name"],
+      ["Antecedente familiar", "character.familyBackgroundName"],
+      ["Antecedente pessoal", "character.personalBackgroundName"],
       ["Cultura", "character.cultureName"],
-      ["Sexo/Genero", "character.gender"],
+      ["Gênero", "character.gender"],
       ["Nascimento", "character.birth"],
       ["Idade", "character.age"],
-      ["Vida Maxima", "calculated.hpMax"],
-      ["CA", "calculated.ca"],
-      ["Pontos de Magia", "calculated.pmMax"],
+      ["Vida máxima", "calculated.hpMax"],
+      ["Classe de Armadura (CA)", "calculated.ca"],
+      ["Pontos de Magia máximos", "calculated.pmMax"],
       ["Corpo", "calculated.body"],
-      ["Bonus", "calculated.bonus"],
+      ["Bônus", "calculated.bonus"],
       ["Esquiva", "calculated.dodge"],
-      ["Tracos de Personalidade", "notes.traits"],
+      ["Traços de personalidade", "notes.traits"],
       ["Ideal", "notes.ideal"],
       ["Defeitos", "notes.flaws"],
-      ["Ligacoes", "notes.bonds"],
+      ["Ligações", "notes.bonds"],
       ["Olhos", "notes.eyes"],
       ["Altura", "notes.height"],
       ["Cabelos", "notes.hair"],
       ["Pele", "notes.skin"],
       ["Peso", "notes.weight"],
-      ...Object.keys(ATTR_FIELD_MAP).map((attrName) => [attrName, `attributes.${attrName}`]),
+      ...Object.keys(ATTR_FIELD_MAP).map((attrName) => [ATTRIBUTE_LABELS[attrName], `attributes.${attrName}`]),
     ];
     const missing = required.filter(([, path]) => {
       const value = valueAt(data, path);
       return value === null || value === undefined || value === "";
     }).map(([label]) => label);
-    if (!Object.keys(data.skills).length) missing.push("Pericias");
+    if (!Object.keys(data.skills).length) missing.push("Perícias");
     return [...new Set(missing)];
   }
 
@@ -490,5 +545,5 @@
     };
   }
 
-  window.MARUFIA_PDF_IMPORTER = { importFromPdf, mergePdfData, countImportedValues };
+  window.MARUFIA_PDF_IMPORTER = { importFromPdf, mergePdfData, countImportedValues, importFieldLabel, importedSkillName };
 })();

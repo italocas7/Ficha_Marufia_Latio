@@ -4,11 +4,12 @@ const stateTools = require("../../src/core/state.js");
 
 function defaults() {
   return {
-    meta: { appId: "marufia-latio", schemaVersion: 3, started: false, importedFromPdf: null },
+    meta: { appId: "marufia-latio", schemaVersion: 4, started: false, importedFromPdf: null },
     character: { name: "", level: 1 },
     attributes: { FOR: 50 },
     resources: {},
     settings: { skillLimit: 70 },
+    skills: { Atletismo: { added: 0, checked: false, evolutions: [] } },
     inventory: { weapons: [], equipment: [], customArmors: [], selectedWeaponId: "" },
     talents: [],
     abilities: [],
@@ -19,7 +20,7 @@ function defaults() {
   };
 }
 
-const options = { appId: "marufia-latio", schemaVersion: 3 };
+const options = { appId: "marufia-latio", schemaVersion: 4 };
 
 test("migrates v1 and removes session UI", () => {
   const prepared = stateTools.prepareImport({
@@ -28,7 +29,7 @@ test("migrates v1 and removes session UI", () => {
     world: { active: true },
     ui: { printMode: true, activeTab: "mundo" },
   }, defaults(), options);
-  assert.equal(prepared.state.meta.schemaVersion, 3);
+  assert.equal(prepared.state.meta.schemaVersion, 4);
   assert.equal(prepared.state.world.status, "active");
   assert.equal(Object.hasOwn(prepared.state, "ui"), false);
 });
@@ -39,13 +40,27 @@ test("migrates v2 and removes legacy World combat state", () => {
     world: { status: "active", turns: "1d4" },
     combat: { activeSpells: [{ id: "world", spellId: "base-Mundo", type: "Mundo", name: "Mundo", level: 1, turns: null, maintenanceCost: 2 }] },
   }, defaults(), options);
-  assert.equal(prepared.state.meta.schemaVersion, 3);
+  assert.equal(prepared.state.meta.schemaVersion, 4);
   assert.equal(prepared.state.world.maintenancePaidForTurn, false);
   assert.equal(Object.hasOwn(prepared.state.world, "turns"), false);
   assert.equal(prepared.state.combat.activeSpells.length, 0);
 });
 
-for (const invalidVersion of [undefined, "banana", 0, -1, 1.5, 4]) {
+test("migrates Escalar points, evolutions, and checks to Atletismo", () => {
+  const prepared = stateTools.prepareImport({
+    meta: { appId: "marufia-latio", schemaVersion: 3 },
+    skills: {
+      Atletismo: { added: 4, checked: false, evolutions: [{ value: 2 }] },
+      Escalar: { added: 7, checked: true, evolutions: [{ value: 3 }] },
+    },
+  }, defaults(), options);
+  assert.equal(prepared.state.skills.Atletismo.added, 11);
+  assert.equal(prepared.state.skills.Atletismo.checked, true);
+  assert.deepEqual(prepared.state.skills.Atletismo.evolutions.map((item) => item.value), [2, 3]);
+  assert.equal(Object.hasOwn(prepared.state.skills, "Escalar"), false);
+});
+
+for (const invalidVersion of [undefined, "banana", 0, -1, 1.5, 5]) {
   test(`rejects invalid schema version ${String(invalidVersion)}`, () => {
     const payload = { meta: { appId: "marufia-latio" } };
     if (invalidVersion !== undefined) payload.meta.schemaVersion = invalidVersion;

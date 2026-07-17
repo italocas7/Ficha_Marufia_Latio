@@ -175,7 +175,7 @@ window.MARUFIA_DB = {
       "description": "Treinar, acalmar, comandar."
     },
     {
-      "name": "Lutar (Armas Longas)",
+      "name": "Lutar (Armas Curtas)",
       "base": 1,
       "description": "Espadas curtas, longas, sabres."
     },
@@ -190,7 +190,7 @@ window.MARUFIA_DB = {
       "description": "Lanças, alabardas, glaives."
     },
     {
-      "name": "Lutar (Armas Curtas)",
+      "name": "Lutar (Armas Longas)",
       "base": 1,
       "description": "Machados de guerra, de arremesso."
     },
@@ -250,11 +250,6 @@ window.MARUFIA_DB = {
       "description": "Estratégia de guerra e manobras."
     },
     {
-      "name": "Escalar",
-      "base": 20,
-      "description": "Subir, descer ou atravessar superfícies difíceis. Incluída para compatibilidade com antecedentes do manual."
-    },
-    {
       "name": "Percepção",
       "base": 15,
       "description": "Perceber detalhes, fluxos de energia, auras e manifestações mágicas."
@@ -267,84 +262,192 @@ window.MARUFIA_DB = {
         "name": "Ferreiro Familiar",
         "description": "Sua família forjava armas e armaduras, ensinando-lhe a arte da metalurgia.",
         "bonusText": "+5 em Arte/Ofício, +5 em Avaliação.",
-        "bonuses": []
+        "bonuses": [
+          {
+            "skill": "Arte/Ofício",
+            "value": 5
+          },
+          {
+            "skill": "Avaliação",
+            "value": 5
+          }
+        ]
       },
       {
         "id": "comerciante-heredit-rio",
         "name": "Comerciante Hereditário",
         "description": "Criado em uma linhagem de mercadores, você aprendeu a negociar e gerir trocas.",
         "bonusText": "+5 em Diplomacia, +5 em Contabilidade.",
-        "bonuses": []
+        "bonuses": [
+          {
+            "skill": "Diplomacia",
+            "value": 5
+          },
+          {
+            "skill": "Contabilidade",
+            "value": 5
+          }
+        ]
       },
       {
         "id": "ca-ador-ancestral",
         "name": "Caçador Ancestral",
         "description": "Sua linhagem viveu da caça, passando técnicas de rastreamento.",
         "bonusText": "+5 em Rastrear, +5 em Sobrevivência.",
-        "bonuses": []
+        "bonuses": [
+          {
+            "skill": "Rastrear",
+            "value": 5
+          },
+          {
+            "skill": "Sobrevivência",
+            "value": 5
+          }
+        ]
       },
       {
         "id": "m-dico-tradicional",
         "name": "Médico Tradicional",
         "description": "Descendente de curandeiros medievais, você conhece remédios e ervas.",
         "bonusText": "+5 em Medicina, +5 em Natureza.",
-        "bonuses": []
+        "bonuses": [
+          {
+            "skill": "Medicina",
+            "value": 5
+          },
+          {
+            "skill": "Natureza",
+            "value": 5
+          }
+        ]
       },
       {
         "id": "guarda-familiar",
         "name": "Guarda Familiar",
         "description": "Sua família serviu como protetores locais, treinando-o em combate.",
         "bonusText": "+5 em Lutar (Brigar), +5 em Intimidação.",
-        "bonuses": []
+        "bonuses": [
+          {
+            "skill": "Lutar (Brigar)",
+            "value": 5
+          },
+          {
+            "skill": "Intimidação",
+            "value": 5
+          }
+        ]
       },
       {
         "id": "agricultor-resiliente",
         "name": "Agricultor Resiliente",
         "description": "Criado em uma família de lavradores, você aprendeu a trabalhar a terra.",
         "bonusText": "+5 em Sobrevivência, +5 em Atletismo.",
-        "bonuses": []
+        "bonuses": [
+          {
+            "skill": "Sobrevivência",
+            "value": 5
+          },
+          {
+            "skill": "Atletismo",
+            "value": 5
+          }
+        ]
       },
       {
         "id": "escriba-mon-stico",
         "name": "Escriba Monástico",
         "description": "Sua família serviu a uma ordem religiosa, ensinando leitura e escrita.",
         "bonusText": "+5 em História, +5 em Religião.",
-        "bonuses": []
+        "bonuses": [
+          {
+            "skill": "História",
+            "value": 5
+          },
+          {
+            "skill": "Religião",
+            "value": 5
+          }
+        ]
       },
       {
         "id": "pescador-experiente",
         "name": "Pescador Experiente",
         "description": "Sua família viveu da pesca, ensinando técnicas de navegação e paciência.",
         "bonusText": "+5 em Navegação, +5 em Lidar com Animais.",
-        "bonuses": []
+        "bonuses": [
+          {
+            "skill": "Navegação",
+            "value": 5
+          },
+          {
+            "skill": "Lidar com Animais",
+            "value": 5
+          }
+        ]
       },
       {
         "id": "lenhador-robusto",
         "name": "Lenhador Robusto",
         "description": "Descendente de lenhadores, você domina o uso de machados e força bruta.",
         "bonusText": "+5 em Lutar (Armas Longas), +5 em Atletismo.",
-        "bonuses": []
+        "bonuses": [
+          {
+            "skill": "Lutar (Armas Longas)",
+            "value": 5
+          },
+          {
+            "skill": "Atletismo",
+            "value": 5
+          }
+        ]
       },
       {
         "id": "tecel-o-habilidoso",
         "name": "Tecelão Habilidoso",
         "description": "Sua família produzia tecidos e roupas, ensinando artesanato detalhado.",
         "bonusText": "+5 em Arte/Ofício, +5 em Prestidigitação.",
-        "bonuses": []
+        "bonuses": [
+          {
+            "skill": "Arte/Ofício",
+            "value": 5
+          },
+          {
+            "skill": "Prestidigitação",
+            "value": 5
+          }
+        ]
       },
       {
         "id": "mensageiro-gil",
         "name": "Mensageiro Ágil",
         "description": "Sua família trabalhou como correios ou emissários, valorizando velocidade.",
         "bonusText": "+5 em Furtividade, +5 em Esquivar.",
-        "bonuses": []
+        "bonuses": [
+          {
+            "skill": "Furtividade",
+            "value": 5
+          },
+          {
+            "skill": "Esquivar",
+            "value": 5
+          }
+        ]
       },
       {
         "id": "construtor-de-fortalezas",
         "name": "Construtor de Fortalezas",
         "description": "Criado por uma família de pedreiros, você entende construção e defesa.",
-        "bonusText": "+5 em Escalar, +5 em Tática.",
-        "bonuses": []
+        "bonusText": "+5 em Atletismo, +5 em Tática.",
+        "bonuses": [
+          {
+            "skill": "Atletismo",
+            "value": 5
+          },
+          {
+            "skill": "Tática",
+            "value": 5
+          }
+        ]
       }
     ],
     "personal": [
@@ -353,7 +456,20 @@ window.MARUFIA_DB = {
         "name": "Artista Errante",
         "description": "Viajou como trovador ou bardo, encantando vilarejos medievais.",
         "bonusText": "+5 em Atuação, +5 em Charme, +5 em História.",
-        "bonuses": [],
+        "bonuses": [
+          {
+            "skill": "Atuação",
+            "value": 5
+          },
+          {
+            "skill": "Charme",
+            "value": 5
+          },
+          {
+            "skill": "História",
+            "value": 5
+          }
+        ],
         "tables": {
           "traits": [
             "Alegre e expressivo, sempre cantando ou contando histórias.",
@@ -394,7 +510,20 @@ window.MARUFIA_DB = {
         "name": "Criminoso Arrependido",
         "description": "Viveu como ladrão ou bandido, buscando redenção após crimes.",
         "bonusText": "+5 em Furtividade, +5 em Blefar, +5 em Prestidigitação.",
-        "bonuses": [],
+        "bonuses": [
+          {
+            "skill": "Furtividade",
+            "value": 5
+          },
+          {
+            "skill": "Blefar",
+            "value": 5
+          },
+          {
+            "skill": "Prestidigitação",
+            "value": 5
+          }
+        ],
         "tables": {
           "traits": [
             "Reservado e desconfiado, evitando contatos.",
@@ -435,7 +564,20 @@ window.MARUFIA_DB = {
         "name": "Soldado Honorável",
         "description": "Serviu como mercenário ou cavaleiro, aprendendo tática e disciplina.",
         "bonusText": "+5 em Tática, +5 em Atletismo, +5 em Intimidação.",
-        "bonuses": [],
+        "bonuses": [
+          {
+            "skill": "Tática",
+            "value": 5
+          },
+          {
+            "skill": "Atletismo",
+            "value": 5
+          },
+          {
+            "skill": "Intimidação",
+            "value": 5
+          }
+        ],
         "tables": {
           "traits": [
             "Leal e direto, sempre cumprindo ordens.",
@@ -476,7 +618,20 @@ window.MARUFIA_DB = {
         "name": "Sábio Errante",
         "description": "Estudou em mosteiros ou cortes, buscando conhecimento profundo.",
         "bonusText": "+5 em História, +5 em Religião, +5 em Intuição.",
-        "bonuses": [],
+        "bonuses": [
+          {
+            "skill": "História",
+            "value": 5
+          },
+          {
+            "skill": "Religião",
+            "value": 5
+          },
+          {
+            "skill": "Intuição",
+            "value": 5
+          }
+        ],
         "tables": {
           "traits": [
             "Curioso, sempre buscando novos conhecimentos.",
@@ -517,7 +672,20 @@ window.MARUFIA_DB = {
         "name": "Nobre Caído",
         "description": "Pertencia a uma casa feudal, mas perdeu status e influência.",
         "bonusText": "+5 em Diplomacia, +5 em Persuasão, +5 em História.",
-        "bonuses": [],
+        "bonuses": [
+          {
+            "skill": "Diplomacia",
+            "value": 5
+          },
+          {
+            "skill": "Persuasão",
+            "value": 5
+          },
+          {
+            "skill": "História",
+            "value": 5
+          }
+        ],
         "tables": {
           "traits": [
             "Orgulhoso, mantendo a postura de nobreza.",
@@ -557,8 +725,21 @@ window.MARUFIA_DB = {
         "id": "peregrino-devoto",
         "name": "Peregrino Devoto",
         "description": "Viajou em peregrinação, fortalecendo espírito e resistência.",
-        "bonusText": "+5 em Religião, +5 em Sobrevivência, +5 em Escalar.",
-        "bonuses": [],
+        "bonusText": "+5 em Religião, +5 em Sobrevivência, +5 em Atletismo.",
+        "bonuses": [
+          {
+            "skill": "Religião",
+            "value": 5
+          },
+          {
+            "skill": "Sobrevivência",
+            "value": 5
+          },
+          {
+            "skill": "Atletismo",
+            "value": 5
+          }
+        ],
         "tables": {
           "traits": [
             "Piedoso, orando em todos os momentos.",
@@ -599,7 +780,20 @@ window.MARUFIA_DB = {
         "name": "Servo Leal",
         "description": "Trabalhou como criado ou escudeiro, aprendendo serviço e combate.",
         "bonusText": "+5 em Diplomacia, +5 em Lutar (Brigar), +5 em Cavalgar.",
-        "bonuses": [],
+        "bonuses": [
+          {
+            "skill": "Diplomacia",
+            "value": 5
+          },
+          {
+            "skill": "Lutar (Brigar)",
+            "value": 5
+          },
+          {
+            "skill": "Cavalgar",
+            "value": 5
+          }
+        ],
         "tables": {
           "traits": [
             "Humilde, colocando outros em primeiro.",
@@ -640,7 +834,20 @@ window.MARUFIA_DB = {
         "name": "Mercador Aventureiro",
         "description": "Viajou como comerciante, lidando com trocas e riscos.",
         "bonusText": "+5 em Contabilidade, +5 em Diplomacia, +5 em Persuasão.",
-        "bonuses": [],
+        "bonuses": [
+          {
+            "skill": "Contabilidade",
+            "value": 5
+          },
+          {
+            "skill": "Diplomacia",
+            "value": 5
+          },
+          {
+            "skill": "Persuasão",
+            "value": 5
+          }
+        ],
         "tables": {
           "traits": [
             "Astuto, sempre negociando vantagens.",
@@ -681,7 +888,20 @@ window.MARUFIA_DB = {
         "name": "Ferreiro Errante",
         "description": "Aprendeu a forjar armas em jornadas, aprimorando sua arte.",
         "bonusText": "+5 em Arte/Ofício, +5 em Avaliação, +5 em Atletismo.",
-        "bonuses": [],
+        "bonuses": [
+          {
+            "skill": "Arte/Ofício",
+            "value": 5
+          },
+          {
+            "skill": "Avaliação",
+            "value": 5
+          },
+          {
+            "skill": "Atletismo",
+            "value": 5
+          }
+        ],
         "tables": {
           "traits": [
             "Resistente, suportando longas forjas.",
@@ -722,7 +942,20 @@ window.MARUFIA_DB = {
         "name": "Caçador Solitário",
         "description": "Viveu nas florestas, caçando presas e evitando perigos.",
         "bonusText": "+5 em Rastrear, +5 em Sobrevivência, +5 em Furtividade.",
-        "bonuses": [],
+        "bonuses": [
+          {
+            "skill": "Rastrear",
+            "value": 5
+          },
+          {
+            "skill": "Sobrevivência",
+            "value": 5
+          },
+          {
+            "skill": "Furtividade",
+            "value": 5
+          }
+        ],
         "tables": {
           "traits": [
             "Silencioso, movendo-se sem ser notado.",
@@ -763,7 +996,20 @@ window.MARUFIA_DB = {
         "name": "Curandeiro de Guerra",
         "description": "Atuou em campos de batalha, salvando vidas com habilidades médicas.",
         "bonusText": "+5 em Medicina, +5 em Intuição, +5 em Esquivar.",
-        "bonuses": [],
+        "bonuses": [
+          {
+            "skill": "Medicina",
+            "value": 5
+          },
+          {
+            "skill": "Intuição",
+            "value": 5
+          },
+          {
+            "skill": "Esquivar",
+            "value": 5
+          }
+        ],
         "tables": {
           "traits": [
             "Compassivo, dedicando-se aos feridos.",
@@ -804,7 +1050,20 @@ window.MARUFIA_DB = {
         "name": "Bardo de Taverna",
         "description": "Cantou em tavernas, aprendendo a entreter e manipular multidões.",
         "bonusText": "+5 em Atuação, +5 em Charme, +5 em Lábia.",
-        "bonuses": [],
+        "bonuses": [
+          {
+            "skill": "Atuação",
+            "value": 5
+          },
+          {
+            "skill": "Charme",
+            "value": 5
+          },
+          {
+            "skill": "Lábia",
+            "value": 5
+          }
+        ],
         "tables": {
           "traits": [
             "Carismático, encantando com facilidade.",
@@ -871,7 +1130,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Sobrevivência.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Sobrevivência",
               "value": -10
             }
           ]
@@ -899,7 +1158,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Furtividade.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Furtividade",
               "value": -10
             }
           ]
@@ -927,7 +1186,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Direito.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Direito",
               "value": -10
             }
           ]
@@ -1386,7 +1645,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Rastrear.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Rastrear",
               "value": -10
             }
           ]
@@ -1414,7 +1673,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Intimidação.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Intimidação",
               "value": -10
             }
           ]
@@ -1442,7 +1701,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Navegação.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Navegação",
               "value": -10
             }
           ]
@@ -1904,7 +2163,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Charme.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Charme",
               "value": -10
             }
           ]
@@ -1932,7 +2191,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Diplomacia.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Diplomacia",
               "value": -10
             }
           ]
@@ -1960,7 +2219,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Contabilidade.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Contabilidade",
               "value": -10
             }
           ]
@@ -2634,7 +2893,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Navegação.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Navegação",
               "value": -10
             }
           ]
@@ -2662,7 +2921,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Disfarce.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Disfarce",
               "value": -10
             }
           ]
@@ -2690,7 +2949,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Persuasão.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Persuasão",
               "value": -10
             }
           ]
@@ -2718,7 +2977,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Diplomacia.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Diplomacia",
               "value": -10
             }
           ]
@@ -2743,7 +3002,7 @@ window.MARUFIA_DB = {
             }
           ],
           "ability": "o Cavaleiro Kzerio: Vantagem em Armas de Arremesso/Cultural montado. | Arqueiro Nômade: Dispara flecha extra sem penalidade.",
-          "weakness": "Desvantagem em Escalar montanhas.",
+          "weakness": "Desvantagem em Atletismo para escalar montanhas.",
           "weaknessBonuses": []
         },
         {
@@ -2769,7 +3028,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Medicina.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Medicina",
               "value": -10
             }
           ]
@@ -2797,7 +3056,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Sobrevivência.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Sobrevivência",
               "value": -10
             }
           ]
@@ -2825,7 +3084,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em História.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "História",
               "value": -10
             }
           ]
@@ -3286,7 +3545,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Furtividade.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Furtividade",
               "value": -10
             }
           ]
@@ -3314,7 +3573,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Sobrevivência.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Sobrevivência",
               "value": -10
             }
           ]
@@ -3342,7 +3601,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Intimidação.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Intimidação",
               "value": -10
             }
           ]
@@ -3370,7 +3629,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Cavalgar.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Cavalgar",
               "value": -10
             }
           ]
@@ -3398,7 +3657,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Rastrear.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Rastrear",
               "value": -10
             }
           ]
@@ -3426,7 +3685,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Navegação.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Navegação",
               "value": -10
             }
           ]
@@ -3454,7 +3713,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Lutar (Brigar).",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Lutar (Brigar)",
               "value": -10
             }
           ]
@@ -3913,7 +4172,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Furtividade.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Furtividade",
               "value": -10
             }
           ]
@@ -3941,7 +4200,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Blefar.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Blefar",
               "value": -10
             }
           ]
@@ -3969,7 +4228,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Sobrevivência.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Sobrevivência",
               "value": -10
             }
           ]
@@ -3997,7 +4256,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Atletismo.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Atletismo",
               "value": -10
             }
           ]
@@ -4456,7 +4715,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Diplomacia.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Diplomacia",
               "value": -10
             }
           ]
@@ -4484,7 +4743,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Medicina.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Medicina",
               "value": -10
             }
           ]
@@ -4512,7 +4771,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Persuasão.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Persuasão",
               "value": -10
             }
           ]
@@ -4540,7 +4799,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Direito.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Direito",
               "value": -10
             }
           ]
@@ -4568,7 +4827,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Furtividade.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Furtividade",
               "value": -10
             }
           ]
@@ -5027,7 +5286,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Sobrevivência.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Sobrevivência",
               "value": -10
             }
           ]
@@ -5055,7 +5314,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Cavalgar.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Cavalgar",
               "value": -10
             }
           ]
@@ -5081,7 +5340,12 @@ window.MARUFIA_DB = {
           ],
           "ability": "o Guerreiro Lakonico: Triplica dados críticos. | Escudo Espartano: +2 em CA em formação.",
           "weakness": "-10 em Perícias Sociais.",
-          "weaknessBonuses": []
+          "weaknessBonuses": [
+            {
+              "skill": "Perícias Sociais",
+              "value": -10
+            }
+          ]
         },
         {
           "id": "p-t-nes",
@@ -5106,7 +5370,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Rastrear.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Rastrear",
               "value": -10
             }
           ]
@@ -5134,7 +5398,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Furtividade.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Furtividade",
               "value": -10
             }
           ]
@@ -5593,7 +5857,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Diplomacia.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Diplomacia",
               "value": -10
             }
           ]
@@ -5621,7 +5885,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Contabilidade.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Contabilidade",
               "value": -10
             }
           ]
@@ -5649,7 +5913,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Persuasão.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Persuasão",
               "value": -10
             }
           ]
@@ -5662,14 +5926,14 @@ window.MARUFIA_DB = {
           "nativeLanguage": "Laami; Saami; Nørdic",
           "description": "Os Lapimeš são nômades do gelo, escalando montanhas geladas e sobrevivendo em tundras. Sua resiliência os torna mestres da vida no extremo norte.",
           "weapon": "Machado Lapão (Arma Curta) – 1d6 cortante; ignora terrenos difíceis.",
-          "skillBonusesText": "Sobrevivência +10, Escalar +5",
+          "skillBonusesText": "Sobrevivência +10, Atletismo +5",
           "skillBonuses": [
             {
               "skill": "Sobrevivência",
               "value": 10
             },
             {
-              "skill": "Escalar",
+              "skill": "Atletismo",
               "value": 5
             }
           ],
@@ -5677,7 +5941,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Navegação.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Navegação",
               "value": -10
             }
           ]
@@ -6142,7 +6406,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Sobrevivência.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Sobrevivência",
               "value": -10
             }
           ]
@@ -6167,10 +6431,10 @@ window.MARUFIA_DB = {
             }
           ],
           "ability": "o Cantor Zafir: Uma vez por descanso longo, pode Compor e Cantar uma música para aqueles que estão ao seu redor, Aumentando em +10 duas periciais sociais, que envolvem | que foi cantado. | Rastreador do Khamisat: Vantagem em Rastrear, Encontrar e Sobrevivência.",
-          "weakness": "Penalidade de -10 em Escalar.",
+          "weakness": "Penalidade de -10 em Atletismo.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Atletismo",
               "value": -10
             }
           ]
@@ -6198,7 +6462,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Navegação.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Navegação",
               "value": -10
             }
           ]
@@ -6226,7 +6490,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Furtividade.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Furtividade",
               "value": -10
             }
           ]
@@ -6254,7 +6518,7 @@ window.MARUFIA_DB = {
           "weakness": "Fraqueza de -10 em Intimidação.",
           "weaknessBonuses": [
             {
-              "skill": "Fraqueza de",
+              "skill": "Intimidação",
               "value": -10
             }
           ]
@@ -6282,7 +6546,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Contabilidade.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Contabilidade",
               "value": -10
             }
           ]
@@ -6310,7 +6574,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Blefar.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Blefar",
               "value": -10
             }
           ]
@@ -6338,7 +6602,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Disfarce.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Disfarce",
               "value": -10
             }
           ]
@@ -6797,7 +7061,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Sobrevivência.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Sobrevivência",
               "value": -10
             }
           ]
@@ -6825,7 +7089,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Cavalgar.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Cavalgar",
               "value": -10
             }
           ]
@@ -7284,7 +7548,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Furtividade.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Furtividade",
               "value": -10
             }
           ]
@@ -7309,10 +7573,10 @@ window.MARUFIA_DB = {
             }
           ],
           "ability": "o Mercador Axumai: Vantagem em Avaliação, Lábia e Contabilidade. | Viajante do Nilo: Enquanto estiver navegando, recebe Vantagem em Navegação, Persuasão e Lábia.",
-          "weakness": "Penalidade de -10 em Escalar montanhas.",
+          "weakness": "Penalidade de -10 em Atletismo para escalar montanhas.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Atletismo",
               "value": -10
             }
           ]
@@ -7771,28 +8035,8 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Lutar (Brigar). REGIÃO M: FACETA FLUIDA Base: Magia Fina A Faceta Fluida usa Cargas de Faceta. Essas Cargas representam a Energia Fina mantida na arma. O Masafir não descarrega toda a energia no primeiro golpe; ele deixa a energia “correr” pela lâmina, ponta ou fio da arma. Regras das Cargas de Faceta: Funcionam com qualquer arma compatível com Magia Fina; A arma precisa ter fio, ponta, lâmina ou extremidade capaz de cortar/perfurar; Não funciona com armas puramente contundentes, salvo se a arma tiver lâmina ou ponta adequada; As Cargas são criadas ao ativar a magia; Cada uso de Carga exige o custo em PM indicado; Se a arma for solta, arrancada ou destruída, as Cargas se perdem; Só uma Carga pode ser usada por rodada até o nível 9, salvo se a tabela disser o contrário; As Cargas não são “Eco”. O Eco descarrega um corte extra; a Faceta mantém a energia circulando na arma. Ao gastar uma Carga, o usuário escolhe um dos efeitos abaixo. • Corte de Correção: Depois de errar um ataque com a arma imbuída, você pode gastar 1 Carga para refazer o movimento da lâmina, realizando um segundo ataque contra o mesmo alvo com penalidade. • Corte de Retorno: Depois de acertar um ataque com a arma imbuída, você pode gastar 1 Carga para fazer um golpe rápido de retorno contra o mesmo alvo ou contra outro alvo adjacente. • Corte de Junta: Contra alvo usando armadura média, armadura pesada ou escudo, você pode gastar 1 Carga para mirar juntas, axilas, frestas ou pontos fracos. O ataque ignora parte da CA do alvo. 1 Com uma ação bônus, você imbui uma arma compatível com Magia Fina, causando 1d6 de dano cortante mágico. Você recebe 1 Carga de Faceta. Pode gastar essa Carga para usar Corte de Correção ou Corte de Retorno, com -15 no teste de ataque. Se acertar, causa o dano da arma e mágico. Consome 1 PM e 1 PM para ativar a Carga. 2 Você pode lançar a Magia Fina até 9m. As Cargas de Faceta só podem ser usadas em ataques feitos com a arma imbuída. Consome 1 PM. 3 A magia causa 2d6 de dano. O Corte de Correção e o Corte de Retorno passam a sofrer apenas -10 no teste de ataque. O Corte de Junta ignora 5 de CA contra armaduras médias, pesadas ou escudos. Consome 2 PM. 4 Se estiver em espaço aberto o bastante para girar ou reposicionar a arma, o Corte de Retorno pode atingir outro alvo adjacente. Em local apertado, corredor estreito ou multidão travada, só pode atingir o mesmo alvo. 5 A magia causa 2d8 de dano e a arma pode permanecer imbuída por 4 turnos. Você recebe 4 Cargas de Faceta. Enquanto a arma estiver imbuída, pode gastar 1 Carga por rodada. O Corte de Correção ou Retorno contra o mesmo alvo não sofre penalidade; contra outro alvo adjacente sofre -10. Consome 4 PM, 1 PM por turno mantido e 2 PM para ativar cada Carga. 6 Quando usar Corte de Junta contra armadura média, pesada ou escudo, o ataque ignora 10 de CA se for contra o mesmo alvo que você atacou no início do turno. Esse efeito só pode ocorrer uma vez por rodada. 7 A magia causa 3d8 de dano. Quando o Corte de Retorno acertar o mesmo alvo do ataque principal, causa também +1d4 de dano cortante mágico. Consome 5 PM e 2 PM para ativar cada Carga. 8 Você aprende a Hélice de Fina. Em vez de criar uma arma natural de Magia Fina, você pode girar ou conduzir a arma imbuída em um arco rápido de Energia Fina. Escolha até 2 alvos adjacentes ao seu alcance. Faça um ataque contra cada um. O primeiro alvo sofre o dano normal da arma + 3d6 de dano cortante mágico; o segundo sofre o dano da arma e metade do dano mágico, esse ataque custa 2 Cargas. Consome 4 PM e dura apenas o giro. 9 A magia causa 4d8 de dano. Você recebe 5 Cargas de Faceta. Uma vez por rodada, ao usar Corte de Junta, pode ignorar 10 de CA contra armadura média, pesada ou escudo, mesmo se for o primeiro ataque contra aquele alvo. Consome 8 PM, 3 PM por turno mantido e 3 PM para ativar cada Carga. 10 A arma natural da Magia Fina pode ser usada normalmente, se o jogador preferir. Você também pode aperfeiçoar a Hélice de Fina: ela pode atingir até 3 alvos adjacentes, mas apenas um recebe o dano mágico completo. Você recebe 6 Cargas de Faceta e pode gastar até 2 Cargas por rodada. 8 PM e 3 PM para ativar cada Carga.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Lutar (Brigar). REGIÃO M: FACETA FLUIDA Base: Magia Fina A Faceta Fluida usa Cargas de Faceta. Essas Cargas representam a Energia Fina mantida na arma. O Masafir não descarrega toda a energia no primeiro golpe; ele deixa a energia “correr” pela lâmina, ponta ou fio da arma. Regras das Cargas de Faceta: Funcionam com qualquer arma compatível com Magia Fina; A arma precisa ter fio, ponta, lâmina ou extremidade capaz de cortar/perfurar; Não funciona com armas puramente contundentes, salvo se a arma tiver lâmina ou ponta adequada; As Cargas são criadas ao ativar a magia; Cada uso de Carga exige o custo em PM indicado; Se a arma for solta, arrancada ou destruída, as Cargas se perdem; Só uma Carga pode ser usada por rodada até o nível 9, salvo se a tabela disser o contrário; As Cargas não são “Eco”. O Eco descarrega um corte extra; a Faceta mantém a energia circulando na arma. Ao gastar uma Carga, o usuário escolhe um dos efeitos abaixo. • Corte de Correção: Depois de errar um ataque com a arma imbuída, você pode gastar 1 Carga para refazer o movimento da lâmina, realizando um segundo ataque contra o mesmo alvo com penalidade. • Corte de Retorno: Depois de acertar um ataque com a arma imbuída, você pode gastar 1 Carga para fazer um golpe rápido de retorno contra o mesmo alvo ou contra outro alvo adjacente. • Corte de Junta: Contra alvo usando armadura média, armadura pesada ou escudo, você pode gastar 1 Carga para mirar juntas, axilas, frestas ou pontos fracos. O ataque ignora parte da CA do alvo. 1 Com uma ação bônus, você imbui uma arma compatível com Magia Fina, causando 1d6 de dano cortante mágico. Você recebe 1 Carga de Faceta. Pode gastar essa Carga para usar Corte de Correção ou Corte de Retorno, com -15 no teste de ataque. Se acertar, causa o dano da arma e mágico. Consome 1 PM e 1 PM para ativar a Carga. 2 Você pode lançar a Magia Fina até 9m. As Cargas de Faceta só podem ser usadas em ataques feitos com a arma imbuída. Consome 1 PM. 3 A magia causa 2d6 de dano. O Corte de Correção e o Corte de Retorno passam a sofrer apenas -10 no teste de ataque. O Corte de Junta ignora 5 de CA contra armaduras médias, pesadas ou escudos. Consome 2 PM. 4 Se estiver em espaço aberto o bastante para girar ou reposicionar a arma, o Corte de Retorno pode atingir outro alvo adjacente. Em local apertado, corredor estreito ou multidão travada, só pode atingir o mesmo alvo. 5 A magia causa 2d8 de dano e a arma pode permanecer imbuída por 4 turnos. Você recebe 4 Cargas de Faceta. Enquanto a arma estiver imbuída, pode gastar 1 Carga por rodada. O Corte de Correção ou Retorno contra o mesmo alvo não sofre penalidade; contra outro alvo adjacente sofre -10. Consome 4 PM, 1 PM por turno mantido e 2 PM para ativar cada Carga. 6 Quando usar Corte de Junta contra armadura média, pesada ou escudo, o ataque ignora 10 de CA se for contra o mesmo alvo que você atacou no início do turno. Esse efeito só pode ocorrer uma vez por rodada. 7 A magia causa 3d8 de dano. Quando o Corte de Retorno acertar o mesmo alvo do ataque principal, causa também +1d4 de dano cortante mágico. Consome 5 PM e 2 PM para ativar cada Carga. 8 Você aprende a Hélice de Fina. Em vez de criar uma arma natural de Magia Fina, você pode girar ou conduzir a arma imbuída em um arco rápido de Energia Fina. Escolha até 2 alvos adjacentes ao seu alcance. Faça um ataque contra cada um. O primeiro alvo sofre o dano normal da arma + 3d6 de dano cortante mágico; o segundo sofre o dano da arma e metade do dano mágico, esse ataque custa 2 Cargas. Consome 4 PM e dura apenas o giro. 9 A magia causa 4d8 de dano. Você recebe 5 Cargas de Faceta. Uma vez por rodada, ao usar Corte de Junta, pode ignorar 10 de CA contra armadura média, pesada ou escudo, mesmo se for o primeiro ataque contra aquele alvo. Consome 8 PM, 3 PM por turno mantido e 3 PM para ativar cada Carga. 10 A arma natural da Magia Fina pode ser usada normalmente, se o jogador preferir. Você também pode aperfeiçoar a Hélice de Fina: ela pode atingir até 3 alvos adjacentes, mas apenas um recebe o dano mágico completo. Você recebe 6 Cargas de Faceta e pode gastar até 2 Cargas por rodada. 8 PM e 3 PM para ativar cada Carga",
               "value": -10
-            },
-            {
-              "skill": "com",
-              "value": -15
-            },
-            {
-              "skill": "de dano. O Corte de Correção e o Corte de Retorno passam a sofrer apenas",
-              "value": -10
-            },
-            {
-              "skill": "contra outro alvo adjacente sofre",
-              "value": -10
-            },
-            {
-              "skill": "causa também",
-              "value": 1
-            },
-            {
-              "skill": "alvos adjacentes ao seu alcance. Faça um ataque contra cada um. O primeiro alvo sofre o dano normal da arma",
-              "value": 3
             }
           ]
         }
@@ -8039,7 +8283,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Intimidação.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Intimidação",
               "value": -10
             }
           ]
@@ -8067,7 +8311,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Furtividade.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Furtividade",
               "value": -10
             }
           ]
@@ -8095,7 +8339,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Sobrevivência.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Sobrevivência",
               "value": -10
             }
           ]
@@ -8562,7 +8806,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Esquivar.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Esquivar",
               "value": -10
             }
           ]
@@ -8590,7 +8834,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Cavalgar.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Cavalgar",
               "value": -10
             }
           ]
@@ -8618,7 +8862,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Navegação.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Navegação",
               "value": -10
             }
           ]
@@ -9077,7 +9321,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Diplomacia.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Diplomacia",
               "value": -10
             }
           ]
@@ -9105,7 +9349,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -5 em Intimidação.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Intimidação",
               "value": -5
             }
           ]
@@ -9133,7 +9377,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de - 10 em Atletismo..",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Atletismo",
               "value": -10
             }
           ]
@@ -9598,7 +9842,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Charme.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Charme",
               "value": -10
             }
           ]
@@ -9626,7 +9870,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Diplomacia.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Diplomacia",
               "value": -10
             }
           ]
@@ -9654,7 +9898,7 @@ window.MARUFIA_DB = {
           "weakness": "Penalidade de -10 em Contabilidade.",
           "weaknessBonuses": [
             {
-              "skill": "Penalidade de",
+              "skill": "Contabilidade",
               "value": -10
             }
           ]

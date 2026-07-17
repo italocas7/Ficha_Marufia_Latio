@@ -75,7 +75,7 @@ function createSandbox(initialState = null) {
 test("migrates the representative v1 fixture without losing sheet data", () => {
   const fixture = JSON.parse(fs.readFileSync(path.join(root, "tests", "fixtures", "state-v1.json"), "utf8"));
   const { sandbox } = createSandbox(fixture);
-  assert.equal(vm.runInContext("state.meta.schemaVersion", sandbox), 3);
+  assert.equal(vm.runInContext("state.meta.schemaVersion", sandbox), 4);
   assert.equal(vm.runInContext("state.character.name", sandbox), "Fixture Latio");
   assert.equal(vm.runInContext("state.attributes.CON", sandbox), 60);
   assert.equal(vm.runInContext("state.resources.hpCurrent", sandbox), 10);
@@ -93,7 +93,7 @@ test("starts and renders every tab without a runtime error", () => {
 test("keeps JSON import transactional when cancelled", () => {
   const { sandbox } = createSandbox();
   const before = vm.runInContext("persistentSignature()", sandbox);
-  vm.runInContext('importJsonText(JSON.stringify({ meta: { appId: APP_ID, schemaVersion: 3 }, character: { name: "Nao aplicar" } }), "cancelar.json")', sandbox);
+  vm.runInContext('importJsonText(JSON.stringify({ meta: { appId: APP_ID, schemaVersion: 4 }, character: { name: "Nao aplicar" } }), "cancelar.json")', sandbox);
   assert.equal(vm.runInContext("state.character.name", sandbox), "");
   vm.runInContext("cancelImport()", sandbox);
   assert.equal(vm.runInContext("persistentSignature()", sandbox), before);
@@ -104,6 +104,25 @@ test("does not recurse when localStorage fails", () => {
   localStorage.setItem = () => { throw new Error("quota"); };
   assert.equal(vm.runInContext("saveStateNow()", sandbox), false);
   assert.equal(vm.runInContext('state.errors.filter((item) => item.code === "LAT-UI-003").length', sandbox), 1);
+});
+
+test("shows friendly PDF conflict names without technical paths", () => {
+  const { sandbox, elements } = createSandbox();
+  vm.runInContext(`showPdfImportReview(
+    ["Vida máxima"],
+    [],
+    {
+      source: "form+text",
+      importedValueCount: 4,
+      fieldCount: 8,
+      conflicts: [{ path: "character.name", label: "Nome do personagem", formValue: "A", textValue: "B" }],
+      diagnostics: {}
+    },
+    "ficha.pdf"
+  )`, sandbox);
+  assert.match(elements.modalRoot.innerHTML, /Nome do personagem/);
+  assert.match(elements.modalRoot.innerHTML, /formulário e texto visível/);
+  assert.doesNotMatch(elements.modalRoot.innerHTML, /character\.name/);
 });
 
 test("charges World maintenance only through its button", () => {

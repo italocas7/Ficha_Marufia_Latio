@@ -22,7 +22,15 @@ test("merges PDF form and visible text with form precedence", () => {
   assert.equal(merged.data.character.name, "Nome do formulário");
   assert.equal(merged.data.character.age, "22");
   assert.equal(JSON.stringify(merged.conflicts.map((item) => item.path)), JSON.stringify(["character.name", "attributes.FOR"]));
+  assert.equal(JSON.stringify(merged.conflicts.map((item) => item.label)), JSON.stringify(["Nome do personagem", "Força (FOR)"]));
   assert.equal(api.countImportedValues(merged.data), 3);
+});
+
+test("uses friendly import labels and converts Escalar to Atletismo", () => {
+  const api = importer();
+  assert.equal(api.importFieldLabel("resources.pmCurrent"), "Pontos de Magia atuais");
+  assert.equal(api.importFieldLabel("skills.Atletismo"), "Perícia: Atletismo");
+  assert.equal(api.importedSkillName("Escalar", { skills: [{ name: "Atletismo" }] }), "Atletismo");
 });
 
 test("falls back to visible text when recognized form fields are empty", async () => {

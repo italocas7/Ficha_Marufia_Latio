@@ -43,11 +43,42 @@ def normalize_magic_type(value):
     raise ValueError(f"Tipo de magia regional não reconhecido: {value!r}.")
 
 
+def normalize_skill_reference_text(text):
+    text = str(text or "").replace("L. Animais", "Lidar com Animais")
+    climb_placeholder = "__LAT_CLIMB_MOUNTAINS__"
+    text = re.sub(
+        r"\bAtletismo(?:\s+para\s+Atletismo)*\s+para\s+escalar\s+montanhas\b",
+        climb_placeholder,
+        text,
+        flags=re.I,
+    )
+    text = re.sub(r"\bEscalar\s+montanhas\b", climb_placeholder, text, flags=re.I)
+    text = re.sub(r"\bEscalar\b", "Atletismo", text, flags=re.I)
+    text = re.sub(r"\bAtletismo\s+montanhas\b", climb_placeholder, text, flags=re.I)
+    return text.replace(climb_placeholder, "Atletismo para escalar montanhas")
+
+
+def canonical_skill_name(skill):
+    skill = compact(skill).strip(" ,.;")
+    if re.fullmatch(r"Atletismo\s+para\s+escalar\s+montanhas", skill, flags=re.I):
+        return "Atletismo"
+    return skill
+
+
 def parse_bonuses(text):
     bonuses = []
-    text = text.replace("L. Animais", "Lidar com Animais")
-    for skill, value in re.findall(r"([A-Za-zÀ-ÿ/() .]+?)\s*([+-]\s*\d+)", text):
-        skill = compact(skill).strip(" ,.;")
+    text = compact(normalize_skill_reference_text(text))
+    prefix_matches = re.findall(
+        r"([+-]\s*\d+)\s+em\s+(.+?)(?=(?:[,;]\s*)?[+-]\s*\d+\s+em|\Z)",
+        text,
+        flags=re.I,
+    )
+    if prefix_matches:
+        pairs = [(skill, value) for value, skill in prefix_matches]
+    else:
+        pairs = re.findall(r"([A-Za-zÀ-ÿ/() .]+?)\s*([+-]\s*\d+)", text)
+    for skill, value in pairs:
+        skill = canonical_skill_name(skill)
         value = int(value.replace(" ", ""))
         if skill:
             bonuses.append({"skill": skill, "value": value})
@@ -143,9 +174,9 @@ def parse_culture(name, block, region_code, region_name):
     native = field("Língua Nativa:", "Descrição:")
     description = field("Descrição:", "● Arma Cultural:")
     weapon = field("● Arma Cultural:", "● Bônus em Perícias:")
-    bonus_text = field("● Bônus em Perícias:", "● Habilidade Especial:")
+    bonus_text = normalize_skill_reference_text(field("● Bônus em Perícias:", "● Habilidade Especial:"))
     ability = field("● Habilidade Especial:", "● Fraqueza:")
-    weakness = field("● Fraqueza:")
+    weakness = normalize_skill_reference_text(field("● Fraqueza:"))
     ability = ability.replace(" o ", " | ")
     return {
         "id": re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-"),
@@ -223,7 +254,7 @@ def parse_regions(manual):
             block = [line]
             i += 1
             while i < len(lines):
-                if re.match(r"^REGIÃO\s+[A-Z]\s+[–-]\s+", lines[i]):
+                if re.match(r"^REGIÃO\s+[A-Z]\s*(?:[–-]|:)\s+", lines[i]):
                     break
                 if re.match(r"^Região\s+[A-Z]\s+[–-]\s+", lines[i]):
                     break
@@ -239,7 +270,7 @@ def parse_regions(manual):
             block = []
             i += 1
             while i < len(lines):
-                if re.match(r"^REGIÃO\s+[A-Z]\s+[–-]\s+", lines[i]):
+                if re.match(r"^REGIÃO\s+[A-Z]\s*(?:[–-]|:)\s+", lines[i]):
                     break
                 if re.match(r"^Região\s+[A-Z]\s+[–-]\s+", lines[i]):
                     break
@@ -261,7 +292,7 @@ def parse_skill_list(manual):
     for line in lines:
         if not line.startswith("● "):
             continue
-        match = re.match(r"●\s*(.*?)\s*\((.*?)\):\s*(.*)", line)
+        match = re.match(r"●\s*(.+)\s+\(([^()]*)\):\s*(.*)", line)
         if not match:
             continue
         name, base, desc = match.groups()
@@ -271,14 +302,6 @@ def parse_skill_list(manual):
                 "name": compact(name),
                 "base": base if "DES" in base else int(re.sub(r"\D", "", base) or 0),
                 "description": compact(desc),
-            }
-        )
-    if not any(s["name"] == "Escalar" for s in skills):
-        skills.append(
-            {
-                "name": "Escalar",
-                "base": 20,
-                "description": "Subir, descer ou atravessar superfícies difíceis. Incluída para compatibilidade com antecedentes do manual.",
             }
         )
     return skills
@@ -301,12 +324,13 @@ def parse_backgrounds(manual):
             chunk = block[begin:finish]
             desc = re.search(r"Descrição:\s*(.*?)\nBônus:", chunk, flags=re.S)
             bonus = re.search(r"Bônus:\s*(.*?)(?:\n1d6|\Z)", chunk, flags=re.S)
+            bonus_text = normalize_skill_reference_text(bonus.group(1) if bonus else "")
             item = {
                 "id": re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-"),
                 "name": name,
                 "description": compact(desc.group(1)) if desc else "",
-                "bonusText": compact(bonus.group(1)) if bonus else "",
-                "bonuses": parse_bonuses(bonus.group(1) if bonus else ""),
+                "bonusText": compact(bonus_text),
+                "bonuses": parse_bonuses(bonus_text),
             }
             tables = {}
             for label, key in [
@@ -439,6 +463,26 @@ def build_database_from_extracts():
     return db
 
 
+def refresh_skill_and_background_sources(database):
+    manual = read_text("manual_pages.txt")
+    database["skills"] = parse_skill_list(manual)
+    database["skills"].append(
+        {
+            "name": "Percepção",
+            "base": 15,
+            "description": "Perceber detalhes, fluxos de energia, auras e manifestações mágicas.",
+        }
+    )
+    database["backgrounds"] = parse_backgrounds(manual)
+    for region in database.get("regions", []):
+        for culture in region.get("cultures", []):
+            culture["skillBonusesText"] = compact(normalize_skill_reference_text(culture.get("skillBonusesText", "")))
+            culture["skillBonuses"] = parse_bonuses(culture["skillBonusesText"])
+            culture["weakness"] = compact(normalize_skill_reference_text(culture.get("weakness", "")))
+            culture["weaknessBonuses"] = parse_bonuses(culture["weakness"])
+    return database
+
+
 def load_canonical_database():
     database = load_json(DATA_SOURCE / "database.json")
     database["worldLaws"] = load_json(DATA_SOURCE / "world_laws.json")
@@ -462,6 +506,11 @@ def update_source_manifest(target: Path) -> None:
 def main():
     parser = argparse.ArgumentParser(description="Gera data.js a partir da fonte canônica.")
     parser.add_argument("--refresh-sources", action="store_true", help="Recria database.json a partir dos extratos em tmp/source_extracts.")
+    parser.add_argument(
+        "--refresh-skills-backgrounds",
+        action="store_true",
+        help="Atualiza somente perícias, antecedentes e suas referências culturais na fonte canônica.",
+    )
     args = parser.parse_args()
     if args.refresh_sources:
         db = normalize_database(
@@ -473,6 +522,9 @@ def main():
         db.pop("worldLaws", None)
         write_json(DATA_SOURCE / "database.json", db)
         write_json(DATA_SOURCE / "world_laws.json", laws)
+    elif args.refresh_skills_backgrounds:
+        db = refresh_skill_and_background_sources(load_json(DATA_SOURCE / "database.json"))
+        write_json(DATA_SOURCE / "database.json", db)
     db = load_canonical_database()
     target = ROOT / "data.js"
     write_data_js(target, db)

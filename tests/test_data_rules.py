@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
+from build_data import parse_bonuses  # noqa: E402
 from data_rules import normalize_spell_levels  # noqa: E402
 
 
@@ -25,6 +26,21 @@ class StrictSpellLevelTests(unittest.TestCase):
 
     def test_rejects_out_of_order_level(self):
         self.assert_invalid([1, 3, 2, 4, 5, 6, 7, 8, 9, 10], "esperado nível 2, encontrado 3")
+
+
+class BonusParserTests(unittest.TestCase):
+    def test_reads_prefix_and_suffix_bonus_formats(self):
+        self.assertEqual(parse_bonuses("+5 em Atletismo, +5 em Tática."), [
+            {"skill": "Atletismo", "value": 5},
+            {"skill": "Tática", "value": 5},
+        ])
+        self.assertEqual(parse_bonuses("Sobrevivência +10, Escalar +5"), [
+            {"skill": "Sobrevivência", "value": 10},
+            {"skill": "Atletismo", "value": 5},
+        ])
+        self.assertEqual(parse_bonuses("Penalidade de -10 em Escalar montanhas."), [
+            {"skill": "Atletismo", "value": -10},
+        ])
 
 
 if __name__ == "__main__":

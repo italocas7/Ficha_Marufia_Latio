@@ -6,7 +6,7 @@ const RULES = window.LATIO_RULES;
 const STORAGE_KEY = "marufia-latio-state-v1";
 const BACKUP_STORAGE_KEY = "marufia-latio-backups-v1";
 const APP_ID = "marufia-latio";
-const STATE_SCHEMA_VERSION = 3;
+const STATE_SCHEMA_VERSION = 4;
 const APP_BASE_URL = new URL(".", document.currentScript?.src || window.location.href).href;
 const MAGIC_TYPES = ["Fina", "Impacto", "Densa", "Mundo", "Forte", "Etérea"];
 const TABS = [
@@ -3428,27 +3428,35 @@ function pdfImportCalculatedDifferences(calculated, targetState) {
     if (!hasImportedValue(pdfValue)) return;
     if (compact(pdfValue) !== compact(latioValue)) differences.push({ label, pdf: pdfValue, latio: latioValue });
   };
-  compareNumber("Vida maxima", calculated.hpMax, maxHp(targetState));
-  compareNumber("Pontos de magia", calculated.pmMax, maxPm(targetState));
+  compareNumber("Vida máxima", calculated.hpMax, maxHp(targetState));
+  compareNumber("Pontos de Magia máximos", calculated.pmMax, maxPm(targetState));
   compareNumber("CA", calculated.ca, caBreakdown(targetState).total);
   compareNumber("Corpo", calculated.body, bodyInfo(targetState).body);
-  compareText("Bonus", calculated.bonus, bodyInfo(targetState).mod);
+  compareText("Bônus", calculated.bonus, bodyInfo(targetState).mod);
   compareNumber("Esquiva", calculated.dodge, skillFinal("Esquivar", targetState));
   return differences;
 }
 
+function pdfImportFieldLabel(conflict) {
+  return conflict?.label || window.MARUFIA_PDF_IMPORTER?.importFieldLabel?.(conflict?.path ?? "") || "Informação da ficha";
+}
+
+function pdfImportSourceLabel(source) {
+  return { "form+text": "formulário e texto visível", form: "formulário preenchido", text: "texto visível" }[source] || "conteúdo do PDF";
+}
+
 function showPdfImportReview(missing, differences, result, fileName) {
   const missingHtml = missing.length
-    ? `<h3>Campos nao encontrados</h3><div class="stack">${missing.map((fieldName) => `<span class="chip">${esc(fieldName)}</span>`).join("")}</div>`
+    ? `<h3>Informações não encontradas</h3><p class="muted small">Você poderá preencher estes dados manualmente depois da importação.</p><div class="stack">${missing.map((fieldName) => `<span class="chip">${esc(fieldName)}</span>`).join("")}</div>`
     : "";
   const differencesHtml = differences.length
-    ? `<h3>Conferencia de calculos</h3><p class="muted">A Latio manteve seus proprios calculos. Use estes itens apenas como conferencia.</p><div class="table-wrap"><table><thead><tr><th>Campo</th><th>PDF</th><th>Latio</th></tr></thead><tbody>${differences.map((item) => `<tr><td>${esc(item.label)}</td><td>${esc(item.pdf)}</td><td>${esc(item.latio)}</td></tr>`).join("")}</tbody></table></div>`
+    ? `<h3>Conferência de cálculos</h3><p class="muted">A Latio manteve seus próprios cálculos. Use estes itens apenas como conferência.</p><div class="table-wrap"><table><thead><tr><th>Informação</th><th>PDF</th><th>Latio</th></tr></thead><tbody>${differences.map((item) => `<tr><td>${esc(item.label)}</td><td>${esc(item.pdf)}</td><td>${esc(item.latio)}</td></tr>`).join("")}</tbody></table></div>`
     : "";
   const diagnostics = result.diagnostics?.fieldObjectError || result.diagnostics?.annotationError
-    ? `<p class="muted small">Aviso tecnico: ${esc([result.diagnostics.fieldObjectError, result.diagnostics.annotationError].filter(Boolean).join(" | "))}</p>`
+    ? `<p class="muted small">Alguns campos internos do PDF não puderam ser lidos. Os demais dados encontrados continuam disponíveis para revisão.</p>`
     : "";
   const conflictsHtml = result.conflicts?.length
-    ? `<h3>Valores ambíguos</h3><div class="stack">${result.conflicts.map((conflict, index) => `<div class="card"><strong>${esc(conflict.path)}</strong><div class="field"><label for="pdfConflict${index}">Valor que será importado</label><select id="pdfConflict${index}"><option value="form">Formulário: ${esc(conflict.formValue)}</option><option value="text">Texto visível: ${esc(conflict.textValue)}</option></select></div></div>`).join("")}</div>`
+    ? `<h3>Informações com dois valores</h3><p class="muted small">Escolha qual valor deseja usar em cada informação.</p><div class="stack">${result.conflicts.map((conflict, index) => `<div class="card"><strong>${esc(pdfImportFieldLabel(conflict))}</strong><div class="field"><label for="pdfConflict${index}">Valor que será importado</label><select id="pdfConflict${index}"><option value="form">Campo preenchido: ${esc(conflict.formValue)}</option><option value="text">Texto visível: ${esc(conflict.textValue)}</option></select></div></div>`).join("")}</div>`
     : "";
   const hasUsefulData = num(result.importedValueCount, 0) > 0;
   const sparseConfirmation = hasUsefulData && num(result.importedValueCount, 0) <= 2
@@ -3457,9 +3465,9 @@ function showPdfImportReview(missing, differences, result, fileName) {
   const footer = hasUsefulData
     ? `<button class="button" type="button" data-action="apply-pdf-import" data-mode="merge">Mesclar</button><button class="danger" type="button" data-action="apply-pdf-import" data-mode="replace">Substituir</button><button class="ghost" type="button" data-action="cancel-import">Cancelar</button>`
     : `<button class="ghost" type="button" data-action="cancel-import">Fechar sem importar</button>`;
-  openModal("Revisao da importacao", `
+  openModal("Revisão da importação", `
     <p><strong>${esc(fileName)}</strong> foi lido, mas ainda não alterou a ficha. Revise os campos antes de continuar.</p>
-    <p class="muted small">Origem da leitura: ${esc(result.source)}; campos lidos: ${esc(result.importedValueCount ?? 0)}/${esc(result.fieldCount ?? 0)}.</p>
+    <p class="muted small">Leitura feita pelo ${esc(pdfImportSourceLabel(result.source))}. Informações encontradas: ${esc(result.importedValueCount ?? 0)}.</p>
     ${missingHtml}
     ${differencesHtml}
     ${conflictsHtml}
@@ -3492,6 +3500,8 @@ function applyPdfImport(mode) {
   }
   if (result.missing.length) addError("LAT-PDF-002", result.missing.join(", "), false);
   if (differences.length || result.conflicts?.length) addError("LAT-PDF-003", [...differences.map((item) => item.label), ...(result.conflicts ?? []).map((item) => item.path)].join(", "), false);
+  const pdfDiagnostics = [result.diagnostics?.fieldObjectError, result.diagnostics?.annotationError].filter(Boolean);
+  if (pdfDiagnostics.length) addError("LAT-PDF-002", pdfDiagnostics.join(" | "), false);
   pendingImport = null;
   closeModal();
   render();

@@ -79,6 +79,32 @@ def validate_database(database: dict) -> list[str]:
     perception = next((skill for skill in database.get("skills", []) if skill.get("name") == "Percepção"), None)
     if not perception or perception.get("base") != 15:
         errors.append("Percepção deve existir na base com valor 15.")
+    skills = database.get("skills", [])
+    skill_names = {skill.get("name") for skill in skills}
+    if len(skills) != 37:
+        errors.append(f"Perícias: {len(skills)}; esperado 37 após remover Escalar.")
+    if "Escalar" in skill_names:
+        errors.append("Escalar não deve existir na tabela de perícias.")
+
+    backgrounds = database.get("backgrounds", {})
+    family_backgrounds = backgrounds.get("family", [])
+    personal_backgrounds = backgrounds.get("personal", [])
+    if len(family_backgrounds) != 12 or len(personal_backgrounds) != 12:
+        errors.append(
+            f"Antecedentes: {len(family_backgrounds)} familiares e {len(personal_backgrounds)} pessoais; esperado 12 de cada."
+        )
+    for background, expected_bonus_count in [
+        *((item, 2) for item in family_backgrounds),
+        *((item, 3) for item in personal_backgrounds),
+    ]:
+        bonuses = background.get("bonuses", [])
+        if len(bonuses) != expected_bonus_count:
+            errors.append(
+                f"{background.get('name')}: {len(bonuses)} bônus estruturados; esperado {expected_bonus_count}."
+            )
+        invalid_skills = [bonus.get("skill") for bonus in bonuses if bonus.get("skill") not in skill_names]
+        if invalid_skills:
+            errors.append(f"{background.get('name')}: perícias de bônus inexistentes {invalid_skills}.")
 
     regions = database.get("regions", [])
     region_codes = {region.get("code") for region in regions}
@@ -87,6 +113,16 @@ def validate_database(database: dict) -> list[str]:
         for culture in region.get("cultures", []):
             if culture.get("regionCode") not in region_codes:
                 errors.append(f"{culture.get('name')}: região inexistente {culture.get('regionCode')!r}.")
+            visible_skill_text = fold(f"{culture.get('skillBonusesText', '')} {culture.get('weakness', '')}")
+            if "EM ESCALAR" in visible_skill_text or "ESCALAR +" in visible_skill_text:
+                errors.append(f"{culture.get('name')}: referência visível a Escalar não foi convertida para Atletismo.")
+            invalid_escalar_bonuses = [
+                bonus.get("skill")
+                for bonus in [*culture.get("skillBonuses", []), *culture.get("weaknessBonuses", [])]
+                if "ESCALAR" in fold(bonus.get("skill"))
+            ]
+            if invalid_escalar_bonuses:
+                errors.append(f"{culture.get('name')}: modificadores de Escalar inválidos {invalid_escalar_bonuses}.")
 
     laws = database.get("worldLaws", [])
     validate_unique_ids(laws, "Leis", errors)
