@@ -14,17 +14,17 @@
         <div class="brand-mark" aria-hidden="true">L</div>
         <div>
           <h1>Ficha de Marufia (Latio)</h1>
-          <p id="statusLine">Sistema Mundo de Marufia</p>
+          <p id="statusLine" aria-live="polite">Sistema Mundo de Marufia</p>
         </div>
       </div>
       <button class="icon-button settings-button" type="button" data-action="open-settings" title="Configurações" aria-label="Configurações">⚙</button>
     </header>
 
-    <nav id="tabs" class="tabs" aria-label="Abas da ficha"></nav>
-    <main id="app" class="app"></main>
+    <nav id="tabs" class="tabs" role="tablist" aria-label="Abas da ficha"></nav>
+    <main id="app" class="app" role="tabpanel"></main>
 
     <div id="modalRoot"></div>
-    <div id="toastRoot" class="toast-root"></div>
+    <div id="toastRoot" class="toast-root" aria-live="assertive" aria-atomic="true"></div>
 
     <script src="data.js"></script>
     <script src="item_descriptions.js"></script>

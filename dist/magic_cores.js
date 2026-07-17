@@ -140,3 +140,9 @@ window.MARUFIA_MAGIC_CORES = [
     permanentPmPenalty: 2,
   },
 ];
+
+window.MARUFIA_MAGIC_CORES = window.MARUFIA_MAGIC_CORES.map((core) => ({
+  ...core,
+  mode: core.type === "prepared" ? "prepared" : core.id === "antebraco" ? "activated" : "passive",
+  automationLevel: ["ventre", "garganta"].includes(core.id) ? "partial" : "complete",
+}));

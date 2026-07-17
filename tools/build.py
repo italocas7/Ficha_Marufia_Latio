@@ -87,7 +87,11 @@ def build_dist() -> None:
         shutil.copy2(ROOT / relative, stage / relative)
     shutil.copytree(ROOT / "vendor", stage / "vendor")
     checked_remove_tree(DIST)
-    stage.rename(DIST)
+    try:
+        stage.rename(DIST)
+    except PermissionError:
+        shutil.copytree(stage, DIST)
+        checked_remove_tree(stage)
 
 
 def create_release() -> Path:

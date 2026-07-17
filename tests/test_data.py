@@ -31,6 +31,12 @@ class DatabaseIntegrityTests(unittest.TestCase):
         siphon = next(law for law in self.database["worldLaws"] if law["ID"] == "UTI-29")
         self.assertIn("POD", siphon["Resistência sugerida"].upper())
 
+    def test_pdf_fixture_is_a_real_form_pdf(self):
+        payload = (ROOT / "tests" / "fixtures" / "Ficha_Marufia_Automatica.pdf").read_bytes()
+        self.assertTrue(payload.startswith(b"%PDF-"))
+        self.assertIn(b"/AcroForm", payload)
+        self.assertGreater(len(payload), 100_000)
+
 
 if __name__ == "__main__":
     unittest.main()
