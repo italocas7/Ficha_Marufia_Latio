@@ -28,8 +28,9 @@ class DatabaseIntegrityTests(unittest.TestCase):
         perception = next(skill for skill in self.database["skills"] if skill["name"] == "Percepção")
         self.assertEqual(perception["base"], 15)
         self.assertEqual(len(self.database["worldLaws"]), 76)
+        siphon = next(law for law in self.database["worldLaws"] if law["ID"] == "UTI-29")
+        self.assertIn("POD", siphon["Resistência sugerida"].upper())
 
 
 if __name__ == "__main__":
     unittest.main()
-

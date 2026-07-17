@@ -9,11 +9,20 @@ from collections import Counter
 from pathlib import Path
 
 from data_io import load_data_js, load_json
+from data_rules import normalize_database
 
 
 ROOT = Path(__file__).resolve().parents[1]
 VALID_MAGIC_TYPES = {"Fina", "Impacto", "Densa", "Mundo", "Forte", "Etérea"}
 EXPECTED_LAWS = {"Ofensivo": 24, "Defensivo": 23, "Utilitário": 29}
+EXPECTED_LAW_FILTERS = {
+    ("Ofensivo", "sem"): 22,
+    ("Ofensivo", "com"): 11,
+    ("Defensivo", "sem"): 23,
+    ("Defensivo", "com"): 0,
+    ("Utilitário", "sem"): 13,
+    ("Utilitário", "com"): 16,
+}
 
 
 def fold(value: str) -> str:
@@ -54,6 +63,8 @@ def validate_database(database: dict) -> list[str]:
                 errors.append(f"{name} N{entry.get('level')}: campos mecânicos ausentes {missing}.")
             if entry.get("action") not in {"standard", "bonus", "movement", "reaction", "full", "free"}:
                 errors.append(f"{name} N{entry.get('level')}: ação inválida {entry.get('action')!r}.")
+            if entry.get("automation") not in {"complete", "partial", "manual"}:
+                errors.append(f"{name} N{entry.get('level')}: automação inválida {entry.get('automation')!r}.")
 
     perception = next((skill for skill in database.get("skills", []) if skill.get("name") == "Percepção"), None)
     if not perception or perception.get("base") != 15:
@@ -80,6 +91,20 @@ def validate_database(database: dict) -> list[str]:
     siphon = next((law for law in laws if law.get("ID") == "UTI-29"), None)
     if not siphon or fold(siphon.get("Resistência sugerida")) in {"", "NAO SE APLICA"}:
         errors.append("UTI-29 Sifão de Mana deve ser uma Lei COM resistência.")
+    filter_counts: Counter = Counter()
+    for law in laws:
+        title = fold(law.get("Lei do Mundo"))
+        if "SEM/COM RESISTENCIA" in title or "COM/SEM RESISTENCIA" in title:
+            modes = ("sem", "com")
+        elif law.get("ID") == "UTI-29" or "COM RESISTENCIA" in title:
+            modes = ("com",)
+        else:
+            modes = ("sem",)
+        for mode in modes:
+            filter_counts[(law.get("Categoria"), mode)] += 1
+    for key, expected in EXPECTED_LAW_FILTERS.items():
+        if filter_counts[key] != expected:
+            errors.append(f"Filtro de Leis {key}: {filter_counts[key]}; esperado {expected}.")
 
     cubit = next((spell for spell in spells if fold(spell.get("name")) == "CUBITO DA BALANCA"), None)
     if not cubit or cubit.get("baseType") != "Densa":
@@ -90,7 +115,7 @@ def validate_database(database: dict) -> list[str]:
 def load_canonical() -> dict:
     database = load_json(ROOT / "data-src" / "database.json")
     database["worldLaws"] = load_json(ROOT / "data-src" / "world_laws.json")
-    return database
+    return normalize_database(database)
 
 
 def logical_json(database: dict) -> str:

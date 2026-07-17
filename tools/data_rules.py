@@ -74,14 +74,14 @@ def spell_level_mechanics(text: str, magic_type: str, level: int) -> dict:
     fallback = FALLBACK_PM_COSTS[magic_type][level]
     activation = first_match(
         [
-            r"(?:consome|custa|ativa com|ativar com)\s*(\d+)\s*PM",
-            r"(\d+)\s*PM\b",
+            r"(?:consumo\s+(?:[ée]\s+)?(?:de\s+)?|consome|custa|ativa\s+com|ativar\s+com|gastando|gasta)\s*(\d+)\s*PM",
+            r"(?:custo|consumo)\s*(?:final\s*)?(?:[ée:]\s*)?(\d+)\s*PM",
         ],
         text,
     )
     maintenance = first_match(
         [
-            r"(\d+)\s*PM\s*(?:/|por\s*)turno",
+            r"(\d+)\s*PM\s*(?:/\s*|por\s+(?:cada\s+)?)turno",
             r"(?:manter|manutenção)[^.;]{0,50}?(\d+)\s*PM",
             r"(\d+)\s*PM\s*para\s*manter",
         ],
@@ -99,7 +99,7 @@ def spell_level_mechanics(text: str, magic_type: str, level: int) -> dict:
         "maintenanceCost": maintenance or 0,
         "durationTurns": duration,
         "action": action_from_text(text, magic_type),
-        "automation": "full",
+        "automation": "complete" if activation is not None else "partial",
     }
 
 
@@ -125,5 +125,9 @@ def normalize_database(database: dict) -> dict:
                 "description": "Perceber detalhes, fluxos de energia, auras e manifestações mágicas.",
             }
         )
+    for talent in database.get("talents", []):
+        conditional = talent.get("tag") == "Ativável/Condicionável"
+        automated = bool(talent.get("skillMods") or talent.get("attributeMods") or talent.get("resourceMods") or talent.get("acMod"))
+        talent["mode"] = "conditional" if conditional else "passive"
+        talent["automationLevel"] = "partial" if conditional else ("complete" if automated else "manual")
     return database
-

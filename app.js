@@ -1,8 +1,12 @@
 const DB = window.MARUFIA_DB;
 const ITEM_DESCRIPTIONS = window.MARUFIA_ITEM_DESCRIPTIONS ?? {};
 const MAGIC_CORES = window.MARUFIA_MAGIC_CORES ?? [];
+const STATE_TOOLS = window.LATIO_STATE;
+const RULES = window.LATIO_RULES;
 const STORAGE_KEY = "marufia-latio-state-v1";
+const BACKUP_STORAGE_KEY = "marufia-latio-backups-v1";
 const APP_ID = "marufia-latio";
+const STATE_SCHEMA_VERSION = 2;
 const APP_BASE_URL = new URL(".", document.currentScript?.src || window.location.href).href;
 const MAGIC_TYPES = ["Fina", "Impacto", "Densa", "Mundo", "Forte", "Etérea"];
 const TABS = [
@@ -72,11 +76,17 @@ const clamp = (value, min, max) => Math.min(max, Math.max(min, num(value, min)))
 const compact = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
 const fold = (value) => String(value ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
 
-ensureRuntimeData();
-
-let state = loadState();
-let previousWorldUnlocked = worldUnlocked();
+const databaseStartupError = !RULES ? "O módulo de regras não foi carregado." : validateRuntimeDatabase(DB);
+let sessionUi = createDefaultSessionUi();
+let state = databaseStartupError ? null : loadState();
+let previousWorldUnlocked = databaseStartupError ? false : worldUnlocked();
 let pdfLibraryPromise = null;
+let pendingImport = null;
+let saveTimer = null;
+let saveInProgress = false;
+let storageFailureRecorded = false;
+let modalReturnFocus = null;
+let controlSerial = 0;
 
 async function getPdfLibrary() {
   if (!pdfLibraryPromise) {
@@ -119,14 +129,18 @@ function errorMessage(error) {
   return error?.message || String(error || "erro desconhecido");
 }
 
-function ensureRuntimeData() {
-  if (!DB?.skills?.some((skill) => skill.name === "Percepção")) {
-    DB.skills.push({
-      name: "Percepção",
-      base: 15,
-      description: "Perceber detalhes, fluxos de energia, auras e manifestações mágicas.",
-    });
+function validateRuntimeDatabase(database) {
+  if (!database || !Array.isArray(database.skills) || !Array.isArray(database.regions) || !Array.isArray(database.baseSpells)) {
+    return "A base principal está ausente ou incompleta.";
   }
+  if (!database.skills.some((skill) => skill.name === "Percepção" && num(skill.base, 0) === 15)) {
+    return "A perícia Percepção não foi encontrada na base oficial.";
+  }
+  return "";
+}
+
+function createDefaultSessionUi() {
+  return { activeTab: "resumo", printMode: false, extraMagicType: "Fina", extraMagicRegion: "Sem Região", showExtraMagic: false, lawCategory: "Ofensivo", lawResistanceMode: "sem", lawId: "", coreRestHours: 1, evolveSkill: "" };
 }
 
 function createDefaultState() {
@@ -136,12 +150,12 @@ function createDefaultState() {
     meta: {
       appId: APP_ID,
       appName: "Ficha de Marufia (Latio)",
-      schemaVersion: 1,
+      schemaVersion: STATE_SCHEMA_VERSION,
       started: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      importedFromPdf: null,
     },
-    ui: { activeTab: "resumo", printMode: false, extraMagicType: "Fina", extraMagicRegion: "Sem Região", showExtraMagic: false, lawCategory: "Ofensivo", lawResistanceMode: "sem", lawId: "", coreRestHours: 1 },
     character: {
       name: "",
       age: "",
@@ -156,7 +170,7 @@ function createDefaultState() {
     },
     attributes: { FOR: 50, DES: 50, CON: 50, APA: 50, POD: 50, INT: 50, CAR: 50, SAB: 50 },
     resources: { hpCurrent: null, pmCurrent: null, hpMaxBonus: 0, pmMaxBonus: 0, injury: false, unconscious: false, dying: false, deathSuccess: 0, deathFail: 0 },
-    settings: { theme: "light", skillLimit: 70 },
+    settings: { theme: "light", skillLimit: 70, gmOverride: false },
     skills: skillState,
     skillExtraPoints: 0,
     effects: [],
@@ -166,7 +180,7 @@ function createDefaultState() {
     combat: { actions: { standard: true, bonus: true, movement: true, reaction: true }, log: [], activeSpells: [], defenseAdjustments: { ca: 0, block: 0 } },
     talents: [],
     abilities: [],
-    world: { name: "", phrase: "", description: "", active: false, turns: 0, lawUses: null, laws: [], narrative: "" },
+    world: { name: "", phrase: "", description: "", status: "closed", turns: 0, lawUses: null, laws: [], narrative: "" },
     notes: {
       traits: "", ideal: "", flaws: "", bonds: "", eyes: "", age: "", height: "", hair: "", skin: "", weight: "",
       appearance: "", history: "", allies: "", patron: "", other: "",
@@ -176,15 +190,12 @@ function createDefaultState() {
 }
 
 function loadState() {
-  if (!DB) {
-    return createDefaultState();
-  }
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return createDefaultState();
     const parsed = JSON.parse(raw);
     if (parsed?.meta?.appId !== APP_ID) return createDefaultState();
-    return normalizeState(mergeState(createDefaultState(), parsed));
+    return prepareStateImport(parsed).state;
   } catch (error) {
     const fallback = createDefaultState();
     fallback.errors.push(makeError("LAT-INI-001", error.message));
@@ -192,28 +203,56 @@ function loadState() {
   }
 }
 
-function mergeState(base, incoming) {
-  if (Array.isArray(base) || Array.isArray(incoming)) return Array.isArray(incoming) ? incoming : base;
-  if (base && typeof base === "object" && incoming && typeof incoming === "object") {
-    const result = { ...base };
-    for (const key of Object.keys(incoming)) result[key] = mergeState(base[key], incoming[key]);
-    return result;
-  }
-  return incoming ?? base;
+function stateToolOptions() {
+  return { appId: APP_ID, schemaVersion: STATE_SCHEMA_VERSION };
+}
+
+function prepareStateImport(raw) {
+  if (!STATE_TOOLS?.prepareImport) throw new Error("Módulo de validação do estado não foi carregado.");
+  return STATE_TOOLS.prepareImport(raw, createDefaultState(), stateToolOptions());
 }
 
 function normalizeState(nextState) {
   if (nextState.magicCore) delete nextState.magicCore.dailyActive;
-  return nextState;
+  return STATE_TOOLS.normalizeDomain(nextState, APP_ID, STATE_SCHEMA_VERSION);
 }
 
-function saveState() {
+function persistentPayload() {
+  return STATE_TOOLS.persistentPayload(state);
+}
+
+function persistentSignature() {
+  return JSON.stringify(persistentPayload());
+}
+
+function recordStorageFailure(error) {
+  if (storageFailureRecorded || !state) return;
+  storageFailureRecorded = true;
+  const item = makeError("LAT-UI-003", errorMessage(error));
+  state.errors.unshift(item);
+  state.errors = state.errors.slice(0, 120);
+  toast(`${item.code}: ${item.userMessage}`, "warn");
+}
+
+function saveStateNow() {
+  if (!state || saveInProgress) return false;
+  saveInProgress = true;
   try {
     state.meta.updatedAt = new Date().toISOString();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(persistentPayload()));
+    storageFailureRecorded = false;
+    return true;
   } catch (error) {
-    addError("LAT-UI-003", error.message, false);
+    recordStorageFailure(error);
+    return false;
+  } finally {
+    saveInProgress = false;
   }
+}
+
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveStateNow, 250);
 }
 
 function makeError(code, detail = "") {
@@ -228,12 +267,12 @@ function makeError(code, detail = "") {
   return { ...base, technicalDetail: detail ? `${base.technicalDetail} ${detail}` : base.technicalDetail, at: new Date().toISOString() };
 }
 
-function addError(code, detail = "", show = true) {
+function addError(code, detail = "", show = true, persist = true) {
   const error = makeError(code, detail);
   state.errors.unshift(error);
   state.errors = state.errors.slice(0, 120);
   if (show) toast(`${error.code}: ${error.userMessage}`, error.severity === "ERRO" || error.severity === "CRÍTICO" ? "danger" : "warn");
-  saveState();
+  if (persist) scheduleSave();
   return error;
 }
 
@@ -247,12 +286,15 @@ function toast(message, kind = "") {
 }
 
 function getPath(path) {
-  return path.split(".").reduce((acc, key) => acc?.[key], state);
+  const root = path.startsWith("ui.") ? sessionUi : state;
+  const normalized = path.startsWith("ui.") ? path.slice(3) : path;
+  return normalized.split(".").reduce((acc, key) => acc?.[key], root);
 }
 
 function setPath(path, value) {
-  const parts = path.split(".");
-  let target = state;
+  const sessionPath = path.startsWith("ui.");
+  const parts = (sessionPath ? path.slice(3) : path).split(".");
+  let target = sessionPath ? sessionUi : state;
   while (parts.length > 1) target = target[parts.shift()];
   target[parts[0]] = value;
 }
@@ -269,12 +311,12 @@ function getCulture(id = state.character.cultureId) {
   return allCultures().find((culture) => culture.id === id);
 }
 
-function getFamilyBackground() {
-  return DB.backgrounds.family.find((item) => item.id === state.character.backgroundFamilyId);
+function getFamilyBackground(id = state.character.backgroundFamilyId) {
+  return DB.backgrounds.family.find((item) => item.id === id);
 }
 
-function getPersonalBackground() {
-  return DB.backgrounds.personal.find((item) => item.id === state.character.backgroundPersonalId);
+function getPersonalBackground(id = state.character.backgroundPersonalId) {
+  return DB.backgrounds.personal.find((item) => item.id === id);
 }
 
 function getSpell(type, regionCode = state.character.regionCode) {
@@ -320,57 +362,54 @@ function conditionalCaMod(talent) {
   return match ? num(match[1].replace(/\s+/g, ""), 0) : 0;
 }
 
-function currentCore() {
-  return MAGIC_CORES.find((core) => core.id === state.magicCore?.selectedId);
+function currentCore(source = state) {
+  return MAGIC_CORES.find((core) => core.id === source.magicCore?.selectedId);
 }
 
-function hasCore(id) {
-  return state.magicCore?.selectedId === id;
+function hasCore(id, source = state) {
+  return source.magicCore?.selectedId === id;
 }
 
 function coreOptions() {
   return MAGIC_CORES.map((core) => [core.id, core.name]);
 }
 
-function isCoreEffectActive(id = state.magicCore?.selectedId) {
-  return Boolean(id && state.magicCore?.selectedId === id);
+function isCoreEffectActive(id = state.magicCore?.selectedId, source = state) {
+  return Boolean(id && source.magicCore?.selectedId === id);
 }
 
-function corePermanentPmPenalty() {
-  return num(currentCore()?.permanentPmPenalty, 0);
+function corePermanentPmPenalty(source = state) {
+  return num(currentCore(source)?.permanentPmPenalty, 0);
 }
 
-function coreCaBonus() {
-  if (hasCore("antebraco")) return num(state.magicCore.caBoostTurns, 0) > 0 ? 10 : 5;
+function coreCaBonus(source = state) {
+  if (hasCore("antebraco", source)) return num(source.magicCore.caBoostTurns, 0) > 0 ? 10 : 5;
   return 0;
 }
 
 function magicCostAfterCore(amount) {
-  const value = Math.max(0, Math.floor(num(amount, 0)));
-  if (!value) return 0;
-  if (hasCore("coracao")) return Math.max(1, Math.floor(value / 2));
+  return RULES.magicCost(amount, hasCore("coracao"));
+}
+
+function attr(name, source = state) {
+  let value = num(source.attributes[name], 0);
+  if (name === "CON" && hasCore("amago", source)) value += 10;
+  for (const talent of activeTalents(source)) value += num(talent.attributeMods?.[name], 0);
   return value;
 }
 
-function attr(name) {
-  let value = num(state.attributes[name], 0);
-  if (name === "CON" && hasCore("amago")) value += 10;
-  for (const talent of activeTalents()) value += num(talent.attributeMods?.[name], 0);
-  return value;
-}
-
-function bodyInfo() {
-  const total = attr("FOR") + attr("CON");
+function bodyInfo(source = state) {
+  const total = attr("FOR", source) + attr("CON", source);
   return DB.bodyTable.find((row) => total >= row.min && total <= row.max) ?? DB.bodyTable.at(-1);
 }
 
-function baseSkillValue(skill) {
-  if (String(skill.base).includes("DES")) return Math.floor(attr("DES") / 2);
+function baseSkillValue(skill, source = state) {
+  if (String(skill.base).includes("DES")) return Math.floor(attr("DES", source) / 2);
   return num(skill.base, 0);
 }
 
-function activeTalents() {
-  return state.talents.map((known) => {
+function activeTalents(source = state) {
+  return source.talents.map((known) => {
     const base = DB.talents.find((talent) => talent.name === known.name) ?? {};
     return { ...base, ...known };
   }).filter((talent) => talent.tag !== "Ativável/Condicionável" || talent.enabled);
@@ -380,7 +419,7 @@ function allKnownTalents() {
   return state.talents.map((known) => ({ ...(DB.talents.find((talent) => talent.name === known.name) ?? {}), ...known }));
 }
 
-function skillModifiers(skillName) {
+function skillModifiers(skillName, source = state) {
   const normalized = normalizeSkillName(skillName);
   const mods = [];
   const pushMods = (list, source) => {
@@ -389,32 +428,34 @@ function skillModifiers(skillName) {
       if (target === normalized) mods.push({ source, value: num(mod.value), detail: `${source}: ${mod.value > 0 ? "+" : ""}${mod.value}` });
     }
   };
-  const culture = getCulture();
+  const culture = getCulture(source.character.cultureId);
   pushMods(culture?.skillBonuses, `Cultura: ${culture?.name}`);
   pushMods(culture?.weaknessBonuses, `Fraqueza: ${culture?.name}`);
-  pushMods(getFamilyBackground()?.bonuses, `A. Familiar: ${getFamilyBackground()?.name}`);
-  pushMods(getPersonalBackground()?.bonuses, `A. Pessoal: ${getPersonalBackground()?.name}`);
-  for (const talent of activeTalents()) pushMods(talent.skillMods, `Talento: ${talent.name}`);
-  for (const talent of activeTalents()) {
+  const family = getFamilyBackground(source.character.backgroundFamilyId);
+  const personal = getPersonalBackground(source.character.backgroundPersonalId);
+  pushMods(family?.bonuses, `A. Familiar: ${family?.name}`);
+  pushMods(personal?.bonuses, `A. Pessoal: ${personal?.name}`);
+  for (const talent of activeTalents(source)) pushMods(talent.skillMods, `Talento: ${talent.name}`);
+  for (const talent of activeTalents(source)) {
     const attackValue = conditionalAttackMod(talent, normalized);
     if (attackValue) mods.push({ source: `Talento: ${talent.name}`, value: attackValue, detail: `${talent.name}: ${attackValue > 0 ? "+" : ""}${attackValue} em todos os ataques` });
   }
-  if (normalized === "Percepção" && isCoreEffectActive("olhos")) {
+  if (normalized === "Percepção" && isCoreEffectActive("olhos", source)) {
     mods.push({ source: "Núcleo: Olhos", value: 50, detail: "Olhos: +50 em Percepção" });
   }
-  if (normalized === "Percepção" && isCoreEffectActive("garganta")) {
+  if (normalized === "Percepção" && isCoreEffectActive("garganta", source)) {
     mods.push({ source: "Núcleo: Garganta", value: 25, detail: "Garganta: +25 em Percepção" });
   }
-  const skillState = state.skills[skillName];
+  const skillState = source.skills[skillName];
   for (const evo of skillState?.evolutions ?? []) mods.push({ source: "Evolução", value: num(evo.value), detail: `Evolução: +${evo.value}` });
   return mods.filter((mod) => Number.isFinite(mod.value));
 }
 
-function skillFinal(skillName) {
+function skillFinal(skillName, source = state) {
   const skill = DB.skills.find((item) => item.name === skillName);
   if (!skill) return 0;
-  const added = num(state.skills[skillName]?.added, 0);
-  return baseSkillValue(skill) + added + skillModifiers(skillName).reduce((sum, mod) => sum + mod.value, 0);
+  const added = num(source.skills[skillName]?.added, 0);
+  return baseSkillValue(skill, source) + added + skillModifiers(skillName, source).reduce((sum, mod) => sum + mod.value, 0);
 }
 
 function skillPointsTotal() {
@@ -426,32 +467,47 @@ function skillPointsSpent() {
   return DB.skills.reduce((sum, skill) => sum + num(state.skills[skill.name]?.added, 0), 0);
 }
 
+function skillAllocationValidation(skillName) {
+  return RULES.validateSkillAllocation({
+    finalValue: skillFinal(skillName),
+    limit: state.settings.skillLimit,
+    spent: skillPointsSpent(),
+    budget: skillPointsTotal(),
+    gmOverride: state.settings.gmOverride,
+  });
+}
+
+function rejectInvalidSkillAllocation(skillName, previousValue, target) {
+  const result = skillAllocationValidation(skillName);
+  if (result.valid) return false;
+  state.skills[skillName].added = previousValue;
+  if (target) target.value = previousValue;
+  if (result.reason === "limit") addError("LAT-CALC-004", `${skillName}: limite ${state.settings.skillLimit}.`);
+  else addError("LAT-PT-002", `${skillName}: ${skillPointsSpent()}/${skillPointsTotal()} pontos.`);
+  return true;
+}
+
+function sheetSkillValidationIssue() {
+  if (state.settings.gmOverride) return null;
+  if (skillPointsSpent() > skillPointsTotal()) return { reason: "budget", detail: `${skillPointsSpent()}/${skillPointsTotal()} pontos.` };
+  const skill = DB.skills.find((item) => skillFinal(item.name) > num(state.settings.skillLimit, 70));
+  return skill ? { reason: "limit", detail: `${skill.name}: limite ${state.settings.skillLimit}.` } : null;
+}
+
 function aptitudeBaseCost(type) {
-  return { Fina: 1, Impacto: 1, Densa: 1, Etérea: 2, Forte: 2, Mundo: 3 }[type] ?? 1;
+  return RULES.aptitudeBaseCost(type);
 }
 
 function aptitudeCost(type, level) {
-  const base = aptitudeBaseCost(type);
-  if (level <= 5) return base;
-  if (level <= 9) return base + 1;
-  return base + 2;
+  return RULES.aptitudeCost(type, level);
 }
 
 function aptitudeUpgradeCost(type, fromLevel, toLevel = fromLevel + 1, options = {}) {
-  let total = 0;
-  const start = clamp(fromLevel, 0, 10);
-  const end = clamp(toLevel, 0, 10);
-  for (let level = start + 1; level <= end; level += 1) {
-    if (options.freeFirstLevel && level === 1) continue;
-    total += aptitudeCost(type, level);
-  }
-  return total;
+  return RULES.aptitudeUpgradeCost(type, fromLevel, toLevel, Boolean(options.freeFirstLevel));
 }
 
 function spellCostTotal(type, level, options = {}) {
-  let total = 0;
-  for (let current = 1; current <= level; current += 1) total += aptitudeUpgradeCost(type, current - 1, current, options);
-  return total;
+  return RULES.spellAptitudeCost(type, level, Boolean(options.freeFirstLevel));
 }
 
 function extraSpellUpgradeCost(type, fromLevel, toLevel = fromLevel + 1) {
@@ -491,32 +547,26 @@ function worldTier() {
   return 1;
 }
 
-function calculatedMaxHp() {
-  const con = attr("CON");
-  const level = Math.max(1, num(state.character.level, 1));
-  let hp = Math.floor(con / 10) + 12;
-  hp += (level - 1) * (Math.floor(con / 10) + 3);
-  const robusto = state.talents.find((talent) => talent.name === "Robusto");
-  if (robusto) hp += Math.max(0, level - num(robusto.level, level) + 1) * Math.floor(con / 8);
-  return Math.max(1, hp);
+function calculatedMaxHp(source = state) {
+  const con = attr("CON", source);
+  const level = Math.max(1, num(source.character.level, 1));
+  const robusto = source.talents.find((talent) => talent.name === "Robusto");
+  return RULES.calculateMaxHp({ con, level, robustAcquiredLevel: robusto?.level ?? null });
 }
 
-function maxHp() {
-  return Math.max(1, calculatedMaxHp() + num(state.resources.hpMaxBonus, 0));
+function maxHp(source = state) {
+  return Math.max(1, calculatedMaxHp(source) + num(source.resources.hpMaxBonus, 0));
 }
 
-function calculatedMaxPm() {
-  const pod = attr("POD");
-  const level = Math.max(1, num(state.character.level, 1));
-  let pm = Math.floor(pod / 3) + (level - 1) * Math.floor(pod / 10);
-  if (hasCore("umbigo")) pm += 10 + (4 * Math.max(0, level - 1));
-  for (const talent of activeTalents()) pm += num(talent.resourceMods?.pm, 0);
-  pm -= corePermanentPmPenalty();
-  return Math.max(0, pm);
+function calculatedMaxPm(source = state) {
+  const pod = attr("POD", source);
+  const level = Math.max(1, num(source.character.level, 1));
+  const talentBonus = activeTalents(source).reduce((sum, talent) => sum + num(talent.resourceMods?.pm, 0), 0);
+  return RULES.calculateMaxPm({ pod, level, umbilicusCore: hasCore("umbigo", source), talentBonus, permanentPenalty: corePermanentPmPenalty(source) });
 }
 
-function maxPm() {
-  return Math.max(0, calculatedMaxPm() + num(state.resources.pmMaxBonus, 0));
+function maxPm(source = state) {
+  return Math.max(0, calculatedMaxPm(source) + num(source.resources.pmMaxBonus, 0));
 }
 
 function resourceCurrent(key, maxValue) {
@@ -598,9 +648,7 @@ function spendPm(amount, label) {
 }
 
 function worldCosts(level = worldLevel()) {
-  const activation = magicCostAfterCore(level >= 10 ? 20 : level >= 5 ? 10 + Math.max(0, level - 5) * 2 : 5 + Math.max(0, level - 1));
-  const maintenance = magicCostAfterCore(level >= 10 ? 6 : level >= 5 ? 4 + Math.floor(Math.max(0, level - 5) / 2) : 2 + Math.floor(Math.max(0, level - 1) / 2));
-  return { activation, maintenance };
+  return RULES.worldCosts(level, hasCore("coracao"));
 }
 
 function ensureCustomArmors() {
@@ -620,12 +668,12 @@ function armorSelectId(armor) {
   return armor?.custom ? customArmorKey(armor.id) : armor?.name ?? "";
 }
 
-function selectedArmor() {
-  const armorId = state.inventory.armorId;
+function selectedArmor(source = state) {
+  const armorId = source.inventory.armorId;
   if (!armorId) return null;
   if (isCustomArmorKey(armorId)) {
     const id = armorId.slice("custom:".length);
-    return ensureCustomArmors().find((item) => item.id === id) ?? null;
+    return (source.inventory.customArmors ?? []).find((item) => item.id === id) ?? null;
   }
   return DB.armors.find((item) => item.name === armorId && item.category !== "Escudo") ?? null;
 }
@@ -660,37 +708,37 @@ function armorIcon(armor, extraClass = "") {
   return `<span class="armor-icon armor-${esc(preset)} ${extraClass}" style="--armor-color:${esc(color)}" aria-hidden="true"><i></i></span>`;
 }
 
-function armorPieces() {
-  const armor = selectedArmor();
-  const shield = state.inventory.shield ? DB.armors.find((item) => item.category === "Escudo") : null;
+function armorPieces(source = state) {
+  const armor = selectedArmor(source);
+  const shield = source.inventory.shield ? DB.armors.find((item) => item.category === "Escudo") : null;
   return [armor, shield].filter(Boolean);
 }
 
-function caBreakdown() {
+function caBreakdown(source = state) {
   try {
-    const base = 20 + Math.floor(attr("DES") / 5) - 30;
-    const armor = armorPieces().reduce((sum, item) => sum + num(item.ca, 0), 0);
-    const effects = state.effects.reduce((sum, effect) => sum + num(effect.ca, 0), 0);
-    const talents = activeTalents().reduce((sum, talent) => sum + num(talent.acMod, 0) + conditionalCaMod(talent), 0);
-    const core = coreCaBonus();
-    const perceptionOverride = isCoreEffectActive("olhos");
-    const calculatedTotal = perceptionOverride ? skillFinal("Percepção") : base + armor + effects + talents + core;
-    const adjustments = state.combat?.defenseAdjustments ?? {};
+    const base = 20 + Math.floor(attr("DES", source) / 5) - 30;
+    const armor = armorPieces(source).reduce((sum, item) => sum + num(item.ca, 0), 0);
+    const effects = source.effects.reduce((sum, effect) => sum + num(effect.ca, 0), 0);
+    const talents = activeTalents(source).reduce((sum, talent) => sum + num(talent.acMod, 0) + conditionalCaMod(talent), 0);
+    const core = coreCaBonus(source);
+    const perceptionOverride = isCoreEffectActive("olhos", source);
+    const calculatedTotal = perceptionOverride ? skillFinal("Percepção", source) : base + armor + effects + talents + core;
+    const adjustments = source.combat?.defenseAdjustments ?? {};
     const caAdjustment = num(adjustments.ca, 0);
     const blockAdjustment = num(adjustments.block, 0);
     const total = calculatedTotal + caAdjustment;
-    const block = { cortante: bodyInfo().block, perfurante: bodyInfo().block, contundente: bodyInfo().block };
-    for (const piece of armorPieces()) {
+    const block = { cortante: bodyInfo(source).block, perfurante: bodyInfo(source).block, contundente: bodyInfo(source).block };
+    for (const piece of armorPieces(source)) {
       for (const type of Object.keys(block)) block[type] += num(piece.block?.[type], 0);
     }
-    for (const effect of state.effects) {
+    for (const effect of source.effects) {
       for (const type of Object.keys(block)) block[type] += num(effect.block?.[type], 0);
     }
     const calculatedBlock = { ...block };
     for (const type of Object.keys(block)) block[type] += blockAdjustment;
     return { total, calculatedTotal, base, armor, effects, talents, core, perceptionOverride, block, calculatedBlock, adjustments: { ca: caAdjustment, block: blockAdjustment } };
   } catch (error) {
-    addError("LAT-CALC-001", error.message);
+    if (source === state) addError("LAT-CALC-001", error.message);
     return { total: 0, calculatedTotal: 0, base: 0, armor: 0, effects: 0, talents: 0, core: 0, perceptionOverride: false, block: { cortante: 0, perfurante: 0, contundente: 0 }, calculatedBlock: { cortante: 0, perfurante: 0, contundente: 0 }, adjustments: { ca: 0, block: 0 } };
   }
 }
@@ -717,23 +765,59 @@ function rollD100(mode = "normal") {
 }
 
 function render() {
+  const renderPosition = captureRenderPosition();
   applyTheme();
   $("#tabs").innerHTML = TABS.map(([id, label]) => {
     const locked = id === "mundo" && !worldUnlocked();
-    return `<button class="tab ${state.ui.activeTab === id ? "active" : ""} ${locked ? "locked" : ""}" type="button" data-action="tab" data-tab="${id}">${esc(label)}${locked ? " · bloqueada" : ""}</button>`;
+    const selected = sessionUi.activeTab === id;
+    return `<button id="tab-${id}" class="tab ${selected ? "active" : ""} ${locked ? "locked" : ""}" type="button" role="tab" aria-selected="${selected}" aria-controls="app" tabindex="${selected ? "0" : "-1"}" data-action="tab" data-tab="${id}" ${locked ? 'disabled aria-disabled="true"' : ""}>${esc(label)}${locked ? " · bloqueada" : ""}</button>`;
   }).join("");
   const status = `${state.character.name || "Personagem sem nome"} · CA ${caBreakdown().total} · Vida ${hpCurrent()}/${maxHp()} · PM ${pmCurrent()}/${maxPm()}`;
   $("#statusLine").textContent = status;
   const app = $("#app");
-  if (state.ui.printMode) {
+  app.setAttribute("aria-labelledby", `tab-${sessionUi.activeTab}`);
+  if (sessionUi.printMode) {
     app.innerHTML = TABS.map(([id, label]) => `<section class="panel"><div class="section-title"><h2>${esc(label)}</h2></div>${renderTab(id)}</section>`).join("<br>");
   } else {
-    app.innerHTML = renderTab(state.ui.activeTab);
+    app.innerHTML = renderTab(sessionUi.activeTab);
   }
-  saveState();
+  associateLabels(app);
   const unlocked = worldUnlocked();
   if (unlocked && !previousWorldUnlocked) addError("LAT-MAG-005", "", false);
   previousWorldUnlocked = unlocked;
+  restoreRenderPosition(renderPosition);
+}
+
+function captureRenderPosition() {
+  const active = document.activeElement;
+  if (!active?.closest?.("#app")) return { scrollX: window.scrollX ?? 0, scrollY: window.scrollY ?? 0 };
+  const keys = ["path", "action", "tab", "skill", "type", "id", "resource", "actionKey"];
+  const dataset = Object.fromEntries(keys.filter((key) => active.dataset?.[key] !== undefined).map((key) => [key, active.dataset[key]]));
+  return {
+    dataset,
+    tagName: active.tagName,
+    selectionStart: active.selectionStart,
+    selectionEnd: active.selectionEnd,
+    scrollX: window.scrollX ?? 0,
+    scrollY: window.scrollY ?? 0,
+  };
+}
+
+function restoreRenderPosition(position) {
+  requestAnimationFrame(() => {
+    if (position?.dataset && Object.keys(position.dataset).length) {
+      const candidate = $$("input, select, textarea, button", $("#app")).find((element) => (
+        element.tagName === position.tagName && Object.entries(position.dataset).every(([key, value]) => element.dataset?.[key] === value)
+      ));
+      if (candidate) {
+        candidate.focus();
+        if (Number.isInteger(position.selectionStart) && typeof candidate.setSelectionRange === "function") {
+          candidate.setSelectionRange(position.selectionStart, position.selectionEnd);
+        }
+      }
+    }
+    if (typeof window.scrollTo === "function") window.scrollTo(position?.scrollX ?? 0, position?.scrollY ?? 0);
+  });
 }
 
 function renderTab(tab) {
@@ -900,8 +984,8 @@ function renderCombate() {
 
 function renderMagia() {
   const available = aptitudeTotal() - aptitudeSpent();
-  const preview = getSpell(state.ui.extraMagicType, state.ui.extraMagicRegion === "Sem Região" ? "" : state.ui.extraMagicRegion);
-  const extraEditor = state.ui.showExtraMagic ? `
+  const preview = getSpell(sessionUi.extraMagicType, sessionUi.extraMagicRegion === "Sem Região" ? "" : sessionUi.extraMagicRegion);
+  const extraEditor = sessionUi.showExtraMagic ? `
     <div class="grid three">
       ${selectRaw("Tipo", "ui.extraMagicType", MAGIC_TYPES.map((type) => [type, type]))}
       ${selectRaw("Região", "ui.extraMagicRegion", [["Sem Região", "Sem Região"], ...DB.regions.map((region) => [region.code, region.label])])}
@@ -929,7 +1013,7 @@ function renderMagia() {
       </div>
     </section>
     <section class="panel">
-      <div class="section-title"><h2>Magia Extra</h2>${state.ui.showExtraMagic ? `<button class="ghost" type="button" data-action="toggle-extra-magic">Fechar</button>` : ""}</div>
+      <div class="section-title"><h2>Magia Extra</h2>${sessionUi.showExtraMagic ? `<button class="ghost" type="button" data-action="toggle-extra-magic">Fechar</button>` : ""}</div>
       ${extraEditor}
     </section>
     <section class="panel">
@@ -1041,15 +1125,17 @@ function renderMundo() {
   const area = level ? `${1.5 + level * 1.5}m de raio` : "3m de raio";
   const difficulty = Math.floor((attr("POD") + Math.max(attr("SAB"), attr("INT"))) / 10) + (level >= 9 ? 20 : level >= 7 ? 15 : level >= 5 ? 10 : level >= 3 ? 5 : 0);
   const categories = ["Ofensivo", "Defensivo", "Utilitário", "Híbrido"];
-  const resistanceMode = normalizeLawResistanceMode(state.ui.lawResistanceMode);
-  const hybridCategory = isHybridCategory(state.ui.lawCategory);
-  const filtered = lawsForCategory(state.ui.lawCategory, resistanceMode);
-  const selectedLaw = filtered.find((law) => law.ID === state.ui.lawId) ?? filtered[0];
+  const resistanceMode = normalizeLawResistanceMode(sessionUi.lawResistanceMode);
+  const hybridCategory = isHybridCategory(sessionUi.lawCategory);
+  const filtered = lawsForCategory(sessionUi.lawCategory, resistanceMode);
+  const selectedLaw = filtered.find((law) => law.ID === sessionUi.lawId) ?? filtered[0];
   const customLaw = selectedLaw?.ID === "CUSTOM-HYB";
   const effectKey = tier === 3 ? "N3 (Mundo 10)" : tier === 2 ? "N2 (Mundo 5-9)" : "N1 (Mundo 1-4)";
   const selectedName = selectedLaw ? lawNameForResistance(selectedLaw, resistanceMode) : "";
   const selectedDetails = selectedLaw && !customLaw ? lawDetailsForResistance(selectedLaw, effectKey, resistanceMode) : null;
   const costs = worldCosts(level);
+  const worldActive = state.world.status === "active";
+  const worldStatusLabel = { closed: "Fechado", active: "Ativo", collapsed: "Colapsado" }[state.world.status] ?? "Fechado";
   return `
     <section class="panel">
       <div class="spell-card">
@@ -1059,6 +1145,7 @@ function renderMundo() {
         </header>
         <div class="stat-grid">
           ${miniStat("Nível", level)}
+          ${miniStat("Estado", worldStatusLabel)}
           ${miniStat("Turnos ativo", state.world.turns || "1d4")}
           ${miniStat("Usos da Lei", state.world.lawUses ?? (tier + 1))}
           ${miniStat("Área", area)}
@@ -1066,11 +1153,11 @@ function renderMundo() {
           ${miniStat("Custo", `${costs.activation} PM / ${costs.maintenance} PM`)}
         </div>
         <div class="inline">
-          <button class="button" type="button" data-action="world-open">Abrir Mundo (-${costs.activation} PM)</button>
-          <button class="ghost" type="button" data-action="world-maintain">Manter Mundo (-${costs.maintenance} PM)</button>
-          <button class="ghost" type="button" data-action="world-law">Usar Lei (livre)</button>
-          <button class="danger" type="button" data-action="world-close">Encerrar Mundo</button>
-          <button class="ghost" type="button" data-action="world-collapse">Colapsar Mundo</button>
+          <button class="button" type="button" data-action="world-open" ${worldActive ? "disabled" : ""}>Abrir Mundo (-${costs.activation} PM)</button>
+          <button class="ghost" type="button" data-action="world-maintain" ${worldActive ? "" : "disabled"}>Manter Mundo (-${costs.maintenance} PM)</button>
+          <button class="ghost" type="button" data-action="world-law" ${worldActive && state.world.laws.length && num(state.world.lawUses, 0) > 0 ? "" : "disabled"}>Usar Lei (livre)</button>
+          <button class="danger" type="button" data-action="world-close" ${worldActive ? "" : "disabled"}>Encerrar Mundo</button>
+          <button class="ghost" type="button" data-action="world-collapse" ${worldActive ? "" : "disabled"}>Colapsar Mundo</button>
         </div>
       </div>
     </section>
@@ -1096,7 +1183,7 @@ function renderMundo() {
         <div class="field"><label>&nbsp;</label><button class="button" type="button" data-action="add-world-law" ${selectedLaw ? "" : "disabled"}>Add Nova Lei</button></div>
       </div>
       <div class="card law-preview" style="margin-top: 12px;">
-        ${!selectedLaw ? `<div class="empty">Nenhuma Lei ${esc(state.ui.lawCategory)} com o filtro ${resistanceMode.toUpperCase()}.</div>` : `
+        ${!selectedLaw ? `<div class="empty">Nenhuma Lei ${esc(sessionUi.lawCategory)} com o filtro ${resistanceMode.toUpperCase()}.</div>` : `
           <div class="inline"><strong>${esc(selectedName)}</strong>${customLaw ? "" : `<span class="tag law-resistance-${resistanceMode}">${resistanceMode.toUpperCase()} Resistência</span>`}</div>
           ${customLaw ? `
             <div class="grid three" style="margin-top: 10px;">
@@ -1167,19 +1254,38 @@ function renderAntecedentes() {
 }
 
 function field(label, path, type = "text", extra = "") {
-  return `<div class="field"><label>${esc(label)}</label><input type="${type}" data-path="${esc(path)}" value="${esc(getPath(path))}" ${extra}></div>`;
+  const id = nextControlId("field");
+  return `<div class="field"><label for="${id}">${esc(label)}</label><input id="${id}" type="${type}" data-path="${esc(path)}" value="${esc(getPath(path))}" ${extra}></div>`;
 }
 
 function textareaField(label, path, max = 1000) {
-  return `<div class="field"><label>${esc(label)} <span class="muted">(${String(getPath(path) ?? "").length}/${max})</span></label><textarea data-path="${esc(path)}" maxlength="${max}" data-live="true">${esc(getPath(path))}</textarea></div>`;
+  const id = nextControlId("textarea");
+  return `<div class="field"><label for="${id}">${esc(label)} <span class="muted">(${String(getPath(path) ?? "").length}/${max})</span></label><textarea id="${id}" data-path="${esc(path)}" maxlength="${max}" data-live="true">${esc(getPath(path))}</textarea></div>`;
 }
 
 function selectField(label, path, options, empty = "") {
-  return `<div class="field"><label>${esc(label)}</label><select data-path="${esc(path)}">${empty ? `<option value="">${esc(empty)}</option>` : ""}${options.map(([value, text]) => `<option value="${esc(value)}" ${String(getPath(path)) === String(value) ? "selected" : ""}>${esc(text)}</option>`).join("")}</select></div>`;
+  const id = nextControlId("select");
+  return `<div class="field"><label for="${id}">${esc(label)}</label><select id="${id}" data-path="${esc(path)}">${empty ? `<option value="">${esc(empty)}</option>` : ""}${options.map(([value, text]) => `<option value="${esc(value)}" ${String(getPath(path)) === String(value) ? "selected" : ""}>${esc(text)}</option>`).join("")}</select></div>`;
 }
 
 function selectRaw(label, path, options, empty = "") {
-  return `<div class="field"><label>${esc(label)}</label><select data-path="${esc(path)}">${empty ? `<option value="">${esc(empty)}</option>` : ""}${options.map(([value, text]) => `<option value="${esc(value)}" ${String(getPath(path) ?? "") === String(value) ? "selected" : ""}>${esc(text)}</option>`).join("")}</select></div>`;
+  const id = nextControlId("select");
+  return `<div class="field"><label for="${id}">${esc(label)}</label><select id="${id}" data-path="${esc(path)}">${empty ? `<option value="">${esc(empty)}</option>` : ""}${options.map(([value, text]) => `<option value="${esc(value)}" ${String(getPath(path) ?? "") === String(value) ? "selected" : ""}>${esc(text)}</option>`).join("")}</select></div>`;
+}
+
+function nextControlId(prefix = "control") {
+  controlSerial += 1;
+  return `${prefix}-${controlSerial}`;
+}
+
+function associateLabels(root) {
+  $$(".field", root).forEach((wrapper) => {
+    const label = $("label", wrapper);
+    const control = $("input, select, textarea", wrapper);
+    if (!label || !control || label.htmlFor) return;
+    control.id ||= nextControlId("control");
+    label.htmlFor = control.id;
+  });
 }
 
 function culturesForSelect() {
@@ -1332,6 +1438,11 @@ function currentLevelText(spell, level) {
   return normalizedSpellLevels(spell).find((entry) => entry.level === level)?.text ?? "Nível ainda não cadastrado.";
 }
 
+function currentLevelEntry(item) {
+  if (!item?.level) return null;
+  return normalizedSpellLevels(item.spell).find((entry) => entry.level === item.level) ?? null;
+}
+
 function magicFallbackPmCost(type, level) {
   const costs = {
     Fina: [0, 1, 1, 2, 2, 4, 4, 5, 5, 8, 8],
@@ -1347,6 +1458,10 @@ function magicFallbackPmCost(type, level) {
 function magicPmCost(item) {
   if (!item?.level) return 0;
   if (item.type === "Mundo") return worldCosts(item.level).activation;
+  const entry = currentLevelEntry(item);
+  if (Number.isFinite(Number(entry?.activationCost))) {
+    return magicCostAfterCore(Math.max(0, Number(entry.activationCost)));
+  }
   const text = currentLevelText(item.spell, item.level);
   const direct = text.match(/(?:consome|custa|ativa com|ativar com)\s*(\d+)\s*PM/i);
   if (direct) return magicCostAfterCore(num(direct[1], magicFallbackPmCost(item.type, item.level)));
@@ -1358,6 +1473,10 @@ function magicPmCost(item) {
 function magicMaintenanceCost(item) {
   if (!item?.level) return 0;
   if (item.type === "Mundo") return worldCosts(item.level).maintenance;
+  const entry = currentLevelEntry(item);
+  if (Number.isFinite(Number(entry?.maintenanceCost))) {
+    return magicCostAfterCore(Math.max(0, Number(entry.maintenanceCost)));
+  }
   const text = currentLevelText(item.spell, item.level);
   const patterns = [
     /(\d+)\s*PM\s*(?:\/|por\s*)turno/i,
@@ -1373,6 +1492,10 @@ function magicMaintenanceCost(item) {
 }
 
 function magicDurationTurns(item) {
+  const entry = currentLevelEntry(item);
+  if (entry && Object.hasOwn(entry, "durationTurns")) {
+    return entry.durationTurns === null ? null : Math.max(1, num(entry.durationTurns, 1));
+  }
   const text = currentLevelText(item?.spell, item?.level);
   const match = text.match(/(?:dura|duração(?: de)?|ativo por)\s*(\d+)\s*turnos?/i) ?? text.match(/(\d+)\s*turnos?/i);
   return match ? Math.max(1, num(match[1], 1)) : null;
@@ -1447,7 +1570,7 @@ function renderCorePanel(context = "sheet") {
         ${context === "combat" ? coreActionButtons("combat") : ""}
         ${core.id === "pulmao" && context !== "compact" ? `
           <div class="core-rest-box">
-            <div class="field"><label>Horas descansadas</label><input type="number" min="1" data-path="ui.coreRestHours" value="${esc(state.ui.coreRestHours ?? 1)}"></div>
+            <div class="field"><label>Horas descansadas</label><input type="number" min="1" data-path="ui.coreRestHours" value="${esc(sessionUi.coreRestHours ?? 1)}"></div>
             <button class="button" type="button" data-action="recover-core-rest">Recuperar bônus</button>
           </div>
         ` : ""}
@@ -1514,9 +1637,9 @@ function extraSpellCard(known) {
     <p>${esc(spell?.description ?? "")}</p>
     ${renderCurrentLevel(spell, known.level)}
     <div class="inline">
-      <button class="button" type="button" data-action="evolve-extra-magic" data-id="${known.id}" ${known.level >= 10 ? "disabled" : ""}>Evoluir (${next})</button>
-      <button class="ghost" type="button" data-action="open-extra-spell" data-id="${known.id}">Ver</button>
-      <button class="danger" type="button" data-action="remove-extra-magic" data-id="${known.id}">Remover</button>
+      <button class="button" type="button" data-action="evolve-extra-magic" data-id="${esc(known.id)}" ${known.level >= 10 ? "disabled" : ""}>Evoluir (${next})</button>
+      <button class="ghost" type="button" data-action="open-extra-spell" data-id="${esc(known.id)}">Ver</button>
+      <button class="danger" type="button" data-action="remove-extra-magic" data-id="${esc(known.id)}">Remover</button>
     </div>
   </div>`;
 }
@@ -1544,32 +1667,32 @@ function spellCombatCard(item) {
 
 function inventoryWeaponRow(weapon) {
   return `<div class="inventory-row">
-    <header><div><strong>${esc(weapon.name)}</strong> ${state.inventory.selectedWeaponId === weapon.id ? `<span class="tag ok">selecionada</span>` : ""}<br><span class="muted">${esc(weapon.type)}</span></div><div class="inline"><button class="ghost" type="button" data-action="select-weapon" data-id="${weapon.id}">Selecionar</button><button class="danger" type="button" data-action="remove-weapon" data-id="${weapon.id}">Remover</button></div></header>
+    <header><div><strong>${esc(weapon.name)}</strong> ${state.inventory.selectedWeaponId === weapon.id ? `<span class="tag ok">selecionada</span>` : ""}<br><span class="muted">${esc(weapon.type)}</span></div><div class="inline"><button class="ghost" type="button" data-action="select-weapon" data-id="${esc(weapon.id)}">Selecionar</button><button class="danger" type="button" data-action="remove-weapon" data-id="${esc(weapon.id)}">Remover</button></div></header>
     <div class="grid three">
-      <div class="field"><label>Dano</label><input data-array="weapon" data-id="${weapon.id}" data-field="damage" value="${esc(weapon.damage)}"></div>
-      <div class="field"><label>Peso</label><input data-array="weapon" data-id="${weapon.id}" data-field="weight" value="${esc(weapon.weight)}"></div>
-      <div class="field"><label>Propriedade</label><input data-array="weapon" data-id="${weapon.id}" data-field="property" value="${esc(weapon.property)}"></div>
+      <div class="field"><label>Dano</label><input data-array="weapon" data-id="${esc(weapon.id)}" data-field="damage" value="${esc(weapon.damage)}"></div>
+      <div class="field"><label>Peso</label><input data-array="weapon" data-id="${esc(weapon.id)}" data-field="weight" value="${esc(weapon.weight)}"></div>
+      <div class="field"><label>Propriedade</label><input data-array="weapon" data-id="${esc(weapon.id)}" data-field="property" value="${esc(weapon.property)}"></div>
     </div>
-    <div class="field"><label>Descrição</label><textarea data-array="weapon" data-id="${weapon.id}" data-field="description" data-live="true">${esc(weapon.description ?? "")}</textarea></div>
+    <div class="field"><label>Descrição</label><textarea data-array="weapon" data-id="${esc(weapon.id)}" data-field="description" data-live="true">${esc(weapon.description ?? "")}</textarea></div>
     ${weapon.ability ? `<div class="chip">Habilidade: ${esc(weapon.ability.name)} · usos ${esc(weapon.ability.uses)}</div>` : ""}
   </div>`;
 }
 
 function equipmentRow(item) {
   return `<div class="inventory-row">
-    <header><div><strong>${esc(item.name)}</strong><br><span class="muted">${esc(item.category)}</span></div><button class="danger" type="button" data-action="remove-equipment" data-id="${item.id}">Remover</button></header>
+    <header><div><strong>${esc(item.name)}</strong><br><span class="muted">${esc(item.category)}</span></div><button class="danger" type="button" data-action="remove-equipment" data-id="${esc(item.id)}">Remover</button></header>
     <div class="grid three">
-      <div class="field"><label>Peso</label><input data-array="equipment" data-id="${item.id}" data-field="weight" value="${esc(item.weight ?? "")}"></div>
-      <div class="field"><label>Quantidade</label><input type="number" data-array="equipment" data-id="${item.id}" data-field="qty" value="${esc(item.qty ?? 1)}"></div>
-      <div class="field"><label>Categoria</label><input data-array="equipment" data-id="${item.id}" data-field="category" value="${esc(item.category ?? "")}"></div>
+      <div class="field"><label>Peso</label><input data-array="equipment" data-id="${esc(item.id)}" data-field="weight" value="${esc(item.weight ?? "")}"></div>
+      <div class="field"><label>Quantidade</label><input type="number" data-array="equipment" data-id="${esc(item.id)}" data-field="qty" value="${esc(item.qty ?? 1)}"></div>
+      <div class="field"><label>Categoria</label><input data-array="equipment" data-id="${esc(item.id)}" data-field="category" value="${esc(item.category ?? "")}"></div>
     </div>
-    <div class="field"><label>Descrição</label><textarea data-array="equipment" data-id="${item.id}" data-field="description" data-live="true">${esc(item.description ?? "")}</textarea></div>
+    <div class="field"><label>Descrição</label><textarea data-array="equipment" data-id="${esc(item.id)}" data-field="description" data-live="true">${esc(item.description ?? "")}</textarea></div>
   </div>`;
 }
 
 function abilityCard(ability) {
   return `<div class="talent-card">
-    <header><div><strong>${esc(ability.name)}</strong><br><span class="tag">${esc(ability.type)}</span>${ability.uses ? ` <span class="chip">Usos ${esc(ability.uses)}</span>` : ""}</div><div class="inline"><button class="ghost" type="button" data-action="open-ability" data-id="${ability.id}">Ver</button><button class="danger" type="button" data-action="remove-ability" data-id="${ability.id}">Remover</button></div></header>
+    <header><div><strong>${esc(ability.name)}</strong><br><span class="tag">${esc(ability.type)}</span>${ability.uses ? ` <span class="chip">Usos ${esc(ability.uses)}</span>` : ""}</div><div class="inline"><button class="ghost" type="button" data-action="open-ability" data-id="${esc(ability.id)}">Ver</button><button class="danger" type="button" data-action="remove-ability" data-id="${esc(ability.id)}">Remover</button></div></header>
     <p>${esc(ability.description)}</p>
   </div>`;
 }
@@ -1585,8 +1708,8 @@ function worldLawCard(law) {
   const resistanceMode = ["sem", "com"].includes(law.resistanceMode) ? law.resistanceMode : "";
   const resistanceTag = resistanceMode ? `<span class="tag law-resistance-${resistanceMode}">${resistanceMode.toUpperCase()} Resistência</span>` : "";
   return `<div class="law-card">
-    <header><div><strong>${esc(law.name)}</strong><br><span class="tag">${esc(law.category)}</span> ${resistanceTag}</div><button class="danger" type="button" data-action="remove-world-law" data-id="${law.id}">Remover</button></header>
-    ${["target", "resistance", "effect"].map((fieldName) => `<p><strong>${fieldLabel(fieldName)}:</strong> ${esc(law[fieldName])} <button class="icon-button" type="button" data-action="edit-law-field" data-id="${law.id}" data-field="${fieldName}" title="Editar">🖋</button></p>`).join("")}
+    <header><div><strong>${esc(law.name)}</strong><br><span class="tag">${esc(law.category)}</span> ${resistanceTag}</div><button class="danger" type="button" data-action="remove-world-law" data-id="${esc(law.id)}">Remover</button></header>
+    ${["target", "resistance", "effect"].map((fieldName) => `<p><strong>${fieldLabel(fieldName)}:</strong> ${esc(law[fieldName])} <button class="icon-button" type="button" data-action="edit-law-field" data-id="${esc(law.id)}" data-field="${fieldName}" title="Editar">🖋</button></p>`).join("")}
   </div>`;
 }
 
@@ -1684,7 +1807,7 @@ function lawDetailsForResistance(law, effectKey, resistanceMode) {
   };
 }
 
-function lawsForCategory(category, resistanceMode = state.ui.lawResistanceMode) {
+function lawsForCategory(category, resistanceMode = sessionUi.lawResistanceMode) {
   const normalized = categoryKey(category);
   if (isHybridCategory(category)) return [customWorldLawOption(), ...DB.worldLaws.filter((law) => isHybridCategory(law.Categoria))];
   const categoryLaws = normalized.startsWith("UTILIT")
@@ -1699,32 +1822,76 @@ function actionCostLabel(cost) {
 }
 
 function openModal(title, body, footer = `<button class="ghost" type="button" data-action="close-modal">Fechar</button>`) {
-  $("#modalRoot").innerHTML = `<div class="modal-backdrop" data-action="close-modal"><div class="modal" role="dialog" aria-modal="true" aria-label="${esc(title)}" data-stop-close><header><h2>${esc(title)}</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Fechar">×</button></header><div class="modal-body">${body}</div><footer>${footer}</footer></div></div>`;
-  requestAnimationFrame(() => $("#modalRoot .modal input, #modalRoot .modal select, #modalRoot .modal textarea, #modalRoot .modal button")?.focus());
+  if (!$("#modalRoot .modal")) modalReturnFocus = document.activeElement;
+  const titleId = nextControlId("modal-title");
+  $("#modalRoot").innerHTML = `<div class="modal-backdrop" data-action="close-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="${titleId}" data-stop-close><header><h2 id="${titleId}">${esc(title)}</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Fechar">×</button></header><div class="modal-body">${body}</div><footer>${footer}</footer></div></div>`;
+  associateLabels($("#modalRoot"));
+  requestAnimationFrame(() => modalFocusable()[0]?.focus());
 }
 
 function closeModal() {
   $("#modalRoot").innerHTML = "";
+  const returnTarget = modalReturnFocus;
+  modalReturnFocus = null;
+  if (returnTarget?.isConnected && typeof returnTarget.focus === "function") requestAnimationFrame(() => returnTarget.focus());
+}
+
+function modalFocusable() {
+  return $$('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])', $("#modalRoot"));
 }
 
 function handleKeydown(event) {
-  if (event.key === "Escape" && $("#modalRoot").innerHTML) {
+  const modal = $("#modalRoot .modal");
+  if (event.key === "Escape" && modal) {
     closeModal();
     event.preventDefault();
+    return;
+  }
+  if (event.key === "Tab" && modal) {
+    const focusable = modalFocusable();
+    if (focusable.length) {
+      const first = focusable[0];
+      const last = focusable.at(-1);
+      if (event.shiftKey && document.activeElement === first) {
+        last.focus();
+        event.preventDefault();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        first.focus();
+        event.preventDefault();
+      }
+    }
+    return;
+  }
+  const focusedTab = event.target.closest?.('[role="tab"]');
+  if (focusedTab && ["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+    const tabs = $$('[role="tab"]:not([disabled])', $("#tabs"));
+    const current = tabs.indexOf(focusedTab);
+    let nextIndex = current;
+    if (event.key === "Home") nextIndex = 0;
+    else if (event.key === "End") nextIndex = tabs.length - 1;
+    else nextIndex = (current + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+    const nextTab = tabs[nextIndex];
+    if (nextTab) {
+      sessionUi.activeTab = nextTab.dataset.tab;
+      render();
+      requestAnimationFrame(() => $(`#tab-${sessionUi.activeTab}`)?.focus());
+      event.preventDefault();
+    }
     return;
   }
   const typing = /INPUT|SELECT|TEXTAREA/.test(event.target?.tagName ?? "");
   if (typing) return;
   if (event.ctrlKey && /^[1-7]$/.test(event.key)) {
     const next = TABS[Number(event.key) - 1]?.[0];
-    if (next) {
-      state.ui.activeTab = next;
+    if (next && (next !== "mundo" || worldUnlocked())) {
+      sessionUi.activeTab = next;
       render();
       event.preventDefault();
     }
   }
   if (event.altKey && event.key.toLowerCase() === "r") {
     passTurn();
+    scheduleSave();
     event.preventDefault();
   }
 }
@@ -1871,7 +2038,7 @@ function saveCustomArmor(id = "") {
 function removeCustomArmor(id = "") {
   state.inventory.customArmors = ensureCustomArmors().filter((armor) => armor.id !== id);
   if (state.inventory.armorId === customArmorKey(id)) state.inventory.armorId = "";
-  saveState();
+  scheduleSave();
   openArmorPicker();
 }
 
@@ -1965,7 +2132,7 @@ function openCaModal() {
       <div class="field"><label>Bloqueio</label><input id="tempEffectBlock" type="number" value="0"></div>
       <div class="field"><label>&nbsp;</label><button class="button" type="button" data-action="add-temp-effect">Adicionar</button></div>
     </div>
-    <div class="stack" style="margin-top: 12px;">${state.effects.map((effect) => `<div class="chip">${esc(effect.name)} · CA ${effect.ca} · Bloqueio ${effect.block?.cortante ?? 0}<button class="ghost" type="button" data-action="remove-temp-effect" data-id="${effect.id}">Remover</button></div>`).join("") || `<div class="empty">Nenhum efeito temporário.</div>`}</div>
+    <div class="stack" style="margin-top: 12px;">${state.effects.map((effect) => `<div class="chip">${esc(effect.name)} · CA ${effect.ca} · Bloqueio ${effect.block?.cortante ?? 0}<button class="ghost" type="button" data-action="remove-temp-effect" data-id="${esc(effect.id)}">Remover</button></div>`).join("") || `<div class="empty">Nenhum efeito temporário.</div>`}</div>
   `);
 }
 
@@ -1977,8 +2144,8 @@ function openSpellModal(type, knownId = "") {
 }
 
 function openSpellPreviewModal() {
-  const regionCode = state.ui.extraMagicRegion === "Sem Região" ? "" : state.ui.extraMagicRegion;
-  const spell = getSpell(state.ui.extraMagicType, regionCode);
+  const regionCode = sessionUi.extraMagicRegion === "Sem Região" ? "" : sessionUi.extraMagicRegion;
+  const spell = getSpell(sessionUi.extraMagicType, regionCode);
   openModal(spell?.name ?? "Magia Extra", `<p>${esc(spell?.description ?? "")}</p>${renderLevels(spell, 0)}`);
 }
 
@@ -2050,8 +2217,8 @@ function coreReduceDamage() {
 
 function recoverCoreRest() {
   if (!hasCore("pulmao")) return;
-  const hours = Math.max(1, num(state.ui.coreRestHours, 1));
-  const recovered = 2 * hours;
+  const hours = Math.max(1, num(sessionUi.coreRestHours, 1));
+  const recovered = RULES.coreRestBonus(hours);
   state.resources.pmCurrent = clamp(pmCurrent() + recovered, 0, maxPm());
   state.combat.log.unshift(`Núcleo Pulmão: +${recovered} PM por ${hours}h de descanso (${pmCurrent()}/${maxPm()}).`);
   render();
@@ -2066,8 +2233,8 @@ function recoverCoreFlat() {
 
 function registerActiveSpell(item, overrides = {}) {
   if (!item) return;
-  const maintenanceCost = overrides.maintenanceCost ?? magicMaintenanceCost(item);
-  const turns = overrides.turns ?? magicDurationTurns(item);
+  const maintenanceCost = Object.hasOwn(overrides, "maintenanceCost") ? overrides.maintenanceCost : magicMaintenanceCost(item);
+  const turns = Object.hasOwn(overrides, "turns") ? overrides.turns : magicDurationTurns(item);
   if (!maintenanceCost && !turns && item.type !== "Mundo") return;
   state.combat.activeSpells = (state.combat.activeSpells ?? []).filter((spell) => spell.spellId !== item.id);
   state.combat.activeSpells.unshift({
@@ -2130,7 +2297,7 @@ function passTurn() {
     if (num(spell.maintenanceCost, 0) > 0) {
       if (!spendPm(spell.maintenanceCost, `Manter ${spell.name}`)) {
         state.combat.log.unshift(`${spell.name} foi encerrada por falta de PM.`);
-        if (spell.type === "Mundo") state.world.active = false;
+        if (spell.type === "Mundo") state.world.status = "closed";
         continue;
       }
     }
@@ -2142,7 +2309,7 @@ function passTurn() {
     if (nextTurns > 0) remaining.push({ ...spell, turns: nextTurns });
     else {
       state.combat.log.unshift(`${spell.name} encerrou.`);
-      if (spell.type === "Mundo") state.world.active = false;
+      if (spell.type === "Mundo") state.world.status = "closed";
     }
   }
   state.combat.activeSpells = remaining;
@@ -2161,7 +2328,7 @@ function finishCombat() {
   state.combat.defenseAdjustments = { ca: 0, block: 0 };
   state.magicCore.preparedBoost = "";
   state.magicCore.caBoostTurns = 0;
-  state.world.active = false;
+  state.world.status = "closed";
   state.combat.log.unshift("Combate finalizado. Magias ativas, preparos e ações foram resetados.");
   render();
 }
@@ -2169,7 +2336,7 @@ function finishCombat() {
 function removeActiveSpell(id) {
   const removed = (state.combat.activeSpells ?? []).find((spell) => spell.id === id);
   state.combat.activeSpells = (state.combat.activeSpells ?? []).filter((spell) => spell.id !== id);
-  if (removed?.type === "Mundo") state.world.active = false;
+  if (removed?.type === "Mundo") state.world.status = "closed";
   if (removed) state.combat.log.unshift(`${removed.name} encerrada manualmente.`);
   render();
 }
@@ -2186,7 +2353,7 @@ function openAbilityModal(existing = null) {
     </div>
     <div class="field"><label>Descrição</label><textarea id="abilityDescription">${esc(existing?.description ?? "")}</textarea></div>
     <div class="field"><label>Observações</label><textarea id="abilityNotes">${esc(existing?.notes ?? "")}</textarea></div>
-  `, `<button class="button" type="button" data-action="save-ability" data-id="${existing?.id ?? ""}">Salvar</button><button class="ghost" type="button" data-action="close-modal">Cancelar</button>`);
+  `, `<button class="button" type="button" data-action="save-ability" data-id="${esc(existing?.id ?? "")}">Salvar</button><button class="ghost" type="button" data-action="close-modal">Cancelar</button>`);
 }
 
 function openTalentModal(name) {
@@ -2215,6 +2382,7 @@ function handleClick(event) {
   if (!button) return;
   if (event.target.closest("[data-stop-close]") && button.dataset.action === "close-modal" && event.target !== button) return;
   const action = button.dataset.action;
+  const beforeState = state ? persistentSignature() : "";
   if (action !== "close-modal") event.stopPropagation();
 
   const actions = {
@@ -2222,7 +2390,12 @@ function handleClick(event) {
     "open-start": openStartModal,
     "start-new": () => { localStorage.removeItem(STORAGE_KEY); state = createDefaultState(); state.meta.started = true; closeModal(); render(); },
     "open-settings": openSettings,
-    "tab": () => { state.ui.activeTab = button.dataset.tab; render(); },
+    "tab": () => {
+      const next = button.dataset.tab;
+      if (button.disabled || (next === "mundo" && !worldUnlocked())) return;
+      sessionUi.activeTab = next;
+      render();
+    },
     "open-attribute": () => openAttributeModal(button.dataset.attribute),
     "open-skill": () => openSkillModal(button.dataset.skill),
     "open-modifiers": () => openModifiersModal(button.dataset.skill),
@@ -2237,7 +2410,7 @@ function handleClick(event) {
     "magic-dec": () => changeMagicLevel(button.dataset.type, -1),
     "open-spell": () => openSpellModal(button.dataset.type),
     "open-spell-preview": openSpellPreviewModal,
-    "toggle-extra-magic": () => { state.ui.showExtraMagic = !state.ui.showExtraMagic; render(); },
+    "toggle-extra-magic": () => { sessionUi.showExtraMagic = !sessionUi.showExtraMagic; render(); },
     "add-extra-magic": addExtraMagic,
     "evolve-extra-magic": () => evolveExtraMagic(button.dataset.id),
     "open-extra-spell": () => openSpellModal("", button.dataset.id),
@@ -2290,12 +2463,12 @@ function handleClick(event) {
     "open-talent": () => openTalentModal(button.dataset.id),
     "toggle-talent": () => toggleTalent(button.dataset.name),
     "remove-talent": () => { state.talents = state.talents.filter((talent) => talent.name !== button.dataset.name); render(); },
-    "go-magic": () => { state.ui.activeTab = "magia"; render(); },
+    "go-magic": () => { sessionUi.activeTab = "magia"; render(); },
     "world-open": openWorldAction,
     "world-maintain": maintainWorldAction,
     "world-law": useWorldLawAction,
-    "world-close": () => { state.world.active = false; state.combat.log.unshift("Mundo encerrado."); render(); },
-    "world-collapse": () => { state.world.active = false; state.combat.log.unshift("Mundo colapsado sem gastar ações."); render(); },
+    "world-close": closeWorldAction,
+    "world-collapse": collapseWorldAction,
     "open-world-details": openWorldDetails,
     "add-world-law": addWorldLaw,
     "remove-world-law": () => { state.world.laws = state.world.laws.filter((law) => law.id !== button.dataset.id); render(); },
@@ -2305,11 +2478,23 @@ function handleClick(event) {
     "download-json": downloadJson,
     "copy-json": copyJson,
     "import-json-paste": importJsonPaste,
+    "apply-json-import": () => applyJsonImport(button.dataset.mode),
+    "apply-pdf-import": () => applyPdfImport(button.dataset.mode),
+    "cancel-import": cancelImport,
+    "open-backups": openBackups,
+    "restore-backup": () => restoreBackup(button.dataset.id),
+    "download-backup": () => downloadBackup(button.dataset.id),
     "print-sheet": printSheet,
     "open-errors": openErrors,
     "clear-errors": () => { state.errors = []; closeModal(); render(); },
+    "request-gm-override": requestGmOverride,
+    "enable-gm-override": enableGmOverride,
+    "disable-gm-override": disableGmOverride,
   };
-  if (actions[action]) actions[action]();
+  if (actions[action]) {
+    actions[action]();
+    if (state && beforeState !== persistentSignature()) scheduleSave();
+  }
 }
 
 function handleChange(event) {
@@ -2325,7 +2510,15 @@ function handleChange(event) {
     let value = target.type === "checkbox" ? target.checked : target.value;
     if (target.type === "number") value = num(value, 0);
     if (target.dataset.path === "character.useIntForSkillPoints") value = value === "true";
+    const skillMatch = target.dataset.path.match(/^skills\.(.+)\.added$/);
+    const previousSkillValue = skillMatch ? num(state.skills[skillMatch[1]]?.added, 0) : null;
+    const previousPathValue = getPath(target.dataset.path);
+    const previousRegionCode = state.character.regionCode;
     setPath(target.dataset.path, value);
+    if (skillMatch && rejectInvalidSkillAllocation(skillMatch[1], previousSkillValue, target)) {
+      render();
+      return;
+    }
     if (target.dataset.path === "magicCore.selectedId") {
       resetCoreRuntime();
       state.combat.log.unshift(value ? `Núcleo selecionado: ${currentCore()?.name ?? value}.` : "Núcleo removido.");
@@ -2338,11 +2531,22 @@ function handleChange(event) {
       const region = getRegion(value);
       if (region && !region.cultures.some((culture) => culture.id === state.character.cultureId)) state.character.cultureId = "";
     }
-    if (["ui.lawCategory", "ui.lawResistanceMode"].includes(target.dataset.path)) {
-      const first = lawsForCategory(state.ui.lawCategory, state.ui.lawResistanceMode)[0];
-      state.ui.lawId = first?.ID ?? "";
+    const affectsSkills = target.dataset.path.startsWith("attributes.") || ["character.cultureId", "character.backgroundFamilyId", "character.backgroundPersonalId", "character.useIntForSkillPoints", "magicCore.selectedId"].includes(target.dataset.path);
+    if (affectsSkills) {
+      const issue = sheetSkillValidationIssue();
+      if (issue) {
+        setPath(target.dataset.path, previousPathValue);
+        if (target.dataset.path === "character.cultureId") state.character.regionCode = previousRegionCode;
+        addError(issue.reason === "limit" ? "LAT-CALC-004" : "LAT-PT-002", issue.detail);
+        render();
+        return;
+      }
     }
-    saveState();
+    if (["ui.lawCategory", "ui.lawResistanceMode"].includes(target.dataset.path)) {
+      const first = lawsForCategory(sessionUi.lawCategory, sessionUi.lawResistanceMode)[0];
+      sessionUi.lawId = first?.ID ?? "";
+    }
+    if (!target.dataset.path.startsWith("ui.")) scheduleSave();
     render();
   }
   if (target.dataset.file === "pdf" && target.files?.[0]) importPdf(target.files[0]);
@@ -2356,13 +2560,13 @@ function handleInput(event) {
   }
   if (target.dataset.path && target.dataset.live) {
     setPath(target.dataset.path, target.value);
-    saveState();
+    scheduleSave();
   }
   if (target.dataset.array) {
     const list = target.dataset.array === "weapon" ? state.inventory.weapons : state.inventory.equipment;
     const item = list.find((entry) => entry.id === target.dataset.id);
     if (item) item[target.dataset.field] = target.type === "number" ? num(target.value) : target.value;
-    saveState();
+    scheduleSave();
   }
 }
 
@@ -2384,8 +2588,8 @@ function changeMagicLevel(type, delta) {
 }
 
 function addExtraMagic() {
-  const type = state.ui.extraMagicType;
-  const regionCode = state.ui.extraMagicRegion === "Sem Região" ? "" : state.ui.extraMagicRegion;
+  const type = sessionUi.extraMagicType;
+  const regionCode = sessionUi.extraMagicRegion === "Sem Região" ? "" : sessionUi.extraMagicRegion;
   if (!MAGIC_TYPES.includes(type)) return addError("LAT-MAG-004");
   const spell = getSpell(type, regionCode);
   state.magic.knownExtras.push({ id: uid(), name: spell?.name ?? `${type} Extra`, type, regionCode, level: 0 });
@@ -2409,7 +2613,8 @@ function activateMagic(type, spellId = "") {
   const item = knownSpells().find((spell) => spell.id === spellId) ?? knownSpells().find((spell) => spell.type === type);
   if (type === "Forte") return openForteActivationModal(item?.id ?? spellId);
   const map = { Mundo: "full", Fina: "bonus", Impacto: "bonus", Densa: "bonus", Forte: "standard", Etérea: "standard" };
-  return activateSpellItem(item, map[type] ?? "bonus");
+  const structuredAction = currentLevelEntry(item)?.action;
+  return activateSpellItem(item, ["full", "standard", "bonus", "movement", "reaction"].includes(structuredAction) ? structuredAction : (map[type] ?? "bonus"));
 }
 
 function useAction(cost, label, rerender = true) {
@@ -2426,13 +2631,17 @@ function useAction(cost, label, rerender = true) {
 }
 
 function openWorldAction() {
+  if (!RULES.validateWorldAction({ status: state.world.status, action: "open" }).valid) {
+    addError("LAT-MUN-002", "O Mundo já está ativo.");
+    return false;
+  }
   const costs = worldCosts();
   if (pmCurrent() < costs.activation) return addError("LAT-MUN-002", `Abrir Mundo: PM insuficiente (${pmCurrent()}/${costs.activation}).`);
   if (!useAction("full", "Abrir Mundo", false)) return false;
   spendPm(costs.activation, "Abrir Mundo");
-  state.world.active = true;
+  state.world.status = "active";
   state.world.turns ||= "1d4";
-  state.world.lawUses ||= worldTier() + 1;
+  state.world.lawUses = worldTier() + 1;
   const item = knownSpells().find((spell) => spell.type === "Mundo");
   if (item) registerActiveSpell(item, { turns: null, maintenanceCost: costs.maintenance });
   render();
@@ -2441,7 +2650,10 @@ function openWorldAction() {
 
 function maintainWorldAction() {
   const costs = worldCosts();
-  if (!state.world.active) state.combat.log.unshift("Mundo mantido antes de estar marcado como aberto.");
+  if (!RULES.validateWorldAction({ status: state.world.status, action: "maintain" }).valid) {
+    addError("LAT-MUN-002", "O Mundo precisa estar ativo antes da manutenção.");
+    return false;
+  }
   if (!spendPm(costs.maintenance, "Manter Mundo")) return false;
   state.combat.log.unshift("Manter Mundo não gastou ação.");
   render();
@@ -2449,10 +2661,33 @@ function maintainWorldAction() {
 }
 
 function useWorldLawAction() {
-  if (state.world.lawUses > 0) state.world.lawUses -= 1;
+  const validation = RULES.validateWorldAction({ status: state.world.status, action: "law", lawCount: state.world.laws.length, lawUses: state.world.lawUses });
+  if (!validation.valid) {
+    const details = { "not-active": "Uma Lei só pode ser usada com o Mundo ativo.", "missing-law": "Nenhuma Lei foi adicionada ao Mundo.", "no-law-uses": "Não há usos de Lei restantes." };
+    addError("LAT-MUN-003", details[validation.reason] ?? validation.reason);
+    return false;
+  }
+  state.world.lawUses -= 1;
   state.combat.log.unshift("Lei usada como ação livre.");
   render();
   return true;
+}
+
+function endWorld(status, message) {
+  if (!RULES.validateWorldAction({ status: state.world.status, action: status === "collapsed" ? "collapse" : "close" }).valid) return false;
+  state.world.status = status;
+  state.combat.activeSpells = (state.combat.activeSpells ?? []).filter((spell) => spell.type !== "Mundo");
+  state.combat.log.unshift(message);
+  render();
+  return true;
+}
+
+function closeWorldAction() {
+  return endWorld("closed", "Mundo encerrado.");
+}
+
+function collapseWorldAction() {
+  return endWorld("collapsed", "Mundo colapsado sem gastar ações.");
 }
 
 function itemKey(value) {
@@ -2698,9 +2933,12 @@ function openEvolveSkills() {
 }
 
 function confirmEvolveSkills() {
-  const skillName = state.ui.evolveSkill || DB.skills.find((skill) => state.skills[skill.name]?.checked)?.name;
+  const skillName = sessionUi.evolveSkill || DB.skills.find((skill) => state.skills[skill.name]?.checked)?.name;
   const value = num($("#evolveValue").value, -1);
   if (value < 0 || value > 10) return addError("LAT-PT-004");
+  if (!state.settings.gmOverride && skillFinal(skillName) + value > num(state.settings.skillLimit, 70)) {
+    return addError("LAT-CALC-004", `${skillName}: a evolução ultrapassaria o limite ${state.settings.skillLimit}.`);
+  }
   state.skills[skillName].evolutions.push({ value, at: new Date().toISOString() });
   state.skills[skillName].checked = false;
   closeModal();
@@ -2733,22 +2971,36 @@ function addTalent() {
   const base = DB.talents.find((talent) => talent.name === name);
   if (!base) return addError("LAT-DB-004", name);
   if (state.talents.some((talent) => talent.name === name)) return toast("Talento já adicionado.", "warn");
-  state.talents.push({ id: uid(), name, level: num($("#talentLevelDraft").value, 1), enabled: base.tag !== "Ativável/Condicionável" });
+  const talent = { id: uid(), name, level: num($("#talentLevelDraft").value, 1), enabled: base.tag !== "Ativável/Condicionável" };
+  state.talents.push(talent);
+  const issue = sheetSkillValidationIssue();
+  if (issue) {
+    state.talents = state.talents.filter((item) => item.id !== talent.id);
+    return addError(issue.reason === "limit" ? "LAT-CALC-004" : "LAT-PT-002", `${name}: ${issue.detail}`);
+  }
   if (!base.skillMods?.length && !Object.keys(base.attributeMods ?? {}).length && !Object.keys(base.resourceMods ?? {}).length) addError("LAT-PT-006", name, false);
   render();
 }
 
 function toggleTalent(name) {
   const talent = state.talents.find((item) => item.name === name);
-  if (talent) talent.enabled = !talent.enabled;
+  if (talent) {
+    const previous = talent.enabled;
+    talent.enabled = !talent.enabled;
+    const issue = sheetSkillValidationIssue();
+    if (issue) {
+      talent.enabled = previous;
+      return addError(issue.reason === "limit" ? "LAT-CALC-004" : "LAT-PT-002", `${name}: ${issue.detail}`);
+    }
+  }
   if (!talent?.enabled) addError("LAT-PT-005", name, false);
   render();
 }
 
 function addWorldLaw() {
-  const resistanceMode = normalizeLawResistanceMode(state.ui.lawResistanceMode);
-  const candidates = lawsForCategory(state.ui.lawCategory, resistanceMode);
-  const selected = candidates.find((law) => law.ID === state.ui.lawId) ?? candidates[0];
+  const resistanceMode = normalizeLawResistanceMode(sessionUi.lawResistanceMode);
+  const candidates = lawsForCategory(sessionUi.lawCategory, resistanceMode);
+  const selected = candidates.find((law) => law.ID === sessionUi.lawId) ?? candidates[0];
   if (!selected) return addError("LAT-MUN-005");
   const tier = worldTier();
   const effectKey = tier === 3 ? "N3 (Mundo 10)" : tier === 2 ? "N2 (Mundo 5-9)" : "N1 (Mundo 1-4)";
@@ -2762,7 +3014,7 @@ function addWorldLaw() {
   const law = {
     id: uid(),
     sourceId: selected.ID,
-    category: state.ui.lawCategory,
+    category: sessionUi.lawCategory,
     ...(custom ? {} : { resistanceMode }),
     name: $("#lawNameDraft")?.value.trim() || lawNameForResistance(selected, resistanceMode),
     target: custom ? $("#customLawTarget")?.value.trim() : selected.Alvo,
@@ -2780,7 +3032,7 @@ function addWorldLaw() {
 function openEditLawField(id, fieldName) {
   const law = state.world.laws.find((item) => item.id === id);
   if (!law) return;
-  openModal(`Editar ${fieldLabel(fieldName)}`, `<textarea id="lawFieldEdit">${esc(law[fieldName])}</textarea>`, `<button class="button" type="button" data-action="save-law-field" data-id="${id}" data-field="${fieldName}">Salvar</button><button class="ghost" type="button" data-action="close-modal">Cancelar</button>`);
+  openModal(`Editar ${fieldLabel(fieldName)}`, `<textarea id="lawFieldEdit">${esc(law[fieldName])}</textarea>`, `<button class="button" type="button" data-action="save-law-field" data-id="${esc(id)}" data-field="${fieldName}">Salvar</button><button class="ghost" type="button" data-action="close-modal">Cancelar</button>`);
 }
 
 function saveLawField(id, fieldName) {
@@ -2818,15 +3070,33 @@ function openSettings() {
   openModal("Configurações", `
     <div class="grid two">
       <div class="card stack"><h3>Tema</h3><div class="inline"><button class="button" type="button" data-action="set-theme" data-theme="dark">Modo Escuro</button><button class="ghost" type="button" data-action="set-theme" data-theme="light">Modo Claro</button></div></div>
-      <div class="card">${field("Limite inicial de Perícia", "settings.skillLimit", "number")}</div>
+      <div class="card stack">${field("Limite inicial de Perícia", "settings.skillLimit", "number")}<button class="${state.settings.gmOverride ? "danger" : "ghost"}" type="button" data-action="${state.settings.gmOverride ? "disable-gm-override" : "request-gm-override"}" role="switch" aria-checked="${Boolean(state.settings.gmOverride)}">Modo Mestre: ${state.settings.gmOverride ? "ligado" : "desligado"}</button><p class="muted small">Permite ultrapassar limite e orçamento de Perícias.</p></div>
     </div>
     <div class="grid two" style="margin-top: 12px;">
       <div class="card stack"><h3>Importar</h3><input type="file" accept="application/json" data-file="json"><textarea id="jsonPaste" placeholder="Cole um JSON exportado aqui"></textarea><button class="ghost" type="button" data-action="import-json-paste">Importar JSON colado</button></div>
       <div class="card stack"><h3>Exportar</h3><button class="button" type="button" data-action="download-json">Baixar JSON</button><button class="ghost" type="button" data-action="copy-json">Copiar JSON</button><button class="ghost" type="button" data-action="print-sheet">Imprimir/PDF completo</button></div>
     </div>
-    <div class="inline" style="margin-top: 12px;"><button class="ghost" type="button" data-action="open-errors">Log de erros</button></div>
+    <div class="inline" style="margin-top: 12px;"><button class="ghost" type="button" data-action="open-backups">Backups recentes</button><button class="ghost" type="button" data-action="open-errors">Log de erros</button></div>
   `);
-  $$("[data-action='set-theme']").forEach((btn) => btn.addEventListener("click", () => { state.settings.theme = btn.dataset.theme; applyTheme(); saveState(); }));
+  $$("[data-action='set-theme']").forEach((btn) => btn.addEventListener("click", () => { state.settings.theme = btn.dataset.theme; applyTheme(); scheduleSave(); }));
+}
+
+function requestGmOverride() {
+  openModal("Ativar Modo Mestre", `<p>Esta exceção permite ultrapassar o limite e o orçamento de Perícias. Use somente quando o Mestre autorizar.</p>`, `<button class="danger" type="button" data-action="enable-gm-override">Ativar exceção</button><button class="ghost" type="button" data-action="close-modal">Cancelar</button>`);
+}
+
+function enableGmOverride() {
+  state.settings.gmOverride = true;
+  closeModal();
+  render();
+  toast("Modo Mestre ativado para Perícias.", "warn");
+}
+
+function disableGmOverride() {
+  state.settings.gmOverride = false;
+  closeModal();
+  render();
+  toast("Modo Mestre desativado.");
 }
 
 function openErrors() {
@@ -2834,17 +3104,77 @@ function openErrors() {
 }
 
 function exportPayload() {
-  return JSON.stringify({ ...state, meta: { ...state.meta, appId: APP_ID, exportedAt: new Date().toISOString() } }, null, 2);
+  const payload = persistentPayload();
+  payload.meta = { ...payload.meta, appId: APP_ID, schemaVersion: STATE_SCHEMA_VERSION, exportedAt: new Date().toISOString() };
+  return JSON.stringify(payload, null, 2);
+}
+
+function downloadText(payload, fileName) {
+  const blob = new Blob([payload], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = fileName;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 0);
+}
+
+function readBackups() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(BACKUP_STORAGE_KEY) || "[]");
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    recordStorageFailure(error);
+    return [];
+  }
+}
+
+function createBackup(label) {
+  const backup = { id: uid(), at: new Date().toISOString(), label, payload: exportPayload() };
+  try {
+    localStorage.setItem(BACKUP_STORAGE_KEY, JSON.stringify([backup, ...readBackups()].slice(0, 5)));
+    return backup;
+  } catch (error) {
+    recordStorageFailure(error);
+    downloadText(backup.payload, `backup-${Date.now()}-ficha-marufia-latio.json`);
+    toast("O backup foi baixado porque o armazenamento local não estava disponível.", "warn");
+    return backup;
+  }
+}
+
+function openBackups() {
+  const backups = readBackups();
+  openModal("Backups recentes", `<div class="stack">${backups.map((backup) => `<div class="card"><strong>${esc(backup.label)}</strong><p class="muted small">${esc(new Date(backup.at).toLocaleString())}</p><div class="inline"><button class="button" type="button" data-action="restore-backup" data-id="${esc(backup.id)}">Restaurar</button><button class="ghost" type="button" data-action="download-backup" data-id="${esc(backup.id)}">Baixar</button></div></div>`).join("") || `<div class="empty">Nenhum backup automático foi criado.</div>`}</div>`);
+}
+
+function backupById(id) {
+  return readBackups().find((backup) => backup.id === id);
+}
+
+function restoreBackup(id) {
+  const backup = backupById(id);
+  if (!backup) return addError("LAT-JSON-001", "Backup não encontrado.");
+  try {
+    const prepared = prepareStateImport(JSON.parse(backup.payload));
+    createBackup("Antes de restaurar backup");
+    state = prepared.state;
+    pendingImport = null;
+    closeModal();
+    render();
+    saveStateNow();
+    toast("Backup restaurado.");
+  } catch (error) {
+    addError(error.code || "LAT-JSON-001", error.message);
+  }
+}
+
+function downloadBackup(id) {
+  const backup = backupById(id);
+  if (backup) downloadText(backup.payload, `backup-ficha-marufia-${backup.at.slice(0, 10)}.json`);
 }
 
 function downloadJson() {
   try {
-    const blob = new Blob([exportPayload()], { type: "application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `${state.character.name || "ficha-marufia-latio"}.json`;
-    a.click();
-    URL.revokeObjectURL(a.href);
+    downloadText(exportPayload(), `${state.character.name || "ficha-marufia-latio"}.json`);
   } catch (error) {
     addError("LAT-JSON-004", error.message);
   }
@@ -2859,21 +3189,47 @@ async function copyJson() {
   }
 }
 
-function importJsonText(text) {
+function importJsonText(text, fileName = "JSON colado") {
   try {
     const parsed = JSON.parse(text);
-    if (parsed?.meta?.appId !== APP_ID) return addError("LAT-JSON-002");
-    if (parsed.meta.schemaVersion !== state.meta.schemaVersion) addError("LAT-JSON-003", `Versão ${parsed.meta.schemaVersion}`, false);
-    state = normalizeState(mergeState(createDefaultState(), parsed));
-    closeModal();
-    render();
+    const prepared = prepareStateImport(parsed);
+    pendingImport = { kind: "json", prepared, fileName };
+    const migration = prepared.migrated ? `<span class="tag warn">Migrará v${esc(prepared.sourceVersion)} para v${STATE_SCHEMA_VERSION}</span>` : `<span class="tag ok">Schema v${STATE_SCHEMA_VERSION}</span>`;
+    openModal("Revisar importação JSON", `
+      <p><strong>${esc(fileName)}</strong></p>
+      <p>Confira como a ficha deve receber o arquivo. Nenhum dado foi alterado ainda.</p>
+      <div class="inline">${migration}<span class="chip">${esc(prepared.state.character.name || "Personagem sem nome")}</span></div>
+      <div class="grid two" style="margin-top:12px;">
+        <div class="card"><strong>Mesclar</strong><p>Preenche dados do arquivo e preserva valores atuais quando o importado estiver vazio.</p></div>
+        <div class="card"><strong>Substituir</strong><p>Troca a ficha atual pela versão validada do arquivo.</p></div>
+      </div>
+    `, `<button class="button" type="button" data-action="apply-json-import" data-mode="merge">Mesclar</button><button class="danger" type="button" data-action="apply-json-import" data-mode="replace">Substituir</button><button class="ghost" type="button" data-action="cancel-import">Cancelar</button>`);
   } catch (error) {
-    addError("LAT-JSON-001", error.message);
+    addError(error.code || "LAT-JSON-001", error.message);
   }
 }
 
+function applyJsonImport(mode) {
+  if (pendingImport?.kind !== "json") return addError("LAT-JSON-001", "Importação pendente não encontrada.");
+  createBackup(`Antes de importar ${pendingImport.fileName}`);
+  state = mode === "replace"
+    ? pendingImport.prepared.state
+    : STATE_TOOLS.mergeImported(state, pendingImport.prepared.incoming, createDefaultState(), stateToolOptions());
+  pendingImport = null;
+  closeModal();
+  render();
+  saveStateNow();
+  toast("JSON importado com segurança.");
+}
+
+function cancelImport() {
+  pendingImport = null;
+  closeModal();
+  toast("Importação cancelada. A ficha não foi alterada.");
+}
+
 async function importJsonFile(file) {
-  importJsonText(await file.text());
+  importJsonText(await file.text(), file.name);
 }
 
 function importJsonPaste() {
@@ -2883,11 +3239,11 @@ function importJsonPaste() {
 function printSheet() {
   try {
     addError("LAT-PRINT-002", "", false);
-    state.ui.printMode = true;
+    sessionUi.printMode = true;
     render();
     setTimeout(() => {
       window.print();
-      state.ui.printMode = false;
+      sessionUi.printMode = false;
       render();
     }, 120);
   } catch (error) {
@@ -2903,72 +3259,6 @@ async function importPdf(file) {
   }
 }
 
-async function extractPdfText(file) {
-  const pdfjsLib = await getPdfLibrary();
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  const pdf = await pdfjsLib.getDocument({ data: bytes, disableWorker: true }).promise;
-  let text = "";
-  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-    const page = await pdf.getPage(pageNumber);
-    const content = await page.getTextContent();
-    text += content.items.map((item) => item.str).join(" ") + "\n";
-  }
-  if (!text.trim()) throw new Error("PDF sem texto extraível.");
-  return text;
-}
-
-function parsePdfText(text) {
-  const required = ["PERSONAGEM", "ATRIBUTOS", "VIDA MÁXIMA", "CA", "PONTOS DE MAGIA", "PERÍCIAS", "CORPO", "BONUS", "ESQUIVA", "ANTECEDENTES"];
-  const missing = [];
-  const data = {};
-  const lines = text.split(/\n+/);
-  const pick = (label) => {
-    const foldedLabel = fold(label);
-    const line = lines.find((entry) => fold(entry).includes(foldedLabel)) ?? "";
-    const idx = fold(line).indexOf(foldedLabel);
-    const value = idx >= 0 ? line.slice(idx + label.length).replace(/[_:]+/g, " ").trim() : "";
-    return value && !/^[\s_]+$/.test(value) ? value : "";
-  };
-  data.name = pick("NOME") || pick("PERSONAGEM");
-  data.age = pick("IDADE");
-  data.gender = pick("SEXO") || pick("GÊNERO");
-  data.birth = pick("NASCIMENTO");
-  data.culture = pick("CULTURA");
-  data.hp = num(pick("VIDA MAXIMA"), 0);
-  data.ca = num(pick("CA"), 0);
-  data.pm = num(pick("PONTOS DE MAGIA"), 0);
-  for (const attrName of DB.attributes) {
-    const match = text.match(new RegExp(`${attrName}\\s*:?\\s*(\\d{1,3})`, "i"));
-    if (match) data[attrName] = num(match[1], 0);
-  }
-  for (const label of required) if (!fold(text).includes(fold(label))) missing.push(label);
-  const specific = [["Nome", "name"], ["Idade", "age"], ["Gênero/Sexo", "gender"], ["Nascimento", "birth"], ...DB.attributes.map((item) => [item, item])];
-  for (const [label, key] of specific) if (!data[key]) missing.push(label);
-  return { data, missing: [...new Set(missing)] };
-}
-
-function applyImportedPdfData(data) {
-  if (data.name) state.character.name = data.name;
-  if (data.age) state.character.age = data.age;
-  if (data.gender) state.character.gender = data.gender;
-  if (data.birth) state.character.birth = data.birth;
-  if (data.hp) state.resources.hpCurrent = data.hp;
-  if (data.pm) state.resources.pmCurrent = data.pm;
-  for (const attrName of DB.attributes) if (data[attrName]) state.attributes[attrName] = data[attrName];
-  if (data.culture) {
-    const found = allCultures().find((culture) => culture.name.toLowerCase() === data.culture.toLowerCase());
-    if (found) {
-      state.character.cultureId = found.id;
-      state.character.regionCode = found.regionCode;
-    }
-  }
-}
-
-function showMissingPdfFields(missing) {
-  addError("LAT-PDF-002", missing.join(", "), false);
-  openModal("Revisão da importação", `<p>Algumas informações não foram encontradas no PDF. Você pode seguir mesmo assim e preencher manualmente.</p><div class="stack">${missing.map((fieldName) => `<span class="chip">${esc(fieldName)}</span>`).join("")}</div>`, `<button class="button" type="button" data-action="close-modal">Seguir mesmo assim</button>`);
-}
-
 async function importPdfWithStructuredReader(file) {
   if (!window.MARUFIA_PDF_IMPORTER?.importFromPdf) throw new Error("Importador PDF auxiliar nao carregado.");
   const result = await window.MARUFIA_PDF_IMPORTER.importFromPdf(file, {
@@ -2980,12 +3270,11 @@ async function importPdfWithStructuredReader(file) {
     return;
   }
 
-  const previousSettings = { ...state.settings };
-  state = createDefaultState();
-  state.settings = { ...state.settings, ...previousSettings };
-  applyImportedPdfPayload(result.data);
-  state.meta.started = true;
-  state.meta.importedFromPdf = {
+  const candidate = createDefaultState();
+  candidate.settings = { ...candidate.settings, ...state.settings };
+  applyImportedPdfPayload(candidate, result.data);
+  candidate.meta.started = true;
+  candidate.meta.importedFromPdf = {
     fileName: file.name,
     importedAt: new Date().toISOString(),
     source: result.source,
@@ -2993,55 +3282,53 @@ async function importPdfWithStructuredReader(file) {
     importedValueCount: result.importedValueCount,
   };
 
-  const differences = pdfImportCalculatedDifferences(result.data?.calculated ?? {});
-  closeModal();
-  render();
-  if (result.missing.length || differences.length) showPdfImportReview(result.missing, differences, result);
-  else toast("PDF importado.");
+  const differences = pdfImportCalculatedDifferences(result.data?.calculated ?? {}, candidate);
+  pendingImport = { kind: "pdf", candidate: normalizeState(candidate), result, fileName: file.name, differences };
+  showPdfImportReview(result.missing, differences, result, file.name);
 }
 
-function applyImportedPdfPayload(data) {
+function applyImportedPdfPayload(targetState, data) {
   const character = data?.character ?? {};
   const attributes = data?.attributes ?? {};
   const resources = data?.resources ?? {};
   const notes = data?.notes ?? {};
   const inventory = data?.inventory ?? {};
 
-  if (hasImportedValue(character.name)) state.character.name = character.name;
-  if (hasImportedValue(character.age)) state.character.age = character.age;
-  if (hasImportedValue(character.gender)) state.character.gender = character.gender;
-  if (hasImportedValue(character.birth)) state.character.birth = character.birth;
+  if (hasImportedValue(character.name)) targetState.character.name = character.name;
+  if (hasImportedValue(character.age)) targetState.character.age = character.age;
+  if (hasImportedValue(character.gender)) targetState.character.gender = character.gender;
+  if (hasImportedValue(character.birth)) targetState.character.birth = character.birth;
 
   const family = findByImportedName(DB.backgrounds.family, character.familyBackgroundName);
   const personal = findByImportedName(DB.backgrounds.personal, character.personalBackgroundName);
   const culture = findByImportedName(allCultures(), character.cultureName);
-  if (family) state.character.backgroundFamilyId = family.id;
-  if (personal) state.character.backgroundPersonalId = personal.id;
+  if (family) targetState.character.backgroundFamilyId = family.id;
+  if (personal) targetState.character.backgroundPersonalId = personal.id;
   if (culture) {
-    state.character.cultureId = culture.id;
-    state.character.regionCode = culture.regionCode;
+    targetState.character.cultureId = culture.id;
+    targetState.character.regionCode = culture.regionCode;
   }
 
   for (const attrName of DB.attributes) {
-    if (hasImportedValue(attributes[attrName])) state.attributes[attrName] = num(attributes[attrName], state.attributes[attrName]);
+    if (hasImportedValue(attributes[attrName])) targetState.attributes[attrName] = num(attributes[attrName], targetState.attributes[attrName]);
   }
 
   for (const [key, value] of Object.entries(notes)) {
-    if (hasImportedValue(value) && Object.hasOwn(state.notes, key)) state.notes[key] = value;
+    if (hasImportedValue(value) && Object.hasOwn(targetState.notes, key)) targetState.notes[key] = value;
   }
-  if (hasImportedValue(character.age) && !state.notes.age) state.notes.age = character.age;
+  if (hasImportedValue(character.age) && !targetState.notes.age) targetState.notes.age = character.age;
 
-  if (hasImportedValue(resources.hpCurrent)) state.resources.hpCurrent = num(resources.hpCurrent, null);
-  if (hasImportedValue(resources.pmCurrent)) state.resources.pmCurrent = num(resources.pmCurrent, null);
+  if (hasImportedValue(resources.hpCurrent)) targetState.resources.hpCurrent = num(resources.hpCurrent, null);
+  if (hasImportedValue(resources.pmCurrent)) targetState.resources.pmCurrent = num(resources.pmCurrent, null);
 
   for (const [coin, value] of Object.entries(inventory.money ?? {})) {
-    if (hasImportedValue(value) && Object.hasOwn(state.inventory.money, coin)) state.inventory.money[coin] = num(value, 0);
+    if (hasImportedValue(value) && Object.hasOwn(targetState.inventory.money, coin)) targetState.inventory.money[coin] = num(value, 0);
   }
-  if (hasImportedValue(inventory.patrimonio)) state.inventory.patrimonio = inventory.patrimonio;
+  if (hasImportedValue(inventory.patrimonio)) targetState.inventory.patrimonio = inventory.patrimonio;
 
   for (const weapon of inventory.weapons ?? []) {
     if (!hasImportedValue(weapon.name) && !hasImportedValue(weapon.damage)) continue;
-    state.inventory.weapons.push({
+    targetState.inventory.weapons.push({
       id: uid(),
       type: "Arma Importada",
       name: weapon.name || "Arma importada",
@@ -3051,11 +3338,11 @@ function applyImportedPdfPayload(data) {
       description: weapon.description ?? "",
     });
   }
-  if (!state.inventory.selectedWeaponId && state.inventory.weapons.length) state.inventory.selectedWeaponId = state.inventory.weapons[0].id;
+  if (!targetState.inventory.selectedWeaponId && targetState.inventory.weapons.length) targetState.inventory.selectedWeaponId = targetState.inventory.weapons[0].id;
 
   for (const item of inventory.equipment ?? []) {
     if (!hasImportedValue(item.name)) continue;
-    state.inventory.equipment.push({
+    targetState.inventory.equipment.push({
       id: uid(),
       name: item.name,
       category: item.category || "Equipamento Importado",
@@ -3065,7 +3352,7 @@ function applyImportedPdfPayload(data) {
     });
   }
 
-  applyImportedPdfSkills(data?.skills ?? {});
+  applyImportedPdfSkills(targetState, data?.skills ?? {});
 }
 
 function hasImportedValue(value) {
@@ -3084,16 +3371,16 @@ function findImportedSkill(name) {
   return DB.skills.find((skill) => fold(skill.name) === target) ?? null;
 }
 
-function applyImportedPdfSkills(skills) {
+function applyImportedPdfSkills(targetState, skills) {
   for (const [skillName, finalValue] of Object.entries(skills)) {
     const skill = findImportedSkill(skillName);
     if (!skill || !hasImportedValue(finalValue)) continue;
-    const automaticValue = baseSkillValue(skill) + skillModifiers(skill.name).reduce((sum, mod) => sum + mod.value, 0);
-    state.skills[skill.name].added = Math.max(0, Math.round(num(finalValue, automaticValue) - automaticValue));
+    const automaticValue = baseSkillValue(skill, targetState) + skillModifiers(skill.name, targetState).reduce((sum, mod) => sum + mod.value, 0);
+    targetState.skills[skill.name].added = Math.max(0, Math.round(num(finalValue, automaticValue) - automaticValue));
   }
 }
 
-function pdfImportCalculatedDifferences(calculated) {
+function pdfImportCalculatedDifferences(calculated, targetState) {
   const differences = [];
   const compareNumber = (label, pdfValue, latioValue) => {
     if (!hasImportedValue(pdfValue)) return;
@@ -3105,18 +3392,16 @@ function pdfImportCalculatedDifferences(calculated) {
     if (!hasImportedValue(pdfValue)) return;
     if (compact(pdfValue) !== compact(latioValue)) differences.push({ label, pdf: pdfValue, latio: latioValue });
   };
-  compareNumber("Vida maxima", calculated.hpMax, maxHp());
-  compareNumber("Pontos de magia", calculated.pmMax, maxPm());
-  compareNumber("CA", calculated.ca, caBreakdown().total);
-  compareNumber("Corpo", calculated.body, bodyInfo().body);
-  compareText("Bonus", calculated.bonus, bodyInfo().mod);
-  compareNumber("Esquiva", calculated.dodge, skillFinal("Esquivar"));
+  compareNumber("Vida maxima", calculated.hpMax, maxHp(targetState));
+  compareNumber("Pontos de magia", calculated.pmMax, maxPm(targetState));
+  compareNumber("CA", calculated.ca, caBreakdown(targetState).total);
+  compareNumber("Corpo", calculated.body, bodyInfo(targetState).body);
+  compareText("Bonus", calculated.bonus, bodyInfo(targetState).mod);
+  compareNumber("Esquiva", calculated.dodge, skillFinal("Esquivar", targetState));
   return differences;
 }
 
-function showPdfImportReview(missing, differences, result) {
-  if (missing.length) addError("LAT-PDF-002", missing.join(", "), false);
-  if (differences.length) addError("LAT-PDF-003", differences.map((item) => item.label).join(", "), false);
+function showPdfImportReview(missing, differences, result, fileName) {
   const missingHtml = missing.length
     ? `<h3>Campos nao encontrados</h3><div class="stack">${missing.map((fieldName) => `<span class="chip">${esc(fieldName)}</span>`).join("")}</div>`
     : "";
@@ -3127,24 +3412,55 @@ function showPdfImportReview(missing, differences, result) {
     ? `<p class="muted small">Aviso tecnico: ${esc([result.diagnostics.fieldObjectError, result.diagnostics.annotationError].filter(Boolean).join(" | "))}</p>`
     : "";
   openModal("Revisao da importacao", `
-    <p>O PDF foi importado. Alguns pontos precisam de revisao manual ou apenas conferem os calculos antigos com a ficha Latio.</p>
+    <p><strong>${esc(fileName)}</strong> foi lido, mas ainda não alterou a ficha. Revise os campos antes de continuar.</p>
     <p class="muted small">Origem da leitura: ${esc(result.source)}; campos lidos: ${esc(result.importedValueCount ?? 0)}/${esc(result.fieldCount ?? 0)}.</p>
     ${missingHtml}
     ${differencesHtml}
     ${diagnostics}
-  `, `<button class="button" type="button" data-action="close-modal">Seguir revisando</button>`);
+  `, `<button class="button" type="button" data-action="apply-pdf-import" data-mode="merge">Mesclar</button><button class="danger" type="button" data-action="apply-pdf-import" data-mode="replace">Substituir</button><button class="ghost" type="button" data-action="cancel-import">Cancelar</button>`);
+}
+
+function applyPdfImport(mode) {
+  if (pendingImport?.kind !== "pdf") return addError("LAT-PDF-001", "Importação pendente não encontrada.");
+  const { result, differences, fileName } = pendingImport;
+  createBackup(`Antes de importar PDF ${fileName}`);
+  if (mode === "replace") {
+    state = pendingImport.candidate;
+  } else {
+    const merged = STATE_TOOLS.persistentPayload(state);
+    applyImportedPdfPayload(merged, result.data);
+    merged.meta.started = true;
+    merged.meta.importedFromPdf = pendingImport.candidate.meta.importedFromPdf;
+    state = normalizeState(merged);
+  }
+  if (result.missing.length) addError("LAT-PDF-002", result.missing.join(", "), false);
+  if (differences.length) addError("LAT-PDF-003", differences.map((item) => item.label).join(", "), false);
+  pendingImport = null;
+  closeModal();
+  render();
+  saveStateNow();
+  toast("PDF importado com segurança.");
 }
 
 function applyTheme() {
   document.body.classList.toggle("dark", state.settings.theme === "dark");
 }
 
-document.body.addEventListener("click", handleClick);
-document.body.addEventListener("change", handleChange);
-document.body.addEventListener("input", handleInput);
-document.addEventListener("keydown", handleKeydown);
+function renderFatalDatabaseError(detail) {
+  const app = $("#app");
+  $("#tabs").innerHTML = "";
+  $("#statusLine").textContent = "Falha ao carregar a base de dados";
+  app.innerHTML = `<section class="panel"><div class="section-title"><h2>Não foi possível carregar a ficha</h2></div><p>A base principal está ausente ou inválida. Seus dados salvos não foram alterados.</p><div class="card"><strong>LAT-DB-001 · CRÍTICO</strong><p>${esc(detail)}</p><p class="muted">Restaure os arquivos oficiais da ficha ou use uma cópia íntegra da pasta.</p></div></section>`;
+}
 
-if (!DB) addError("LAT-DB-001");
-applyTheme();
-render();
-if (!state.meta.started) openStartModal();
+if (databaseStartupError) {
+  renderFatalDatabaseError(databaseStartupError);
+} else {
+  document.body.addEventListener("click", handleClick);
+  document.body.addEventListener("change", handleChange);
+  document.body.addEventListener("input", handleInput);
+  document.addEventListener("keydown", handleKeydown);
+  applyTheme();
+  render();
+  if (!state.meta.started) openStartModal();
+}
