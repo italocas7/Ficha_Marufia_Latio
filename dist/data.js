@@ -253,6 +253,11 @@ window.MARUFIA_DB = {
       "name": "Escalar",
       "base": 20,
       "description": "Subir, descer ou atravessar superfícies difíceis. Incluída para compatibilidade com antecedentes do manual."
+    },
+    {
+      "name": "Percepção",
+      "base": 15,
+      "description": "Perceber detalhes, fluxos de energia, auras e manifestações mágicas."
     }
   ],
   "backgrounds": {
@@ -940,43 +945,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você pronuncia um Geas contra um alvo em até 9m. O alvo pode resistir com POD. Se falhar e quebrar a sentença até o início do seu próximo turno, sofre 1d10 de penalidade no teste relacionado à ação quebrada. Consome 2 PM."
+              "text": "Com uma ação bônus, você pronuncia um Geas contra um alvo em até 9m. O alvo pode resistir com POD. Se falhar e quebrar a sentença até o início do seu próximo turno, sofre 1d10 de penalidade no teste relacionado à ação quebrada. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "O Geas também pode prender o deslocamento. Se a sentença envolver movimento, fuga, avanço ou travessia, o alvo perde 3m de movimento ao quebrá-la. Consome 3 PM."
+              "text": "O Geas também pode prender o deslocamento. Se a sentença envolver movimento, fuga, avanço ou travessia, o alvo perde 3m de movimento ao quebrá-la. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A penalidade aumenta para 2d10. O Geas pode durar 2 turnos, consumindo 1 PM por turno mantido. Consome 4 PM."
+              "text": "A penalidade aumenta para 2d10. O Geas pode durar 2 turnos, consumindo 1 PM por turno mantido. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 1,
+              "durationTurns": 2,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Você pode escolher até POD/10 alvos para serem imunes ao seu Geas quando ele envolver uma área, passagem, círculo de bruma ou limite territorial."
+              "text": "Você pode escolher até POD/10 alvos para serem imunes ao seu Geas quando ele envolver uma área, passagem, círculo de bruma ou limite territorial.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Você pode conjurar o Geas como reação quando uma criatura em até 9m declarar uma ação. Se ela falhar em POD, a sentença se prende àquela ação. Para resistir, agora é necessário um sucesso Sólido.A penalidade aumenta para 3d10 Consome 5 PM e 2 PM para manter."
+              "text": "Você pode conjurar o Geas como reação quando uma criatura em até 9m declarar uma ação. Se ela falhar em POD, a sentença se prende àquela ação. Para resistir, agora é necessário um sucesso Sólido.A penalidade aumenta para 3d10 Consome 5 PM e 2 PM para manter.",
+              "activationCost": 5,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "O Geas pode ser fixado em uma área de até 6m de diâmetro. A área se torna terreno difícil para inimigos que tenham falhado na resistência. Dura até 3 turnos. Consome 5 PM e 2 PM para manter."
+              "text": "O Geas pode ser fixado em uma área de até 6m de diâmetro. A área se torna terreno difícil para inimigos que tenham falhado na resistência. Dura até 3 turnos. Consome 5 PM e 2 PM para manter.",
+              "activationCost": 5,
+              "maintenanceCost": 2,
+              "durationTurns": 3,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "Se o alvo quebrar o Geas, além da penalidade, sofre 2d6 de dano mágico Denso.A penalidade aumenta para 4d10 Caso resista ao Geas, não sofre o dano. Consome 6 PM e 2 PM para manter."
+              "text": "Se o alvo quebrar o Geas, além da penalidade, sofre 2d6 de dano mágico Denso.A penalidade aumenta para 4d10 Caso resista ao Geas, não sofre o dano. Consome 6 PM e 2 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "O dano ao quebrar o Geas aumenta para 2d8. Caso o alvo tenha resistido parcialmente, sofre apenas metade do dano se quebrar a sentença. Consome 6 PM e 3 PM para manter."
+              "text": "O dano ao quebrar o Geas aumenta para 2d8. Caso o alvo tenha resistido parcialmente, sofre apenas metade do dano se quebrar a sentença. Consome 6 PM e 3 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A penalidade aumenta para 5d10 e o dano por quebrar o Geas se torna 3d8. Consome 8 PM e 4 PM para manter."
+              "text": "A penalidade aumenta para 5d10 e o dano por quebrar o Geas se torna 3d8. Consome 8 PM e 4 PM para manter.",
+              "activationCost": 8,
+              "maintenanceCost": 4,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "O Geas passa a ser chamado de Geas dos Reis Mortos. Os dados de penalidade se tornam d12, o dano por quebra se torna 4d8, e o usuário recebe +20 em SAB para resistir ou interferir em Mundo através da Densa. Consome 12 PM e 5 PM para manter."
+              "text": "O Geas passa a ser chamado de Geas dos Reis Mortos. Os dados de penalidade se tornam d12, o dano por quebra se torna 4d8, e o usuário recebe +20 em SAB para resistir ou interferir em Mundo através da Densa. Consome 12 PM e 5 PM para manter.",
+              "activationCost": 12,
+              "maintenanceCost": 5,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             }
           ]
         },
@@ -991,43 +1046,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você pode imbuir sua arma com Fio de Awen. Ao acertar um ataque corpo a corpo, causa 1d6 de dano mágico cortante. Se acertar, o alvo fica Marcado pelo Fio até o início do seu próximo turno. Consome 1 PM."
+              "text": "Com uma ação bônus, você pode imbuir sua arma com Fio de Awen. Ao acertar um ataque corpo a corpo, causa 1d6 de dano mágico cortante. Se acertar, o alvo fica Marcado pelo Fio até o início do seu próximo turno. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Você pode lançar o Fio de Awen a até 9m, seguindo a regra normal da Magia Fina. O alvo atingido também pode ser Marcado pelo Fio. Consome 1 PM."
+              "text": "Você pode lançar o Fio de Awen a até 9m, seguindo a regra normal da Magia Fina. O alvo atingido também pode ser Marcado pelo Fio. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "O dano aumenta para 2d6. Quando usar o Passo da Bruma, você pode se mover 3m em vez de 1,5m. Consome 2 PM."
+              "text": "O dano aumenta para 2d6. Quando usar o Passo da Bruma, você pode se mover 3m em vez de 1,5m. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "O bonus do Rastro da Caçada aumenta para +10."
+              "text": "O bonus do Rastro da Caçada aumenta para +10.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "A magia causa 2d8 de dano. Ao imbuir a arma, dura 4 turnos e lhe dá 4 cargas. Consome 4 PM e 1 PM por turno mantido, cada Carga Consome 1 PM. O Eco pode ser usado normalmente; se o Eco acertar um alvo Marcado pelo Fio, você pode renovar a duração da marca até o início do seu próximo turno."
+              "text": "A magia causa 2d8 de dano. Ao imbuir a arma, dura 4 turnos e lhe dá 4 cargas. Consome 4 PM e 1 PM por turno mantido, cada Carga Consome 1 PM. O Eco pode ser usado normalmente; se o Eco acertar um alvo Marcado pelo Fio, você pode renovar a duração da marca até o início do seu próximo turno.",
+              "activationCost": 4,
+              "maintenanceCost": 1,
+              "durationTurns": 4,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Voce pode se Beneficiar do Corte Da Crônica."
+              "text": "Voce pode se Beneficiar do Corte Da Crônica.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A magia causa 3d8 de dano. O Eco causa 3d6. Enquanto a arma estiver imbuída, você pode manter o mesmo alvo Marcado pelo Fio por até 2 turnos, desde que acerte pelo menos um ataque contra ele nesse período."
+              "text": "A magia causa 3d8 de dano. O Eco causa 3d6. Enquanto a arma estiver imbuída, você pode manter o mesmo alvo Marcado pelo Fio por até 2 turnos, desde que acerte pelo menos um ataque contra ele nesse período.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": 2,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Você cria uma arma natural de Magia Fina na mão. No estilo albiônico, essa arma parece uma lâmina, garra, fio, espinho ou arco de bruma (Uma flecha lançada a distância). pode utilizar sua ação bônus para atacar e Causar 3d6 de dano, consome 4 PM e dura a cena."
+              "text": "Você cria uma arma natural de Magia Fina na mão. No estilo albiônico, essa arma parece uma lâmina, garra, fio, espinho ou arco de bruma (Uma flecha lançada a distância). pode utilizar sua ação bônus para atacar e Causar 3d6 de dano, consome 4 PM e dura a cena.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A magia causa 4d8 de dano. Enquanto a arma estiver imbuída, o alvo Marcado pelo Fio não se beneficia de bruma, chuva, folhagem leve ou multidão para impedir testes de Rastrear, Encontrar ou Escutar feitos pelo conjurador. Consome 8 PM e 3 PM por turno."
+              "text": "A magia causa 4d8 de dano. Enquanto a arma estiver imbuída, o alvo Marcado pelo Fio não se beneficia de bruma, chuva, folhagem leve ou multidão para impedir testes de Rastrear, Encontrar ou Escutar feitos pelo conjurador. Consome 8 PM e 3 PM por turno.",
+              "activationCost": 8,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Atacar com a arma natural da Magia Fina é considerado um ataque extra. O dano da arma criada aumenta para 4d6, consome 5 PM e dura a cena. O Eco causa 4d6, consome 3 PM, e pode renovar o Fio mesmo se o alvo tentar fugir, esconder-se ou atravessar terreno difícil."
+              "text": "Atacar com a arma natural da Magia Fina é considerado um ataque extra. O dano da arma criada aumenta para 4d6, consome 5 PM e dura a cena. O Eco causa 4d6, consome 3 PM, e pode renovar o Fio mesmo se o alvo tentar fugir, esconder-se ou atravessar terreno difícil.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             }
           ]
         }
@@ -1135,43 +1240,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Aumenta a CA em +5. Além disso, recebe +5 de Vigor Efetivo. Se estiver montado ou se mover pelo menos 3m em linha reta antes de acertar um ataque corpo a corpo, causa +2 de dano físico no primeiro alvo atingido. Consome 1 PM."
+              "text": "Aumenta a CA em +5. Além disso, recebe +5 de Vigor Efetivo. Se estiver montado ou se mover pelo menos 3m em linha reta antes de acertar um ataque corpo a corpo, causa +2 de dano físico no primeiro alvo atingido. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Reduz 1d6 de dano mágico. Enquanto o Juramento estiver ativo, o Vigor Efetivo também pode ser usado como bônus ou reação para não ser derrubado, empurrado ou desmontado. Consome 1 PM para ativar e 1 pm para ativar o efeito do vigor efetivo."
+              "text": "Reduz 1d6 de dano mágico. Enquanto o Juramento estiver ativo, o Vigor Efetivo também pode ser usado como bônus ou reação para não ser derrubado, empurrado ou desmontado. Consome 1 PM para ativar e 1 pm para ativar o efeito do vigor efetivo.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "Aumenta a CA em +10. O Vigor Efetivo permanece +10. O dano de investida ou golpe montado aumenta para +3. Consome 2 PM."
+              "text": "Aumenta a CA em +10. O Vigor Efetivo permanece +10. O dano de investida ou golpe montado aumenta para +3. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Reduz 1d6 de dano físico. Se essa redução zerar o dano de um ataque corpo a corpo, o personagem não pode ser movido, derrubado ou desmontado por esse ataque, salvo efeito especial maior."
+              "text": "Reduz 1d6 de dano físico. Se essa redução zerar o dano de um ataque corpo a corpo, o personagem não pode ser movido, derrubado ou desmontado por esse ataque, salvo efeito especial maior.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Aumenta a CA em +15. O Vigor Efetivo permanece em +10. O primeiro ataque corpo a corpo feito após investida, movimento de 3m ou ataque montado causa +4 de dano físico. Consome 3 PM e 1 PM para manter."
+              "text": "Aumenta a CA em +15. O Vigor Efetivo permanece em +10. O primeiro ataque corpo a corpo feito após investida, movimento de 3m ou ataque montado causa +4 de dano físico. Consome 3 PM e 1 PM para manter.",
+              "activationCost": 3,
+              "maintenanceCost": 1,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Reduz 2d6 de dano mágico e 1d6 de dano físico. Seu deslocamento é aumentado em 3 metros."
+              "text": "Reduz 2d6 de dano mágico e 1d6 de dano físico. Seu deslocamento é aumentado em 3 metros.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "Aumenta a CA em +20. O Vigor Efetivo aumenta para +15. Consome 4 PM."
+              "text": "Aumenta a CA em +20. O Vigor Efetivo aumenta para +15. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Reduz 2d6 de dano mágico e 2d6 de dano físico. Em investidas o dano aumenta para +5 de dano físico."
+              "text": "Reduz 2d6 de dano mágico e 2d6 de dano físico. Em investidas o dano aumenta para +5 de dano físico.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "Aumenta a CA em +25. O Vigor Efetivo aumenta para +20. Consome 6 PM."
+              "text": "Aumenta a CA em +25. O Vigor Efetivo aumenta para +20. Consome 6 PM.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Aumenta a CA em +30 e reduz todo dano em 10. O Vigor Efetivo permanece +20. Uma vez por rodada, se acertar um ataque corpo a corpo após investida, movimento de 3m ou ataque montado, causa +6 de dano físico. Consome 8 PM e 3 PM para manter."
+              "text": "Aumenta a CA em +30 e reduz todo dano em 10. O Vigor Efetivo permanece +20. Uma vez por rodada, se acertar um ataque corpo a corpo após investida, movimento de 3m ou ataque montado, causa +6 de dano físico. Consome 8 PM e 3 PM para manter.",
+              "activationCost": 8,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         },
@@ -1186,43 +1341,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Depois de acertar um ataque físico corpo a corpo, você pode gastar sua ação bônus para liberar o Rompante da Linha. O alvo sofre 1d8 de dano contundente mágico. Se você estava montado ou se moveu pelo menos 3m em linha reta antes do ataque, o alvo faz CON; se falhar, é empurrado 1,5m. Consome 1 PM."
+              "text": "Depois de acertar um ataque físico corpo a corpo, você pode gastar sua ação bônus para liberar o Rompante da Linha. O alvo sofre 1d8 de dano contundente mágico. Se você estava montado ou se moveu pelo menos 3m em linha reta antes do ataque, o alvo faz CON; se falhar, é empurrado 1,5m. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Você pode projetar o Rompante até 9m como ação bônus, sem precisar acertar com arma. Nesse caso, causa apenas o dano da Magia Impacto e não soma dano de arma. Consome 1 PM."
+              "text": "Você pode projetar o Rompante até 9m como ação bônus, sem precisar acertar com arma. Nesse caso, causa apenas o dano da Magia Impacto e não soma dano de arma. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "O dano aumenta para 2d8. Se o Rompante foi usado após investida ou ataque montado, o empurrão aumenta para 3m em falha de CON. Consome 2 PM."
+              "text": "O dano aumenta para 2d8. Se o Rompante foi usado após investida ou ataque montado, o empurrão aumenta para 3m em falha de CON. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Ao acertar o ataque e ativar o Rompante, o alvo deve passar em CON ou fica atordoado por 1 turno. Consome 3 PM."
+              "text": "Ao acertar o ataque e ativar o Rompante, o alvo deve passar em CON ou fica atordoado por 1 turno. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": 1,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "O dano aumenta para 3d8. Você pode declarar Quebra de Guarda: o alvo sofre -10 no teste de Esquiva contra esse golpe e não recebe benefício de cobertura parcial de escudos, fileiras ou barreiras leves. Consome 4 PM."
+              "text": "O dano aumenta para 3d8. Você pode declarar Quebra de Guarda: o alvo sofre -10 no teste de Esquiva contra esse golpe e não recebe benefício de cobertura parcial de escudos, fileiras ou barreiras leves. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Você pode usar o Rompimento de Linha: em vez de atingir um único alvo, libera uma linha de choque de 4,5m. Escolha um alvo principal para sofrer o dano completo; os demais fazem receberão metade do dano, caso passem no teste de CON não serão nem empurrados 3m e nem receberão esse dano. Consome 5 PM."
+              "text": "Você pode usar o Rompimento de Linha: em vez de atingir um único alvo, libera uma linha de choque de 4,5m. Escolha um alvo principal para sofrer o dano completo; os demais fazem receberão metade do dano, caso passem no teste de CON não serão nem empurrados 3m e nem receberão esse dano. Consome 5 PM.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "O dano aumenta para 4d8. Se o alvo principal for empurrado contra parede, escudo, criatura ou obstáculo, sofre +2 de dano contundente físico. Consome 6 PM."
+              "text": "O dano aumenta para 4d8. Se o alvo principal for empurrado contra parede, escudo, criatura ou obstáculo, sofre +2 de dano contundente físico. Consome 6 PM.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Com uma ação padrão, você pode realizar um Rompante pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Você é empurrado 1,5m sem provocar ataque de oportunidade. Consome 8 PM."
+              "text": "Com uma ação padrão, você pode realizar um Rompante pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Você é empurrado 1,5m sem provocar ataque de oportunidade. Consome 8 PM.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "O dano aumenta para 5d8, ou 5d10 se usado com ação padrão. A linha do Rompimento aumenta para 6m. Consome 10 PM.Se o alvo principal for empurrado contra parede, escudo, criatura ou obstáculo, sofre +4 de dano contundente físico."
+              "text": "O dano aumenta para 5d8, ou 5d10 se usado com ação padrão. A linha do Rompimento aumenta para 6m. Consome 10 PM.Se o alvo principal for empurrado contra parede, escudo, criatura ou obstáculo, sofre +4 de dano contundente físico.",
+              "activationCost": 10,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "O empurrão em falha de CON se torna 4,5m, o teste para resistir é dificultado em 20, e se usado com ação padrão os dados se tornam d12. Consome 12 PM..Se o alvo principal for empurrado contra parede, escudo, criatura ou obstáculo, sofre +6 de dano contundente físico."
+              "text": "O empurrão em falha de CON se torna 4,5m, o teste para resistir é dificultado em 20, e se usado com ação padrão os dados se tornam d12. Consome 12 PM..Se o alvo principal for empurrado contra parede, escudo, criatura ou obstáculo, sofre +6 de dano contundente físico.",
+              "activationCost": 12,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         }
@@ -1330,47 +1535,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você projeta o Edito do Céu em uma área de 4m de diâmetro. Alvos afetados resistem com POD. Se falharem, sofrem 1d10 de penalidade em todas as ações ligadas ao Ato Medido até o início do seu próximo turno. Consome 2 PM."
+              "text": "Com uma ação bônus, você projeta o Edito do Céu em uma área de 4m de diâmetro. Alvos afetados resistem com POD. Se falharem, sofrem 1d10 de penalidade em todas as ações ligadas ao Ato Medido até o início do seu próximo turno. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Alvos que falharam na resistência têm o movimento reduzido em 3m enquanto permanecerem na área do Edito. Consome 3 PM."
+              "text": "Alvos que falharam na resistência têm o movimento reduzido em 3m enquanto permanecerem na área do Edito. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A penalidade aumenta para 2d10. O Edito pode ser lançado em cone de 6m ou área de 4m de diâmetro. Dura 2 turnos, consumindo 1 PM por turno mantido. Consome 4 PM."
+              "text": "A penalidade aumenta para 2d10. O Edito pode ser lançado em cone de 6m ou área de 4m de diâmetro. Dura 2 turnos, consumindo 1 PM por turno mantido. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 1,
+              "durationTurns": 2,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Você pode escolher até POD/10 alvos para serem imunes ao Edito."
+              "text": "Você pode escolher até POD/10 alvos para serem imunes ao Edito.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Você pode usar o Edito como reação quando um alvo declarar uma ação ligada ao Ato Medido escolhido. Se ele falhar em POD, sofre 3d10 de penalidade naquela ação e continua afetado pelo Edito enquanto permanecer na área. O Edito também interfere automaticamente em Mundo: as propriedades do Mundo são suspensas em uma área de 4m de raio até o início do seu próximo turno. Consome 5 PM e 2 PM para manter."
+              "text": "Você pode usar o Edito como reação quando um alvo declarar uma ação ligada ao Ato Medido escolhido. Se ele falhar em POD, sofre 3d10 de penalidade naquela ação e continua afetado pelo Edito enquanto permanecer na área. O Edito também interfere automaticamente em Mundo: as propriedades do Mundo são suspensas em uma área de 4m de raio até o início do seu próximo turno. Consome 5 PM e 2 PM para manter.",
+              "activationCost": 5,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "A área afetada se torna terreno difícil para alvos que falharam na resistência. O cone aumenta para 10m e a área circular aumenta para 8m de diâmetro. O Edito dura 3 turnos. Consome"
-            },
-            {
-              "level": 5,
-              "text": "PM e 2 PM para manter."
+              "text": "A área afetada se torna terreno difícil para alvos que falharam na resistência. O cone aumenta para 10m e a área circular aumenta para 8m de diâmetro. O Edito dura 3 turnos. Consome PM e 2 PM para manter.",
+              "activationCost": 2,
+              "maintenanceCost": 2,
+              "durationTurns": 3,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A penalidade aumenta para 4d10. Uma vez por turno, se um alvo falhar em uma ação por causa do Edito, sofre 2d6 de dano mágico Denso. Consome 6 PM e 2 PM para manter."
+              "text": "A penalidade aumenta para 4d10. Uma vez por turno, se um alvo falhar em uma ação por causa do Edito, sofre 2d6 de dano mágico Denso. Consome 6 PM e 2 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "O dano aumenta para 2d8. A interferência em Mundo aumenta para 6m de raio e permanece enquanto o Edito estiver mantido. A área circular do Edito aumenta para 12m de diâmetro e o cone para 18m. Consome 6 PM e 3 PM para manter."
+              "text": "O dano aumenta para 2d8. A interferência em Mundo aumenta para 6m de raio e permanece enquanto o Edito estiver mantido. A área circular do Edito aumenta para 12m de diâmetro e o cone para 18m. Consome 6 PM e 3 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A penalidade aumenta para 5d10 e o dano para 3d8. A interferência em Mundo aumenta para 7,5m de raio. Dentro dessa área, o Mundo perde suas propriedades de dificuldade, bônus, redução de custo e aumento de dados enquanto o Edito estiver mantido. Consome 8 PM e 4 PM para manter."
+              "text": "A penalidade aumenta para 5d10 e o dano para 3d8. A interferência em Mundo aumenta para 7,5m de raio. Dentro dessa área, o Mundo perde suas propriedades de dificuldade, bônus, redução de custo e aumento de dados enquanto o Edito estiver mantido. Consome 8 PM e 4 PM para manter.",
+              "activationCost": 8,
+              "maintenanceCost": 4,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Os dados de penalidade se tornam d12 e o dano aumenta para 4d8. A interferência em Mundo aumenta para 9m de raio. Dentro dessa área, o Mundo perde suas propriedades principais e suas habilidades únicas enquanto o Edito estiver mantido. Consome 12 PM e 5 PM para manter."
+              "text": "Os dados de penalidade se tornam d12 e o dano aumenta para 4d8. A interferência em Mundo aumenta para 9m de raio. Dentro dessa área, o Mundo perde suas propriedades principais e suas habilidades únicas enquanto o Edito estiver mantido. Consome 12 PM e 5 PM para manter.",
+              "activationCost": 12,
+              "maintenanceCost": 5,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             }
           ]
         },
@@ -1385,43 +1636,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Depois de acertar um ataque físico corpo a corpo com machado, arma longa, escudo, punho pé ou cabo de arma, você pode gastar sua ação bônus para causar 1d8 de dano contundente mágico. Se o alvo estiver usando escudo, ele faz CON; se falhar, sofre -2 no próximo Bloqueio ou -5 no próximo Aparar contra você até o início do seu próximo turno. Consome 1 PM."
+              "text": "Depois de acertar um ataque físico corpo a corpo com machado, arma longa, escudo, punho pé ou cabo de arma, você pode gastar sua ação bônus para causar 1d8 de dano contundente mágico. Se o alvo estiver usando escudo, ele faz CON; se falhar, sofre -2 no próximo Bloqueio ou -5 no próximo Aparar contra você até o início do seu próximo turno. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Você pode lançar a Impacto até 9m. Se usada à distância, causa apenas o dano da Impacto; o efeito contra escudo ocorre quando o golpe for transmitido por contato físico, arma, escudo, convés, porta ou superfície rígida. Consome 1 PM."
+              "text": "Você pode lançar a Impacto até 9m. Se usada à distância, causa apenas o dano da Impacto; o efeito contra escudo ocorre quando o golpe for transmitido por contato físico, arma, escudo, convés, porta ou superfície rígida. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A magia causa 2d8 de dano. Contra alvo usando escudo, se ele falhar em CON, o próximo ataque seu contra ele ignora 5 de CA. Consome 2 PM."
+              "text": "A magia causa 2d8 de dano. Contra alvo usando escudo, se ele falhar em CON, o próximo ataque seu contra ele ignora 5 de CA. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Ao acertar o Rugido, o alvo faz CON. Se falhar, fica atordoado por 1 turno. Consome 3 PM."
+              "text": "Ao acertar o Rugido, o alvo faz CON. Se falhar, fica atordoado por 1 turno. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": 1,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "A magia causa 3d8 de dano. Você pode escolher entre dificultar Esquiva em 10 ou aplicar Quebra-Escudo, fazendo o alvo sofrer -4 no Bloqueio ou -10 em Aparar contra o próximo ataque. Consome 4 PM."
+              "text": "A magia causa 3d8 de dano. Você pode escolher entre dificultar Esquiva em 10 ou aplicar Quebra-Escudo, fazendo o alvo sofrer -4 no Bloqueio ou -10 em Aparar contra o próximo ataque. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Você pode descarregar o Rugido em uma área curta de 3m de diâmetro. Criaturas escolhidas fazem CON; em falha, são empurradas 1,5m e sofrem metade do dano. Um alvo principal sofre dano completo. Alvos usando escudo também sofrem o efeito de Quebra-Escudo. Consome 5 PM."
+              "text": "Você pode descarregar o Rugido em uma área curta de 3m de diâmetro. Criaturas escolhidas fazem CON; em falha, são empurradas 1,5m e sofrem metade do dano. Um alvo principal sofre dano completo. Alvos usando escudo também sofrem o efeito de Quebra-Escudo. Consome 5 PM.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A magia causa 4d8 de dano. Contra alvo usando escudo, se o ataque acertar, causa +2d6 de dano físico. Consome 6 PM."
+              "text": "A magia causa 4d8 de dano. Contra alvo usando escudo, se o ataque acertar, causa +2d6 de dano físico. Consome 6 PM.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Com uma ação padrão, você realiza um Rugido pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Consome 8 PM."
+              "text": "Com uma ação padrão, você realiza um Rugido pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Consome 8 PM.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A magia causa 5d8, ou 5d10 com ação padrão. Contra alvo usando escudo, o efeito de Quebra-Escudo passa a ser -6 no Bloqueio ou -15 em Aparar. Consome 10 PM."
+              "text": "A magia causa 5d8, ou 5d10 com ação padrão. Contra alvo usando escudo, o efeito de Quebra-Escudo passa a ser -6 no Bloqueio ou -15 em Aparar. Consome 10 PM.",
+              "activationCost": 10,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "O empurrão em falha de CON se torna 4,5m, o teste para resistir é dificultado em 20, e se usar ação padrão os dados se tornam d12. Se o alvo estiver usando escudo comum e falhar em CON, o escudo se quebra. Consome 12 PM."
+              "text": "O empurrão em falha de CON se torna 4,5m, o teste para resistir é dificultado em 20, e se usar ação padrão os dados se tornam d12. Se o alvo estiver usando escudo comum e falhar em CON, o escudo se quebra. Consome 12 PM.",
+              "activationCost": 12,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         },
@@ -1436,47 +1737,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Aumenta sua CA em +5. Você recebe Vigor Efetivo +5. Consome 1 PM."
+              "text": "Aumenta sua CA em +5. Você recebe Vigor Efetivo +5. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Reduz 1d6 de dano mágico em você. O Vigor Efetivo pode ser usado em testes físicos de resistência, força corporal e disputa de posição. Consome 1 PM."
+              "text": "Reduz 1d6 de dano mágico em você. O Vigor Efetivo pode ser usado em testes físicos de resistência, força corporal e disputa de posição. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "Aumenta sua CA em +10. O Vigor Efetivo aumenta para +10. Consome 2 PM."
+              "text": "Aumenta sua CA em +10. O Vigor Efetivo aumenta para +10. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Reduz 1d6 de dano físico em você. Se essa redução zerar o dano de um ataque corpo a corpo, você permanece firme contra empurrão, queda ou deslocamento causado por esse ataque."
+              "text": "Reduz 1d6 de dano físico em você. Se essa redução zerar o dano de um ataque corpo a corpo, você permanece firme contra empurrão, queda ou deslocamento causado por esse ataque.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Aumenta sua CA em +15. O Vigor Efetivo aumenta para +15. Se estiver usando, arma contundente, arma de haste ou arma cultural Egrýmir, o primeiro teste para Derrubar feito por você na rodada recebe +10. Consome 3 PM e 1 PM para manter."
+              "text": "Aumenta sua CA em +15. O Vigor Efetivo aumenta para +15. Se estiver usando, arma contundente, arma de haste ou arma cultural Egrýmir, o primeiro teste para Derrubar feito por você na rodada recebe +10. Consome 3 PM e 1 PM para manter.",
+              "activationCost": 3,
+              "maintenanceCost": 1,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Reduz 2d6 de dano mágico e 1d6 de dano físico em você. Uma vez por rodada, se vencer uma disputa física usando Vigor Efetivo, pode se mover 3m sem provocar ataque de oportunidade do alvo envolvido na disputa. Consome 3 PM e 1 PM para manter."
+              "text": "Reduz 2d6 de dano mágico e 1d6 de dano físico em você. Uma vez por rodada, se vencer uma disputa física usando Vigor Efetivo, pode se mover 3m sem provocar ataque de oportunidade do alvo envolvido na disputa. Consome 3 PM e 1 PM para manter.",
+              "activationCost": 3,
+              "maintenanceCost": 1,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "Aumenta sua CA em +20. O Vigor Efetivo aumenta para +20. Se você acertar um alvo com martelo, arma contundente, arma de haste ou arma cultural Egrýmir depois de usar Vigor Efetivo na rodada, o alvo sofre -10 para resistir a Derrubar até o início do próximo turno dele. Consome 4 PM."
+              "text": "Aumenta sua CA em +20. O Vigor Efetivo aumenta para +20. Se você acertar um alvo com martelo, arma contundente, arma de haste ou arma cultural Egrýmir depois de usar Vigor Efetivo na rodada, o alvo sofre -10 para resistir a Derrubar até o início do próximo turno dele. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Reduz 2d6 de dano mágico e 2d6 de dano físico em você. Você pode erguer o Escudo da Terra, uma barreira mágica compactada de 3m, que concede cobertura total a quem estiver atrás dela. O Escudo tem 15+4d8 PV. Criar o Escudo exige ação de movimento. O efeito principal consome 4 PM e"
-            },
-            {
-              "level": 2,
-              "text": "PM para manter; o Escudo consome 6 PM e 3 PM para manter."
+              "text": "Reduz 2d6 de dano mágico e 2d6 de dano físico em você. Você pode erguer o Escudo da Terra, uma barreira mágica compactada de 3m, que concede cobertura total a quem estiver atrás dela. O Escudo tem 15+4d8 PV. Criar o Escudo exige ação de movimento. O efeito principal consome 4 PM e PM para manter; o Escudo consome 6 PM e 3 PM para manter.",
+              "activationCost": 4,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "movement",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "Aumenta sua CA em +25. O Vigor Efetivo aumenta para +25. Uma vez por rodada, se você derrubar um alvo com martelo, arma contundente, arma de haste ou arma cultural Egrýmir, seu próximo teste de contra esse alvo ou grupo recebe +20 até o fim da cena. Consome 6 PM e 1 PM para manter."
+              "text": "Aumenta sua CA em +25. O Vigor Efetivo aumenta para +25. Uma vez por rodada, se você derrubar um alvo com martelo, arma contundente, arma de haste ou arma cultural Egrýmir, seu próximo teste de contra esse alvo ou grupo recebe +20 até o fim da cena. Consome 6 PM e 1 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 1,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Aumenta sua CA em +30 e reduz todo dano sofrido por você em 10. O Vigor Efetivo permanece +25. O Escudo da Terra pode ter até 6m e 20+6d8 PV. Criar o Escudo exige ação de movimento. O efeito principal consome 8 PM e 3 PM para manter; o Escudo consome 10 PM e 4 PM para manter."
+              "text": "Aumenta sua CA em +30 e reduz todo dano sofrido por você em 10. O Vigor Efetivo permanece +25. O Escudo da Terra pode ter até 6m e 20+6d8 PV. Criar o Escudo exige ação de movimento. O efeito principal consome 8 PM e 3 PM para manter; o Escudo consome 10 PM e 4 PM para manter.",
+              "activationCost": 8,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "movement",
+              "automation": "full"
             }
           ]
         }
@@ -1719,43 +2066,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você imbui sua arma com Energia Fina, causando 1d6 de dano cortante mágico. Se tiver realizado Deslocamento Total neste round e acertar o ataque, pode usar Passo do Vento, movendo-se 2m sem provocar ataque de oportunidade do alvo atingido. Consome 1 PM."
+              "text": "Com uma ação bônus, você imbui sua arma com Energia Fina, causando 1d6 de dano cortante mágico. Se tiver realizado Deslocamento Total neste round e acertar o ataque, pode usar Passo do Vento, movendo-se 2m sem provocar ataque de oportunidade do alvo atingido. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Você pode lançar a Magia Fina até 9m. Se tiver realizado Deslocamento Total, pode usar o Passo do Vento antes ou depois do lançamento. Consome 1 PM."
+              "text": "Você pode lançar a Magia Fina até 9m. Se tiver realizado Deslocamento Total, pode usar o Passo do Vento antes ou depois do lançamento. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A magia causa 2d6 de dano. O Passo do Vento aumenta para 4m. Consome 2 PM."
+              "text": "A magia causa 2d6 de dano. O Passo do Vento aumenta para 4m. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "—"
+              "text": "—",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "A magia causa 2d8 de dano e a arma pode permanecer imbuída com 4 cargas. Enquanto a arma estiver imbuída, você só pode usar Passo do Vento uma vez por rodada. Consome 4 PM e 1 PM por turno mantido."
+              "text": "A magia causa 2d8 de dano e a arma pode permanecer imbuída com 4 cargas. Enquanto a arma estiver imbuída, você só pode usar Passo do Vento uma vez por rodada. Consome 4 PM e 1 PM por turno mantido.",
+              "activationCost": 4,
+              "maintenanceCost": 1,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "—"
+              "text": "—",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A magia causa 3d8 de dano. O Eco funciona normalmente; se o Eco acertar depois de Deslocamento Total, ele também pode ativar Passo do Vento, mas ainda respeitando o limite de uma vez por rodada. O passo de vento aumenta para 6m"
+              "text": "A magia causa 3d8 de dano. O Eco funciona normalmente; se o Eco acertar depois de Deslocamento Total, ele também pode ativar Passo do Vento, mas ainda respeitando o limite de uma vez por rodada. O passo de vento aumenta para 6m",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Você cria uma arma natural de Magia Fina na mão. No Estilo Slawio, ela toma forma de sabre de vento, machado de ar, garra de estepe ou lâmina de neve. A magia causa 4d8 de dano. Quando usa Passo do Vento, você"
+              "text": "Você cria uma arma natural de Magia Fina na mão. No Estilo Slawio, ela toma forma de sabre de vento, machado de ar, garra de estepe ou lâmina de neve. A magia causa 4d8 de dano. Quando usa Passo do Vento, você",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "também recebe +5 no próximo teste de Rastrear, Encontrar ou Encontrar contra o alvo atingido até o fim da cena. Consome 8 PM e 3 PM por turno. A arma natural da Magia Fina funciona como ataque extra. O"
+              "text": "também recebe +5 no próximo teste de Rastrear, Encontrar ou Encontrar contra o alvo atingido até o fim da cena. Consome 8 PM e 3 PM por turno. A arma natural da Magia Fina funciona como ataque extra. O",
+              "activationCost": 8,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Passo do Vento pode ser usado após esse ataque extra, ainda respeitando o limite de uma vez por rodada."
+              "text": "Passo do Vento pode ser usado após esse ataque extra, ainda respeitando o limite de uma vez por rodada.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             }
           ]
         },
@@ -1770,47 +2167,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Aumenta sua CA em +5. Você ganha também 1 Carga e recupera a cada turno. Se estiver em Formação de Vigília, pode usar 1 Carga para dar +3 de CA a um aliado da Formação de Vigília. Consome 1 PM e mais 1 PM para ativar a Carga."
+              "text": "Aumenta sua CA em +5. Você ganha também 1 Carga e recupera a cada turno. Se estiver em Formação de Vigília, pode usar 1 Carga para dar +3 de CA a um aliado da Formação de Vigília. Consome 1 PM e mais 1 PM para ativar a Carga.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Reduz 1d6 de dano mágico em você. Em Formação de Vigília, você ganha a habilidade “Sofrer com o Clã” podendo reduzir 1d6 de dano mágico sofrido por um aliado. Consome 1 PM e mais 1 PM para ativar a Carga."
+              "text": "Reduz 1d6 de dano mágico em você. Em Formação de Vigília, você ganha a habilidade “Sofrer com o Clã” podendo reduzir 1d6 de dano mágico sofrido por um aliado. Consome 1 PM e mais 1 PM para ativar a Carga.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "Aumenta sua CA em +10. O bônus de Aparar pelo Clã aumenta para +5 de CA contra um ataque. Consome 2 PM e mais 1 PM para ativar a Carga."
+              "text": "Aumenta sua CA em +10. O bônus de Aparar pelo Clã aumenta para +5 de CA contra um ataque. Consome 2 PM e mais 1 PM para ativar a Carga.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Você consegue reduzir 1d6 de dano físico em você. Em Formação de Vigília, pode usar 1 Carga para reduzir 1d6 de dano físico sofrido por um aliado. Consome 2 PM e mais 2 PM para ativar a Carga."
+              "text": "Você consegue reduzir 1d6 de dano físico em você. Em Formação de Vigília, pode usar 1 Carga para reduzir 1d6 de dano físico sofrido por um aliado. Consome 2 PM e mais 2 PM para ativar a Carga.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Aumenta sua CA em +15. Agora você tem 2 Cargas que se recuperam a cada turno. Quando usar Aparar pelo Clã, o aliado recebe +10 de CA contra um ataque. Consome 3 PM e 1 PM para manter e você gasta 2 PM para ativar cada Carga."
+              "text": "Aumenta sua CA em +15. Agora você tem 2 Cargas que se recuperam a cada turno. Quando usar Aparar pelo Clã, o aliado recebe +10 de CA contra um ataque. Consome 3 PM e 1 PM para manter e você gasta 2 PM para ativar cada Carga.",
+              "activationCost": 3,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Reduz 2d6 (ou 8) de dano mágico e 1d6 de dano físico em você. Ao usar a Sofrer com o Clã, você pode reduzir 1d6+4 de dano mágico de seu aliado. Consome 3 PM e 1 PM para manter e você gasta 2 PM para ativar cada Carga."
+              "text": "Reduz 2d6 (ou 8) de dano mágico e 1d6 de dano físico em você. Ao usar a Sofrer com o Clã, você pode reduzir 1d6+4 de dano mágico de seu aliado. Consome 3 PM e 1 PM para manter e você gasta 2 PM para ativar cada Carga.",
+              "activationCost": 3,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "Aumenta sua CA em +20. O bônus de Aparar pelo Clã aumenta para +15 de CA. Se você proteger um aliado com Aparar pelo Clã e o ataque errar por causa deste bônus, você recebe +5 no próximo teste de ataque até o fim do seu próximo turno contra esse alvo. Consome 4 PM e 1 PM para manter e você gasta 2 PM para ativar cada Carga."
+              "text": "Aumenta sua CA em +20. O bônus de Aparar pelo Clã aumenta para +15 de CA. Se você proteger um aliado com Aparar pelo Clã e o ataque errar por causa deste bônus, você recebe +5 no próximo teste de ataque até o fim do seu próximo turno contra esse alvo. Consome 4 PM e 1 PM para manter e você gasta 2 PM para ativar cada Carga.",
+              "activationCost": 4,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Reduz 2d6 de dano mágico e 2d6 de dano físico. O bônus de Sofrer pelo Clã aumenta para 1d6+4 de dano físico. Consome"
-            },
-            {
-              "level": 5,
-              "text": "PM e 1 PM para manter e você gasta 3 PM para ativar cada Carga."
+              "text": "Reduz 2d6 de dano mágico e 2d6 de dano físico. O bônus de Sofrer pelo Clã aumenta para 1d6+4 de dano físico. Consome PM e 1 PM para manter e você gasta 3 PM para ativar cada Carga.",
+              "activationCost": 1,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "Aumenta sua CA em +25. O Aparar pelo Clã aumenta para +20 de CA. 6 PM e 1 PM para manter e você gasta 3 PM para ativar cada Carga."
+              "text": "Aumenta sua CA em +25. O Aparar pelo Clã aumenta para +20 de CA. 6 PM e 1 PM para manter e você gasta 3 PM para ativar cada Carga.",
+              "activationCost": 6,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Aumenta sua CA em +30 e reduz todo dano em 10. Agora você tem 3 Cargas por Turno. O Aparar pelo Clã aumenta para +25 e o Sofrer pelo Clã reduz todo dano em 10. Uma vez por rodada, se um aliado em até 3m tiver o PV reduzido a 0 por causa de algum dano, você pode usar sua reação e gastar o valor de ativação da magia (8 PM) para reduzir o dano recebido por ele em 2d8+2. Se isso impedir que ele chegue a 0 PV, ele permanece de pé. Consome 8 PM, 3 PM para manter e 4 PM para ativar cada Carga."
+              "text": "Aumenta sua CA em +30 e reduz todo dano em 10. Agora você tem 3 Cargas por Turno. O Aparar pelo Clã aumenta para +25 e o Sofrer pelo Clã reduz todo dano em 10. Uma vez por rodada, se um aliado em até 3m tiver o PV reduzido a 0 por causa de algum dano, você pode usar sua reação e gastar o valor de ativação da magia (8 PM) para reduzir o dano recebido por ele em 2d8+2. Se isso impedir que ele chegue a 0 PV, ele permanece de pé. Consome 8 PM, 3 PM para manter e 4 PM para ativar cada Carga.",
+              "activationCost": 8,
+              "maintenanceCost": 4,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             }
           ]
         }
@@ -2030,43 +2473,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você imbui sua arma com Energia Fina, causando 1d6 de dano cortante mágico. Se estiver em formação e acertar o ataque, cria uma Brecha de Coorte +5 de acerto no alvo. Consome 1 PM."
+              "text": "Com uma ação bônus, você imbui sua arma com Energia Fina, causando 1d6 de dano cortante mágico. Se estiver em formação e acertar o ataque, cria uma Brecha de Coorte +5 de acerto no alvo. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Você pode lançar a Magia Fina até 9m. A Brecha continua sendo +5, mas só pode ser criada se o alvo estiver engajado com um aliado seu em formação ou dentro da linha de combate da sua formação. Consome 1 PM."
+              "text": "Você pode lançar a Magia Fina até 9m. A Brecha continua sendo +5, mas só pode ser criada se o alvo estiver engajado com um aliado seu em formação ou dentro da linha de combate da sua formação. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A magia causa 2d6 de dano. A Brecha de Coorte aumenta para +10. Consome 2 PM."
+              "text": "A magia causa 2d6 de dano. A Brecha de Coorte aumenta para +10. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "-"
+              "text": "-",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "A magia causa 2d8 de dano. Ao imbuir, dura 4 turnos. A Brecha de Coorte aumenta para +15. Você ainda só pode criar uma Brecha por rodada. Consome 4 PM e 1 PM por turno mantido."
+              "text": "A magia causa 2d8 de dano. Ao imbuir, dura 4 turnos. A Brecha de Coorte aumenta para +15. Você ainda só pode criar uma Brecha por rodada. Consome 4 PM e 1 PM por turno mantido.",
+              "activationCost": 4,
+              "maintenanceCost": 1,
+              "durationTurns": 4,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "A Brecha permanece +15. Além disso, o alvo sofre -5 em Esquivar contra o ataque que consumir a Brecha. Esse redutor só vale para esse ataque específico."
+              "text": "A Brecha permanece +15. Além disso, o alvo sofre -5 em Esquivar contra o ataque que consumir a Brecha. Esse redutor só vale para esse ataque específico.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A magia causa 3d8 de dano. A Brecha de Coorte permanece +15. Se o aliado consumir a Brecha e acertar o alvo, ele pode se mover até o limite de seu movimento disponível sem provocar ataque de oportunidade desse alvo. Esse movimento ainda provoca ataques de oportunidade de outros inimigos."
+              "text": "A magia causa 3d8 de dano. A Brecha de Coorte permanece +15. Se o aliado consumir a Brecha e acertar o alvo, ele pode se mover até o limite de seu movimento disponível sem provocar ataque de oportunidade desse alvo. Esse movimento ainda provoca ataques de oportunidade de outros inimigos.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Você cria uma arma natural de Magia Fina na mão. No Estilo Romanius, ela assume forma de gládio, estilete, ponta de pilum, lâmina curta ou fio de cinzel. A Brecha aumenta para +20, e o redutor de Esquivar aumenta para -10 contra o ataque que consumir a Brecha."
+              "text": "Você cria uma arma natural de Magia Fina na mão. No Estilo Romanius, ela assume forma de gládio, estilete, ponta de pilum, lâmina curta ou fio de cinzel. A Brecha aumenta para +20, e o redutor de Esquivar aumenta para -10 contra o ataque que consumir a Brecha.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A magia causa 4d8 de dano. A Brecha de Coorte aumenta para +25. O redutor de Esquivar permanece -10. Consome 8 PM e 3 PM por turno."
+              "text": "A magia causa 4d8 de dano. A Brecha de Coorte aumenta para +25. O redutor de Esquivar permanece -10. Consome 8 PM e 3 PM por turno.",
+              "activationCost": 8,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "A arma natural funciona como ataque extra. A Brecha permanece +25, e o redutor de Esquivar aumenta para -15 contra o ataque que consumir a Brecha. Mesmo com ataque extra, você ainda pode criar uma Brecha por rodada."
+              "text": "A arma natural funciona como ataque extra. A Brecha permanece +25, e o redutor de Esquivar aumenta para -15 contra o ataque que consumir a Brecha. Mesmo com ataque extra, você ainda pode criar uma Brecha por rodada.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             }
           ]
         },
@@ -2081,47 +2574,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você declara um Decreto contra inimigos em uma área de 3m de diâmetro. Alvos afetados sofrem 1d10 de penalidade em ataques, Agarrar, Derrubar ou outras manobras feitas contra você ou contra aliados em formação com você. Podem resistir com POD. Consome 2 PM."
+              "text": "Com uma ação bônus, você declara um Decreto contra inimigos em uma área de 3m de diâmetro. Alvos afetados sofrem 1d10 de penalidade em ataques, Agarrar, Derrubar ou outras manobras feitas contra você ou contra aliados em formação com você. Podem resistir com POD. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Em vez de reduzir movimento, o Decreto passa a afetar defesas ativas. Alvos afetados sofrem a penalidade da Densa quando tentarem Esquivar ou Aparar ataques feitos por você ou por aliados em formação com você. Bloquear e Contra-atacar não são afetados diretamente neste nível. Consome 3 PM."
+              "text": "Em vez de reduzir movimento, o Decreto passa a afetar defesas ativas. Alvos afetados sofrem a penalidade da Densa quando tentarem Esquivar ou Aparar ataques feitos por você ou por aliados em formação com você. Bloquear e Contra-atacar não são afetados diretamente neste nível. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A penalidade aumenta para 2d10. O Decreto pode ser lançado em cone de 4,5m ou área de 3m de diâmetro. Dura 2 turnos, consumindo 1 PM por turno mantido. Consome 4 PM."
+              "text": "A penalidade aumenta para 2d10. O Decreto pode ser lançado em cone de 4,5m ou área de 3m de diâmetro. Dura 2 turnos, consumindo 1 PM por turno mantido. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 1,
+              "durationTurns": 2,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Você pode escolher até POD/10 alvos para serem imunes ao Decreto. Normalmente são aliados, legionários, guardas ou membros da mesma linha."
+              "text": "Você pode escolher até POD/10 alvos para serem imunes ao Decreto. Normalmente são aliados, legionários, guardas ou membros da mesma linha.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Você pode usar o Decreto como reação quando um inimigo declarar ataque, Agarrar, Derrubar, Esquivar ou Aparar contra você ou contra um aliado em formação com você. Se o alvo falhar em POD, sofre a penalidade da Densa naquela ação. A partir deste nível, também pode usar a Densa para interferir em Mundo, seguindo a regra base. Consome 5 PM e 2 PM para manter."
+              "text": "Você pode usar o Decreto como reação quando um inimigo declarar ataque, Agarrar, Derrubar, Esquivar ou Aparar contra você ou contra um aliado em formação com você. Se o alvo falhar em POD, sofre a penalidade da Densa naquela ação. A partir deste nível, também pode usar a Densa para interferir em Mundo, seguindo a regra base. Consome 5 PM e 2 PM para manter.",
+              "activationCost": 5,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "O Decreto passa a afetar Bloqueio de forma limitada. Se um alvo afetado usar Bloquear contra um ataque seu ou de aliado em formação, a redução de dano do Bloqueio diminui em 2 ponto, mínimo. Além disso, se o alvo usar Contra-atacar, sofre a penalidade da Densa se for contra você ou contra sua formação."
+              "text": "O Decreto passa a afetar Bloqueio de forma limitada. Se um alvo afetado usar Bloquear contra um ataque seu ou de aliado em formação, a redução de dano do Bloqueio diminui em 2 ponto, mínimo. Além disso, se o alvo usar Contra-atacar, sofre a penalidade da Densa se for contra você ou contra sua formação.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A penalidade aumenta para 4d10. Se um alvo afetado errar um ataque, falhar em Aparar ou falhar em Esquivar contra você ou contra sua formação, sofre 2d6 de dano mágico Denso. Se resistir ao Decreto, não sofre esse dano. Consome 6 PM e 2 PM para manter."
+              "text": "A penalidade aumenta para 4d10. Se um alvo afetado errar um ataque, falhar em Aparar ou falhar em Esquivar contra você ou contra sua formação, sofre 2d6 de dano mágico Denso. Se resistir ao Decreto, não sofre esse dano. Consome 6 PM e 2 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "O dano aumenta para 2d8. A redução sobre Bloqueio aumenta para 4 pontos, mínimo 1. Consome 6 PM e 3 PM para manter."
+              "text": "O dano aumenta para 2d8. A redução sobre Bloqueio aumenta para 4 pontos, mínimo 1. Consome 6 PM e 3 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A penalidade aumenta para 5d10 e o dano para 3d8. Consome"
-            },
-            {
-              "level": 8,
-              "text": "PM e 4 PM para manter."
+              "text": "A penalidade aumenta para 5d10 e o dano para 3d8. Consome PM e 4 PM para manter.",
+              "activationCost": 4,
+              "maintenanceCost": 4,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Os dados de penalidade se tornam d12, o dano aumenta para 4d8, e o usuário recebe +20 em SAB para resistir ou interferir em Mundo. A redução sobre Bloqueio aumenta para 6 pontos, mínimo 1. Consome 12 PM e 5 PM para manter."
+              "text": "Os dados de penalidade se tornam d12, o dano aumenta para 4d8, e o usuário recebe +20 em SAB para resistir ou interferir em Mundo. A redução sobre Bloqueio aumenta para 6 pontos, mínimo 1. Consome 12 PM e 5 PM para manter.",
+              "activationCost": 12,
+              "maintenanceCost": 5,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             }
           ]
         }
@@ -2257,47 +2796,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você imbui sua arma com Energia Fina, causando 1d6 de dano cortante mágico. Se o alvo estiver em Combate Engajado com você, ele sofre -5 em Esquivar contra esse ataque. Consome 1 PM."
+              "text": "Com uma ação bônus, você imbui sua arma com Energia Fina, causando 1d6 de dano cortante mágico. Se o alvo estiver em Combate Engajado com você, ele sofre -5 em Esquivar contra esse ataque. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Você pode lançar a Magia Fina até 9m. A Pressão de Duelo só se aplica se o alvo estiver em Combate Engajado com você ou com um aliado seu. Consome 1 PM."
+              "text": "Você pode lançar a Magia Fina até 9m. A Pressão de Duelo só se aplica se o alvo estiver em Combate Engajado com você ou com um aliado seu. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A magia causa 2d6 de dano. Se você tiver usado Aparar com sucesso contra esse alvo desde o seu último turno, recebe +5 no ataque contra ele ao usar Duelo da Fronteira. Consome 2 PM."
+              "text": "A magia causa 2d6 de dano. Se você tiver usado Aparar com sucesso contra esse alvo desde o seu último turno, recebe +5 no ataque contra ele ao usar Duelo da Fronteira. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Se você acertar um ataque com Duelo da Fronteira, pode causar 1d4 de sangramento, desde que esteja usando lâmina cortante ou perfurante. Esse efeito não acumula com outro sangramento da mesma fonte."
+              "text": "Se você acertar um ataque com Duelo da Fronteira, pode causar 1d4 de sangramento, desde que esteja usando lâmina cortante ou perfurante. Esse efeito não acumula com outro sangramento da mesma fonte.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "A magia causa 2d8 de dano e pode ficar imbuída por 4 turnos. A Pressão de Duelo aumenta para -10 em Esquivar. Consome"
-            },
-            {
-              "level": 4,
-              "text": "PM e 1 PM por turno mantido."
+              "text": "A magia causa 2d8 de dano e pode ficar imbuída por 4 turnos. A Pressão de Duelo aumenta para -10 em Esquivar. Consome PM e 1 PM por turno mantido.",
+              "activationCost": 1,
+              "maintenanceCost": 1,
+              "durationTurns": 4,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "-"
+              "text": "-",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A magia causa 3d8 de dano. Se o alvo estiver sangrando, você recebe +5 em Aparar contra ataques dele até o início do seu próximo turno."
+              "text": "A magia causa 3d8 de dano. Se o alvo estiver sangrando, você recebe +5 em Aparar contra ataques dele até o início do seu próximo turno.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Você cria uma arma natural de Magia Fina na mão. No Estilo Hisbérico, ela assume forma de espada asturiana, tizona, colada, cimitarra, adaga curva ou lâmina estreita de duelo, que causa 3d6 de dano. o dano de sangramento é aumentado para 1d6 de sangramento, desde que esteja usando lâmina cortante ou perfurante, esse valor não estaca com outros efeitos de sangramento."
+              "text": "Você cria uma arma natural de Magia Fina na mão. No Estilo Hisbérico, ela assume forma de espada asturiana, tizona, colada, cimitarra, adaga curva ou lâmina estreita de duelo, que causa 3d6 de dano. o dano de sangramento é aumentado para 1d6 de sangramento, desde que esteja usando lâmina cortante ou perfurante, esse valor não estaca com outros efeitos de sangramento.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A magia causa 4d8 de dano. A Pressão de Duelo aumenta para -15 em Esquivar. Consome 8 PM e 3 PM por turno."
+              "text": "A magia causa 4d8 de dano. A Pressão de Duelo aumenta para -15 em Esquivar. Consome 8 PM e 3 PM por turno.",
+              "activationCost": 8,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "A arma natural funciona como ataque extra. Mesmo com ataque extra, a Pressão de Duelo só pode ser aplicada uma vez por rodada contra o mesmo alvo. Se o alvo estiver sangrando, você recebe +10 em Aparar contra ataques dele até o início do seu próximo turno."
+              "text": "A arma natural funciona como ataque extra. Mesmo com ataque extra, a Pressão de Duelo só pode ser aplicada uma vez por rodada contra o mesmo alvo. Se o alvo estiver sangrando, você recebe +10 em Aparar contra ataques dele até o início do seu próximo turno.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             }
           ]
         },
@@ -2312,43 +2897,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Aumenta sua CA em +5. Ao ativar a magia, escolha uma Postura de Fronteira: Duelar, Cavalgar ou Resistir. Uma vez por rodada, recebe +5 em um teste ligado ao foco escolhido. Consome 1 PM."
+              "text": "Aumenta sua CA em +5. Ao ativar a magia, escolha uma Postura de Fronteira: Duelar, Cavalgar ou Resistir. Uma vez por rodada, recebe +5 em um teste ligado ao foco escolhido. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Reduz 1d6 de dano mágico. Consome 1 PM."
+              "text": "Reduz 1d6 de dano mágico. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "Aumenta sua CA em +10. O bônus da Postura continua +5. Se o foco for Cavalgar e você acertar um ataque montado, pode somar +2 de dano físico ao ataque. Consome 2 PM."
+              "text": "Aumenta sua CA em +10. O bônus da Postura continua +5. Se o foco for Cavalgar e você acertar um ataque montado, pode somar +2 de dano físico ao ataque. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Reduz 1d6 de dano físico. Se a redução zerar o dano de um ataque feito pelo alvo do seu duelo, você recebe +5 adicional em sua postura contra ele até o início do seu próximo turno."
+              "text": "Reduz 1d6 de dano físico. Se a redução zerar o dano de um ataque feito pelo alvo do seu duelo, você recebe +5 adicional em sua postura contra ele até o início do seu próximo turno.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Aumenta sua CA em +15. O bônus da Postura de Fronteira aumenta para +10. Consome 3 PM e 1 PM para manter."
+              "text": "Aumenta sua CA em +15. O bônus da Postura de Fronteira aumenta para +10. Consome 3 PM e 1 PM para manter.",
+              "activationCost": 3,
+              "maintenanceCost": 1,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Reduz 2d6 de dano mágico e 1d6 de dano físico. Uma vez por rodada, se você resistir a sangramento ou exaustão, pode ignorar metade do dano da penalidade causado por essa condição até o início do próximo turno."
+              "text": "Reduz 2d6 de dano mágico e 1d6 de dano físico. Uma vez por rodada, se você resistir a sangramento ou exaustão, pode ignorar metade do dano da penalidade causado por essa condição até o início do próximo turno.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "Aumenta sua CA em +20. Se o foco for Duelar, quando você Aparar com sucesso um ataque do alvo escolhido, seu próximo ataque contra ele recebe +5 de acerto. Consome 4 PM."
+              "text": "Aumenta sua CA em +20. Se o foco for Duelar, quando você Aparar com sucesso um ataque do alvo escolhido, seu próximo ataque contra ele recebe +5 de acerto. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Reduz 2d6 de dano mágico e 2d6 de dano físico."
+              "text": "Reduz 2d6 de dano mágico e 2d6 de dano físico.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "Aumenta sua CA em +25. O bônus da Postura de Fronteira aumenta para +15. Se o foco for Cavalgar, o primeiro ataque montado enquanto a magia estiver ativa causa +2d6 de dano físico, apenas uma vez por cena. Consome 6 PM."
+              "text": "Aumenta sua CA em +25. O bônus da Postura de Fronteira aumenta para +15. Se o foco for Cavalgar, o primeiro ataque montado enquanto a magia estiver ativa causa +2d6 de dano físico, apenas uma vez por cena. Consome 6 PM.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Aumenta sua CA em +30 e reduz todo dano em 10. Enquanto estiver em Postura de Fronteira, uma vez por rodada, você pode escolher não ficar desprevenido, ou não tomar ataque de oportunidade contra um ataque vindo do alvo do seu foco. Consome 8 PM e 3 PM para manter."
+              "text": "Aumenta sua CA em +30 e reduz todo dano em 10. Enquanto estiver em Postura de Fronteira, uma vez por rodada, você pode escolher não ficar desprevenido, ou não tomar ataque de oportunidade contra um ataque vindo do alvo do seu foco. Consome 8 PM e 3 PM para manter.",
+              "activationCost": 8,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         }
@@ -2512,43 +3147,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Depois de acertar um ataque à distância ou arremesso durante um Disparo de Passagem, você pode gastar sua ação bônus para causar 1d8 de dano contundente mágico ao alvo. Se o alvo falhar em CON, ele sofre -5 no próximo ataque contra você até o início do seu próximo turno. Consome 1 PM."
+              "text": "Depois de acertar um ataque à distância ou arremesso durante um Disparo de Passagem, você pode gastar sua ação bônus para causar 1d8 de dano contundente mágico ao alvo. Se o alvo falhar em CON, ele sofre -5 no próximo ataque contra você até o início do seu próximo turno. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "-"
+              "text": "-",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "O dano aumenta para 2d8. Se usado em Disparo de Passagem, o redutor no próximo ataque do alvo contra você aumenta para -10. Consome 2 PM."
+              "text": "O dano aumenta para 2d8. Se usado em Disparo de Passagem, o redutor no próximo ataque do alvo contra você aumenta para -10. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Ao acertar o Pulso, o alvo faz CON. Em falha, fica atordoado por 1 turno. Consome 3 PM."
+              "text": "Ao acertar o Pulso, o alvo faz CON. Em falha, fica atordoado por 1 turno. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": 1,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "O dano aumenta para 3d8. Você pode adicionar uma Finta de Sela: o alvo sofre -10 em Esquivar contra esse disparo e não recebe benefício de cobertura parcial leve, como escudo mal posicionado, poeira, movimentação de tropa ou obstáculo pequeno. O alcance do impacto tem seu alcance aumentado para 12 metros. Consome 4 PM."
+              "text": "O dano aumenta para 3d8. Você pode adicionar uma Finta de Sela: o alvo sofre -10 em Esquivar contra esse disparo e não recebe benefício de cobertura parcial leve, como escudo mal posicionado, poeira, movimentação de tropa ou obstáculo pequeno. O alcance do impacto tem seu alcance aumentado para 12 metros. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Você pode usar Rajada de Casco: escolha até 2 alvos a até 3m um do outro, desde que ambos estejam no caminho ou na direção do seu Disparo de Passagem. Um alvo recebe o dano completo; o outro faz CON para não sofrer metade do dano. Consome 5 PM."
+              "text": "Você pode usar Rajada de Casco: escolha até 2 alvos a até 3m um do outro, desde que ambos estejam no caminho ou na direção do seu Disparo de Passagem. Um alvo recebe o dano completo; o outro faz CON para não sofrer metade do dano. Consome 5 PM.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "O dano aumenta para 4d8. Se o alvo falhar em CON após um Disparo de Passagem, ele também sofre -5 em Cavalgar, Tática ou Lutar até o início do próximo turno dele, à escolha do conjurador. O alcance do impacto tem seu alcance aumentado para 15 metros. Consome 6 PM."
+              "text": "O dano aumenta para 4d8. Se o alvo falhar em CON após um Disparo de Passagem, ele também sofre -5 em Cavalgar, Tática ou Lutar até o início do próximo turno dele, à escolha do conjurador. O alcance do impacto tem seu alcance aumentado para 15 metros. Consome 6 PM.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Com uma ação padrão, você pode realizar um Pulso pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Se estiver montado, você não é empurrado; em vez disso, a montaria precisa estar em movimento ou você perde esse benefício. Consome 8 PM."
+              "text": "Com uma ação padrão, você pode realizar um Pulso pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Se estiver montado, você não é empurrado; em vez disso, a montaria precisa estar em movimento ou você perde esse benefício. Consome 8 PM.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "O dano aumenta para 5d8, ou 5d10 com ação padrão. O alcance do impacto tem seu alcance aumentado para 18 metros. Consome 10 PM."
+              "text": "O dano aumenta para 5d8, ou 5d10 com ação padrão. O alcance do impacto tem seu alcance aumentado para 18 metros. Consome 10 PM.",
+              "activationCost": 10,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "O teste para resistir é dificultado em 20, e se usar ação padrão os dados se tornam d12. A Rajada de Casco pode afetar até 3 alvos, mas apenas um recebe dano completo; os demais sofrem metade se falharem em CON. Consome 12 PM."
+              "text": "O teste para resistir é dificultado em 20, e se usar ação padrão os dados se tornam d12. A Rajada de Casco pode afetar até 3 alvos, mas apenas um recebe dano completo; os demais sofrem metade se falharem em CON. Consome 12 PM.",
+              "activationCost": 12,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         },
@@ -2563,43 +3248,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você cria uma pressão Densa invisível em uma área de 3m de diâmetro. Alvos afetados fazem resistência de POD. Se falharem ficam até o início do seu próximo turno, sofrendo 1d10 de penalidade em Esquivar, Aparar, Cavalgar, Atletismo ou testes de FOR/CON feitos para resistir a derrubar, empurrar, desmontar ou manter equilíbrio. Consome 2 PM."
+              "text": "Com uma ação bônus, você cria uma pressão Densa invisível em uma área de 3m de diâmetro. Alvos afetados fazem resistência de POD. Se falharem ficam até o início do seu próximo turno, sofrendo 1d10 de penalidade em Esquivar, Aparar, Cavalgar, Atletismo ou testes de FOR/CON feitos para resistir a derrubar, empurrar, desmontar ou manter equilíbrio. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Em vez de reduzir o movimento diretamente, o Laço prejudica a mudança brusca de posição. Se o alvo tentar sair do seu alcance, montar, desmontar, levantar-se, trocar de posição defensiva ou recuar de um combate engajado, sofre a penalidade da Densa nesse teste ou na defesa relacionada. Consome 3 PM."
+              "text": "Em vez de reduzir o movimento diretamente, o Laço prejudica a mudança brusca de posição. Se o alvo tentar sair do seu alcance, montar, desmontar, levantar-se, trocar de posição defensiva ou recuar de um combate engajado, sofre a penalidade da Densa nesse teste ou na defesa relacionada. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A penalidade aumenta para 2d10. A área pode ser usada em cone de 4,5m ou área de 3m de diâmetro. Dura 2 turnos, consumindo 1 PM por turno mantido. Consome 4 PM."
+              "text": "A penalidade aumenta para 2d10. A área pode ser usada em cone de 4,5m ou área de 3m de diâmetro. Dura 2 turnos, consumindo 1 PM por turno mantido. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 1,
+              "durationTurns": 2,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Você pode escolher até POD/10 alvos para serem imunes ao Laço da Estepe. Normalmente são aliados da mesma horda, montarias treinadas ou companheiros acostumados ao seu ritmo de combate."
+              "text": "Você pode escolher até POD/10 alvos para serem imunes ao Laço da Estepe. Normalmente são aliados da mesma horda, montarias treinadas ou companheiros acostumados ao seu ritmo de combate.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Você pode usar o Laço da Estepe como reação quando um alvo a até 3m tentar Esquivar, Aparar, Cavalgar para se reposicionar, resistir a uma manobra, montar, desmontar ou sair do seu alcance. Se o alvo falhar em POD, sofre 3d10 de penalidade naquela ação. A partir daqui, mantém a interação normal da Magia Densa com Mundo. Consome 5 PM e 2 PM para manter."
+              "text": "Você pode usar o Laço da Estepe como reação quando um alvo a até 3m tentar Esquivar, Aparar, Cavalgar para se reposicionar, resistir a uma manobra, montar, desmontar ou sair do seu alcance. Se o alvo falhar em POD, sofre 3d10 de penalidade naquela ação. A partir daqui, mantém a interação normal da Magia Densa com Mundo. Consome 5 PM e 2 PM para manter.",
+              "activationCost": 5,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "O alvo não perde movimento, mas perde firmeza. Uma vez por rodada, se ele falhar em Esquivar, Aparar ou Cavalgar por causa da penalidade do Laço, você pode se mover sem provocar ataque de oportunidade desse alvo. Consome 5 PM e 2 PM para manter."
+              "text": "O alvo não perde movimento, mas perde firmeza. Uma vez por rodada, se ele falhar em Esquivar, Aparar ou Cavalgar por causa da penalidade do Laço, você pode se mover sem provocar ataque de oportunidade desse alvo. Consome 5 PM e 2 PM para manter.",
+              "activationCost": 5,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A penalidade aumenta para 4d10. Se o alvo falhar em Esquivar, Aparar, Cavalgar ou resistir a uma manobra enquanto estiver dentro da Densa, sofre 2d6 de dano mágico. Se resistir ao Laço, não sofrerá esse dano. Consome 6 PM e 2 PM para manter."
+              "text": "A penalidade aumenta para 4d10. Se o alvo falhar em Esquivar, Aparar, Cavalgar ou resistir a uma manobra enquanto estiver dentro da Densa, sofre 2d6 de dano mágico. Se resistir ao Laço, não sofrerá esse dano. Consome 6 PM e 2 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "O dano aumenta para 2d8. Caso o alvo resista, sofre metade do dano. Consome 6 PM e 3 PM para manter."
+              "text": "O dano aumenta para 2d8. Caso o alvo resista, sofre metade do dano. Consome 6 PM e 3 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A penalidade aumenta para 5d10 e o dano para 3d8. Se o alvo estiver montado e falhar em Cavalgar por causa do Laço, ele não cai automaticamente, mas fica sem controle pleno da montaria até o início do próximo turno. Consome 8 PM e 4 PM para manter."
+              "text": "A penalidade aumenta para 5d10 e o dano para 3d8. Se o alvo estiver montado e falhar em Cavalgar por causa do Laço, ele não cai automaticamente, mas fica sem controle pleno da montaria até o início do próximo turno. Consome 8 PM e 4 PM para manter.",
+              "activationCost": 8,
+              "maintenanceCost": 4,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Os dados de penalidade se tornam d12, o dano aumenta para 4d8, e o usuário recebe +20 em SAB para resistir ou interferir em Mundo. Consome 12 PM e 5 PM para manter."
+              "text": "Os dados de penalidade se tornam d12, o dano aumenta para 4d8, e o usuário recebe +20 em SAB para resistir ou interferir em Mundo. Consome 12 PM e 5 PM para manter.",
+              "activationCost": 12,
+              "maintenanceCost": 5,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             }
           ]
         }
@@ -2758,47 +3493,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Aumenta sua CA em +5. Você recebe Vigor Efetivo +5. Possui"
-            },
-            {
-              "level": 1,
-              "text": "Carga por turno. Pode gastar 1 Carga para usar Erguer a Muralha, concedendo +3 de CA a um aliado adjacente contra um ataque. Consome 1 PM e 1 PM para ativar cada Carga."
+              "text": "Aumenta sua CA em +5. Você recebe Vigor Efetivo +5. Possui Carga por turno. Pode gastar 1 Carga para usar Erguer a Muralha, concedendo +3 de CA a um aliado adjacente contra um ataque. Consome 1 PM e 1 PM para ativar cada Carga.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Reduz 1d6 de dano mágico em você. Você pode gastar 1 Carga para usar Sustentar a Muralha, reduzindo 1d6 de dano mágico sofrido por um aliado adjacente. Consome 1 PM e 1 PM para ativar cada Carga."
+              "text": "Reduz 1d6 de dano mágico em você. Você pode gastar 1 Carga para usar Sustentar a Muralha, reduzindo 1d6 de dano mágico sofrido por um aliado adjacente. Consome 1 PM e 1 PM para ativar cada Carga.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "Aumenta sua CA em +10. O Vigor Efetivo permanece +5. Erguer a Muralha passa a conceder +5 de CA a um aliado adjacente contra um ataque. Consome 2 PM e 1 PM para ativar cada Carga."
+              "text": "Aumenta sua CA em +10. O Vigor Efetivo permanece +5. Erguer a Muralha passa a conceder +5 de CA a um aliado adjacente contra um ataque. Consome 2 PM e 1 PM para ativar cada Carga.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Reduz 1d6 de dano físico em você. Sustentar a Muralha também pode reduzir 1d6 de dano físico sofrido por um aliado adjacente. Consome 2 PM e 1 PM para ativar cada Carga."
+              "text": "Reduz 1d6 de dano físico em você. Sustentar a Muralha também pode reduzir 1d6 de dano físico sofrido por um aliado adjacente. Consome 2 PM e 1 PM para ativar cada Carga.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Aumenta sua CA em +15. Seu Vigor Efetivo aumenta para +10. Agora você possui 2 Cargas por turno. Erguer a Muralha concede +10 de CA a um aliado adjacente contra um ataque. Consome 3 PM, 1 PM para manter e 2 PM para ativar cada Carga."
+              "text": "Aumenta sua CA em +15. Seu Vigor Efetivo aumenta para +10. Agora você possui 2 Cargas por turno. Erguer a Muralha concede +10 de CA a um aliado adjacente contra um ataque. Consome 3 PM, 1 PM para manter e 2 PM para ativar cada Carga.",
+              "activationCost": 3,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Reduz 2d6 (8) de dano mágico e 1d6 de dano físico em você. Sustentar a Muralha passa a reduzir 1d6+4 de dano mágico ou 1d6 de dano físico sofrido por um aliado adjacente. Consome 3 PM, 1 PM para manter e 2 PM para ativar cada Carga."
+              "text": "Reduz 2d6 (8) de dano mágico e 1d6 de dano físico em você. Sustentar a Muralha passa a reduzir 1d6+4 de dano mágico ou 1d6 de dano físico sofrido por um aliado adjacente. Consome 3 PM, 1 PM para manter e 2 PM para ativar cada Carga.",
+              "activationCost": 3,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "Aumenta sua CA em +20. Erguer a Muralha concede +15 de CA a um aliado adjacente contra um ataque. Se o ataque errar por causa desse bônus, você recebe +5 no próximo teste de ataque contra esse alvo até o fim do seu próximo turno. Consome 4 PM, 1 PM para manter e 2 PM para ativar cada Carga."
+              "text": "Aumenta sua CA em +20. Erguer a Muralha concede +15 de CA a um aliado adjacente contra um ataque. Se o ataque errar por causa desse bônus, você recebe +5 no próximo teste de ataque contra esse alvo até o fim do seu próximo turno. Consome 4 PM, 1 PM para manter e 2 PM para ativar cada Carga.",
+              "activationCost": 4,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Reduz 2d6 de dano mágico e 2d6 de dano físico em você. Sustentar a Muralha passa a reduzir 1d6+4 de dano físico e 1d6+4 de dano mágico sofrido por um aliado adjacente. Consome 5 PM, 1 PM para manter e 3 PM para ativar cada Carga."
+              "text": "Reduz 2d6 de dano mágico e 2d6 de dano físico em você. Sustentar a Muralha passa a reduzir 1d6+4 de dano físico e 1d6+4 de dano mágico sofrido por um aliado adjacente. Consome 5 PM, 1 PM para manter e 3 PM para ativar cada Carga.",
+              "activationCost": 5,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "Aumenta sua CA em +25. Seu Vigor Efetivo aumenta para +15. Erguer a Muralha concede +20 de CA a um aliado adjacente contra um ataque. Consome 6 PM, 1 PM para manter e 3 PM para ativar cada Carga."
+              "text": "Aumenta sua CA em +25. Seu Vigor Efetivo aumenta para +15. Erguer a Muralha concede +20 de CA a um aliado adjacente contra um ataque. Consome 6 PM, 1 PM para manter e 3 PM para ativar cada Carga.",
+              "activationCost": 6,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Aumenta sua CA em +30 e reduz todo dano sofrido por você em 10. Agora você possui 3 Cargas por turno. Erguer a Muralha concede +20 de CA a um aliado adjacente contra um ataque. Sustentar a Muralha reduz 10 de qualquer dano sofrido por um aliado adjacente. Uma vez por rodada, se um aliado em até 3m tiver o PV reduzido a 0 por dano, você pode gastar o valor de ativação da magia, 8 PM, para reduzir o dano recebido por ele em 2d8+2. Se isso impedir que ele chegue a 0 PV, ele permanece de pé. Consome 8 PM, 3 PM para manter e 4 PM para ativar cada Carga."
+              "text": "Aumenta sua CA em +30 e reduz todo dano sofrido por você em 10. Agora você possui 3 Cargas por turno. Erguer a Muralha concede +20 de CA a um aliado adjacente contra um ataque. Sustentar a Muralha reduz 10 de qualquer dano sofrido por um aliado adjacente. Uma vez por rodada, se um aliado em até 3m tiver o PV reduzido a 0 por dano, você pode gastar o valor de ativação da magia, 8 PM, para reduzir o dano recebido por ele em 2d8+2. Se isso impedir que ele chegue a 0 PV, ele permanece de pé. Consome 8 PM, 3 PM para manter e 4 PM para ativar cada Carga.",
+              "activationCost": 8,
+              "maintenanceCost": 4,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         },
@@ -2813,47 +3594,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Cura 1d8 em si, . Além disso, recebe Vigor Efetivo +5 para um teste de CON, FOR ou Atletismo feito até o início do seu próximo turno, desde que o teste envolva sangramento, veneno, doença, exaustão, dor, queda ou manter-se de pé. Consome 1 PM."
+              "text": "Cura 1d8 em si, . Além disso, recebe Vigor Efetivo +5 para um teste de CON, FOR ou Atletismo feito até o início do seu próximo turno, desde que o teste envolva sangramento, veneno, doença, exaustão, dor, queda ou manter-se de pé. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Pode curar um alvo em 1d6, . O alvo curado recebe Vigor Efetivo +5 para um teste físico ou de recuperação feito até o início do seu próximo turno. Consome 2 PM."
+              "text": "Pode curar um alvo em 1d6, . O alvo curado recebe Vigor Efetivo +5 para um teste físico ou de recuperação feito até o início do seu próximo turno. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "Cura 2d8 em si, ou concede 5 de vida temporária em si ou em um alvo, . Quem receber a cura ou a vida temporária também recebe Vigor Efetivo +5 para um teste físico ou de estabilização. Consome 3 PM."
+              "text": "Cura 2d8 em si, ou concede 5 de vida temporária em si ou em um alvo, . Quem receber a cura ou a vida temporária também recebe Vigor Efetivo +5 para um teste físico ou de estabilização. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Cura 2d6 em um alvo, além de doenças leves, sangramento e envenenamento. Se remover uma dessas condições, o alvo recebe Vigor Efetivo +10 no próximo teste para resistir à mesma fonte ou impedir que a condição retorne até o próximo descanso curto. Consome 4 PM."
+              "text": "Cura 2d6 em um alvo, além de doenças leves, sangramento e envenenamento. Se remover uma dessas condições, o alvo recebe Vigor Efetivo +10 no próximo teste para resistir à mesma fonte ou impedir que a condição retorne até o próximo descanso curto. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Cura 3d8 em si, cura 2d6 em alvos até 3m, ou concede 10 de vida temporária, . Escolha um alvo afetado: ele recebe Vigor Efetivo +10 para um teste físico ou de recuperação feito até o início do seu próximo turno. Consome 5 PM."
+              "text": "Cura 3d8 em si, cura 2d6 em alvos até 3m, ou concede 10 de vida temporária, . Escolha um alvo afetado: ele recebe Vigor Efetivo +10 para um teste físico ou de recuperação feito até o início do seu próximo turno. Consome 5 PM.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Pode curar um alvo em 3d6, . Se o alvo estiver sofrendo sangramento, veneno, exaustão, dor severa ou risco de cair/desmaiar, ele pode realizar imediatamente um teste apropriado com Vigor Efetivo +10. Consome 6 PM."
+              "text": "Pode curar um alvo em 3d6, . Se o alvo estiver sofrendo sangramento, veneno, exaustão, dor severa ou risco de cair/desmaiar, ele pode realizar imediatamente um teste apropriado com Vigor Efetivo +10. Consome 6 PM.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "Cura 4d8 em si, ou concede 15 de vida temporária, . Também pode remover Lesão Grave. Ao remover Lesão Grave, o alvo recebe Vigor Efetivo +15 para o próximo teste físico ligado ao ferimento removido até o próximo descanso curto. Consome 7 PM."
+              "text": "Cura 4d8 em si, ou concede 15 de vida temporária, . Também pode remover Lesão Grave. Ao remover Lesão Grave, o alvo recebe Vigor Efetivo +15 para o próximo teste físico ligado ao ferimento removido até o próximo descanso curto. Consome 7 PM.",
+              "activationCost": 7,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Pode curar um alvo em 4d6, . O alvo curado recebe Vigor Efetivo +15. Se estiver caído, Morrendo, exausto ou sob dor física intensa, pode usar esse Vigor no próximo teste para estabilizar o corpo, manter-se consciente ou voltar a agir com ajuda do mestre. Consome 8 PM."
+              "text": "Pode curar um alvo em 4d6, . O alvo curado recebe Vigor Efetivo +15. Se estiver caído, Morrendo, exausto ou sob dor física intensa, pode usar esse Vigor no próximo teste para estabilizar o corpo, manter-se consciente ou voltar a agir com ajuda do mestre. Consome 8 PM.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "Cura 5d8 em si, além de poder curar doenças raras em 1d4 horas, . Durante esse processo de cura prolongada, o alvo tratado recebe Vigor Efetivo +20 em testes contra agravamento da doença, febre, exaustão, veneno ou fraqueza física. Consome"
-            },
-            {
-              "level": 9,
-              "text": "PM."
+              "text": "Cura 5d8 em si, além de poder curar doenças raras em 1d4 horas, . Durante esse processo de cura prolongada, o alvo tratado recebe Vigor Efetivo +20 em testes contra agravamento da doença, febre, exaustão, veneno ou fraqueza física. Consome PM.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Pode curar um alvo em 6d6 ou conceder 25 de vida temporária, . O alvo recebe Vigor Efetivo +25. Uma vez até o início do seu próximo turno, ele pode usar esse Vigor para resistir a cair, desmaiar, piorar sangramento, sucumbir a veneno/doença ou perder ação por dor física. Consome 12 PM."
+              "text": "Pode curar um alvo em 6d6 ou conceder 25 de vida temporária, . O alvo recebe Vigor Efetivo +25. Uma vez até o início do seu próximo turno, ele pode usar esse Vigor para resistir a cair, desmaiar, piorar sangramento, sucumbir a veneno/doença ou perder ação por dor física. Consome 12 PM.",
+              "activationCost": 12,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         }
@@ -2989,43 +3816,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Depois de acertar um ataque desarmado com as mãos, você pode gastar sua ação bônus para causar 1d8 de dano contundente mágico. Se ambos estiverem desarmados, ou se a cena ocorrer em frio intenso/neve/gelo, o alvo faz CON; se falhar, sofre -5 em Lutar/Brigar contra você até o início do seu próximo turno. Consome 1 PM."
+              "text": "Depois de acertar um ataque desarmado com as mãos, você pode gastar sua ação bônus para causar 1d8 de dano contundente mágico. Se ambos estiverem desarmados, ou se a cena ocorrer em frio intenso/neve/gelo, o alvo faz CON; se falhar, sofre -5 em Lutar/Brigar contra você até o início do seu próximo turno. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Você pode lançar a Impacto até 9m. Consome 1 PM."
+              "text": "Você pode lançar a Impacto até 9m. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A magia causa 2d8 de dano. Se o alvo tentar Bloquear um Punho da Neve usado em ataque desarmado, a redução do Bloqueio diminui em 2 ponto, mínimo 1. Consome 2 PM."
+              "text": "A magia causa 2d8 de dano. Se o alvo tentar Bloquear um Punho da Neve usado em ataque desarmado, a redução do Bloqueio diminui em 2 ponto, mínimo 1. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Ao acertar o ataque, o alvo faz CON. Se falhar, fica atordoado por 1 turno. Consome 3 PM."
+              "text": "Ao acertar o ataque, o alvo faz CON. Se falhar, fica atordoado por 1 turno. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": 1,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "A magia causa 3d8 de dano. Você pode adicionar uma finta corporal: o alvo sofre -10 em Esquivar contra esse golpe e não recebe benefício de cobertura parcial leve. Consome 4 PM."
+              "text": "A magia causa 3d8 de dano. Você pode adicionar uma finta corporal: o alvo sofre -10 em Esquivar contra esse golpe e não recebe benefício de cobertura parcial leve. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Em vez de atacar uma área ampla, você pode descarregar o impacto em uma pancada curta ao redor do corpo. Criaturas adjacentes escolhidas por você fazem CON; em falha, são empurradas 1,5m e metade do dano. Apenas o alvo principal sofre o dano completo da magia. Consome 5 PM."
+              "text": "Em vez de atacar uma área ampla, você pode descarregar o impacto em uma pancada curta ao redor do corpo. Criaturas adjacentes escolhidas por você fazem CON; em falha, são empurradas 1,5m e metade do dano. Apenas o alvo principal sofre o dano completo da magia. Consome 5 PM.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A magia causa 4d8 de dano. A redução do Bloqueio contra seu Punho da Neve aumenta para 3 pontos, mínimo 1. Consome 6 PM."
+              "text": "A magia causa 4d8 de dano. A redução do Bloqueio contra seu Punho da Neve aumenta para 3 pontos, mínimo 1. Consome 6 PM.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Com uma ação padrão, você realiza um golpe pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Você é empurrado 1,5m, mas não provoca ataque de oportunidade do alvo atingido. Consome 8 PM."
+              "text": "Com uma ação padrão, você realiza um golpe pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Você é empurrado 1,5m, mas não provoca ataque de oportunidade do alvo atingido. Consome 8 PM.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A magia causa 5d8, ou 5d10 com ação padrão. Se ambos estiverem desarmados, ou se a cena ocorrer em frio intenso/neve/gelo, o redutor em Lutar/Brigar contra você aumenta para -10 em falha de CON. Consome 10 PM."
+              "text": "A magia causa 5d8, ou 5d10 com ação padrão. Se ambos estiverem desarmados, ou se a cena ocorrer em frio intenso/neve/gelo, o redutor em Lutar/Brigar contra você aumenta para -10 em falha de CON. Consome 10 PM.",
+              "activationCost": 10,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "O empurrão em falha de CON é de 4,5m, o teste para não ser afetado é dificultado em 20, e se usar ação padrão os dados se tornam d12. A redução do Bloqueio contra o Punho da Neve aumenta para 5 pontos, mínimo 1. Finta corporal é aumentando para -15 em Esquivar contra esse golpe e não recebe benefício de cobertura parcial leve. Consome 12 PM."
+              "text": "O empurrão em falha de CON é de 4,5m, o teste para não ser afetado é dificultado em 20, e se usar ação padrão os dados se tornam d12. A redução do Bloqueio contra o Punho da Neve aumenta para 5 pontos, mínimo 1. Finta corporal é aumentando para -15 em Esquivar contra esse golpe e não recebe benefício de cobertura parcial leve. Consome 12 PM.",
+              "activationCost": 12,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         },
@@ -3040,47 +3917,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você recita uma prece curta e recupera 1d6 de Cura de Emergência em si mesmo. Esse valor pode impedir que você caia Inconsciente por frio, dor, exaustão leve ou sangramento até o início do seu próximo turno. Consome 1 PM."
+              "text": "Com uma ação bônus, você recita uma prece curta e recupera 1d6 de Cura de Emergência em si mesmo. Esse valor pode impedir que você caia Inconsciente por frio, dor, exaustão leve ou sangramento até o início do seu próximo turno. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Com uma ação bônus, você pode conceder 1d4 de Cura de Emergência a um alvo adjacente. Esse valor pode ser usado imediatamente para impedir que o alvo entre em Morrendo ou fique Inconsciente, caso o valor seja suficiente. Consome 2 PM."
+              "text": "Com uma ação bônus, você pode conceder 1d4 de Cura de Emergência a um alvo adjacente. Esse valor pode ser usado imediatamente para impedir que o alvo entre em Morrendo ou fique Inconsciente, caso o valor seja suficiente. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "Você recupera 2d6 de Cura de Emergência em si, ou concede 3 de vida temporária emergencial a um alvo adjacente. Essa vida temporária dura até o início do seu próximo turno e só serve contra dano, frio, dor, sangramento ou exaustão. Consome 3 PM."
+              "text": "Você recupera 2d6 de Cura de Emergência em si, ou concede 3 de vida temporária emergencial a um alvo adjacente. Essa vida temporária dura até o início do seu próximo turno e só serve contra dano, frio, dor, sangramento ou exaustão. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Você concede 2d4 de Cura de Emergência a um alvo em até 3m. Se o alvo estiver sofrendo sangramento, envenenamento ou doença leve, a Prece não remove a condição, mas pode segurar seus efeitos até o início do seu próximo turno. Consome 4 PM."
+              "text": "Você concede 2d4 de Cura de Emergência a um alvo em até 3m. Se o alvo estiver sofrendo sangramento, envenenamento ou doença leve, a Prece não remove a condição, mas pode segurar seus efeitos até o início do seu próximo turno. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Você recupera 3d6 de Cura de Emergência em si, concede 2d4 de Vigor de Emergência a alvos em uma área de 3m, ou concede 6 de vida temporária emergencial. O ponto de origem da área pode estar a até 9m de você. Consome 5 PM."
+              "text": "Você recupera 3d6 de Cura de Emergência em si, concede 2d4 de Vigor de Emergência a alvos em uma área de 3m, ou concede 6 de vida temporária emergencial. O ponto de origem da área pode estar a até 9m de você. Consome 5 PM.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Você pode conceder 3d4 de Cura de Emergência a um alvo em até 6m. A partir deste nível, pode usar esta magia como reação quando esse alvo for cair a 0 PV, entrar em Morrendo ou ficar Inconsciente. Consome 6 PM."
+              "text": "Você pode conceder 3d4 de Cura de Emergência a um alvo em até 6m. A partir deste nível, pode usar esta magia como reação quando esse alvo for cair a 0 PV, entrar em Morrendo ou ficar Inconsciente. Consome 6 PM.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "Você recupera 4d6 de Cura de Emergência em si, ou concede"
-            },
-            {
-              "level": 10,
-              "text": "de vida temporária emergencial. Se você sofrer uma Lesão Grave recente, pode ignorar seus efeitos incapacitantes até o fim do combate; depois do combate, a Lesão Grave permanece e precisa ser tratada normalmente. Consome 7 PM."
+              "text": "Você recupera 4d6 de Cura de Emergência em si, ou concede de vida temporária emergencial. Se você sofrer uma Lesão Grave recente, pode ignorar seus efeitos incapacitantes até o fim do combate; depois do combate, a Lesão Grave permanece e precisa ser tratada normalmente. Consome 7 PM.",
+              "activationCost": 7,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Você concede 4d4 de Cura de Emergência a um alvo em até 9m. Se o alvo entrou em Morrendo ou ficou Inconsciente desde o fim do seu último turno, você pode usar uma ação bônus para aplicar essa Cura; se ele voltar acima de 0 PV, desperta caído e fraco, mas consciente. Consome 8 PM."
+              "text": "Você concede 4d4 de Cura de Emergência a um alvo em até 9m. Se o alvo entrou em Morrendo ou ficou Inconsciente desde o fim do seu último turno, você pode usar uma ação bônus para aplicar essa Cura; se ele voltar acima de 0 PV, desperta caído e fraco, mas consciente. Consome 8 PM.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "Você recupera 5d6 de Cura de Emergência em si. Fora de combate, durante um descanso em frio intenso, neve, tundra, mar gelado ou viagem extrema, pode conduzir uma prece Sameš: faça Religião; em sucesso, até 1d4 aliados recebem +5 contra frio, exaustão ou agravamento de doença até o fim do descanso. Esse efeito não acumula com a habilidade cultural Xamã Sameš. Consome 9 PM."
+              "text": "Você recupera 5d6 de Cura de Emergência em si. Fora de combate, durante um descanso em frio intenso, neve, tundra, mar gelado ou viagem extrema, pode conduzir uma prece Sameš: faça Religião; em sucesso, até 1d4 aliados recebem +5 contra frio, exaustão ou agravamento de doença até o fim do descanso. Esse efeito não acumula com a habilidade cultural Xamã Sameš. Consome 9 PM.",
+              "activationCost": 9,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Você concede 6d4 de Cura de Emergência ou 15 de vida temporária emergencial a um alvo em até 9m. Pode usar esta magia como reação dando 20 pontos de vida temporária quando o alvo for cair a 0 PV, entrar em Morrendo ou ficar Inconsciente. Consome 12 PM."
+              "text": "Você concede 6d4 de Cura de Emergência ou 15 de vida temporária emergencial a um alvo em até 9m. Pode usar esta magia como reação dando 20 pontos de vida temporária quando o alvo for cair a 0 PV, entrar em Morrendo ou ficar Inconsciente. Consome 12 PM.",
+              "activationCost": 12,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             }
           ]
         }
@@ -3328,43 +4251,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Depois de acertar um ataque físico próximo com mão, punho, palma ou golpe corporal, você pode gastar sua ação bônus para causar 1d8 de dano contundente mágico. O próximo teste de manobra física feito por você contra esse alvo antes do início do seu próximo turno recebe +5. Consome 1 PM."
+              "text": "Depois de acertar um ataque físico próximo com mão, punho, palma ou golpe corporal, você pode gastar sua ação bônus para causar 1d8 de dano contundente mágico. O próximo teste de manobra física feito por você contra esse alvo antes do início do seu próximo turno recebe +5. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Você pode lançar a Magia Impacto até 9m. Se for lançada à distância, causa apenas o dano da magia; o bônus de manobra só se aplica se o alvo estiver a até 3m de você. Consome 1 PM."
+              "text": "Você pode lançar a Magia Impacto até 9m. Se for lançada à distância, causa apenas o dano da magia; o bônus de manobra só se aplica se o alvo estiver a até 3m de você. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A magia causa 2d8 de dano. O bônus na próxima manobra física contra o alvo aumenta para +10. Consome 2 PM."
+              "text": "A magia causa 2d8 de dano. O bônus na próxima manobra física contra o alvo aumenta para +10. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Ao acertar, o alvo faz CON. Se falhar, fica atordoado por 1 turno. Consome 3 PM."
+              "text": "Ao acertar, o alvo faz CON. Se falhar, fica atordoado por 1 turno. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": 1,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "A magia causa 3d8 de dano. Você pode adicionar uma Finta, dificultando a Esquiva em 10 e negando cobertura parcial, ou pode manter o bônus de manobra. Consome 4 PM."
+              "text": "A magia causa 3d8 de dano. Você pode adicionar uma Finta, dificultando a Esquiva em 10 e negando cobertura parcial, ou pode manter o bônus de manobra. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Você pode descarregar o ritmo ao redor do corpo. Criaturas escolhidas em até 3m de diâmetro fazem CON; em falha, são empurradas 1,5m e sofrem -5 no próximo teste oposto de manobra física feito contra elas até o início do seu próximo turno. Consome 5 PM."
+              "text": "Você pode descarregar o ritmo ao redor do corpo. Criaturas escolhidas em até 3m de diâmetro fazem CON; em falha, são empurradas 1,5m e sofrem -5 no próximo teste oposto de manobra física feito contra elas até o início do seu próximo turno. Consome 5 PM.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A magia causa 4d8 de dano. O bônus na próxima manobra física contra o alvo aumenta para +15. Consome 6 PM."
+              "text": "A magia causa 4d8 de dano. O bônus na próxima manobra física contra o alvo aumenta para +15. Consome 6 PM.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Com uma ação padrão, você realiza um golpe pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Se o alvo falhar em CON, o próximo aliado que tentar uma manobra física contra ele recebe +5. Consome 8 PM."
+              "text": "Com uma ação padrão, você realiza um golpe pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Se o alvo falhar em CON, o próximo aliado que tentar uma manobra física contra ele recebe +5. Consome 8 PM.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A magia causa 5d8, ou 5d10 com ação padrão. Se o alvo já estiver sangrando, ferido desde o último descanso longo ou tiver sido rastreado por você nessa cena, o bônus de manobra pode ser usado por um aliado em vez de você. Consome 10 PM."
+              "text": "A magia causa 5d8, ou 5d10 com ação padrão. Se o alvo já estiver sangrando, ferido desde o último descanso longo ou tiver sido rastreado por você nessa cena, o bônus de manobra pode ser usado por um aliado em vez de você. Consome 10 PM.",
+              "activationCost": 10,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "O empurrão em falha de CON é de 4,5m, o teste para resistir é dificultado em 20, e se usar ação padrão os dados se tornam d12. O bônus de manobra permanece +15, mas pode ser aplicado a qualquer aliado que aja contra o alvo antes do início do seu próximo turno. Consome 12 PM."
+              "text": "O empurrão em falha de CON é de 4,5m, o teste para resistir é dificultado em 20, e se usar ação padrão os dados se tornam d12. O bônus de manobra permanece +15, mas pode ser aplicado a qualquer aliado que aja contra o alvo antes do início do seu próximo turno. Consome 12 PM.",
+              "activationCost": 12,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         },
@@ -3379,51 +4352,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você declara um Veredito contra um alvo em uma área de 3m de diâmetro. O alvo resiste com POD. Se falhar, sofre 1d10 de penalidade no próximo teste oposto feito contra você ou contra um aliado seu até o início do seu próximo turno. Consome 2 PM."
+              "text": "Com uma ação bônus, você declara um Veredito contra um alvo em uma área de 3m de diâmetro. O alvo resiste com POD. Se falhar, sofre 1d10 de penalidade no próximo teste oposto feito contra você ou contra um aliado seu até o início do seu próximo turno. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Em vez de reduzir movimento, o Veredito pode pesar sobre uma defesa ativa. Se o alvo afetado tentar Esquivar ou Aparar uma ação de alguém que ele atacou, feriu, enganou ou ameaçou nesta cena, sofre a penalidade da Densa nesse teste. Consome"
+              "text": "Em vez de reduzir movimento, o Veredito pode pesar sobre uma defesa ativa. Se o alvo afetado tentar Esquivar ou Aparar uma ação de alguém que ele atacou, feriu, enganou ou ameaçou nesta cena, sofre a penalidade da Densa nesse teste. Consome",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "PM."
-            },
-            {
-              "level": 3,
-              "text": "A penalidade aumenta para 2d10. O Veredito pode ser lançado em cone de 4,5m ou área de 3m de diâmetro. Dura 2 turnos, consumindo 1 PM por turno mantido. Consome 4 PM."
+              "text": "PM. A penalidade aumenta para 2d10. O Veredito pode ser lançado em cone de 4,5m ou área de 3m de diâmetro. Dura 2 turnos, consumindo 1 PM por turno mantido. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 1,
+              "durationTurns": 2,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Você pode escolher até POD/10 alvos para serem imunes ao Veredito. Normalmente são aliados, membros da mesma caravana, testemunhas protegidas ou companheiros de julgamento."
+              "text": "Você pode escolher até POD/10 alvos para serem imunes ao Veredito. Normalmente são aliados, membros da mesma caravana, testemunhas protegidas ou companheiros de julgamento.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Você pode usar o Peso do Veredito como reação quando um alvo tentar Blefar, Intimidar, fugir de uma acusação, resistir a uma manobra ou Aparar/Esquivar contra alguém que ele feriu nesta cena. Se falhar em POD, sofre 3d10 de penalidade naquela ação. Consome 5 PM e 2 PM para manter."
+              "text": "Você pode usar o Peso do Veredito como reação quando um alvo tentar Blefar, Intimidar, fugir de uma acusação, resistir a uma manobra ou Aparar/Esquivar contra alguém que ele feriu nesta cena. Se falhar em POD, sofre 3d10 de penalidade naquela ação. Consome 5 PM e 2 PM para manter.",
+              "activationCost": 5,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "O Veredito passa a afetar manobras com mais força. Se o alvo afetado tentar resistir a Derrubar, Desarmar, Agarrar ou Empurrar, sofre a penalidade da Densa no teste oposto. Se o alvo estiver marcado narrativamente como “injusto” pela cena, o mestre pode permitir que a penalidade seja aplicada mesmo fora do alcance inicial, desde que o conflito ainda esteja acontecendo."
+              "text": "O Veredito passa a afetar manobras com mais força. Se o alvo afetado tentar resistir a Derrubar, Desarmar, Agarrar ou Empurrar, sofre a penalidade da Densa no teste oposto. Se o alvo estiver marcado narrativamente como “injusto” pela cena, o mestre pode permitir que a penalidade seja aplicada mesmo fora do alcance inicial, desde que o conflito ainda esteja acontecendo.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A penalidade aumenta para 4d10. Se o alvo falhar em um teste oposto por causa do Veredito, sofre 2d6 de dano mágico Denso. Se resistir ao Veredito, não sofre esse dano. Consome 6 PM e"
-            },
-            {
-              "level": 2,
-              "text": "PM para manter."
+              "text": "A penalidade aumenta para 4d10. Se o alvo falhar em um teste oposto por causa do Veredito, sofre 2d6 de dano mágico Denso. Se resistir ao Veredito, não sofre esse dano. Consome 6 PM e PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "O dano aumenta para 2d8. Se o alvo falhar em Blefar, Intimidação injusta, Esquivar, Aparar ou resistir a uma manobra por causa do Veredito, ele também sofre -10 no próximo teste social contra testemunhas da cena até o fim do encontro. Consome 6 PM e 3 PM para manter."
+              "text": "O dano aumenta para 2d8. Se o alvo falhar em Blefar, Intimidação injusta, Esquivar, Aparar ou resistir a uma manobra por causa do Veredito, ele também sofre -10 no próximo teste social contra testemunhas da cena até o fim do encontro. Consome 6 PM e 3 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A penalidade aumenta para 5d10 e o dano para 3d8. Se o alvo tiver eliminado outro ser nesta cena, testes contra ele enquanto estiver afetado pelo Veredito recebe +5. Consome 8 PM e 4 PM para manter."
+              "text": "A penalidade aumenta para 5d10 e o dano para 3d8. Se o alvo tiver eliminado outro ser nesta cena, testes contra ele enquanto estiver afetado pelo Veredito recebe +5. Consome 8 PM e 4 PM para manter.",
+              "activationCost": 8,
+              "maintenanceCost": 4,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Os dados de penalidade se tornam d12, o dano aumenta para 4d8, e o usuário recebe +20 em SAB para resistir ou interferir em Mundo , quando a disputa envolver julgamento, acusação, honra, reparação, mentira, fé ou veredito dentro da cena. Consome 12 PM e 5 PM para manter."
+              "text": "Os dados de penalidade se tornam d12, o dano aumenta para 4d8, e o usuário recebe +20 em SAB para resistir ou interferir em Mundo , quando a disputa envolver julgamento, acusação, honra, reparação, mentira, fé ou veredito dentro da cena. Consome 12 PM e 5 PM para manter.",
+              "activationCost": 12,
+              "maintenanceCost": 5,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             }
           ]
         }
@@ -3503,51 +4518,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "PV, e a divisão não aumenta o total curado, apenas distribui melhor. Vida temporária também pode ser dividida, quando o nível permitir. Esse efeito não cura mortos, não cria água real do nada e não remove sede automaticamente, salvo decisão narrativa do Mestre."
-            },
-            {
-              "level": 1,
-              "text": "Cura 1d8 em si. No Estilo Paleneu, se houver um aliado adjacente ferido, você pode dividir o resultado da cura entre você e esse aliado. Consome 1 PM."
+              "text": "PV, e a divisão não aumenta o total curado, apenas distribui melhor. Vida temporária também pode ser dividida, quando o nível permitir. Esse efeito não cura mortos, não cria água real do nada e não remove sede automaticamente, salvo decisão narrativa do Mestre. Cura 1d8 em si. No Estilo Paleneu, se houver um aliado adjacente ferido, você pode dividir o resultado da cura entre você e esse aliado. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Pode curar um alvo em 1d6. Você pode dividir essa cura entre até 2 alvos adjacentes entre si. Consome 2 PM."
+              "text": "Pode curar um alvo em 1d6. Você pode dividir essa cura entre até 2 alvos adjacentes entre si. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "Cura 2d8 em si, ou concede 5 de vida temporária em si ou em alvos. Você pode fazer a cura ou vida temporária ser dividida entre até 2 alvos em até 3m. Consome 3 PM."
+              "text": "Cura 2d8 em si, ou concede 5 de vida temporária em si ou em alvos. Você pode fazer a cura ou vida temporária ser dividida entre até 2 alvos em até 3m. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Cura 2d6 em um alvo, além de doenças leves, sangramento e envenenamento. Se remover sangramento, envenenamento ou doença leve de um alvo, outro alvo adjacente recebe +5 no próximo teste contra a mesma fonte até o fim da cena. Consome"
-            },
-            {
-              "level": 4,
-              "text": "PM."
+              "text": "Cura 2d6 em um alvo, além de doenças leves, sangramento e envenenamento. Se remover sangramento, envenenamento ou doença leve de um alvo, outro alvo adjacente recebe +5 no próximo teste contra a mesma fonte até o fim da cena. Consome PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Cura 3d8 em si, cura 2d6 em alvos em até 3m, ou concede 10 de vida temporária. Você pode dividir a vida temporária entre até 3 alvos em até 3m. Consome 5 PM."
+              "text": "Cura 3d8 em si, cura 2d6 em alvos em até 3m, ou concede 10 de vida temporária. Você pode dividir a vida temporária entre até 3 alvos em até 3m. Consome 5 PM.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Pode curar um alvo em 3d6. Você pode dividir essa cura entre até 3 alvos em até 3m. Consome 6 PM."
+              "text": "Pode curar um alvo em 3d6. Você pode dividir essa cura entre até 3 alvos em até 3m. Consome 6 PM.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "Cura 4d8 em si, ou concede 15 de vida temporária. Também pode remover Lesão Grave. Ao remover Lesão Grave, você pode conceder 5 de vida temporária a outro aliado em até 3m. Consome 7 PM."
+              "text": "Cura 4d8 em si, ou concede 15 de vida temporária. Também pode remover Lesão Grave. Ao remover Lesão Grave, você pode conceder 5 de vida temporária a outro aliado em até 3m. Consome 7 PM.",
+              "activationCost": 7,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Pode curar um alvo em 4d6. Você pode dividir essa cura entre até 4 alvos em até 3m, mas apenas um deles pode receber mais da metade do total curado. Consome 8 PM."
+              "text": "Pode curar um alvo em 4d6. Você pode dividir essa cura entre até 4 alvos em até 3m, mas apenas um deles pode receber mais da metade do total curado. Consome 8 PM.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "Cura 5d8 em si, além de poder curar doenças raras em 1d4 horas. Durante esse tratamento prolongado, até 1d4 aliados que ajudarem no cuidado recebem +5 em Medicina, Religião ou Sobrevivência relacionados ao tratamento, à viagem ou à manutenção do paciente. Consome 9 PM."
+              "text": "Cura 5d8 em si, além de poder curar doenças raras em 1d4 horas. Durante esse tratamento prolongado, até 1d4 aliados que ajudarem no cuidado recebem +5 em Medicina, Religião ou Sobrevivência relacionados ao tratamento, à viagem ou à manutenção do paciente. Consome 9 PM.",
+              "activationCost": 9,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Pode curar um alvo em 6d6 ou conceder 25 de vida temporária. A cura ou vida temporária pode ser dividida entre até 5 alvos em até 6m. Se todos os alvos receberem ao menos 1 ponto de cura ou vida temporária, eles podem remover sangramento ou envenenamento. Consome 12 PM."
+              "text": "Pode curar um alvo em 6d6 ou conceder 25 de vida temporária. A cura ou vida temporária pode ser dividida entre até 5 alvos em até 6m. Se todos os alvos receberem ao menos 1 ponto de cura ou vida temporária, eles podem remover sangramento ou envenenamento. Consome 12 PM.",
+              "activationCost": 12,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         },
@@ -3562,47 +4619,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você anuncia um perigo concreto envolvendo um alvo em uma área de 3m de diâmetro. O alvo resiste com POD. Se falhar e realizar a ação prevista até o início do seu próximo turno, sofre 1d10 de penalidade no teste relacionado. Consome 2 PM."
+              "text": "Com uma ação bônus, você anuncia um perigo concreto envolvendo um alvo em uma área de 3m de diâmetro. O alvo resiste com POD. Se falhar e realizar a ação prevista até o início do seu próximo turno, sofre 1d10 de penalidade no teste relacionado. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Em vez de reduzir movimento genericamente, o Presságio afeta travessia perigosa. Se o alvo afetado tentar atravessar uma porta, corredor, vau, ponte, passagem estreita ou aproximar-se de um aliado que você avisou, sofre a penalidade da Densa no teste relacionado à ação, se houver. Consome 3 PM."
+              "text": "Em vez de reduzir movimento genericamente, o Presságio afeta travessia perigosa. Se o alvo afetado tentar atravessar uma porta, corredor, vau, ponte, passagem estreita ou aproximar-se de um aliado que você avisou, sofre a penalidade da Densa no teste relacionado à ação, se houver. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A penalidade aumenta para 2d10. O Presságio pode ser lançado em cone de 4,5m ou área de 3m de diâmetro. Dura 2 turnos, consumindo 1 PM por turno mantido. Consome 4 PM."
+              "text": "A penalidade aumenta para 2d10. O Presságio pode ser lançado em cone de 4,5m ou área de 3m de diâmetro. Dura 2 turnos, consumindo 1 PM por turno mantido. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 1,
+              "durationTurns": 2,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Você pode escolher até POD/10 alvos para serem imunes ao Presságio. Normalmente são aliados, familiares, peregrinos, membros da tenda ou guardas avisados."
+              "text": "Você pode escolher até POD/10 alvos para serem imunes ao Presságio. Normalmente são aliados, familiares, peregrinos, membros da tenda ou guardas avisados.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Você pode usar a Voz do Presságio como reação quando um inimigo declarar ataque, fuga, manobra, travessia, Esquiva, Aparar ou uma ação que você consiga anunciar em uma frase curta. Se o alvo falhar em POD, sofre 3d10 de penalidade naquela ação. A partir deste nível, mantém a interação normal da Densa com Mundo. Consome 5 PM e 2 PM para manter."
+              "text": "Você pode usar a Voz do Presságio como reação quando um inimigo declarar ataque, fuga, manobra, travessia, Esquiva, Aparar ou uma ação que você consiga anunciar em uma frase curta. Se o alvo falhar em POD, sofre 3d10 de penalidade naquela ação. A partir deste nível, mantém a interação normal da Densa com Mundo. Consome 5 PM e 2 PM para manter.",
+              "activationCost": 5,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Se o Presságio afetar uma ação contra um aliado que ouviu claramente seu aviso, esse aliado recebe +5 em Esquivar, Aparar ou resistir à manobra contra aquela ação. Esse bônus só vale contra o perigo anunciado. Consome 5 PM e 2 PM para manter."
+              "text": "Se o Presságio afetar uma ação contra um aliado que ouviu claramente seu aviso, esse aliado recebe +5 em Esquivar, Aparar ou resistir à manobra contra aquela ação. Esse bônus só vale contra o perigo anunciado. Consome 5 PM e 2 PM para manter.",
+              "activationCost": 5,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A penalidade aumenta para 4d10. Se o alvo falhar na ação prevista por causa do Presságio, sofre 2d6 de dano mágico Denso. Se resistir ao Presságio, não sofre esse dano. Consome"
-            },
-            {
-              "level": 6,
-              "text": "PM e 2 PM para manter."
+              "text": "A penalidade aumenta para 4d10. Se o alvo falhar na ação prevista por causa do Presságio, sofre 2d6 de dano mágico Denso. Se resistir ao Presságio, não sofre esse dano. Consome PM e 2 PM para manter.",
+              "activationCost": 2,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "O dano aumenta para 2d8. Se o alvo previsto tentar enganar, fintar ou blefar contra alguém que ouviu o Presságio, sofre metade da penalidade da Densa também em Blefar ou Lábia naquela ação. Consome 6 PM e 3 PM para manter."
+              "text": "O dano aumenta para 2d8. Se o alvo previsto tentar enganar, fintar ou blefar contra alguém que ouviu o Presságio, sofre metade da penalidade da Densa também em Blefar ou Lábia naquela ação. Consome 6 PM e 3 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A penalidade aumenta para 5d10 e o dano para 3d8. Se a ação prevista envolver atacar um alvo ferido, atravessar uma passagem protegida ou fugir carregando algo importante, a penalidade também se aplica ao primeiro teste de Esquivar ou Aparar do alvo até o início do próximo turno dele. Consome 8 PM e 4 PM para manter."
+              "text": "A penalidade aumenta para 5d10 e o dano para 3d8. Se a ação prevista envolver atacar um alvo ferido, atravessar uma passagem protegida ou fugir carregando algo importante, a penalidade também se aplica ao primeiro teste de Esquivar ou Aparar do alvo até o início do próximo turno dele. Consome 8 PM e 4 PM para manter.",
+              "activationCost": 8,
+              "maintenanceCost": 4,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Os dados de penalidade se tornam d12, o dano aumenta para 4d8, e o usuário recebe +20 em SAB para resistir ou interferir em Mundo quando a disputa envolver presságio, proteção de aliados avisados, travessia, promessa, fuga ou perigo anunciado dentro da cena. Aliados que ouviu o aviso aumentam em +10 em Esquivar, Aparar ou resistir à manobra contra aquela ação. Consome 12 PM e 5 PM para manter."
+              "text": "Os dados de penalidade se tornam d12, o dano aumenta para 4d8, e o usuário recebe +20 em SAB para resistir ou interferir em Mundo quando a disputa envolver presságio, proteção de aliados avisados, travessia, promessa, fuga ou perigo anunciado dentro da cena. Aliados que ouviu o aviso aumentam em +10 em Esquivar, Aparar ou resistir à manobra contra aquela ação. Consome 12 PM e 5 PM para manter.",
+              "activationCost": 12,
+              "maintenanceCost": 5,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             }
           ]
         }
@@ -3676,49 +4779,99 @@ window.MARUFIA_DB = {
           "name": "Cúbito Da Balança",
           "regionCode": "L",
           "region": "Akhet e Habash",
-          "baseType": "Base",
+          "baseType": "Densa",
           "regional": true,
           "description": "REGIÃO L - CÚBITO DA BALANÇA O usuário ativa a Densa como ação bônus O alvo resiste com POD. Se falhar, sofre a penalidade da Densa em ações ligadas a manter postura, segurar arma, resistir a desarme, aparar ou realizar manobras contra o usuário.",
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você projeta Energia Densa a partir do corpo em uma área de 3m de diâmetro. Alvos afetados resistem com POD. Se falharem, sofrem 1d10 de penalidade em testes para resistir a Desarmar, Derrubar, Empurrar ou Agarrar feitos por você até o início do seu próximo turno. Consome 2 PM."
+              "text": "Com uma ação bônus, você projeta Energia Densa a partir do corpo em uma área de 3m de diâmetro. Alvos afetados resistem com POD. Se falharem, sofrem 1d10 de penalidade em testes para resistir a Desarmar, Derrubar, Empurrar ou Agarrar feitos por você até o início do seu próximo turno. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "O Cúbito da Balança prejudica a postura. Um alvo afetado que tente Aparar ou resistir a Desarmar sofre a penalidade da Densa nesse teste. Consome 3 PM."
+              "text": "O Cúbito da Balança prejudica a postura. Um alvo afetado que tente Aparar ou resistir a Desarmar sofre a penalidade da Densa nesse teste. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A penalidade aumenta para 2d10. Pode ser usada em cone de 4,5m ou área de 3m de diâmetro. Dura 2 turnos, consumindo 1 PM por turno mantido. Consome 4 PM."
+              "text": "A penalidade aumenta para 2d10. Pode ser usada em cone de 4,5m ou área de 3m de diâmetro. Dura 2 turnos, consumindo 1 PM por turno mantido. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 1,
+              "durationTurns": 2,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Você pode escolher até POD/10 alvos para serem imunes ao Cúbito da Balança."
+              "text": "Você pode escolher até POD/10 alvos para serem imunes ao Cúbito da Balança.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Você pode usar o Cúbito da Balança como reação quando um alvo a até 3m tentar Aparar, Bloquear com arma, resistir a Desarmar ou realizar uma manobra contra você. Se falhar em POD, sofre 3d10 de penalidade nessa ação. A partir deste nível, mantém a interação normal da Densa com Mundo. Consome 5 PM e 2 PM para manter."
+              "text": "Você pode usar o Cúbito da Balança como reação quando um alvo a até 3m tentar Aparar, Bloquear com arma, resistir a Desarmar ou realizar uma manobra contra você. Se falhar em POD, sofre 3d10 de penalidade nessa ação. A partir deste nível, mantém a interação normal da Densa com Mundo. Consome 5 PM e 2 PM para manter.",
+              "activationCost": 5,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Se você estiver usando khopesh, foice-espada, lâmina curva ou arma cultural kemetiu, um alvo afetado pelo Cúbito da Balança sofre -5 para resistir a Desarmar além da penalidade normal da Densa. Esse -5 só vale contra uma tentativa por rodada."
+              "text": "Se você estiver usando khopesh, foice-espada, lâmina curva ou arma cultural kemetiu, um alvo afetado pelo Cúbito da Balança sofre -5 para resistir a Desarmar além da penalidade normal da Densa. Esse -5 só vale contra uma tentativa por rodada.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A penalidade aumenta para 4d10. Se o alvo falhar em resistir a Desarmar, Derrubar ou Empurrar por causa da penalidade, sofre 2d6 de dano mágico Denso, representando a pressão da própria postura quebrada. Se resistir à Densa, não sofre esse dano. Consome 6 PM e 2 PM para manter."
+              "text": "A penalidade aumenta para 4d10. Se o alvo falhar em resistir a Desarmar, Derrubar ou Empurrar por causa da penalidade, sofre 2d6 de dano mágico Denso, representando a pressão da própria postura quebrada. Se resistir à Densa, não sofre esse dano. Consome 6 PM e 2 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "O dano aumenta para 2d8. Se o alvo for desarmado enquanto afetado pelo Cúbito da Balança, ele sofre -5 no próximo teste de Lutar até o início do próximo turno dele, pois precisa recuperar o eixo corporal. Consome 6 PM e 3 PM para manter."
+              "text": "O dano aumenta para 2d8. Se o alvo for desarmado enquanto afetado pelo Cúbito da Balança, ele sofre -5 no próximo teste de Lutar até o início do próximo turno dele, pois precisa recuperar o eixo corporal. Consome 6 PM e 3 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A penalidade aumenta para 5d10 e o dano para 3d8. Se o alvo estiver usando escudo, arma pesada ou arma de haste, você pode aplicar a penalidade da Densa também no primeiro teste dele para manter a guarda contra você. Consome 8 PM e 4 PM para manter."
+              "text": "A penalidade aumenta para 5d10 e o dano para 3d8. Se o alvo estiver usando escudo, arma pesada ou arma de haste, você pode aplicar a penalidade da Densa também no primeiro teste dele para manter a guarda contra você. Consome 8 PM e 4 PM para manter.",
+              "activationCost": 8,
+              "maintenanceCost": 4,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Os dados de penalidade se tornam d12, o dano aumenta para 4d8, e você recebe +20 em SAB para resistir ou interferir em Mundo. Consome 12 PM e 5 PM para manter."
+              "text": "Os dados de penalidade se tornam d12, o dano aumenta para 4d8, e você recebe +20 em SAB para resistir ou interferir em Mundo. Consome 12 PM e 5 PM para manter.",
+              "activationCost": 12,
+              "maintenanceCost": 5,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             }
           ]
         },
@@ -3733,51 +4886,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, depois de tocar com a mão uma superfície firme ou objeto segurado, você libera um Pulso de Impacto contra um alvo a até 1m dessa superfície ou objeto. O alvo sofre 1d8 de dano contundente mágico. Se estiver em barco, doca, ponte, carroça ou superfície instável, o alvo faz CON; se falhar, sofre -5 no próximo teste de Atletismo, Cavalgar ou Navegação até o início do seu próximo turno. Consome 1 PM."
+              "text": "Com uma ação bônus, depois de tocar com a mão uma superfície firme ou objeto segurado, você libera um Pulso de Impacto contra um alvo a até 1m dessa superfície ou objeto. O alvo sofre 1d8 de dano contundente mágico. Se estiver em barco, doca, ponte, carroça ou superfície instável, o alvo faz CON; se falhar, sofre -5 no próximo teste de Atletismo, Cavalgar ou Navegação até o início do seu próximo turno. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Você pode lançar a Impacto até 9m. Se o Pulso for conduzido por superfície contínua tocada por você, ele pode alcançar um alvo a até 9m que esteja sobre a mesma superfície. Consome 1 PM."
+              "text": "Você pode lançar a Impacto até 9m. Se o Pulso for conduzido por superfície contínua tocada por você, ele pode alcançar um alvo a até 9m que esteja sobre a mesma superfície. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A magia causa 2d8 de dano. Se o alvo estiver carregando carga, escudo, remo, ferramenta ou arma de haste, ele sofre -5 no próximo teste para manter posse, equilíbrio ou controle desse objeto em falha de CON. Consome 2 PM."
+              "text": "A magia causa 2d8 de dano. Se o alvo estiver carregando carga, escudo, remo, ferramenta ou arma de haste, ele sofre -5 no próximo teste para manter posse, equilíbrio ou controle desse objeto em falha de CON. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Ao acertar o Pulso, o alvo faz CON. Se falhar, fica atordoado por 1 turno. Consome 3 PM."
+              "text": "Ao acertar o Pulso, o alvo faz CON. Se falhar, fica atordoado por 1 turno. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": 1,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "A magia causa 3d8 de dano. Você pode adicionar uma Finta, dificultando Esquiva em 10 e negando cobertura parcial, ou pode usar o Pulso para proteger carga: um objeto, caixa, vela, remo, leme ou porta tocada por você recebe 5 de proteção contra dano físico até o início do seu próximo turno. Escolha um dos efeitos. Consome 4 PM."
+              "text": "A magia causa 3d8 de dano. Você pode adicionar uma Finta, dificultando Esquiva em 10 e negando cobertura parcial, ou pode usar o Pulso para proteger carga: um objeto, caixa, vela, remo, leme ou porta tocada por você recebe 5 de proteção contra dano físico até o início do seu próximo turno. Escolha um dos efeitos. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Você pode descarregar o Pulso por uma superfície em até 3m de diâmetro. Criaturas escolhidas por você sobre essa superfície fazem CON; em falha, são empurradas 1m e sofrem metade do dano. Apenas um alvo principal sofre dano completo. Consome"
-            },
-            {
-              "level": 5,
-              "text": "PM."
+              "text": "Você pode descarregar o Pulso por uma superfície em até 3m de diâmetro. Criaturas escolhidas por você sobre essa superfície fazem CON; em falha, são empurradas 1m e sofrem metade do dano. Apenas um alvo principal sofre dano completo. Consome PM.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A magia causa 4d8 de dano. Consome 6 PM."
+              "text": "A magia causa 4d8 de dano. Consome 6 PM.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Com uma ação padrão, você realiza um Pulso pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Se o Pulso for conduzido por convés, mastro, porta, pedra ou estrutura, você não é empurrado; a superfície absorve o recuo. Consome"
-            },
-            {
-              "level": 8,
-              "text": "PM."
+              "text": "Com uma ação padrão, você realiza um Pulso pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Se o Pulso for conduzido por convés, mastro, porta, pedra ou estrutura, você não é empurrado; a superfície absorve o recuo. Consome PM.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A magia causa 5d8, ou 5d10 com ação padrão. Ao usar o Pulso em uma superfície de barco, ponte, porta ou carroça, você pode escolher até 2 alvos secundários; eles fazem CON e sofrem metade do dano em falha. Consome 10 PM."
+              "text": "A magia causa 5d8, ou 5d10 com ação padrão. Ao usar o Pulso em uma superfície de barco, ponte, porta ou carroça, você pode escolher até 2 alvos secundários; eles fazem CON e sofrem metade do dano em falha. Consome 10 PM.",
+              "activationCost": 10,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "O empurrão em falha de CON se torna 4,5m, o teste para resistir é dificultado em 20, e se usar ação padrão os dados se tornam d12. Além disso, quando usado para proteger carga, porta, leme, mastro ou estrutura tocada, a proteção aumenta para 10 contra dano físico até o início do seu próximo turno. Consome 12 PM."
+              "text": "O empurrão em falha de CON se torna 4,5m, o teste para resistir é dificultado em 20, e se usar ação padrão os dados se tornam d12. Além disso, quando usado para proteger carga, porta, leme, mastro ou estrutura tocada, a proteção aumenta para 10 contra dano físico até o início do seu próximo turno. Consome 12 PM.",
+              "activationCost": 12,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         }
@@ -3849,47 +5044,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você libera Impacto pela palma da mão, punho ou toque no cabo da lança. Um alvo a até 1m sofre 1d8 de dano contundente mágico. Se falhar em CON, é empurrado 1m. Consome 1 PM."
+              "text": "Com uma ação bônus, você libera Impacto pela palma da mão, punho ou toque no cabo da lança. Um alvo a até 1m sofre 1d8 de dano contundente mágico. Se falhar em CON, é empurrado 1m. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Você pode lançar o Impacto até 9m. No Estilo Masafir, o lançamento parece uma pancada seca de ar quente. Consome 1 PM."
+              "text": "Você pode lançar o Impacto até 9m. No Estilo Masafir, o lançamento parece uma pancada seca de ar quente. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A magia causa 2d8 de dano. Se o alvo for empurrado pelo Sopro do Simum, você pode se mover 3m sem provocar ataque de oportunidade desse alvo, apenas para recuperar espaço. Consome 2 PM."
+              "text": "A magia causa 2d8 de dano. Se o alvo for empurrado pelo Sopro do Simum, você pode se mover 3m sem provocar ataque de oportunidade desse alvo, apenas para recuperar espaço. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Ao acertar, o alvo faz CON. Se falhar, fica atordoado por 1 turno. No Estilo Masafir, isso representa perda de fôlego pelo choque seco. Consome 3 PM."
+              "text": "Ao acertar, o alvo faz CON. Se falhar, fica atordoado por 1 turno. No Estilo Masafir, isso representa perda de fôlego pelo choque seco. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": 1,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "A magia causa 3d8 de dano. Você pode escolher entre uma Finta, dificultando Esquiva em 10, ou o Sopro Aberto: se o alvo falhar em CON, além de ser empurrado, sofre -5 no próximo ataque contra você até o início do seu próximo turno. Consome"
-            },
-            {
-              "level": 4,
-              "text": "PM."
+              "text": "A magia causa 3d8 de dano. Você pode escolher entre uma Finta, dificultando Esquiva em 10, ou o Sopro Aberto: se o alvo falhar em CON, além de ser empurrado, sofre -5 no próximo ataque contra você até o início do seu próximo turno. Consome PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Você pode liberar o Sopro em uma meia-lua ao seu redor. Criaturas escolhidas em até 3m de diâmetro fazem CON; em falha, são empurradas 3m e sofrem metade do dano. Um alvo principal sofre dano completo. Consome 5 PM."
+              "text": "Você pode liberar o Sopro em uma meia-lua ao seu redor. Criaturas escolhidas em até 3m de diâmetro fazem CON; em falha, são empurradas 3m e sofrem metade do dano. Um alvo principal sofre dano completo. Consome 5 PM.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A magia causa 4d8 de dano. O empurrão aumenta para 6m em falha de CON. Consome 6 PM."
+              "text": "A magia causa 4d8 de dano. O empurrão aumenta para 6m em falha de CON. Consome 6 PM.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Com uma ação padrão, você realiza um Sopro pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Você é empurrado 3m, mas não provoca ataque de oportunidade do alvo atingido. Consome 8 PM."
+              "text": "Com uma ação padrão, você realiza um Sopro pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Você é empurrado 3m, mas não provoca ataque de oportunidade do alvo atingido. Consome 8 PM.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A magia causa 5d8, ou 5d10 com ação padrão. Se usar o Sopro para abrir espaço e em seguida atacar com uma lança curta de duas pontas até o fim do seu próximo turno, recebe +5 no primeiro teste de Lutar com a lança contra um alvo que tenha sido empurrado. Consome 10 PM."
+              "text": "A magia causa 5d8, ou 5d10 com ação padrão. Se usar o Sopro para abrir espaço e em seguida atacar com uma lança curta de duas pontas até o fim do seu próximo turno, recebe +5 no primeiro teste de Lutar com a lança contra um alvo que tenha sido empurrado. Consome 10 PM.",
+              "activationCost": 10,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "O empurrão em falha de CON se torna 4,5m, o teste para resistir é dificultado em 20, e se usar ação padrão os dados se tornam d12. Se três ou mais inimigos forem afetados pelo Sopro em área, você recupera espaço suficiente para usar Cargas de Faceta até o início do seu próximo turno, mesmo que estivesse parcialmente cercado. Consome 12 PM."
+              "text": "O empurrão em falha de CON se torna 4,5m, o teste para resistir é dificultado em 20, e se usar ação padrão os dados se tornam d12. Se três ou mais inimigos forem afetados pelo Sopro em área, você recupera espaço suficiente para usar Cargas de Faceta até o início do seu próximo turno, mesmo que estivesse parcialmente cercado. Consome 12 PM.",
+              "activationCost": 12,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         }
@@ -3997,43 +5238,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você imbui sua arma com Energia Fina, causando 1d6 de dano cortante mágico. Enquanto a arma estiver imbuída, se você Aparar com sucesso, pode usar sua reação para realizar a Resposta de Jade contra o atacante. Se acertar, causa apenas o dano normal da arma e +2 de dano físico. Consome 1 PM."
+              "text": "Com uma ação bônus, você imbui sua arma com Energia Fina, causando 1d6 de dano cortante mágico. Enquanto a arma estiver imbuída, se você Aparar com sucesso, pode usar sua reação para realizar a Resposta de Jade contra o atacante. Se acertar, causa apenas o dano normal da arma e +2 de dano físico. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Você pode lançar a Magia Fina até 9m. A Resposta de Jade só funciona em combate corpo a corpo. Consome 1 PM."
+              "text": "Você pode lançar a Magia Fina até 9m. A Resposta de Jade só funciona em combate corpo a corpo. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A magia causa 2d6 de dano. A Resposta de Jade recebe +5 no teste de ataque contra o alvo aparado. Consome 2 PM."
+              "text": "A magia causa 2d6 de dano. A Resposta de Jade recebe +5 no teste de ataque contra o alvo aparado. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Se a Resposta de Jade acertar, o alvo sofre -5 no próximo teste de Aparar contra você até o início do seu próximo turno."
+              "text": "Se a Resposta de Jade acertar, o alvo sofre -5 no próximo teste de Aparar contra você até o início do seu próximo turno.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "A magia causa 2d8 de dano e pode ficar imbuída por 4 turnos. Você aprende a Varredura do Guandao: com uma ação completa, pode atacar até 2 inimigos adjacentes ao seu alcance. O primeiro alvo sofre o dano normal da arma + dano da Magia Fina; o segundo sofre apenas o dano da arma. A Resposta de Jade passa a aplicar o dano mágico da Magia Fina, mas apenas uma vez por rodada. Consome 4 PM e 1 PM por turno mantido."
+              "text": "A magia causa 2d8 de dano e pode ficar imbuída por 4 turnos. Você aprende a Varredura do Guandao: com uma ação completa, pode atacar até 2 inimigos adjacentes ao seu alcance. O primeiro alvo sofre o dano normal da arma + dano da Magia Fina; o segundo sofre apenas o dano da arma. A Resposta de Jade passa a aplicar o dano mágico da Magia Fina, mas apenas uma vez por rodada. Consome 4 PM e 1 PM por turno mantido.",
+              "activationCost": 4,
+              "maintenanceCost": 1,
+              "durationTurns": 4,
+              "action": "full",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Se você acertar um alvo que tenha sido atingido por sua Resposta de Jade desde o início do seu último turno, recebe +5 em lutar contra esse alvo até o início do seu próximo turno."
+              "text": "Se você acertar um alvo que tenha sido atingido por sua Resposta de Jade desde o início do seu último turno, recebe +5 em lutar contra esse alvo até o início do seu próximo turno.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A magia causa 3d8 de dano. A Varredura do Guandao permanece em 2 inimigos adjacentes, mas agora ambos recebem o dano completo."
+              "text": "A magia causa 3d8 de dano. A Varredura do Guandao permanece em 2 inimigos adjacentes, mas agora ambos recebem o dano completo.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Em vez de criar uma arma natural. A Resposta de Jade passa a aplicar o dano mágico da Magia Fina, mas duas vezes por rodada. Consome 4 PM e dura apenas o giro."
+              "text": "Em vez de criar uma arma natural. A Resposta de Jade passa a aplicar o dano mágico da Magia Fina, mas duas vezes por rodada. Consome 4 PM e dura apenas o giro.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A magia causa 4d8 de dano. Agora a Varredura do Guandao: é usada com a ação bonus, atacando ainda até 2 inimigos adjacentes ao seu alcance. Consome 8 PM e 3 PM por turno."
+              "text": "A magia causa 4d8 de dano. Agora a Varredura do Guandao: é usada com a ação bonus, atacando ainda até 2 inimigos adjacentes ao seu alcance. Consome 8 PM e 3 PM por turno.",
+              "activationCost": 8,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "A arma natural da Magia Fina pode ser usada normalmente se o jogador preferir. No Estilo Mingorano, a Varredura do Guandao pode atingir até 3 alvos adjacentes. Consome 5 PM para arma natural, ou 8 PM para a Fina de nível 10."
+              "text": "A arma natural da Magia Fina pode ser usada normalmente se o jogador preferir. No Estilo Mingorano, a Varredura do Guandao pode atingir até 3 alvos adjacentes. Consome 5 PM para arma natural, ou 8 PM para a Fina de nível 10.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             }
           ]
         },
@@ -4048,47 +5339,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Cura 1d8 em si. Além disso, você pode aplicar Aliviar Dor em si mesmo, recebe 5 de vida temporária. Consome 1 PM."
+              "text": "Cura 1d8 em si. Além disso, você pode aplicar Aliviar Dor em si mesmo, recebe 5 de vida temporária. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Pode curar um alvo em 1d6. O alvo curado pode receber Aliviar Dor, sendo 5 seu valor ou Firmar Pulso, dando 5 de vigor efetivo Consome 2 PM."
+              "text": "Pode curar um alvo em 1d6. O alvo curado pode receber Aliviar Dor, sendo 5 seu valor ou Firmar Pulso, dando 5 de vigor efetivo Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "Cura 2d8 em si. O Aliviar Dor ganha aumenta o ganho de vida temporário próprio para +10. Consome 3 PM. Ao entrar em Morrendo pode gastar uma reação para remover a condição, mas permanece inconsciente."
+              "text": "Cura 2d8 em si. O Aliviar Dor ganha aumenta o ganho de vida temporário próprio para +10. Consome 3 PM. Ao entrar em Morrendo pode gastar uma reação para remover a condição, mas permanece inconsciente.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Cura 2d6 em um alvo, além de doenças leves, sangramento e envenenamento. O valor de vida temporária do aliviar dor mantém em 10, mas para outros também, e o valor de vigor efetivo de firmar pulso aumenta para 10. Consome 4 PM."
+              "text": "Cura 2d6 em um alvo, além de doenças leves, sangramento e envenenamento. O valor de vida temporária do aliviar dor mantém em 10, mas para outros também, e o valor de vigor efetivo de firmar pulso aumenta para 10. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Cura 3d8 em si, cura 2d6 em alvos até 3m e concede 6 de vida temporária. Usando ação completa pode manter essa área de cura. Consome 5 PM para ativar e 2PM manter"
+              "text": "Cura 3d8 em si, cura 2d6 em alvos até 3m e concede 6 de vida temporária. Usando ação completa pode manter essa área de cura. Consome 5 PM para ativar e 2PM manter",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "full",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Pode curar um alvo em 3d6. O valor de vida temporaria do aliviar dor aumenta para 15, e o valor de vigor efetivo de firmar pulso aumenta para 15. Se o alvo estiver sob penalidade temporária de dor, veneno, sangramento, doença leve, Receoso ou choque, pode reduzir essa penalidade em 10 até o início do seu próximo turno. Consome 6 PM para ativar e continua sendo"
-            },
-            {
-              "level": 2,
-              "text": "PM manter."
+              "text": "Pode curar um alvo em 3d6. O valor de vida temporaria do aliviar dor aumenta para 15, e o valor de vigor efetivo de firmar pulso aumenta para 15. Se o alvo estiver sob penalidade temporária de dor, veneno, sangramento, doença leve, Receoso ou choque, pode reduzir essa penalidade em 10 até o início do seu próximo turno. Consome 6 PM para ativar e continua sendo PM manter.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "Cura 4d8 em si,cura 3d6 em alvos até 4m e concede 9 de vida temporária. Também pode remover Lesão Grave. Ao remover Lesão Grave, o alvo recebe +10 no próximo teste físico ou mental diretamente ligado à recuperação desse ferimento. Consome 7 PM para ativar e continua sendo 4PM manter."
+              "text": "Cura 4d8 em si,cura 3d6 em alvos até 4m e concede 9 de vida temporária. Também pode remover Lesão Grave. Ao remover Lesão Grave, o alvo recebe +10 no próximo teste físico ou mental diretamente ligado à recuperação desse ferimento. Consome 7 PM para ativar e continua sendo 4PM manter.",
+              "activationCost": 7,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Pode curar um alvo em 5d6. O valor de vida temporária do aliviar dor aumenta para 20, e o valor de vigor efetivo de firmar pulso aumenta para 20. O alvo curado pode escolher dois efeitos entre Aliviar Dor e Firmar Pulso, mas os bônus não podem ser usados no mesmo teste. Consome 8 PM."
+              "text": "Pode curar um alvo em 5d6. O valor de vida temporária do aliviar dor aumenta para 20, e o valor de vigor efetivo de firmar pulso aumenta para 20. O alvo curado pode escolher dois efeitos entre Aliviar Dor e Firmar Pulso, mas os bônus não podem ser usados no mesmo teste. Consome 8 PM.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "Cura 5d8 em si,cura 3d8 em alvos até 5m e concede 12 de vida temporária, além de poder curar doenças raras em 1d4 horas, . Durante o tratamento prolongado, o conjurador recebe +10 em Medicina ou Arte/Ofício caso esteja usando agulhas, talas, ervas, compressas ou instrumentos de cura adequados. Consome 9 PM para ativar e continua sendo 6 PM manter."
+              "text": "Cura 5d8 em si,cura 3d8 em alvos até 5m e concede 12 de vida temporária, além de poder curar doenças raras em 1d4 horas, . Durante o tratamento prolongado, o conjurador recebe +10 em Medicina ou Arte/Ofício caso esteja usando agulhas, talas, ervas, compressas ou instrumentos de cura adequados. Consome 9 PM para ativar e continua sendo 6 PM manter.",
+              "activationCost": 9,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Pode curar um alvo em 6d6 ou conceder 25 de vida temporária. O valor de vida temporaria do aliviar dor aumenta para 25, e o valor de vigor efetivo de firmar pulso aumenta para 25. O alvo curado pode remover completamente uma penalidade temporária corporal de até -15, ou receber +15 em um teste de CON ou SAB, feito até o início do próximo turno. Consome 12 PM para ativar e 6 para manter."
+              "text": "Pode curar um alvo em 6d6 ou conceder 25 de vida temporária. O valor de vida temporaria do aliviar dor aumenta para 25, e o valor de vigor efetivo de firmar pulso aumenta para 25. O alvo curado pode remover completamente uma penalidade temporária corporal de até -15, ou receber +15 em um teste de CON ou SAB, feito até o início do próximo turno. Consome 12 PM para ativar e 6 para manter.",
+              "activationCost": 12,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         }
@@ -4196,47 +5533,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Depois de acertar um ataque desarmado com mão, punho, palma, cotovelo ou golpe corporal próximo, você pode gastar sua ação bônus para causar 1d8 de dano contundente mágico. O alvo faz CON; se falhar, sofre Quebra de Fôlego -5 até o início do seu próximo turno. Consome 1 PM."
+              "text": "Depois de acertar um ataque desarmado com mão, punho, palma, cotovelo ou golpe corporal próximo, você pode gastar sua ação bônus para causar 1d8 de dano contundente mágico. O alvo faz CON; se falhar, sofre Quebra de Fôlego -5 até o início do seu próximo turno. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Você pode lançar a Magia Impacto até 9m. Se usada à distância, causa apenas o dano da Impacto; a Quebra de Fôlego só se aplica se o alvo estiver a até 1,5m de você ou se o mestre permitir uma cena de toque/palma muito clara. Consome 1 PM."
+              "text": "Você pode lançar a Magia Impacto até 9m. Se usada à distância, causa apenas o dano da Impacto; a Quebra de Fôlego só se aplica se o alvo estiver a até 1,5m de você ou se o mestre permitir uma cena de toque/palma muito clara. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A magia causa 2d8 de dano. Se o alvo estiver sob Quebra de Fôlego, o próximo ataque desarmado feito por você contra ele recebe +5 de acerto até o início do seu próximo turno. Consome"
-            },
-            {
-              "level": 2,
-              "text": "PM."
+              "text": "A magia causa 2d8 de dano. Se o alvo estiver sob Quebra de Fôlego, o próximo ataque desarmado feito por você contra ele recebe +5 de acerto até o início do seu próximo turno. Consome PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Ao acertar o ataque, o alvo faz CON. Se falhar, fica atordoado por 1 turno. No Estilo Rajira, isso representa interrupção de respiração, choque no peito, no queixo, nas costelas ou em ponto vital. Consome 3 PM."
+              "text": "Ao acertar o ataque, o alvo faz CON. Se falhar, fica atordoado por 1 turno. No Estilo Rajira, isso representa interrupção de respiração, choque no peito, no queixo, nas costelas ou em ponto vital. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": 1,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "A magia causa 3d8 de dano. A Quebra de Fôlego aumenta para -10, ou reduz o Bloqueio em 2. Você pode escolher entre aplicar Quebra de Fôlego ou usar uma Finta, dificultando Esquiva em 10 e negando cobertura parcial. Consome 4 PM."
+              "text": "A magia causa 3d8 de dano. A Quebra de Fôlego aumenta para -10, ou reduz o Bloqueio em 2. Você pode escolher entre aplicar Quebra de Fôlego ou usar uma Finta, dificultando Esquiva em 10 e negando cobertura parcial. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Você pode descarregar a energia em um círculo curto ao redor do corpo. Criaturas escolhidas em até 3m de diâmetro fazem CON; em falha, sofrem metade do dano e Quebra de Fôlego - 5. Um alvo principal sofre o dano completo. Consome 5 PM."
+              "text": "Você pode descarregar a energia em um círculo curto ao redor do corpo. Criaturas escolhidas em até 3m de diâmetro fazem CON; em falha, sofrem metade do dano e Quebra de Fôlego - 5. Um alvo principal sofre o dano completo. Consome 5 PM.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A magia causa 4d8 de dano. Se um alvo sob Quebra de Fôlego falhar em Esquivar, Aparar, Atletismo, Lutar/Brigar ou resistir a uma manobra contra você, você pode se mover 1,5m sem provocar ataque de oportunidade desse alvo. Consome 6 PM."
+              "text": "A magia causa 4d8 de dano. Se um alvo sob Quebra de Fôlego falhar em Esquivar, Aparar, Atletismo, Lutar/Brigar ou resistir a uma manobra contra você, você pode se mover 1,5m sem provocar ataque de oportunidade desse alvo. Consome 6 PM.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Com uma ação padrão, você realiza um Mudra Pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Se você estiver desarmado e sem escudo, pode escolher não ser empurrado 1,5m; nesse caso, não pode se mover voluntariamente até o fim do turno. Consome 8 PM."
+              "text": "Com uma ação padrão, você realiza um Mudra Pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Se você estiver desarmado e sem escudo, pode escolher não ser empurrado 1,5m; nesse caso, não pode se mover voluntariamente até o fim do turno. Consome 8 PM.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A magia causa 5d8, ou 5d10 com ação padrão. A Quebra de Fôlego aumenta para -15, ou reduz o Bloqueio em 3. Se o ataque desarmado for um acerto Extremo, o alvo sofre Desvantagem no próximo teste corporal contra você até o início do seu próximo turno. Consome 10 PM."
+              "text": "A magia causa 5d8, ou 5d10 com ação padrão. A Quebra de Fôlego aumenta para -15, ou reduz o Bloqueio em 3. Se o ataque desarmado for um acerto Extremo, o alvo sofre Desvantagem no próximo teste corporal contra você até o início do seu próximo turno. Consome 10 PM.",
+              "activationCost": 10,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "O empurrão em falha de CON é de 4,5m, o teste para não ser afetado é dificultado em 20, e se usar ação padrão os dados se tornam d12. Uma vez por rodada, quando aplicar Quebra de Fôlego, você pode escolher se ela afetará defesa, manobra ou resistência corporal do alvo. Consome 12 PM."
+              "text": "O empurrão em falha de CON é de 4,5m, o teste para não ser afetado é dificultado em 20, e se usar ação padrão os dados se tornam d12. Uma vez por rodada, quando aplicar Quebra de Fôlego, você pode escolher se ela afetará defesa, manobra ou resistência corporal do alvo. Consome 12 PM.",
+              "activationCost": 12,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         },
@@ -4251,43 +5634,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você manifesta Densa a partir do corpo, voz ou gesto em uma área de 3m de diâmetro. Escolha um Rasa: Heroico, Terrível ou Sereno. Alvos afetados resistem com POD. Se falharem, sofrem 1d10 de penalidade na próxima ação ligada ao Rasa escolhido até o início do seu próximo turno. Consome 1 PM."
+              "text": "Com uma ação bônus, você manifesta Densa a partir do corpo, voz ou gesto em uma área de 3m de diâmetro. Escolha um Rasa: Heroico, Terrível ou Sereno. Alvos afetados resistem com POD. Se falharem, sofrem 1d10 de penalidade na próxima ação ligada ao Rasa escolhido até o início do seu próximo turno. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Em vez de reduzir movimento, o Rasa afeta ritmo. Se o alvo afetado tentar agir contra o tom da cena — atacar durante Rasa Sereno, fugir de um desafio em Rasa Heroico, ou se defender de uma investida em Rasa Terrível — sofre a penalidade da Densa no teste apropriado, se houver. Consome 1 PM."
+              "text": "Em vez de reduzir movimento, o Rasa afeta ritmo. Se o alvo afetado tentar agir contra o tom da cena — atacar durante Rasa Sereno, fugir de um desafio em Rasa Heroico, ou se defender de uma investida em Rasa Terrível — sofre a penalidade da Densa no teste apropriado, se houver. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A penalidade aumenta para 2d10. O Rasa pode ser lançado em cone de 4,5m ou área de 3m de diâmetro. Dura 2 turnos, consumindo 1 PM por turno mantido. Consome 3 PM."
+              "text": "A penalidade aumenta para 2d10. O Rasa pode ser lançado em cone de 4,5m ou área de 3m de diâmetro. Dura 2 turnos, consumindo 1 PM por turno mantido. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 1,
+              "durationTurns": 2,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Você pode escolher até POD/10 alvos para serem imunes ao Rasa. Normalmente são aliados, músicos, dançarinos, discípulos, monges, guardas ou pessoas que entendem a encenação."
+              "text": "Você pode escolher até POD/10 alvos para serem imunes ao Rasa. Normalmente são aliados, músicos, dançarinos, discípulos, monges, guardas ou pessoas que entendem a encenação.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Você pode usar o Rasa como reação quando um alvo a até 6m declarar uma ação ligada ao Rasa escolhido. Se falhar em POD, sofre 3d10 de penalidade naquela ação. A partir daqui, mantém a interação normal da Densa com Mundo. Consome 4 PM e 1 PM para manter."
+              "text": "Você pode usar o Rasa como reação quando um alvo a até 6m declarar uma ação ligada ao Rasa escolhido. Se falhar em POD, sofre 3d10 de penalidade naquela ação. A partir daqui, mantém a interação normal da Densa com Mundo. Consome 4 PM e 1 PM para manter.",
+              "activationCost": 4,
+              "maintenanceCost": 1,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Se você tiver realizado uma Atuação, canto, dança, postura ritual ou narrativa épica no mesmo turno, pode escolher dois alvos dentro da área para sofrerem a penalidade completa. Os demais afetados sofrem apenas metade da penalidade, arredondada para baixo. Consome 5 PM e 2 PM para manter."
+              "text": "Se você tiver realizado uma Atuação, canto, dança, postura ritual ou narrativa épica no mesmo turno, pode escolher dois alvos dentro da área para sofrerem a penalidade completa. Os demais afetados sofrem apenas metade da penalidade, arredondada para baixo. Consome 5 PM e 2 PM para manter.",
+              "activationCost": 5,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A penalidade aumenta para 4d10. Se o alvo falhar em uma ação por causa do Rasa, sofre 2d6 de dano mágico Denso, representando o corpo cedendo ao peso emocional da cena. Se resistir ao Rasa, não sofre esse dano. Consome 6 PM e 2 PM para manter."
+              "text": "A penalidade aumenta para 4d10. Se o alvo falhar em uma ação por causa do Rasa, sofre 2d6 de dano mágico Denso, representando o corpo cedendo ao peso emocional da cena. Se resistir ao Rasa, não sofre esse dano. Consome 6 PM e 2 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "O dano aumenta para 2d8. Se o Rasa for usado em terreno difícil, templo, palco, salão ritual, caverna sagrada ou passagem de montanha, o usuário recebe +5 em Atuação, Religião ou Atletismo no próximo teste diretamente ligado à cena. Consome 6 PM e 2 PM para manter."
+              "text": "O dano aumenta para 2d8. Se o Rasa for usado em terreno difícil, templo, palco, salão ritual, caverna sagrada ou passagem de montanha, o usuário recebe +5 em Atuação, Religião ou Atletismo no próximo teste diretamente ligado à cena. Consome 6 PM e 2 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 2,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A penalidade aumenta para 5d10 e o dano para 3d8. Se um alvo afetado for atingido por um acerto Extremo enquanto estiver sob o Rasa, ele sofre Desvantagem na próxima ação ligada ao Rasa escolhido até o início do próximo turno dele. Consome 7 PM e 3 PM para manter."
+              "text": "A penalidade aumenta para 5d10 e o dano para 3d8. Se um alvo afetado for atingido por um acerto Extremo enquanto estiver sob o Rasa, ele sofre Desvantagem na próxima ação ligada ao Rasa escolhido até o início do próximo turno dele. Consome 7 PM e 3 PM para manter.",
+              "activationCost": 7,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Os dados de penalidade se tornam d12, o dano aumenta para 4d8, e o usuário recebe +20 em SAB para resistir ou interferir em Mundo quando a disputa envolver emoção, encenação, ritmo, narrativa, devoção, serenidade ou domínio da cena. Consome 8 PM e 4 PM para manter."
+              "text": "Os dados de penalidade se tornam d12, o dano aumenta para 4d8, e o usuário recebe +20 em SAB para resistir ou interferir em Mundo quando a disputa envolver emoção, encenação, ritmo, narrativa, devoção, serenidade ou domínio da cena. Consome 8 PM e 4 PM para manter.",
+              "activationCost": 8,
+              "maintenanceCost": 4,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             }
           ]
         }
@@ -4395,43 +5828,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você imbui uma arma compatível com Magia Fina, causando 1d6 de dano cortante mágico. Você recebe 1 Carga de Têmpera. Pode gastar 1 Carga para usar Corte de Resposta, recebendo +5 no ataque feito como reação, contra-ataque ou ataque de oportunidade. Consome 1 PM e 1 PM para ativar a Carga."
+              "text": "Com uma ação bônus, você imbui uma arma compatível com Magia Fina, causando 1d6 de dano cortante mágico. Você recebe 1 Carga de Têmpera. Pode gastar 1 Carga para usar Corte de Resposta, recebendo +5 no ataque feito como reação, contra-ataque ou ataque de oportunidade. Consome 1 PM e 1 PM para ativar a Carga.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Você pode lançar a Magia Fina até 9m. As Cargas de Têmpera podem ser usadas com armas arremessadas compatíveis com Fina, como shuriken, faca, tanto ou flecha. Consome 1 PM."
+              "text": "Você pode lançar a Magia Fina até 9m. As Cargas de Têmpera podem ser usadas com armas arremessadas compatíveis com Fina, como shuriken, faca, tanto ou flecha. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A magia causa 2d6 de dano. Se você Aparar com sucesso enquanto a arma estiver imbuída, pode gastar 1 Carga para receber +5 no próximo ataque contra o alvo aparado até o início do seu próximo turno. Consome 2 PM."
+              "text": "A magia causa 2d6 de dano. Se você Aparar com sucesso enquanto a arma estiver imbuída, pode gastar 1 Carga para receber +5 no próximo ataque contra o alvo aparado até o início do seu próximo turno. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Se usar Corte de Resposta e acertar, o alvo sofre -5 no próximo teste de Aparar contra você até o início do próximo turno dele."
+              "text": "Se usar Corte de Resposta e acertar, o alvo sofre -5 no próximo teste de Aparar contra você até o início do próximo turno dele.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "A magia causa 2d8 de dano e pode permanecer imbuída por 4 turnos. Você recebe 4 Cargas de Têmpera. O bônus do Corte de Resposta aumenta para +10. Você ainda só pode gastar 1 Carga por rodada. Consome 4 PM, 1 PM por turno mantido e 2 PM para ativar cada Carga."
+              "text": "A magia causa 2d8 de dano e pode permanecer imbuída por 4 turnos. Você recebe 4 Cargas de Têmpera. O bônus do Corte de Resposta aumenta para +10. Você ainda só pode gastar 1 Carga por rodada. Consome 4 PM, 1 PM por turno mantido e 2 PM para ativar cada Carga.",
+              "activationCost": 4,
+              "maintenanceCost": 1,
+              "durationTurns": 4,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Você aprende o Corte Silencioso. Ao lançar uma arma pequena compatível com Fina enquanto estiver furtivo, pode gastar 1 Carga. Se errar, sua posição não é revelada; se acertar, o mestre decide conforme cobertura, distância e barulho da cena."
+              "text": "Você aprende o Corte Silencioso. Ao lançar uma arma pequena compatível com Fina enquanto estiver furtivo, pode gastar 1 Carga. Se errar, sua posição não é revelada; se acertar, o mestre decide conforme cobertura, distância e barulho da cena.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A magia causa 3d8 de dano. Quando acertar um ataque feito como reação ou contra-ataque usando Carga de Têmpera, causa +1d6 de dano cortante mágico. Consome 5 PM e 2 PM para ativar cada Carga."
+              "text": "A magia causa 3d8 de dano. Quando acertar um ataque feito como reação ou contra-ataque usando Carga de Têmpera, causa +1d6 de dano cortante mágico. Consome 5 PM e 2 PM para ativar cada Carga.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Em vez de criar uma arma natural de Magia Fina, você pode usar Lâmina da Forja Serena: sua arma real se torna o centro da técnica até o fim da cena. Enquanto ela estiver em sua mão, você recebe +5 contra Desarmar e pode manter 1 Carga de Têmpera mesmo se errar um ataque. Consome 4 PM."
+              "text": "Em vez de criar uma arma natural de Magia Fina, você pode usar Lâmina da Forja Serena: sua arma real se torna o centro da técnica até o fim da cena. Enquanto ela estiver em sua mão, você recebe +5 contra Desarmar e pode manter 1 Carga de Têmpera mesmo se errar um ataque. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A magia causa 4d8 de dano. Você recebe 5 Cargas de Têmpera. O bônus do Corte de Resposta aumenta para +15. Se o ataque for feito contra um alvo que acabou de atacar você, pode também ignorar 5 de CA desse alvo. Consome 8 PM, 3 PM por turno mantido e 3 PM para ativar cada Carga."
+              "text": "A magia causa 4d8 de dano. Você recebe 5 Cargas de Têmpera. O bônus do Corte de Resposta aumenta para +15. Se o ataque for feito contra um alvo que acabou de atacar você, pode também ignorar 5 de CA desse alvo. Consome 8 PM, 3 PM por turno mantido e 3 PM para ativar cada Carga.",
+              "activationCost": 8,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "A arma natural da Magia Fina pode ser usada normalmente, se o jogador preferir. No Estilo Arashiko, você também pode manter a Lâmina da Forja Serena: recebe 6 Cargas de Têmpera e pode gastar até 2 Cargas por rodada, mas apenas uma delas pode ser usada em reação. O dano adicional do ataque com Carga aumenta para +1d8 cortante mágico. Consome 5 PM para arma natural, ou 8 PM para a Fina de nível 10, e 3 PM para ativar cada Carga."
+              "text": "A arma natural da Magia Fina pode ser usada normalmente, se o jogador preferir. No Estilo Arashiko, você também pode manter a Lâmina da Forja Serena: recebe 6 Cargas de Têmpera e pode gastar até 2 Cargas por rodada, mas apenas uma delas pode ser usada em reação. O dano adicional do ataque com Carga aumenta para +1d8 cortante mágico. Consome 5 PM para arma natural, ou 8 PM para a Fina de nível 10, e 3 PM para ativar cada Carga.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "reaction",
+              "automation": "full"
             }
           ]
         },
@@ -4446,43 +5929,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você libera Impacto pela palma, punho ou toque curto contra um alvo a até 1,5m. O alvo sofre 1d8 de dano contundente mágico. Se estiver usando arma, escudo ou armadura, faz CON; se falhar, sofre Ressonância de Têmpera, recebendo -5 em Aparar ou -1 no valor de Bloqueio contra o próximo ataque até o início do seu próximo turno. Consome 1 PM."
+              "text": "Com uma ação bônus, você libera Impacto pela palma, punho ou toque curto contra um alvo a até 1,5m. O alvo sofre 1d8 de dano contundente mágico. Se estiver usando arma, escudo ou armadura, faz CON; se falhar, sofre Ressonância de Têmpera, recebendo -5 em Aparar ou -1 no valor de Bloqueio contra o próximo ataque até o início do seu próximo turno. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Você pode lançar a Impacto até 9m. A Ressonância de Têmpera só se aplica se o Impacto for transmitido por toque, arma, escudo, madeira, metal, convés, porta ou superfície rígida próxima ao alvo. Consome 1 PM."
+              "text": "Você pode lançar a Impacto até 9m. A Ressonância de Têmpera só se aplica se o Impacto for transmitido por toque, arma, escudo, madeira, metal, convés, porta ou superfície rígida próxima ao alvo. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A magia causa 2d8 de dano. Se o alvo falhar em CON, também sofre -5 para resistir a Desarmar até o início do seu próximo turno. Consome 2 PM."
+              "text": "A magia causa 2d8 de dano. Se o alvo falhar em CON, também sofre -5 para resistir a Desarmar até o início do seu próximo turno. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Ao acertar a Batida, o alvo faz CON. Se falhar, fica atordoado por 1 turno. No Estilo Arashiko, isso representa vibração no elmo, peito, arma, escudo ou ossos. Consome 3 PM."
+              "text": "Ao acertar a Batida, o alvo faz CON. Se falhar, fica atordoado por 1 turno. No Estilo Arashiko, isso representa vibração no elmo, peito, arma, escudo ou ossos. Consome 3 PM.",
+              "activationCost": 3,
+              "maintenanceCost": 0,
+              "durationTurns": 1,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "A magia causa 3d8 de dano. Você pode escolher entre uma Finta, dificultando Esquiva em 10, ou Ressonância Profunda: o alvo sofre -10 em Aparar ou -2 no Bloqueio contra o próximo ataque. Consome 4 PM."
+              "text": "A magia causa 3d8 de dano. Você pode escolher entre uma Finta, dificultando Esquiva em 10, ou Ressonância Profunda: o alvo sofre -10 em Aparar ou -2 no Bloqueio contra o próximo ataque. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Você pode descarregar a Batida em uma superfície de madeira, metal ou pedra em até 3m de diâmetro. Criaturas escolhidas sobre essa superfície fazem CON; em falha, são empurradas 1,5m ou sofrem Ressonância de Têmpera. Um alvo principal sofre o dano completo; os demais sofrem metade do dano se falharem. Consome 5 PM."
+              "text": "Você pode descarregar a Batida em uma superfície de madeira, metal ou pedra em até 3m de diâmetro. Criaturas escolhidas sobre essa superfície fazem CON; em falha, são empurradas 1,5m ou sofrem Ressonância de Têmpera. Um alvo principal sofre o dano completo; os demais sofrem metade do dano se falharem. Consome 5 PM.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A magia causa 4d8 de dano. Se a Ressonância for aplicada contra alvo usando arma metálica, escudo ou armadura média/pesada, o próximo ataque feito contra ele ignora 5 de CA. Consome 6 PM."
+              "text": "A magia causa 4d8 de dano. Se a Ressonância for aplicada contra alvo usando arma metálica, escudo ou armadura média/pesada, o próximo ataque feito contra ele ignora 5 de CA. Consome 6 PM.",
+              "activationCost": 6,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Com uma ação padrão, você realiza uma Batida de Forja. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Se tocar uma arma, armadura, escudo, porta, corrente, bigorna, mastro ou estrutura, você não é empurrado; a superfície absorve o recuo. Consome 8 PM."
+              "text": "Com uma ação padrão, você realiza uma Batida de Forja. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Se tocar uma arma, armadura, escudo, porta, corrente, bigorna, mastro ou estrutura, você não é empurrado; a superfície absorve o recuo. Consome 8 PM.",
+              "activationCost": 8,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A magia causa 5d8, ou 5d10 com ação padrão. A Ressonância Profunda passa a causar -15 em Aparar ou -3 no Bloqueio contra o próximo ataque. Consome 10 PM."
+              "text": "A magia causa 5d8, ou 5d10 com ação padrão. A Ressonância Profunda passa a causar -15 em Aparar ou -3 no Bloqueio contra o próximo ataque. Consome 10 PM.",
+              "activationCost": 10,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "O empurrão em falha de CON se torna 4,5m, o teste para resistir é dificultado em 20, e se usar ação padrão os dados se tornam d12. Se o alvo estiver usando arma, escudo ou armadura metálica, a Batida pode também forçá-lo a testar para não perder a firmeza da arma ou escudo; em falha, sofre -10 no próximo teste de Lutar até o início do próximo turno. Consome 12 PM."
+              "text": "O empurrão em falha de CON se torna 4,5m, o teste para resistir é dificultado em 20, e se usar ação padrão os dados se tornam d12. Se o alvo estiver usando arma, escudo ou armadura metálica, a Batida pode também forçá-lo a testar para não perder a firmeza da arma ou escudo; em falha, sofre -10 no próximo teste de Lutar até o início do próximo turno. Consome 12 PM.",
+              "activationCost": 12,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         }
@@ -4590,43 +6123,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Com uma ação bônus, você imbui uma arma compatível com Magia Fina, causando 1d6 de dano cortante mágico. Se acertar, o alvo se torna Presa Assinalada. Você recebe +5 em Rastrear, Encontrar ou Sobrevivência para seguir esse alvo até o início do seu próximo turno, ou até o fim da cena se ele fugir deixando rastros. Consome 1 PM."
+              "text": "Com uma ação bônus, você imbui uma arma compatível com Magia Fina, causando 1d6 de dano cortante mágico. Se acertar, o alvo se torna Presa Assinalada. Você recebe +5 em Rastrear, Encontrar ou Sobrevivência para seguir esse alvo até o início do seu próximo turno, ou até o fim da cena se ele fugir deixando rastros. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Você pode lançar a Magia Fina até 9m. Se usada com arma arremessada, flecha, lança curta, machado arremessado ou arpão, a Presa Assinalada pode ser seguida mesmo se sair do alcance visual, desde que haja rastros. Consome 1 PM."
+              "text": "Você pode lançar a Magia Fina até 9m. Se usada com arma arremessada, flecha, lança curta, machado arremessado ou arpão, a Presa Assinalada pode ser seguida mesmo se sair do alcance visual, desde que haja rastros. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "A magia causa 2d6 de dano. Contra alvo sem armadura ou com armadura leve, o primeiro ataque feito por você contra a Presa Assinalada ignora 5 de CA até o início do seu próximo turno. Consome 2 PM."
+              "text": "A magia causa 2d6 de dano. Contra alvo sem armadura ou com armadura leve, o primeiro ataque feito por você contra a Presa Assinalada ignora 5 de CA até o início do seu próximo turno. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Se a Presa Assinalada tentar se esconder, apagar rastros, mergulhar em neve, atravessar água rasa ou se misturar à paisagem, ela sofre -5 no teste usado para ocultar o próprio rastro contra você."
+              "text": "Se a Presa Assinalada tentar se esconder, apagar rastros, mergulhar em neve, atravessar água rasa ou se misturar à paisagem, ela sofre -5 no teste usado para ocultar o próprio rastro contra você.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "A magia causa 2d8 de dano e pode ficar imbuída por 4 turnos. Enquanto estiver mantida, você pode ter apenas uma Presa Assinalada por vez. O bônus de rastreio aumenta para +10. Consome 4 PM e 1 PM por turno mantido."
+              "text": "A magia causa 2d8 de dano e pode ficar imbuída por 4 turnos. Enquanto estiver mantida, você pode ter apenas uma Presa Assinalada por vez. O bônus de rastreio aumenta para +10. Consome 4 PM e 1 PM por turno mantido.",
+              "activationCost": 4,
+              "maintenanceCost": 1,
+              "durationTurns": 4,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Se acertar a Presa Assinalada com uma arma arremessada ou projétil compatível com Fina, você pode se mover 1,5m sem provocar ataque de oportunidade desse alvo, representando o recuo do caçador após lançar a ponta."
+              "text": "Se acertar a Presa Assinalada com uma arma arremessada ou projétil compatível com Fina, você pode se mover 1,5m sem provocar ataque de oportunidade desse alvo, representando o recuo do caçador após lançar a ponta.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "A magia causa 3d8 de dano. Contra alvo sem armadura ou com armadura leve, o ataque contra a Presa Assinalada causa +2 de dano físico. Esse bônus não acumula com o bônus cultural Nevaski de +4; use apenas o maior. Consome 5 PM."
+              "text": "A magia causa 3d8 de dano. Contra alvo sem armadura ou com armadura leve, o ataque contra a Presa Assinalada causa +2 de dano físico. Esse bônus não acumula com o bônus cultural Nevaski de +4; use apenas o maior. Consome 5 PM.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Em vez de criar uma arma natural de Magia Fina, você pode usar Farpa de Osso Branco: ao acertar uma Presa Assinalada, uma parte da energia permanece na ferida até o início do seu próximo turno. O próximo teste de Rastrear, Encontrar ou Sobrevivência contra esse alvo recebe +15. Consome 4 PM e dura apenas uma aplicação."
+              "text": "Em vez de criar uma arma natural de Magia Fina, você pode usar Farpa de Osso Branco: ao acertar uma Presa Assinalada, uma parte da energia permanece na ferida até o início do seu próximo turno. O próximo teste de Rastrear, Encontrar ou Sobrevivência contra esse alvo recebe +15. Consome 4 PM e dura apenas uma aplicação.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "A magia causa 4d8 de dano. Contra alvo sem armadura, com armadura leve ou já ferido desde o último descanso curto, o ataque ignora 10 de CA e o ataque contra a Presa Assinalada causa +4 de dano físico.Consome 8 PM e 3 PM por turno mantido."
+              "text": "A magia causa 4d8 de dano. Contra alvo sem armadura, com armadura leve ou já ferido desde o último descanso curto, o ataque ignora 10 de CA e o ataque contra a Presa Assinalada causa +4 de dano físico.Consome 8 PM e 3 PM por turno mantido.",
+              "activationCost": 8,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "A arma natural da Magia Fina pode ser usada normalmente, se o jogador preferir. No Estilo Geal, você também pode aperfeiçoar a Farpa de Osso Branco: a Presa Assinalada não se beneficia de neve, neblina, gelo quebrado, sangue misturado à água ou pele branca/camuflada para impedir seu rastreio, desde que ainda deixe algum sinal físico possível. O dano contra alvos sem armadura leve aumenta para +6 caso o conjurador seja da Região Geal. Consome 5 PM para arma natural, ou 8 PM para a Fina de nível 10."
+              "text": "A arma natural da Magia Fina pode ser usada normalmente, se o jogador preferir. No Estilo Geal, você também pode aperfeiçoar a Farpa de Osso Branco: a Presa Assinalada não se beneficia de neve, neblina, gelo quebrado, sangue misturado à água ou pele branca/camuflada para impedir seu rastreio, desde que ainda deixe algum sinal físico possível. O dano contra alvos sem armadura leve aumenta para +6 caso o conjurador seja da Região Geal. Consome 5 PM para arma natural, ou 8 PM para a Fina de nível 10.",
+              "activationCost": 5,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "bonus",
+              "automation": "full"
             }
           ]
         },
@@ -4641,43 +6224,93 @@ window.MARUFIA_DB = {
           "levels": [
             {
               "level": 1,
-              "text": "Aumenta sua CA em +5. Além disso, recebe 3 de Fôlego de Hibernação até o início do seu próximo turno. Se estiver em frio extremo, neve, gelo, tundra ou depois de sofrer dano desde o último turno, esse valor aumenta para 5. Consome 1 PM."
+              "text": "Aumenta sua CA em +5. Além disso, recebe 3 de Fôlego de Hibernação até o início do seu próximo turno. Se estiver em frio extremo, neve, gelo, tundra ou depois de sofrer dano desde o último turno, esse valor aumenta para 5. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 2,
-              "text": "Reduz 1d6 de dano mágico em você. Enquanto a Pele do Urso Branco estiver ativa, você recebe +5 em CON ou Atletismo para resistir a frio, dor, queda, empurrão, exaustão ou manter- se de pé. Consome 1 PM."
+              "text": "Reduz 1d6 de dano mágico em você. Enquanto a Pele do Urso Branco estiver ativa, você recebe +5 em CON ou Atletismo para resistir a frio, dor, queda, empurrão, exaustão ou manter- se de pé. Consome 1 PM.",
+              "activationCost": 1,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 3,
-              "text": "Aumenta sua CA em +10. O Fôlego de Hibernação passa a ser 5, ou 8 em frio extremo/neve/gelo/tundra ou se você sofreu dano desde o último turno. Consome 2 PM."
+              "text": "Aumenta sua CA em +10. O Fôlego de Hibernação passa a ser 5, ou 8 em frio extremo/neve/gelo/tundra ou se você sofreu dano desde o último turno. Consome 2 PM.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 4,
-              "text": "Reduz 1d6 de dano físico em você. Se essa redução zerar o dano de um ataque corpo a corpo, você pode receber +5 em Intimidação contra esse alvo até o início do seu próximo turno."
+              "text": "Reduz 1d6 de dano físico em você. Se essa redução zerar o dano de um ataque corpo a corpo, você pode receber +5 em Intimidação contra esse alvo até o início do seu próximo turno.",
+              "activationCost": 2,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 5,
-              "text": "Aumenta sua CA em +15. O Fôlego de Hibernação passa a ser 10. Se estiver com metade ou menos dos PV máximos, você também recebe +5 em Lutar com arma longa, cultural ou Brigar até o início do seu próximo turno. Consome 3 PM e 1 PM para manter."
+              "text": "Aumenta sua CA em +15. O Fôlego de Hibernação passa a ser 10. Se estiver com metade ou menos dos PV máximos, você também recebe +5 em Lutar com arma longa, cultural ou Brigar até o início do seu próximo turno. Consome 3 PM e 1 PM para manter.",
+              "activationCost": 3,
+              "maintenanceCost": 1,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 6,
-              "text": "Reduz 2d6 de dano mágico e 1d6 de dano físico em você. Uma vez por rodada, quando você sofrer dano, pode converter até 3 pontos desse dano em perda de Fôlego de Hibernação antes de afetar seus PV. Consome 3 PM e 1 PM para manter."
+              "text": "Reduz 2d6 de dano mágico e 1d6 de dano físico em você. Uma vez por rodada, quando você sofrer dano, pode converter até 3 pontos desse dano em perda de Fôlego de Hibernação antes de afetar seus PV. Consome 3 PM e 1 PM para manter.",
+              "activationCost": 3,
+              "maintenanceCost": 1,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 7,
-              "text": "Aumenta sua CA em +20. O Fôlego de Hibernação passa a ser 15. Se você derrubar, empurrar ou vencer uma disputa de Atletismo contra um alvo, recebe +5 em Religião ou Intimidação até o fim da cena, representando o respeito ao “espírito do urso”. Consome 4 PM."
+              "text": "Aumenta sua CA em +20. O Fôlego de Hibernação passa a ser 15. Se você derrubar, empurrar ou vencer uma disputa de Atletismo contra um alvo, recebe +5 em Religião ou Intimidação até o fim da cena, representando o respeito ao “espírito do urso”. Consome 4 PM.",
+              "activationCost": 4,
+              "maintenanceCost": 0,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 8,
-              "text": "Reduz 2d6 de dano mágico e 2d6 de dano físico em você. Se estiver em frio extremo, gelo, neve ou tundra, você ignora 1 ponto de Exaustão enquanto a magia estiver ativa. Esse ponto retorna quando a magia termina, se ainda fizer sentido na cena. Consome 5 PM e 1 PM para manter."
+              "text": "Reduz 2d6 de dano mágico e 2d6 de dano físico em você. Se estiver em frio extremo, gelo, neve ou tundra, você ignora 1 ponto de Exaustão enquanto a magia estiver ativa. Esse ponto retorna quando a magia termina, se ainda fizer sentido na cena. Consome 5 PM e 1 PM para manter.",
+              "activationCost": 5,
+              "maintenanceCost": 1,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 9,
-              "text": "Aumenta sua CA em +25. O Fôlego de Hibernação passa a ser 20. Se você estiver com metade ou menos dos PV máximos, o primeiro ataque corpo a corpo que acertar por rodada causa +3 de dano físico, apenas com arma longa, arma cultural ou ataque corporal pesado. Consome 6 PM e 1 PM para manter."
+              "text": "Aumenta sua CA em +25. O Fôlego de Hibernação passa a ser 20. Se você estiver com metade ou menos dos PV máximos, o primeiro ataque corpo a corpo que acertar por rodada causa +3 de dano físico, apenas com arma longa, arma cultural ou ataque corporal pesado. Consome 6 PM e 1 PM para manter.",
+              "activationCost": 6,
+              "maintenanceCost": 1,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             },
             {
               "level": 10,
-              "text": "Aumenta sua CA em +30 e reduz todo dano sofrido por você em 10. O Fôlego de Hibernação passa a ser 25. Uma vez por combate, se você seria reduzido a 0 PV, pode gastar 4 PM para consumir todo o Fôlego restante; se o valor consumido for suficiente para impedir a queda, você permanece com 1 PV. Consome 8 PM e 3 PM para manter."
+              "text": "Aumenta sua CA em +30 e reduz todo dano sofrido por você em 10. O Fôlego de Hibernação passa a ser 25. Uma vez por combate, se você seria reduzido a 0 PV, pode gastar 4 PM para consumir todo o Fôlego restante; se o valor consumido for suficiente para impedir a queda, você permanece com 1 PV. Consome 8 PM e 3 PM para manter.",
+              "activationCost": 8,
+              "maintenanceCost": 3,
+              "durationTurns": null,
+              "action": "standard",
+              "automation": "full"
             }
           ]
         }
@@ -4694,47 +6327,93 @@ window.MARUFIA_DB = {
       "levels": [
         {
           "level": 1,
-          "text": "Com uma ação bônus, você pode imbuir sua arma com energia fina, dando 1d6 de dano mágico, ela só funciona com um ataque corpo a corpo. Consome 1 PM."
+          "text": "Com uma ação bônus, você pode imbuir sua arma com energia fina, dando 1d6 de dano mágico, ela só funciona com um ataque corpo a corpo. Consome 1 PM.",
+          "activationCost": 1,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 2,
-          "text": "Agora você pode lançar a magia em uma distância de 9m. Consome 1 PM."
+          "text": "Agora você pode lançar a magia em uma distância de 9m. Consome 1 PM.",
+          "activationCost": 1,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 3,
-          "text": "A magia agora da 2d6 de dano. Consome 2 PM"
+          "text": "A magia agora da 2d6 de dano. Consome 2 PM",
+          "activationCost": 2,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 4,
-          "text": "---------------------------------------------------------------------"
+          "text": "---------------------------------------------------------------------",
+          "activationCost": 2,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 5,
-          "text": "A magia agora da 2d8 de dano. Ao imbuir ela dura até 4 turnos, dando 4 Cargas. Seu consumo é de 4 PM e 1 PM por cada turno que ainda tiver alguma Carga imbuída. Cada Carga Consome 1 PM. Eco: Você pode gastar 1 PM adicional, uma ação bônus e um turno dos 4 turnos para dar um corte extra dando 2d6 de dano."
+          "text": "A magia agora da 2d8 de dano. Ao imbuir ela dura até 4 turnos, dando 4 Cargas. Seu consumo é de 4 PM e 1 PM por cada turno que ainda tiver alguma Carga imbuída. Cada Carga Consome 1 PM. Eco: Você pode gastar 1 PM adicional, uma ação bônus e um turno dos 4 turnos para dar um corte extra dando 2d6 de dano.",
+          "activationCost": 1,
+          "maintenanceCost": 0,
+          "durationTurns": 4,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 6,
-          "text": "---------------------------------------------------------------------"
+          "text": "---------------------------------------------------------------------",
+          "activationCost": 4,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 7,
-          "text": "A magia agora dá 3d8 de dano gastando 5 PM, e 3d6 no Eco, 2 PM."
+          "text": "A magia agora dá 3d8 de dano gastando 5 PM, e 3d6 no Eco, 2 PM.",
+          "activationCost": 5,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 8,
-          "text": "Você cria uma arma natural de magia fina na sua mão, causando 3d6 de dano com ela como ação bônus, consome"
-        },
-        {
-          "level": 4,
-          "text": "PM e dura a cena."
+          "text": "Você cria uma arma natural de magia fina na sua mão, causando 3d6 de dano com ela como ação bônus, consome PM e dura a cena.",
+          "activationCost": 5,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 9,
-          "text": "A magia agora dá 4d8 de dano. Consome 8 PM e 3 PM por turno e por Carga."
+          "text": "A magia agora dá 4d8 de dano. Consome 8 PM e 3 PM por turno e por Carga.",
+          "activationCost": 8,
+          "maintenanceCost": 3,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 10,
-          "text": "Atacar com a arma natural da magia fina é considerado (2 PTS Aptidão) como um ataque extra, o dano da arma criada aumenta pra 4d6 consome 5 PM e dura a cena. O dano do eco do corte aumenta pra 4d6, consome 3 PM."
+          "text": "Atacar com a arma natural da magia fina é considerado (2 PTS Aptidão) como um ataque extra, o dano da arma criada aumenta pra 4d6 consome 5 PM e dura a cena. O dano do eco do corte aumenta pra 4d6, consome 3 PM.",
+          "activationCost": 5,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         }
       ]
     },
@@ -4747,43 +6426,93 @@ window.MARUFIA_DB = {
       "levels": [
         {
           "level": 1,
-          "text": "Gera uma esfera comprimida de magia ao redor de seu punho, acertando o alvo depois de um acerto físico, causando 1d8 de dano contundente. Consome 1 PM."
+          "text": "Gera uma esfera comprimida de magia ao redor de seu punho, acertando o alvo depois de um acerto físico, causando 1d8 de dano contundente. Consome 1 PM.",
+          "activationCost": 1,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 2,
-          "text": "Você pode lançar a magia até 9m. Consome 1 PM."
+          "text": "Você pode lançar a magia até 9m. Consome 1 PM.",
+          "activationCost": 1,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 3,
-          "text": "A magia agora da 2d8 de dano. Consome 2 PM."
+          "text": "A magia agora da 2d8 de dano. Consome 2 PM.",
+          "activationCost": 2,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 4,
-          "text": "Ao acertar seu ataque ele causa um atordoamento. Se o alvo falhar em uma salvaguarda de CON, fica atordoado por 1 turno. Consome 3 PM."
+          "text": "Ao acertar seu ataque ele causa um atordoamento. Se o alvo falhar em uma salvaguarda de CON, fica atordoado por 1 turno. Consome 3 PM.",
+          "activationCost": 3,
+          "maintenanceCost": 0,
+          "durationTurns": 1,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 5,
-          "text": "A magia agora causa 3d8 de dano, além de poder adicionar uma “Finta”, que dificulta o teste de Esquiva em 10, além de negar cobertura de 2/3. Consome 4 PM."
+          "text": "A magia agora causa 3d8 de dano, além de poder adicionar uma “Finta”, que dificulta o teste de Esquiva em 10, além de negar cobertura de 2/3. Consome 4 PM.",
+          "activationCost": 4,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 6,
-          "text": "Ao invés de lançar em um alvo, agora você ataca uma área de 3 metros de diâmetro. Empurra os alvos 3 metros caso falhem em teste de CON. Consome 5 PM."
+          "text": "Ao invés de lançar em um alvo, agora você ataca uma área de 3 metros de diâmetro. Empurra os alvos 3 metros caso falhem em teste de CON. Consome 5 PM.",
+          "activationCost": 5,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 7,
-          "text": "A magia agora da 4d8 de dano. Consome 6 PM."
+          "text": "A magia agora da 4d8 de dano. Consome 6 PM.",
+          "activationCost": 6,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 8,
-          "text": "Ao juntar as duas mãos, você lança um golpe mais poderoso. Com uma ação padrão, os dados do impacto se tornam d10 e o alvo tem o teste dificultado em 15. Em troca você é empurrado 1,5m (Sem provocar ataque de oportunidade). Consome 8 PM"
+          "text": "Ao juntar as duas mãos, você lança um golpe mais poderoso. Com uma ação padrão, os dados do impacto se tornam d10 e o alvo tem o teste dificultado em 15. Em troca você é empurrado 1,5m (Sem provocar ataque de oportunidade). Consome 8 PM",
+          "activationCost": 8,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 9,
-          "text": "A magia agora causa 5d8 (ou 5d10 com uma ação padrão), o diâmetro da área é aumentado para 4,5m. Consome 10 PM."
+          "text": "A magia agora causa 5d8 (ou 5d10 com uma ação padrão), o diâmetro da área é aumentado para 4,5m. Consome 10 PM.",
+          "activationCost": 10,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 10,
-          "text": "A magia tem a área aumentada para 6m de diâmetro, o (2 PTS Aptidão) empurrão do impacto em falha de COM é 4,5m, o teste para não ser acertado é dificultado em 20 e caso utilize da ação padrão os dados de dano se tornam d12. Consome 12 PM."
+          "text": "A magia tem a área aumentada para 6m de diâmetro, o (2 PTS Aptidão) empurrão do impacto em falha de COM é 4,5m, o teste para não ser acertado é dificultado em 20 e caso utilize da ação padrão os dados de dano se tornam d12. Consome 12 PM.",
+          "activationCost": 12,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         }
       ]
     },
@@ -4796,47 +6525,93 @@ window.MARUFIA_DB = {
       "levels": [
         {
           "level": 1,
-          "text": "A magia causa 1d10 de dificuldade em uma área de 3m de diâmetro. É utilizado uma Ação Bônus e dura 1 turno, podendo resistir com um sucesso em POD. Consome 2 PM"
+          "text": "A magia causa 1d10 de dificuldade em uma área de 3m de diâmetro. É utilizado uma Ação Bônus e dura 1 turno, podendo resistir com um sucesso em POD. Consome 2 PM",
+          "activationCost": 2,
+          "maintenanceCost": 0,
+          "durationTurns": 1,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 2,
-          "text": "A magia agora reduz o movimento de quem está na área em 3 metros. Consome 3 PM."
+          "text": "A magia agora reduz o movimento de quem está na área em 3 metros. Consome 3 PM.",
+          "activationCost": 3,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 3,
-          "text": "A magia agora causa 2d10 de penalidade em uma área de 4,5 metros em Cone ou 3m de diâmetro. Dura 2 turnos consumindo"
-        },
-        {
-          "level": 1,
-          "text": "PM por turno. Consome 4PM."
+          "text": "A magia agora causa 2d10 de penalidade em uma área de 4,5 metros em Cone ou 3m de diâmetro. Dura 2 turnos consumindo PM por turno. Consome 4PM.",
+          "activationCost": 4,
+          "maintenanceCost": 0,
+          "durationTurns": 2,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 4,
-          "text": "Você pode escolher POD/10 alvos imunes a este efeito."
+          "text": "Você pode escolher POD/10 alvos imunes a este efeito.",
+          "activationCost": 4,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 5,
-          "text": "A magia pode ser usada com uma reação. A partir de agora para impedir com que um Mundo seja efetivo você realiza um teste de SAB, se passar o mundo perde suas propriedades em um raio de 3 metros. A magia causa 3d10 de penalidade e para resistir é necessário um sucesso Sólido. Consome 5 PM e 2 PM para manter."
+          "text": "A magia pode ser usada com uma reação. A partir de agora para impedir com que um Mundo seja efetivo você realiza um teste de SAB, se passar o mundo perde suas propriedades em um raio de 3 metros. A magia causa 3d10 de penalidade e para resistir é necessário um sucesso Sólido. Consome 5 PM e 2 PM para manter.",
+          "activationCost": 5,
+          "maintenanceCost": 2,
+          "durationTurns": null,
+          "action": "reaction",
+          "automation": "full"
         },
         {
           "level": 6,
-          "text": "A área afetada pela magia se torna terreno difícil e a área do cone é aumentada para 9m junto com a área de diâmetro aumentada para 6m. A magia agora dura 3 turnos. Consome 5 PM e 2 PM para manter."
+          "text": "A área afetada pela magia se torna terreno difícil e a área do cone é aumentada para 9m junto com a área de diâmetro aumentada para 6m. A magia agora dura 3 turnos. Consome 5 PM e 2 PM para manter.",
+          "activationCost": 5,
+          "maintenanceCost": 2,
+          "durationTurns": 3,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 7,
-          "text": "A magia agora causa 4d10 de penalidade, além de causar dano nos alvos afetados, dando 2d6 de dano por turno mantido. Caso resista, você não recebe o dano. Consome 6 PM e 2 PM para manter."
+          "text": "A magia agora causa 4d10 de penalidade, além de causar dano nos alvos afetados, dando 2d6 de dano por turno mantido. Caso resista, você não recebe o dano. Consome 6 PM e 2 PM para manter.",
+          "activationCost": 6,
+          "maintenanceCost": 2,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 8,
-          "text": "A magia agora gera 2d8 de dano por turno mantido. Caso resista toma metade do dano. O tamanho do cone aumenta para 18 m e o diâmetro aumenta para 12m de raio. Consome 6 PM e 3PM para manter."
+          "text": "A magia agora gera 2d8 de dano por turno mantido. Caso resista toma metade do dano. O tamanho do cone aumenta para 18 m e o diâmetro aumenta para 12m de raio. Consome 6 PM e 3PM para manter.",
+          "activationCost": 6,
+          "maintenanceCost": 3,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 9,
-          "text": "A magia agora causa 5d10 de penalidade e 3d8 de dano. Consome 8 PM e 4 PM para Manter."
+          "text": "A magia agora causa 5d10 de penalidade e 3d8 de dano. Consome 8 PM e 4 PM para Manter.",
+          "activationCost": 8,
+          "maintenanceCost": 4,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         },
         {
           "level": 10,
-          "text": "A magia agora recebe +20 em SAB para resistir ao Mundo. A (2 PTS Aptidão) área em que o Mundo perde suas propriedades é aumentada para 6m de raio. Os dados de penalidade se tornam d12 e causa 4d8 de dano. Consome 12 PM e 5 PM para manter."
+          "text": "A magia agora recebe +20 em SAB para resistir ao Mundo. A (2 PTS Aptidão) área em que o Mundo perde suas propriedades é aumentada para 6m de raio. Os dados de penalidade se tornam d12 e causa 4d8 de dano. Consome 12 PM e 5 PM para manter.",
+          "activationCost": 12,
+          "maintenanceCost": 5,
+          "durationTurns": null,
+          "action": "bonus",
+          "automation": "full"
         }
       ]
     },
@@ -4849,47 +6624,93 @@ window.MARUFIA_DB = {
       "levels": [
         {
           "level": 1,
-          "text": "Gera uma aura mágica que cura 1d8 de si. Consome 1 PM."
+          "text": "Gera uma aura mágica que cura 1d8 de si. Consome 1 PM.",
+          "activationCost": 1,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 2,
-          "text": "A magia agora pode curar um alvo em 1d6. Consome 2 PM."
+          "text": "A magia agora pode curar um alvo em 1d6. Consome 2 PM.",
+          "activationCost": 2,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 3,
-          "text": "A magia agora causas 2d8 de cura em si, ou 5 de vida temporária em si ou em alvos. Consome 3 PM."
+          "text": "A magia agora causas 2d8 de cura em si, ou 5 de vida temporária em si ou em alvos. Consome 3 PM.",
+          "activationCost": 3,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 4,
-          "text": "A magia agora pode curar em 2d6 um alvo, além de doenças leves, como sangramento e envenenamento. Consome 4 PM."
+          "text": "A magia agora pode curar em 2d6 um alvo, além de doenças leves, como sangramento e envenenamento. Consome 4 PM.",
+          "activationCost": 4,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 5,
-          "text": "A magia agora cura 3d8 de vida em si, além de curar com 2d6 alvos em até 3 metros de raio, ou pode dar 10 de vida temporária. Consome 5 PM."
+          "text": "A magia agora cura 3d8 de vida em si, além de curar com 2d6 alvos em até 3 metros de raio, ou pode dar 10 de vida temporária. Consome 5 PM.",
+          "activationCost": 5,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 6,
-          "text": "A magia agora pode curar um alvo em 3d6. Consome 6 PM."
+          "text": "A magia agora pode curar um alvo em 3d6. Consome 6 PM.",
+          "activationCost": 6,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 7,
-          "text": "A magia agora cura 4d8 de si, ou 15 de vida temporária. Além de poder tirar a condição de Lesão Grave. Consome"
-        },
-        {
-          "level": 7,
-          "text": "PM."
+          "text": "A magia agora cura 4d8 de si, ou 15 de vida temporária. Além de poder tirar a condição de Lesão Grave. Consome PM.",
+          "activationCost": 4,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 8,
-          "text": "A magia agora pode curar um alvo em 4d6. Consome 8 PM."
+          "text": "A magia agora pode curar um alvo em 4d6. Consome 8 PM.",
+          "activationCost": 8,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 9,
-          "text": "A magia agora cura 5d8 em si, além de poder curar doenças raras demorando 1d4 horas. Consome 9 PM."
+          "text": "A magia agora cura 5d8 em si, além de poder curar doenças raras demorando 1d4 horas. Consome 9 PM.",
+          "activationCost": 9,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 10,
-          "text": "A magia agora pode curar um alvo em 6d6 ou dar 25 de vida temporária. Consome 12 PM."
+          "text": "A magia agora pode curar um alvo em 6d6 ou dar 25 de vida temporária. Consome 12 PM.",
+          "activationCost": 12,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         }
       ]
     },
@@ -4902,43 +6723,93 @@ window.MARUFIA_DB = {
       "levels": [
         {
           "level": 1,
-          "text": "Aumenta a CA em +5. Consome 1 PM."
+          "text": "Aumenta a CA em +5. Consome 1 PM.",
+          "activationCost": 1,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 2,
-          "text": "A magia reduz 1d6 de dano magico. Consome 1 PM."
+          "text": "A magia reduz 1d6 de dano magico. Consome 1 PM.",
+          "activationCost": 1,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 3,
-          "text": "Aumenta a CA em +10. Consome 2 PM."
+          "text": "Aumenta a CA em +10. Consome 2 PM.",
+          "activationCost": 2,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 4,
-          "text": "A magia reduz 1d6 de dano físico."
+          "text": "A magia reduz 1d6 de dano físico.",
+          "activationCost": 2,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 5,
-          "text": "Aumenta a CA em +15. Consome 3 PM e 1 PM para manter."
+          "text": "Aumenta a CA em +15. Consome 3 PM e 1 PM para manter.",
+          "activationCost": 3,
+          "maintenanceCost": 1,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 6,
-          "text": "A magia reduz 2d6 de dano magico 1d6 de dano físico."
+          "text": "A magia reduz 2d6 de dano magico 1d6 de dano físico.",
+          "activationCost": 3,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 7,
-          "text": "Aumenta a CA em +20. Consome 4 PM"
+          "text": "Aumenta a CA em +20. Consome 4 PM",
+          "activationCost": 4,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 8,
-          "text": "A magia reduz 2d6 de dano magico e 2d6 de dano físico. Consome 4 PM e 2 PM para manter."
+          "text": "A magia reduz 2d6 de dano magico e 2d6 de dano físico. Consome 4 PM e 2 PM para manter.",
+          "activationCost": 4,
+          "maintenanceCost": 2,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 9,
-          "text": "Aumenta a CA em +25. Consome 6 PM."
+          "text": "Aumenta a CA em +25. Consome 6 PM.",
+          "activationCost": 6,
+          "maintenanceCost": 0,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         },
         {
           "level": 10,
-          "text": "Aumenta a CA em +30 e reduz todo o dano em 10. Consome (3 PTS Aptidão) 8 PM e 3 PM para manter."
+          "text": "Aumenta a CA em +30 e reduz todo o dano em 10. Consome (3 PTS Aptidão) 8 PM e 3 PM para manter.",
+          "activationCost": 8,
+          "maintenanceCost": 3,
+          "durationTurns": null,
+          "action": "standard",
+          "automation": "full"
         }
       ]
     },
@@ -4951,43 +6822,93 @@ window.MARUFIA_DB = {
       "levels": [
         {
           "level": 1,
-          "text": "Ativa com 5 PM, consome 2 PM/turno. Causa uma dificuldade de POD+SAB(ou INT)÷10 em tudo que o alvo for realizar. Consegue manter ativo por 1d4 rodadas e tem uma habilidade de nível 1 (2 Usos). A área de ativação do Mundo é 3m de raio."
+          "text": "Ativa com 5 PM, consome 2 PM/turno. Causa uma dificuldade de POD+SAB(ou INT)÷10 em tudo que o alvo for realizar. Consegue manter ativo por 1d4 rodadas e tem uma habilidade de nível 1 (2 Usos). A área de ativação do Mundo é 3m de raio.",
+          "activationCost": 5,
+          "maintenanceCost": 2,
+          "durationTurns": null,
+          "action": "full",
+          "automation": "full"
         },
         {
           "level": 2,
-          "text": "Ativa com 6 PM, consome 2 PM/Turno. Reduz o custo de magias pela metade para o usuário. A área de ativação do Mundo é de 4,5m de raio."
+          "text": "Ativa com 6 PM, consome 2 PM/Turno. Reduz o custo de magias pela metade para o usuário. A área de ativação do Mundo é de 4,5m de raio.",
+          "activationCost": 6,
+          "maintenanceCost": 2,
+          "durationTurns": null,
+          "action": "full",
+          "automation": "full"
         },
         {
           "level": 3,
-          "text": "Ativa com 7 PM, consome 3 PM/Turno. A dificuldade é aumentada em 5 e você recebe mais 1 dado de dano para todas as magias dentro do mundo (Dano/efeito/cura). A área de ativação é aumentada para 6m de raio."
+          "text": "Ativa com 7 PM, consome 3 PM/Turno. A dificuldade é aumentada em 5 e você recebe mais 1 dado de dano para todas as magias dentro do mundo (Dano/efeito/cura). A área de ativação é aumentada para 6m de raio.",
+          "activationCost": 7,
+          "maintenanceCost": 3,
+          "durationTurns": null,
+          "action": "full",
+          "automation": "full"
         },
         {
           "level": 4,
-          "text": "Ativa com 8 PM, consome 3 PM/Turno. Aumenta a CA do usuário em +10. Caso a mana acabe, toma 1d8 de dano por turno extra no Mundo. A área de ativação é aumentada para 7,5m de raio."
+          "text": "Ativa com 8 PM, consome 3 PM/Turno. Aumenta a CA do usuário em +10. Caso a mana acabe, toma 1d8 de dano por turno extra no Mundo. A área de ativação é aumentada para 7,5m de raio.",
+          "activationCost": 8,
+          "maintenanceCost": 3,
+          "durationTurns": null,
+          "action": "full",
+          "automation": "full"
         },
         {
           "level": 5,
-          "text": "Ativa com 10PM, consome 4 PM/Turno, aumenta a dificuldade para o alvo em +10. A duração do mundo se torna 1d4+2, o usuário consegue reduzir o tamanho da area de ativação do Mundo, a área é aumentada para 9m de raio. Além de ter uma habilidade única nível 2 (3 Usos)."
+          "text": "Ativa com 10PM, consome 4 PM/Turno, aumenta a dificuldade para o alvo em +10. A duração do mundo se torna 1d4+2, o usuário consegue reduzir o tamanho da area de ativação do Mundo, a área é aumentada para 9m de raio. Além de ter uma habilidade única nível 2 (3 Usos).",
+          "activationCost": 10,
+          "maintenanceCost": 4,
+          "durationTurns": null,
+          "action": "full",
+          "automation": "full"
         },
         {
           "level": 6,
-          "text": "Ativa com 12 PM, consome 4 PM/Turno. Magias do usuário não custam mana dentro do Mundo, além de aumentar em 2 dados todas as magias do usuário (dano/efeito/cura). Caso o tempo do mundo ou a mana do usuário acabe, você toma 2d6 de dano por turno extra dentro do Mundo. A área de ativação se torna 10,5m raio."
+          "text": "Ativa com 12 PM, consome 4 PM/Turno. Magias do usuário não custam mana dentro do Mundo, além de aumentar em 2 dados todas as magias do usuário (dano/efeito/cura). Caso o tempo do mundo ou a mana do usuário acabe, você toma 2d6 de dano por turno extra dentro do Mundo. A área de ativação se torna 10,5m raio.",
+          "activationCost": 12,
+          "maintenanceCost": 4,
+          "durationTurns": null,
+          "action": "full",
+          "automation": "full"
         },
         {
           "level": 7,
-          "text": "Ativa com 14 PM, consome 5PM/Turno. A dificuldade para o alvo é aumentada para +15. Se o alvo falhar em um teste de POD ele fica atordoado. A área de ativação se torna 12m de raio."
+          "text": "Ativa com 14 PM, consome 5PM/Turno. A dificuldade para o alvo é aumentada para +15. Se o alvo falhar em um teste de POD ele fica atordoado. A área de ativação se torna 12m de raio.",
+          "activationCost": 14,
+          "maintenanceCost": 5,
+          "durationTurns": null,
+          "action": "full",
+          "automation": "full"
         },
         {
           "level": 8,
-          "text": "Ativa com 16 PM, consome 5 PM/Turno. A CA do usuário é aumentada em +15. A área de ativação 13,5m de raio."
+          "text": "Ativa com 16 PM, consome 5 PM/Turno. A CA do usuário é aumentada em +15. A área de ativação 13,5m de raio.",
+          "activationCost": 16,
+          "maintenanceCost": 5,
+          "durationTurns": null,
+          "action": "full",
+          "automation": "full"
         },
         {
           "level": 9,
-          "text": "Ativa com 18 PM, consome 6 PM/Turno. A dificuldade para o alvo se torna +20 e caso o mundo ou a mana do usuário acabe, toma 2d8 de dano para cada turno extra. A área de ativação se torna 15m de raio."
+          "text": "Ativa com 18 PM, consome 6 PM/Turno. A dificuldade para o alvo se torna +20 e caso o mundo ou a mana do usuário acabe, toma 2d8 de dano para cada turno extra. A área de ativação se torna 15m de raio.",
+          "activationCost": 18,
+          "maintenanceCost": 6,
+          "durationTurns": null,
+          "action": "full",
+          "automation": "full"
         },
         {
           "level": 10,
-          "text": "Ativa com 20 PM, consome 6 PM/Turno. Caso o tempo do (5 PTS Aptidão) mundo ou a mana do usuário acabe ele toma 3d8 de dano por turno extra. O usuário recebe +4 dados de dano em todas suas magias (dano/efeito/cura). Você desbloqueia a Habilidade Única nível 3 (4 Usos). A área de ativação se torna 18m de raio."
+          "text": "Ativa com 20 PM, consome 6 PM/Turno. Caso o tempo do (5 PTS Aptidão) mundo ou a mana do usuário acabe ele toma 3d8 de dano por turno extra. O usuário recebe +4 dados de dano em todas suas magias (dano/efeito/cura). Você desbloqueia a Habilidade Única nível 3 (4 Usos). A área de ativação se torna 18m de raio.",
+          "activationCost": 20,
+          "maintenanceCost": 6,
+          "durationTurns": null,
+          "action": "full",
+          "automation": "full"
         }
       ]
     }
@@ -5424,1133 +7345,6 @@ window.MARUFIA_DB = {
       "attributeMods": {},
       "resourceMods": {},
       "acMod": 0
-    }
-  ],
-  "worldLaws": [
-    {
-      "ID": "OFE-01",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Amplificação de dano",
-      "N1 (Mundo 1-4)": "+15 dano no próximo dano causado por uma técnica/ataque dentro do Mundo.",
-      "N2 (Mundo 5-9)": "+25 dano e o alvo sofre -5 em Bloqueio contra esse dano.",
-      "N3 (Mundo 10)": "+40 dano e ignora 10 de Bloqueio/RD contra esse dano.",
-      "Alvo": "1 técnica/ataque do usuário",
-      "Resistência sugerida": "CON ou POD",
-      "Se falhar": "Recebe o bônus inteiro.",
-      "Se passar": "Reduz o bônus pela metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Aumentado em relação ao Book (+5/+10/+25) para representar impacto mínimo de Mundo N1.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-02",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Ataques extras",
-      "N1 (Mundo 1-4)": "1 ataque extra com -10 no teste, ou 1 golpe automático narrativo de 10 dano se o ataque não fizer sentido.",
-      "N2 (Mundo 5-9)": "2 ataques extras com -10 no teste; no máximo um deles pode aplicar magia.",
-      "N3 (Mundo 10)": "4 ataques extras; apenas dois podem aplicar efeitos mágicos completos.",
-      "Alvo": "Usuário ou clones/técnicas do Mundo",
-      "Resistência sugerida": "Defesas normais do alvo",
-      "Se falhar": "A sequência ocorre completa.",
-      "Se passar": "O alvo reduz/evita parte conforme defesa individual.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Limitar aplicação de magia evita explosão excessiva.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-03",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Ignorar defesa parcialmente",
-      "N1 (Mundo 1-4)": "Ignora 10 de CA, Bloqueio ou RD do alvo.",
-      "N2 (Mundo 5-9)": "Ignora 25 de CA, Bloqueio ou RD.",
-      "N3 (Mundo 10)": "Ignora 45 de CA, Bloqueio ou RD; mínimo de defesa 0.",
-      "Alvo": "1 alvo atingido",
-      "Resistência sugerida": "POD ou Densa",
-      "Se falhar": "Defesa reduzida pelo valor total.",
-      "Se passar": "Defesa reduzida pela metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Funciona melhor como amplificador de golpe/Lei de execução.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-04",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Aumento de alcance",
-      "N1 (Mundo 1-4)": "+6m de alcance e técnicas atravessam cobertura leve.",
-      "N2 (Mundo 5-9)": "+12m de alcance; ignora meia cobertura e curvas simples.",
-      "N3 (Mundo 10)": "Alcance dentro de todo o Mundo; pode atingir alvos vistos/sentidos no domínio.",
-      "Alvo": "Técnicas do usuário",
-      "Resistência sugerida": "Densa ou sair da área",
-      "Se falhar": "Alcance ampliado por completo.",
-      "Se passar": "Alcance reduzido pela metade ou exige linha sensorial.",
-      "Força": "Adequada",
-      "Observações de equilíbrio": "Book tinha +2/+6/+12; N1 foi elevado para impacto prático.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-05",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Golpes causam efeitos secundários",
-      "N1 (Mundo 1-4)": "Ao causar dano, impõe 1 efeito fraco: -5 em ação escolhida, movimento -3m ou sangramento 1d4.",
-      "N2 (Mundo 5-9)": "Impõe efeito médio: -10, caído, desarmado ou sangramento 1d6.",
-      "N3 (Mundo 10)": "Impõe efeito forte: atordoado 1 turno, preso, sangramento 2d6 ou vulnerável a uma magia.",
-      "Alvo": "Alvo atingido",
-      "Resistência sugerida": "CON, DES ou POD conforme efeito",
-      "Se falhar": "Sofre dano e efeito completo.",
-      "Se passar": "Sofre dano, mas reduz/evita efeito secundário.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Escolher efeito ao criar a Lei evita versatilidade abusiva.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-06",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Execução abaixo de certa vida",
-      "N1 (Mundo 1-4)": "Se o alvo estiver com 20% PV ou menos, sofre 25 dano inevitável ou cai a 0 se falhar por margem 20+.",
-      "N2 (Mundo 5-9)": "Se estiver com 30% PV ou menos, sofre 40 dano inevitável ou cai a 0 se falhar por margem 15+.",
-      "N3 (Mundo 10)": "Se estiver com 50% PV ou menos, sofre 70 dano inevitável ou cai a 0 se falhar por margem 10+.",
-      "Alvo": "1 alvo ferido",
-      "Resistência sugerida": "CON ou POD",
-      "Se falhar": "Sofre execução conforme tier.",
-      "Se passar": "Sofre metade do dano inevitável e não cai automaticamente.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "Deve exigir uso de Lei e alvo já ferido.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-07",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Crítico ampliado",
-      "N1 (Mundo 1-4)": "O próximo Extremo conta como Crítico x3; crítico natural recebe +15 dano.",
-      "N2 (Mundo 5-9)": "Extremo conta como Crítico x5; Bom/Sólido pode virar Extremo uma vez.",
-      "N3 (Mundo 10)": "Extremo conta como Crítico x7; Bom/Sólido vira Crítico uma vez por uso da Lei.",
-      "Alvo": "Usuário",
-      "Resistência sugerida": "Não se aplica; defesa é do ataque",
-      "Se falhar": "Multiplicador aplicado.",
-      "Se passar": "Sem teste direto; alvo defende ataque normal.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Muito perigoso com armas grandes; limitar a 1 ataque por uso.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-08",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Quebra de armadura",
-      "N1 (Mundo 1-4)": "Reduz Bloqueio/RD/CA da armadura em 5 até fim da cena ou até reparo rápido.",
-      "N2 (Mundo 5-9)": "Reduz em 10 e ignora redução mínima de armadura.",
-      "N3 (Mundo 10)": "Reduz em 15; se zerar defesa, alvo fica Exposto: +15 dano recebido no próximo golpe.",
-      "Alvo": "Alvo/equipamento",
-      "Resistência sugerida": "CON, POD ou qualidade do equipamento",
-      "Se falhar": "Redução completa.",
-      "Se passar": "Redução pela metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Não destruir permanentemente equipamento sem decisão do mestre.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-09",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Dano em área",
-      "N1 (Mundo 1-4)": "15 dano mágico em 3m de diâmetro.",
-      "N2 (Mundo 5-9)": "30 dano mágico em 8m de diâmetro.",
-      "N3 (Mundo 10)": "50 dano mágico em 16m de diâmetro.",
-      "Alvo": "Área dentro do Mundo",
-      "Resistência sugerida": "DES ou POD",
-      "Se falhar": "Dano completo.",
-      "Se passar": "Metade do dano.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Base mínima ideal para Mundo ofensivo.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-10",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Pressão contínua (dano passivo)",
-      "N1 (Mundo 1-4)": "8 dano por turno enquanto permanecer na zona marcada.",
-      "N2 (Mundo 5-9)": "15 dano por turno e movimento -3m.",
-      "N3 (Mundo 10)": "25 dano por turno e não pode recuperar PV dentro da zona.",
-      "Alvo": "Inimigos em zona/área",
-      "Resistência sugerida": "POD ou CON por turno",
-      "Se falhar": "Sofre dano e efeito secundário.",
-      "Se passar": "Metade do dano e evita efeito secundário no turno.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Era 4/10/20; N1 elevado para mínimo decente.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-11",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Impedir cura",
-      "N1 (Mundo 1-4)": "Curas recebidas pelo alvo reduzem 15 e vida temporária é reduzida pela metade.",
-      "N2 (Mundo 5-9)": "Curas reduzem 30 e não removem Lesão Grave enquanto estiver no Mundo.",
-      "N3 (Mundo 10)": "Curas são anuladas; apenas Etérea N8+ ou Mundo oposto contesta.",
-      "Alvo": "Inimigos dentro do Mundo",
-      "Resistência sugerida": "POD do curador ou Densa",
-      "Se falhar": "Cura reduzida/anulada.",
-      "Se passar": "Cura funciona pela metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Funciona como controle; não é dano direto.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-12",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Roubo de vida",
-      "N1 (Mundo 1-4)": "Ao causar dano com Lei/técnica, cura 1/4 do dano causado.",
-      "N2 (Mundo 5-9)": "Cura 1/2 do dano causado e pode converter excesso em PV temporário.",
-      "N3 (Mundo 10)": "Cura valor igual ao dano causado; excesso vira PV temporário até 25.",
-      "Alvo": "Alvo danificado e usuário",
-      "Resistência sugerida": "CON ou POD",
-      "Se falhar": "Roubo completo.",
-      "Se passar": "Roubo reduzido pela metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Limitar a uma vez por turno evita abuso.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-13",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Ataques inevitáveis",
-      "N1 (Mundo 1-4)": "Ataque/Lei causa pelo menos 15 dano mesmo se o alvo esquivar/bloquear, salvo contestação de Mundo.",
-      "N2 (Mundo 5-9)": "Causa pelo menos 30 dano e ignora uma defesa comum.",
-      "N3 (Mundo 10)": "Causa pelo menos 50 dano; só Densa/Mundo oposto pode evitar completamente.",
-      "Alvo": "1 alvo no Mundo",
-      "Resistência sugerida": "Densa, POD ou Mundo oposto",
-      "Se falhar": "Acerto quase garantido completo.",
-      "Se passar": "Sofre metade/efeito reduzido, mas não ignora tudo.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "Deve gastar uso da Lei; é a tradução direta de domínio.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-14",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Perseguir automaticamente",
-      "N1 (Mundo 1-4)": "Se o alvo se mover, a técnica o segue até 6m e causa 15 dano se alcançar.",
-      "N2 (Mundo 5-9)": "Segue até 12m, ignora terreno e causa 25 dano.",
-      "N3 (Mundo 10)": "A técnica alcança qualquer ponto do Mundo e causa 40 dano.",
-      "Alvo": "Alvo que tenta se afastar",
-      "Resistência sugerida": "DES ou movimento especial",
-      "Se falhar": "É alcançado e sofre efeito.",
-      "Se passar": "Ganha distância parcial e sofre metade.",
-      "Força": "Adequada",
-      "Observações de equilíbrio": "Boa contra arqueiros/conjuradores.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-15",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Punir esquiva",
-      "N1 (Mundo 1-4)": "Ao usar Esquiva contra o usuário, alvo sofre +2d8 ou 10 dano fixo.",
-      "N2 (Mundo 5-9)": "Sofre +4d8 ou 20 dano fixo e -10 na próxima Esquiva.",
-      "N3 (Mundo 10)": "Sofre +8d8 ou 35 dano fixo e perde reação no próximo turno.",
-      "Alvo": "Alvo que esquiva",
-      "Resistência sugerida": "DES ou POD",
-      "Se falhar": "Punição completa.",
-      "Se passar": "Metade do dano e evita penalidade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Mantém N1 relevante sem virar morte automática.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-16",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Punir Bloqueios",
-      "N1 (Mundo 1-4)": "Ao Bloquear, alvo sofre +2d8 ou 10 dano que ignora Bloqueio.",
-      "N2 (Mundo 5-9)": "Sofre +4d8 ou 20 e Bloqueio -5 até próximo turno.",
-      "N3 (Mundo 10)": "Sofre +8d8 ou 35 e o Bloqueio falha contra a próxima técnica do Mundo.",
-      "Alvo": "Alvo que bloqueia",
-      "Resistência sugerida": "CON ou POD",
-      "Se falhar": "Punição completa.",
-      "Se passar": "Metade do dano e reduz penalidade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Especialmente boa contra tanques.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-17",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Punir conjuração",
-      "N1 (Mundo 1-4)": "Ao conjurar magia, alvo sofre +2d8 ou 10 dano e teste da magia fica -5.",
-      "N2 (Mundo 5-9)": "Sofre +4d8 ou 20 dano; se falhar, perde a magia e o PM.",
-      "N3 (Mundo 10)": "Sofre +8d8 ou 35 dano; conjuração é anulada se não passar em POD/SAB.",
-      "Alvo": "Conjurador inimigo",
-      "Resistência sugerida": "POD ou SAB",
-      "Se falhar": "Punição completa/anulação conforme tier.",
-      "Se passar": "Metade do dano; conjuração continua com penalidade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Funciona como counter de magos dentro do domínio.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-18",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Crescimento progressivo de dano",
-      "N1 (Mundo 1-4)": "+5 dano cumulativo por turno ou por acerto, máximo +15.",
-      "N2 (Mundo 5-9)": "+8 cumulativo, máximo +32.",
-      "N3 (Mundo 10)": "+12 cumulativo, máximo +60; ao máximo, próximo ataque impõe resistência.",
-      "Alvo": "Usuário/técnica",
-      "Resistência sugerida": "Densa ou quebrar concentração",
-      "Se falhar": "Crescimento se mantém.",
-      "Se passar": "Crescimento reduzido pela metade por 1 turno.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Escala com tempo; bom para mundos que prendem inimigos.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-19",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Distorção de espaço ofensiva",
-      "N1 (Mundo 1-4)": "Dobra a trajetória 2 vezes: ignora uma cobertura ou muda direção do golpe.",
-      "N2 (Mundo 5-9)": "Dobra 5 vezes: atinge por ângulos impossíveis e impõe -10 na defesa.",
-      "N3 (Mundo 10)": "Dobra 10 vezes: golpe surge de qualquer ponto do Mundo; defesa comum não basta.",
-      "Alvo": "Trajetória/posição",
-      "Resistência sugerida": "DES, POD ou Densa",
-      "Se falhar": "Distorção completa.",
-      "Se passar": "Defesa reduz parte do efeito.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Dano deve vir do ataque base ou de outra Lei.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-20",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Clones ofensivos",
-      "N1 (Mundo 1-4)": "Cria 1 clone com 1 ação padrão limitada; dano máximo 15.",
-      "N2 (Mundo 5-9)": "Cria 1 clone com 1 ação completa; dano máximo 30.",
-      "N3 (Mundo 10)": "Cria 2 clones com 2 ações completas totais; dano máximo 50 por uso.",
-      "Alvo": "Usuário/clones",
-      "Resistência sugerida": "Percepção, POD ou Densa",
-      "Se falhar": "Clones executam ações completas.",
-      "Se passar": "Clones causam metade/uma ação falha.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "Limites de dano evitam duplicação infinita.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-21",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Aumento absurdo de iniciativa",
-      "N1 (Mundo 1-4)": "+40 iniciativa e age primeiro no próximo turno dentro do Mundo.",
-      "N2 (Mundo 5-9)": "+50 iniciativa e ganha 1 turno extra limitado a movimento ou magia sem dano.",
-      "N3 (Mundo 10)": "+100 iniciativa e ganha 2 turnos extras limitados: apenas um pode causar dano completo.",
-      "Alvo": "Usuário",
-      "Resistência sugerida": "Não se aplica; contestável por Mundo",
-      "Se falhar": "Vantagem temporal completa.",
-      "Se passar": "Mundo/Densa pode remover turno extra.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "Controle de ação é extremamente forte; precisa limite.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-22",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Reação ofensiva automática",
-      "N1 (Mundo 1-4)": "2 cargas: quando inimigo ataca/conjura/move, causa 10 dano ou -5 no teste.",
-      "N2 (Mundo 5-9)": "5 cargas: causa 15 dano ou -10 no teste.",
-      "N3 (Mundo 10)": "10 cargas: causa 25 dano ou anula uma ação se falhar em resistência.",
-      "Alvo": "Gatilhos inimigos",
-      "Resistência sugerida": "DES ou POD",
-      "Se falhar": "Reação automática dispara.",
-      "Se passar": "Efeito pela metade ou consome carga sem dano.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Cargas por abertura de Mundo.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-23",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Efeito berserk",
-      "N1 (Mundo 1-4)": "+10 acerto e +2d6 dano; usuário recebe -5 CA enquanto durar.",
-      "N2 (Mundo 5-9)": "+20 acerto e +3d8 dano; ignora medo/dor, mas recebe -8 CA.",
-      "N3 (Mundo 10)": "+40 acerto e +4d10 dano; não cai a 0 até fim do turno, mas sofre exaustão/colapso depois.",
-      "Alvo": "Usuário",
-      "Resistência sugerida": "Autocontrole/SAB opcional",
-      "Se falhar": "Buff completo.",
-      "Se passar": "Buff reduzido ou consequência menor.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "Forte, mas com risco defensivo.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "OFE-24",
-      "Categoria": "Ofensivo",
-      "Lei do Mundo": "Drenagem de energia",
-      "N1 (Mundo 1-4)": "Drena 2d6 PM; se alvo não tiver PM, causa 15 dano.",
-      "N2 (Mundo 5-9)": "Drena 3d8 PM; metade vira PM temporário do usuário.",
-      "N3 (Mundo 10)": "Drena 4d10 PM; se zerar o alvo, ele fica Silenciado 1 turno.",
-      "Alvo": "Alvo com PM",
-      "Resistência sugerida": "POD ou SAB",
-      "Se falhar": "Drenagem completa.",
-      "Se passar": "Drena metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Útil contra conjuradores; mantém impacto contra não-magos.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-01",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Redução de dano físico",
-      "N1 (Mundo 1-4)": "Reduz 8 dano físico recebido por instância.",
-      "N2 (Mundo 5-9)": "Reduz 15 dano físico e 5 dano mágico.",
-      "N3 (Mundo 10)": "Reduz 25 dano físico e 10 mágico.",
-      "Alvo": "Usuário/aliados escolhidos",
-      "Resistência sugerida": "Não se aplica; Densa pode reduzir",
-      "Se falhar": "Redução aplicada.",
-      "Se passar": "Redução reduzida por contestação.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Aumentado do 5/10/15 do Book.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-02",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Regeneração com Etérea",
-      "N1 (Mundo 1-4)": "Regenera 5 PV por turno; não fecha Lesão Grave.",
-      "N2 (Mundo 5-9)": "Regenera 10 PV por turno e estabiliza Morrendo uma vez.",
-      "N3 (Mundo 10)": "Regenera 15 PV por turno; pode remover Lesão Grave com uso da Lei.",
-      "Alvo": "Usuário/aliados",
-      "Resistência sugerida": "Impedir cura, Densa ou dano contínuo",
-      "Se falhar": "Regeneração completa.",
-      "Se passar": "Regenera metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Requer acesso/tema de cura ou Etérea.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-03",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Escudo automático",
-      "N1 (Mundo 1-4)": "2 cargas: +10 CA e RD 2 contra um ataque.",
-      "N2 (Mundo 5-9)": "5 cargas: +15 CA e RD 5.",
-      "N3 (Mundo 10)": "10 cargas: +30 CA e RD 12; pode proteger aliado no Mundo.",
-      "Alvo": "Usuário/aliados",
-      "Resistência sugerida": "Ataque supera defesa ou Densa",
-      "Se falhar": "Escudo absorve conforme tier.",
-      "Se passar": "Escudo perde carga e reduz metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Bom e claro para mesa.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-04",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Anular status negativos",
-      "N1 (Mundo 1-4)": "Anula condições fracas ou reduz médias em 1 passo.",
-      "N2 (Mundo 5-9)": "Anula médias e reduz fortes em 1 passo.",
-      "N3 (Mundo 10)": "Anula fortes uma vez por turno; não anula morte/colapso narrativo.",
-      "Alvo": "Usuário/aliados",
-      "Resistência sugerida": "POD do causador ou Densa",
-      "Se falhar": "Status removido/reduzido.",
-      "Se passar": "Status só reduz duração.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Muito útil sem depender de dano.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-05",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Não ser empurrado",
-      "N1 (Mundo 1-4)": "Usuário/aliados em 6m não podem ser movidos à força; +10 FOR/CON contra queda.",
-      "N2 (Mundo 5-9)": "Área 12m; não caem e ignoram empurrões; +15 FOR/CON.",
-      "N3 (Mundo 10)": "Vantagem em FOR/CON; terreno do Mundo ancora todos aliados escolhidos.",
-      "Alvo": "Usuário/aliados",
-      "Resistência sugerida": "FOR oposto ou Mundo inimigo",
-      "Se falhar": "Proteção completa.",
-      "Se passar": "Movimento forçado reduzido pela metade.",
-      "Força": "Adequada",
-      "Observações de equilíbrio": "Boa contra Impacto e controle.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-06",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Reflexão de dano",
-      "N1 (Mundo 1-4)": "Reflete 8 dano ao agressor por instância, 1 vez/turno.",
-      "N2 (Mundo 5-9)": "Reflete 16 dano, 2 vezes/turno.",
-      "N3 (Mundo 10)": "Reflete 30 dano; se refletir magia, pode devolver efeito menor.",
-      "Alvo": "Agressor",
-      "Resistência sugerida": "CON ou POD do agressor",
-      "Se falhar": "Reflete completo.",
-      "Se passar": "Reflete metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Subido do Book 4/8/16.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-07",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Divisão de dano",
-      "N1 (Mundo 1-4)": "Divide o dano final por 4 uma vez por turno.",
-      "N2 (Mundo 5-9)": "Divide por 3 até 2 vezes por turno.",
-      "N3 (Mundo 10)": "Divide por 2 todo dano recebido por aliados escolhidos no Mundo.",
-      "Alvo": "Usuário/aliados",
-      "Resistência sugerida": "Não se aplica; Densa/Mundo",
-      "Se falhar": "Divisão aplicada.",
-      "Se passar": "Divisão enfraquecida por contestação.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "Poderoso; limitado por uso no N1/N2.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-08",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Conversão de dano em energia",
-      "N1 (Mundo 1-4)": "Converte 1/6 do dano recebido em PM temporário.",
-      "N2 (Mundo 5-9)": "Converte 1/5 e reduz 5 dano.",
-      "N3 (Mundo 10)": "Converte 1/4 e reduz 10 dano; excesso vira escudo temporário.",
-      "Alvo": "Usuário",
-      "Resistência sugerida": "Densa ou anti-magia",
-      "Se falhar": "Conversão completa.",
-      "Se passar": "Conversão pela metade.",
-      "Força": "Adequada",
-      "Observações de equilíbrio": "Sinergia com magia; cuidado com loops.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-09",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Armadura crescente",
-      "N1 (Mundo 1-4)": "+3 CA por turno, máximo +9.",
-      "N2 (Mundo 5-9)": "+5 CA por turno, máximo +20.",
-      "N3 (Mundo 10)": "+8 CA por turno, máximo +40; no máximo, ganha RD 10.",
-      "Alvo": "Usuário/aliados",
-      "Resistência sugerida": "Densa ou quebrar concentração",
-      "Se falhar": "Crescimento normal.",
-      "Se passar": "Crescimento reduzido pela metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Book era +1/+2/+4; escalado para ser relevante.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-10",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Bloqueio automático",
-      "N1 (Mundo 1-4)": "Ganha RD 5 ou Bloqueio automático 1 vez/turno.",
-      "N2 (Mundo 5-9)": "RD 10 ou Bloqueio automático 2 vezes/turno.",
-      "N3 (Mundo 10)": "RD 18 ou Bloqueio automático contra todas as reações comuns.",
-      "Alvo": "Usuário/aliados",
-      "Resistência sugerida": "Ataque Extremo, Densa ou Mundo",
-      "Se falhar": "Bloqueio funciona.",
-      "Se passar": "Bloqueio reduz metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Subido de 3/6/9 RD.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-11",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Desaceleração de projéteis",
-      "N1 (Mundo 1-4)": "Projéteis em 3m sofrem -15 e dano -10.",
-      "N2 (Mundo 5-9)": "Projéteis em 6m sofrem -25 e dano -20.",
-      "N3 (Mundo 10)": "Projéteis em 12m podem ser devolvidos; se não, dano -40.",
-      "Alvo": "Projéteis/ataques à distância",
-      "Resistência sugerida": "Atirador supera POD ou Densa",
-      "Se falhar": "Projétil desacelera/devolve.",
-      "Se passar": "Apenas penalidade parcial.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Defesa especializada.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-12",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Cancelar magia inimiga",
-      "N1 (Mundo 1-4)": "2 cargas: cancela magia N1-N3 ou reduz efeito pela metade.",
-      "N2 (Mundo 5-9)": "5 cargas: cancela magia N1-N6 ou reduz forte.",
-      "N3 (Mundo 10)": "10 cargas: cancela magia N1-N9; N10 vira embate de POD/SAB.",
-      "Alvo": "Magia inimiga",
-      "Resistência sugerida": "POD/SAB do conjurador",
-      "Se falhar": "Magia cancelada/reduzida.",
-      "Se passar": "Magia passa com efeito parcial.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "Deve consumir carga e talvez uso da Lei.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-13",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Último suspiro",
-      "N1 (Mundo 1-4)": "1 vez: ao cair a 0, volta com 25% PV e perde próximo movimento.",
-      "N2 (Mundo 5-9)": "2 vezes: volta com 50% PV e remove Morrendo.",
-      "N3 (Mundo 10)": "Enquanto Mundo durar: volta com 100% PV uma vez, depois 50%; ao fim sofre exaustão/colapso.",
-      "Alvo": "Usuário",
-      "Resistência sugerida": "Não se aplica; impedir cura pode bloquear",
-      "Se falhar": "Revive conforme tier.",
-      "Se passar": "Se contestado, volta com metade.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "Precisa consequência narrativa no N3.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-14",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Distorção temporal defensiva",
-      "N1 (Mundo 1-4)": "2 cargas: transforma acerto recebido em falha parcial ou reduz dano pela metade.",
-      "N2 (Mundo 5-9)": "5 cargas: desfaz uma ação contra o usuário.",
-      "N3 (Mundo 10)": "10 cargas: pode refazer o turno defensivo de um aliado dentro do Mundo.",
-      "Alvo": "Ataques/ações contra usuário",
-      "Resistência sugerida": "POD/SAB ou Mundo oposto",
-      "Se falhar": "Distorção completa.",
-      "Se passar": "Distorção consome carga e reduz parcialmente.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "Controle temporal é forte; cargas limitam.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-15",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Defesa compartilhada",
-      "N1 (Mundo 1-4)": "2 aliados ligados: +5 CA mútuo e podem dividir 5 dano.",
-      "N2 (Mundo 5-9)": "3 aliados: +10 CA e dividem 10 dano.",
-      "N3 (Mundo 10)": "4 aliados: +15 CA, dividem 20 dano e uma condição fraca.",
-      "Alvo": "Aliados escolhidos",
-      "Resistência sugerida": "Densa ou separar aliados",
-      "Se falhar": "Rede defensiva completa.",
-      "Se passar": "Bônus cai pela metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Bom para grupos.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "DEF-16",
-      "Categoria": "Defensivo",
-      "Lei do Mundo": "Resistência absurda a controle",
-      "N1 (Mundo 1-4)": "Reduz penalidades de controle em 10 e dá vantagem contra queda/atordoamento.",
-      "N2 (Mundo 5-9)": "Reduz em 15; área 3m para aliados.",
-      "N3 (Mundo 10)": "Reduz em 20; área 6m; nega uma tentativa de domínio/controle por uso.",
-      "Alvo": "Usuário/aliados",
-      "Resistência sugerida": "POD/SAB do controlador",
-      "Se falhar": "Resistência completa.",
-      "Se passar": "Resistência parcial.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Ótimo contra Densa/Mundo de controle.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-01",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Manipular percepção",
-      "N1 (Mundo 1-4)": "Altera percepção de até 2 alvos: -10 em Percepção/Encontrar ou cria imagem sensorial simples.",
-      "N2 (Mundo 5-9)": "Afeta grupo em 6m: -20 ou altera sentidos múltiplos.",
-      "N3 (Mundo 10)": "Reescreve a percepção dentro do Mundo: alvos falham em distinguir real/ilusão sem Extremo.",
-      "Alvo": "Alvos no Mundo",
-      "Resistência sugerida": "SAB ou Percepção",
-      "Se falhar": "Percepção alterada por completo.",
-      "Se passar": "Percebe inconsistência e reduz penalidade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Utilidade com uso defensivo/ofensivo.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-02",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Alterar gravidade",
-      "N1 (Mundo 1-4)": "Área 3m: alvo cai, fica lento ou sofre 2d8 se falhar.",
-      "N2 (Mundo 5-9)": "Área 8m: move verticalmente, prende ou arremessa; 4d8 se impacto.",
-      "N3 (Mundo 10)": "Todo Mundo: define direção da gravidade; falha causa queda/choque 8d8 e caído.",
-      "Alvo": "Área/alvos",
-      "Resistência sugerida": "CON ou Atletismo",
-      "Se falhar": "Efeito completo.",
-      "Se passar": "Move metade/evita dano maior.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "Excelente como domínio de terreno.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-03",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Criar ilusões reais",
-      "N1 (Mundo 1-4)": "Cria objeto/ameaça realista simples; pode causar 10 dano psicológico se interagir.",
-      "N2 (Mundo 5-9)": "Cria cena complexa ou criatura ilusória com 25 PV ilusório; 20 dano psíquico.",
-      "N3 (Mundo 10)": "Ilusão ganha peso parcial e altera terreno; 40 dano/condição se acreditada.",
-      "Alvo": "Área/alvos",
-      "Resistência sugerida": "SAB, Intuição ou Percepção",
-      "Se falhar": "Acredita e sofre efeito.",
-      "Se passar": "Reconhece parcialmente; efeito reduzido.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Deixar claro que não cria vida real permanente.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-04",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Distorcer espaço",
-      "N1 (Mundo 1-4)": "Move entrada/saída de área em 3m; troca posição de 2 alvos próximos.",
-      "N2 (Mundo 5-9)": "Dobra distância em 12m; teleporta alvo 6m se falhar.",
-      "N3 (Mundo 10)": "Reorganiza o mapa do Mundo; escolhe até 4 reposicionamentos de 12m.",
-      "Alvo": "Alvos/terreno",
-      "Resistência sugerida": "POD ou DES",
-      "Se falhar": "Reposicionamento completo.",
-      "Se passar": "Move metade ou escolhe direção segura.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Versátil; não deve causar dano alto sem colisão.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-05",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Expandir sentidos",
-      "N1 (Mundo 1-4)": "Usuário percebe tudo em 12m: +20 Percepção e não sofre surpresa.",
-      "N2 (Mundo 5-9)": "Percebe todo o Mundo: +30 Percepção, vê invisível/magia comum.",
-      "N3 (Mundo 10)": "Percepção absoluta do Mundo: sabe posição, intenção básica e magia ativa dos alvos.",
-      "Alvo": "Usuário",
-      "Resistência sugerida": "Ocultação superior ou Mundo oposto",
-      "Se falhar": "Sentidos completos.",
-      "Se passar": "Recebe informação parcial.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Sem dano, mas muito útil.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-06",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Ler intenções",
-      "N1 (Mundo 1-4)": "Lê intenção imediata de 1 alvo; +15 em Intuição/defesa contra ele.",
-      "N2 (Mundo 5-9)": "Lê intenção de grupo; impõe -10 em blefes/fintas contra usuário.",
-      "N3 (Mundo 10)": "Prevê intenção do turno: uma vez, anula vantagem/emboscada e reage como se soubesse.",
-      "Alvo": "Alvos no Mundo",
-      "Resistência sugerida": "CAR, SAB ou Blefar",
-      "Se falhar": "Intenção revelada.",
-      "Se passar": "Informação vaga.",
-      "Força": "Adequada",
-      "Observações de equilíbrio": "Boa para social/combate.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-07",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Comunicação mental",
-      "N1 (Mundo 1-4)": "Liga mente de até 3 aliados; comunicação silenciosa e +5 Tática.",
-      "N2 (Mundo 5-9)": "Até 6 aliados; compartilha imagens/sensações e +10 Tática.",
-      "N3 (Mundo 10)": "Todos aliados no Mundo; podem coordenar reações uma vez por rodada.",
-      "Alvo": "Aliados",
-      "Resistência sugerida": "Interferência mental/Densa",
-      "Se falhar": "Ligação completa.",
-      "Se passar": "Mensagens fragmentadas.",
-      "Força": "Adequada",
-      "Observações de equilíbrio": "Suporte de grupo.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-08",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Amplificar aliados",
-      "N1 (Mundo 1-4)": "Até 2 aliados recebem +5 em um tipo de teste e +5 dano no próximo acerto.",
-      "N2 (Mundo 5-9)": "Até 4 aliados recebem +10 em um tipo de teste e +10 dano.",
-      "N3 (Mundo 10)": "Todos aliados no Mundo recebem +15 em um tipo de teste e +20 dano uma vez.",
-      "Alvo": "Aliados",
-      "Resistência sugerida": "Densa ou quebrar concentração",
-      "Se falhar": "Buff completo.",
-      "Se passar": "Buff pela metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Não acumular com outro buff de Mundo.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-09",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Roubar foco/iniciativa",
-      "N1 (Mundo 1-4)": "1 alvo perde -20 iniciativa ou -10 no próximo teste mental.",
-      "N2 (Mundo 5-9)": "Até 3 alvos perdem -30 iniciativa; usuário ganha +20.",
-      "N3 (Mundo 10)": "Todos inimigos perdem foco: -40 iniciativa e não podem reação na abertura da Lei.",
-      "Alvo": "Inimigos",
-      "Resistência sugerida": "SAB ou POD",
-      "Se falhar": "Perde foco completo.",
-      "Se passar": "Penalidade pela metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Muito forte em abertura de combate.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-10",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Ocultar aliados",
-      "N1 (Mundo 1-4)": "Até 2 aliados ficam ocultos; +20 Furtividade até atacar.",
-      "N2 (Mundo 5-9)": "Até 4 aliados; invisibilidade parcial e ataques contra eles sofrem -15.",
-      "N3 (Mundo 10)": "Todos aliados escolhidos somem da percepção comum; só Percepção Extrema/Densa revela.",
-      "Alvo": "Aliados",
-      "Resistência sugerida": "Percepção, Encontrar ou Densa",
-      "Se falhar": "Ocultação completa.",
-      "Se passar": "Alvo percebe contorno/posição parcial.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Bom para infiltração.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-11",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Criar terreno",
-      "N1 (Mundo 1-4)": "Cria terreno difícil em 6m ou cobertura leve.",
-      "N2 (Mundo 5-9)": "Cria obstáculos/cobertura pesada em 12m; 2d8 dano se surgir sob alvo.",
-      "N3 (Mundo 10)": "Reescreve terreno do Mundo: muralhas, fossos, pontes, zonas perigosas; 4d8 se colidir.",
-      "Alvo": "Área",
-      "Resistência sugerida": "DES ou Atletismo",
-      "Se falhar": "Terreno afeta completo.",
-      "Se passar": "Move-se para borda ou sofre metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Ter ciência de não criar recursos permanentes.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-12",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Teleporte",
-      "N1 (Mundo 1-4)": "Teleporta usuário 6m dentro do Mundo.",
-      "N2 (Mundo 5-9)": "Teleporta usuário e 1 aliado 12m, ou troca com inimigo se falhar.",
-      "N3 (Mundo 10)": "Teleporta até 4 alvos para posições escolhidas dentro do Mundo.",
-      "Alvo": "Usuário/alvos",
-      "Resistência sugerida": "POD ou DES se alvo involuntário",
-      "Se falhar": "Teleporte completo.",
-      "Se passar": "Alvo resiste e move metade/posição segura.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Restringido ao Mundo.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-13",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Manipular som",
-      "N1 (Mundo 1-4)": "Silencia área 3m ou cria som ilusório; -15 Escutar/conjuração verbal.",
-      "N2 (Mundo 5-9)": "Área 8m: anula comandos, comunicação e impõe -20 Escutar.",
-      "N3 (Mundo 10)": "Todo Mundo: decide quem pode ouvir/falar; conjuração verbal exige POD.",
-      "Alvo": "Área/alvos",
-      "Resistência sugerida": "SAB ou POD",
-      "Se falhar": "Som manipulado completo.",
-      "Se passar": "Ruído parcial/penalidade reduzida.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Especialmente útil contra magia verbal.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-14",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Lentidão em área",
-      "N1 (Mundo 1-4)": "Área 6m: movimento -3m e -5 DES.",
-      "N2 (Mundo 5-9)": "Área 12m: movimento pela metade e -10 DES/reação.",
-      "N3 (Mundo 10)": "Todo Mundo: inimigos agem depois do usuário; movimento 0 se falhar por margem 20+.",
-      "Alvo": "Inimigos",
-      "Resistência sugerida": "CON ou POD",
-      "Se falhar": "Lentidão completa.",
-      "Se passar": "Movimento reduzido parcialmente.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Controle forte sem dano alto.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-15",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Aceleração em área",
-      "N1 (Mundo 1-4)": "Aliados em 6m ganham +3m movimento e +5 DES.",
-      "N2 (Mundo 5-9)": "Aliados em 12m ganham +6m, +10 DES e uma interação livre.",
-      "N3 (Mundo 10)": "Aliados no Mundo ganham +9m e uma ação de movimento extra.",
-      "Alvo": "Aliados",
-      "Resistência sugerida": "Densa/controle temporal",
-      "Se falhar": "Aceleração completa.",
-      "Se passar": "Aceleração reduzida.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Evitar conceder ação padrão extra.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-16",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Invocação territorial",
-      "N1 (Mundo 1-4)": "Invoca elemento/estrutura territorial simples com 20 PV e 10 dano/efeito.",
-      "N2 (Mundo 5-9)": "Invoca guardião/zona com 45 PV e 20 dano/efeito.",
-      "N3 (Mundo 10)": "Invoca avatar territorial com 90 PV e 35 dano/efeito por turno limitado.",
-      "Alvo": "Território do Mundo",
-      "Resistência sugerida": "POD/Densa",
-      "Se falhar": "Invocação atua completa.",
-      "Se passar": "PV/efeito pela metade.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "Precisa duração e limite de ações.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-17",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Controle de emoções",
-      "N1 (Mundo 1-4)": "1 alvo recebe medo, calma, raiva ou coragem leve: ±10 em teste social/mental.",
-      "N2 (Mundo 5-9)": "Grupo em 6m: ±20 e pode forçar foco/hesitação.",
-      "N3 (Mundo 10)": "Todo Mundo: emoção dominante; falha impede atacar certo alvo ou força fuga/avanço.",
-      "Alvo": "Alvos",
-      "Resistência sugerida": "SAB ou CAR",
-      "Se falhar": "Emoção domina.",
-      "Se passar": "Sente emoção mas age com penalidade menor.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Cuidado com agência dos jogadores.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-18",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Controle de memória curta",
-      "N1 (Mundo 1-4)": "Apaga/embaralha últimos segundos; alvo perde reação ou informação recente.",
-      "N2 (Mundo 5-9)": "Apaga cena curta dentro do Mundo; alvo perde ação preparada.",
-      "N3 (Mundo 10)": "Reescreve lembrança da abertura do Mundo; alvo não lembra gatilho/posição sem Extremo.",
-      "Alvo": "Alvo",
-      "Resistência sugerida": "SAB ou INT",
-      "Se falhar": "Memória alterada.",
-      "Se passar": "Recorda fragmentos.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Não apagar memórias permanentes sem trama.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-19",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Visão futura limitada",
-      "N1 (Mundo 1-4)": "Uma vez, pergunta ao mestre consequência provável de 1 ação.",
-      "N2 (Mundo 5-9)": "Prevê 1 turno: +15 defesa/teste contra evento visto.",
-      "N3 (Mundo 10)": "Prevê 1 rodada: pode refazer uma decisão própria ou de aliado.",
-      "Alvo": "Usuário",
-      "Resistência sugerida": "Interferência temporal/Mundo",
-      "Se falhar": "Visão clara.",
-      "Se passar": "Visão simbólica/parcial.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "Poder narrativo, limitar perguntas.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-20",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Cancelar rastreamento",
-      "N1 (Mundo 1-4)": "Apaga rastros físicos/mágicos dentro de 12m.",
-      "N2 (Mundo 5-9)": "Apaga rastros de grupo e confunde perseguição por 1 hora.",
-      "N3 (Mundo 10)": "Remove presença do grupo da memória espacial do Mundo/região por 1 dia narrativo.",
-      "Alvo": "Usuário/aliados",
-      "Resistência sugerida": "Rastrear, Percepção ou magia superior",
-      "Se falhar": "Rastro apagado.",
-      "Se passar": "Rastro fica com dificuldade alta.",
-      "Força": "Adequada",
-      "Observações de equilíbrio": "Ótimo pós-combate/fuga.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-21",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Manipular temperatura",
-      "N1 (Mundo 1-4)": "Área 6m: calor/frio extremo leve; 2d8 dano ou penalidade -10.",
-      "N2 (Mundo 5-9)": "Área 12m: 4d8 dano ou exaustão/entorpecimento se falhar.",
-      "N3 (Mundo 10)": "Todo Mundo: clima absoluto; 8d8 dano ou condição forte por turno-chave.",
-      "Alvo": "Área/alvos",
-      "Resistência sugerida": "CON",
-      "Se falhar": "Sofre dano/condição completo.",
-      "Se passar": "Metade do dano e evita condição.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Escolher calor ou frio ao criar Lei.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-22",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Alterar peso",
-      "N1 (Mundo 1-4)": "Duplica ou reduz pela metade peso de 1 alvo/objeto; 2d8 impacto se cair.",
-      "N2 (Mundo 5-9)": "Multiplica/divide por 5; prende ou arremessa, 4d8.",
-      "N3 (Mundo 10)": "Multiplica/divide por 20; alvo fica imóvel/flutua, 8d8 em colisão.",
-      "Alvo": "Alvos/objetos",
-      "Resistência sugerida": "FOR, CON ou Atletismo",
-      "Se falhar": "Peso alterado completo.",
-      "Se passar": "Alteração parcial.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Use com cuidado em boss gigantes.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-23",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Criar zonas específicas",
-      "N1 (Mundo 1-4)": "Cria zona 3m com regra simples: silêncio, cura menor, dano 5, lentidão etc.",
-      "N2 (Mundo 5-9)": "Zona 8m com regra média: dano 15, cura 10, bloqueio, medo etc.",
-      "N3 (Mundo 10)": "Zona 16m com regra forte: dano 30, cura 20, restrição de ação ou proteção pesada.",
-      "Alvo": "Área",
-      "Resistência sugerida": "Resistência conforme regra",
-      "Se falhar": "Regra da zona aplica completa.",
-      "Se passar": "Efeito da zona pela metade.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "É uma lei modular; definir uma regra por uso.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-24",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Reescrever trajetórias",
-      "N1 (Mundo 1-4)": "Redireciona 1 projétil/golpe por até 45°; +15 ou -15 no teste.",
-      "N2 (Mundo 5-9)": "Redireciona até 3 trajetórias; pode acertar outro alvo próximo.",
-      "N3 (Mundo 10)": "Redireciona qualquer trajetória visível no Mundo uma vez por rodada.",
-      "Alvo": "Ataques/projéteis",
-      "Resistência sugerida": "DES/POD do atacante",
-      "Se falhar": "Trajetória reescrita.",
-      "Se passar": "Desvio parcial.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Muito tático.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-25",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Copiar padrões de combate",
-      "N1 (Mundo 1-4)": "Após observar 1 ação, ganha +10 contra repetição dela.",
-      "N2 (Mundo 5-9)": "Copia uma técnica física simples por 1 turno com -10.",
-      "N3 (Mundo 10)": "Copia padrão completo de combate por 1 cena; ganha +20 contra o alvo.",
-      "Alvo": "Usuário/alvo observado",
-      "Resistência sugerida": "Blefar, Tática ou POD",
-      "Se falhar": "Padrão copiado.",
-      "Se passar": "Bônus reduzido.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Não copiar magias únicas sem permissão.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-26",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Criar ecos/passados",
-      "N1 (Mundo 1-4)": "Cria eco de uma ação passada simples; repete movimento/ataque de 10 dano.",
-      "N2 (Mundo 5-9)": "Eco repete técnica de até 25 dano ou bloqueio médio.",
-      "N3 (Mundo 10)": "Ecos múltiplos repetem cena curta; até 50 dano total ou defesa equivalente.",
-      "Alvo": "Área/usuário",
-      "Resistência sugerida": "POD, Percepção ou Densa",
-      "Se falhar": "Eco atua completo.",
-      "Se passar": "Eco enfraquecido/metade.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "Muito estiloso e perigoso; limitar por uso.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-27",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Inverter cima/baixo",
-      "N1 (Mundo 1-4)": "Área 3m: alvo cai e sofre 2d8 se falhar.",
-      "N2 (Mundo 5-9)": "Área 8m: vários alvos caem/flutuam, 4d8.",
-      "N3 (Mundo 10)": "Todo Mundo: direção muda à vontade; 8d8 e caído/preso.",
-      "Alvo": "Área/alvos",
-      "Resistência sugerida": "CON ou DES",
-      "Se falhar": "Inversão completa.",
-      "Se passar": "Alvo se segura, metade do dano.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Similar gravidade, mas mais repentino.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-28",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Prender inimigos",
-      "N1 (Mundo 1-4)": "Prende 1 alvo: movimento 0 até passar FOR/DES; sofre 10 dano se forçar.",
-      "N2 (Mundo 5-9)": "Prende até 3 alvos; -10 em ações físicas, 20 dano se forçar.",
-      "N3 (Mundo 10)": "Prende todos inimigos em zona; exige Extremo ou Mundo/Densa para escapar.",
-      "Alvo": "Inimigos",
-      "Resistência sugerida": "FOR, DES ou POD",
-      "Se falhar": "Preso completo.",
-      "Se passar": "Movimento reduzido pela metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Controle forte; evitar travar boss sem resistência.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-29",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Compartilhar sentidos",
-      "N1 (Mundo 1-4)": "Até 2 aliados compartilham visão/audição; +10 Percepção/Tática.",
-      "N2 (Mundo 5-9)": "Até 5 aliados; um pode reagir a ameaça percebida por outro.",
-      "N3 (Mundo 10)": "Todos aliados no Mundo compartilham sentidos; surpresa impossível e +20 Tática.",
-      "Alvo": "Aliados",
-      "Resistência sugerida": "Interferência mental",
-      "Se falhar": "Ligação completa.",
-      "Se passar": "Ligação parcial/ruído.",
-      "Força": "Adequada",
-      "Observações de equilíbrio": "Suporte poderoso mas sem dano.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-30",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Detectar mentira",
-      "N1 (Mundo 1-4)": "1 alvo: sabe se uma fala curta é mentira, omissão ou verdade provável.",
-      "N2 (Mundo 5-9)": "Grupo: detecta mentira em conversas; +20 Intuição.",
-      "N3 (Mundo 10)": "Dentro do Mundo, falsidade vibra: mentir exige teste Extremo de Blefar/CAR.",
-      "Alvo": "Alvos",
-      "Resistência sugerida": "CAR, Blefar ou POD",
-      "Se falhar": "Mentira detectada.",
-      "Se passar": "Resultado ambíguo.",
-      "Força": "Adequada",
-      "Observações de equilíbrio": "Excelente social.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-31",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Neutralizar ambiente",
-      "N1 (Mundo 1-4)": "Remove um perigo ambiental leve em 6m: fumaça, lama, veneno fraco.",
-      "N2 (Mundo 5-9)": "Neutraliza perigo médio em 12m; cria ar/solo seguro.",
-      "N3 (Mundo 10)": "Neutraliza clima/ambiente hostil no Mundo; aliados ignoram penalidades ambientais.",
-      "Alvo": "Área/aliados",
-      "Resistência sugerida": "Força do ambiente ou magia oposta",
-      "Se falhar": "Ambiente neutralizado.",
-      "Se passar": "Reduz penalidade pela metade.",
-      "Força": "Adequada",
-      "Observações de equilíbrio": "Utilidade defensiva.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-32",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Expandir alcance mágico",
-      "N1 (Mundo 1-4)": "+6m no alcance de magias e +5 na dificuldade de resistir.",
-      "N2 (Mundo 5-9)": "+12m e +10 dificuldade; magias podem contornar cobertura leve.",
-      "N3 (Mundo 10)": "Alcance de magias cobre todo o Mundo; +15 dificuldade.",
-      "Alvo": "Magias do usuário",
-      "Resistência sugerida": "Densa/Mundo oposto",
-      "Se falhar": "Ampliação completa.",
-      "Se passar": "Alcance/dificuldade pela metade.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Parecido com aumento de alcance, mas só magia.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-33",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Manipular sorte/probabilidade",
-      "N1 (Mundo 1-4)": "Uma vez, transforma falha em nova rolagem ou impõe reroll a inimigo.",
-      "N2 (Mundo 5-9)": "Duas vezes, escolhe melhor/pior de 2 dados em teste dentro do Mundo.",
-      "N3 (Mundo 10)": "Três vezes, define um resultado como Normal se não for crítico/falha crítica.",
-      "Alvo": "Rolagens no Mundo",
-      "Resistência sugerida": "POD/Sorte/Mundo oposto",
-      "Se falhar": "Probabilidade alterada.",
-      "Se passar": "Apenas reroll sem escolha.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "Não alterar 1 natural/95+ sem regra específica.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-34",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Silenciar magia",
-      "N1 (Mundo 1-4)": "Área 3m: conjuração custa +2 PM e -10 no teste.",
-      "N2 (Mundo 5-9)": "Área 8m: magia N1-N5 exige POD ou falha.",
-      "N3 (Mundo 10)": "Todo Mundo: magia inimiga só funciona com sucesso Sólido/Extremo em POD/SAB.",
-      "Alvo": "Conjuradores inimigos",
-      "Resistência sugerida": "POD ou SAB",
-      "Se falhar": "Magia silenciada/penalizada.",
-      "Se passar": "Conjura com custo/penalidade menor.",
-      "Força": "Forte",
-      "Observações de equilíbrio": "Controle antimágico.",
-      "Fonte": "Book.xlsx"
-    },
-    {
-      "ID": "UTI-35",
-      "Categoria": "Utilidade",
-      "Lei do Mundo": "Alterar percepção temporal",
-      "N1 (Mundo 1-4)": "1 alvo sente atraso: perde reação ou sofre -10 no próximo teste.",
-      "N2 (Mundo 5-9)": "Grupo em 6m: perde ação preparada/reação e movimento -3m.",
-      "N3 (Mundo 10)": "Todo Mundo: inimigos agem como se um turno atrasados; usuário pode reposicionar 12m.",
-      "Alvo": "Inimigos",
-      "Resistência sugerida": "SAB ou POD",
-      "Se falhar": "Atraso completo.",
-      "Se passar": "Penalidade parcial.",
-      "Força": "Muito Forte",
-      "Observações de equilíbrio": "Controle temporal; limitar por uso.",
-      "Fonte": "Book.xlsx"
     }
   ],
   "weapons": [
@@ -7024,5 +7818,1147 @@ window.MARUFIA_DB = {
     "Símbolo sagrado (emblema)",
     "Símbolo sagrado (relicário)",
     "Tenda para duas pessoas"
+  ],
+  "worldLaws": [
+    {
+      "ID": "OFE-01",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Dano em alvo (sem/com Resistência)",
+      "N1 (Mundo 1-4)": "Sem: 15. Com: 20; sucesso reduz para 10.",
+      "N2 (Mundo 5-9)": "Sem: 30. Com: 40; sucesso reduz para 20.",
+      "N3 (Mundo 10)": "Sem: 60. Com: 80; sucesso reduz para 40.",
+      "Alvo": "1 criatura no Mundo",
+      "Resistência sugerida": "CON ou POD",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Alvo: 1 criatura no Mundo. Instantâneo. O dano é mágico e o tipo é definido ao criar a Lei. Na versão com Resistência, use CON ou POD, também definido ao aprender a Lei. Usos sucessivos podem atingir a mesma criatura.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-02",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Dano em área pequena (sem/com Resistência)",
+      "N1 (Mundo 1-4)": "Sem: 8 por criatura. Com: 10; sucesso reduz para 5.",
+      "N2 (Mundo 5-9)": "Sem: 15 por criatura. Com: 20; sucesso reduz para 10.",
+      "N3 (Mundo 10)": "Sem: 30 por criatura. Com: 40; sucesso reduz para 20.",
+      "Alvo": "Círculo de 3/6/12 m de diâmetro conforme N1/N2/N3, em ponto do Mundo.",
+      "Resistência sugerida": "Conforme regra comum",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Círculo de 3/6/12 m de diâmetro conforme N1/N2/N3, em ponto do Mundo. Instantâneo e não seletivo; cada criatura testa separadamente. O usuário pode se declarar imune.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-03",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Dano em alvo duplo",
+      "N1 (Mundo 1-4)": "10 de dano em cada alvo.",
+      "N2 (Mundo 5-9)": "20 de dano em cada alvo.",
+      "N3 (Mundo 10)": "40 de dano em cada alvo.",
+      "Alvo": "Escolha exatamente 2 criaturas distintas no Mundo.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Escolha exatamente 2 criaturas distintas no Mundo. Dano instantâneo e garantido. Se houver apenas um alvo válido, a parcela restante é perdida.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-04",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Área de dano fixa",
+      "N1 (Mundo 1-4)": "5 de dano por rodada.",
+      "N2 (Mundo 5-9)": "10 de dano por rodada.",
+      "N3 (Mundo 10)": "20 de dano por rodada.",
+      "Alvo": "Cria círculo persistente de 3/6/12 m de diâmetro conforme N1/N2/N3.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Cria círculo persistente de 3/6/12 m de diâmetro conforme N1/N2/N3. No início do turno de cada criatura na área, causa dano garantido. Não seletiva; uma área ativa e nova ativação reposiciona.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-05",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Área de dano ajustável (sem/com Resistência)",
+      "N1 (Mundo 1-4)": "Diâmetro 3 m. Sem: 10. Com: 13; sucesso causa 6.",
+      "N2 (Mundo 5-9)": "Diâmetro 3/6 m. Sem: 20/15. Com: 27/20; sucesso causa 13/10.",
+      "N3 (Mundo 10)": "Diâmetro 3/6/12 m. Sem: 40/30/20. Com: 55/40/25; sucesso causa 27/20/12.",
+      "Alvo": "Área instantânea, não seletiva, centrada em ponto do Mundo.",
+      "Resistência sugerida": "Conforme regra comum",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Área instantânea, não seletiva, centrada em ponto do Mundo. O diâmetro máximo depende da Lei; cada criatura testa separadamente na versão com Resistência.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-06",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Dano em múltiplos alvos (com Resistência)",
+      "N1 (Mundo 1-4)": "7 por alvo; sucesso causa 3.",
+      "N2 (Mundo 5-9)": "13 por alvo; sucesso causa 6.",
+      "N3 (Mundo 10)": "25 por alvo; sucesso causa 12.",
+      "Alvo": "Escolha até 4 criaturas no Mundo.",
+      "Resistência sugerida": "Conforme regra comum",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Sucesso reduz à metade, arredondando para baixo.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Escolha até 4 criaturas no Mundo. Dano instantâneo; cada alvo faz CON ou POD. Sucesso reduz à metade, arredondando para baixo. Valor não utilizado não pode ser concentrado em menos alvos.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-07",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Mais dano ao acertar",
+      "N1 (Mundo 1-4)": "+15 de dano no acerto.",
+      "N2 (Mundo 5-9)": "+30 de dano no acerto.",
+      "N3 (Mundo 10)": "+60 de dano no acerto.",
+      "Alvo": "Depois que o usuário acertar um ataque ou magia, gaste um uso para adicionar dano do mesmo tipo.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Depois que o usuário acertar um ataque ou magia, gaste um uso para adicionar dano do mesmo tipo. Máximo de uma ativação desta Lei por acerto. O dano fixo não é duplicado por Extremo ou Crítico.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-08",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Aumento de penalidade (sem/com Resistência)",
+      "N1 (Mundo 1-4)": "Sem: aumenta em 10. Com POD: aumenta em 15; sucesso anula o aumento.",
+      "N2 (Mundo 5-9)": "Sem: aumenta em 20. Com POD: aumenta em 30; sucesso anula o aumento.",
+      "N3 (Mundo 10)": "Sem: aumenta em 50. Com POD: aumenta em 75; sucesso anula o aumento.",
+      "Alvo": "Aumenta penalidade numérica já ativa até o início do próximo turno ou até ela terminar.",
+      "Resistência sugerida": "Conforme regra comum",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Aumenta penalidade numérica já ativa até o início do próximo turno ou até ela terminar. Penalidades originadas por Leis ficam limitadas a -75 no total.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-09",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Aumento de Corpo",
+      "N1 (Mundo 1-4)": "+1 categoria de Corpo.",
+      "N2 (Mundo 5-9)": "+2 categorias de Corpo.",
+      "N3 (Mundo 10)": "+4 categorias. Cada categoria excedente ao Corpo 3 concede +5 de Vigor Efetivo, máximo +10.",
+      "Alvo": "O Corpo efetivo do usuário sobe faixas até o início do próximo turno.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "O Corpo efetivo do usuário sobe faixas até o início do próximo turno. Altera MOD, carga, empurrar/erguer e Bloqueio, não FOR, CON ou Vida. Máximo Corpo 3; não acumula.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-10",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Área de penalidade fixa",
+      "N1 (Mundo 1-4)": "-5 nos testes.",
+      "N2 (Mundo 5-9)": "-10 nos testes.",
+      "N3 (Mundo 10)": "-25 nos testes.",
+      "Alvo": "Cria área não seletiva de 3/6/12 m de diâmetro conforme N1/N2/N3 até o Mundo acabar.",
+      "Resistência sugerida": "Conforme regra comum",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Cria área não seletiva de 3/6/12 m de diâmetro conforme N1/N2/N3 até o Mundo acabar. Criaturas dentro sofrem penalidade em testes d100. Uma área ativa; nova ativação reposiciona.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-11",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Penalidade em alvo",
+      "N1 (Mundo 1-4)": "-10 nos testes escolhidos.",
+      "N2 (Mundo 5-9)": "-20 nos testes escolhidos.",
+      "N3 (Mundo 10)": "-50 nos testes escolhidos.",
+      "Alvo": "Ao aprender a Lei, escolha uma família: Ataques, Defesas Ativas ou um atributo específico.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Ao aprender a Lei, escolha uma família: Ataques, Defesas Ativas ou um atributo específico. Um alvo sofre a penalidade nessa família até o início do próximo turno do usuário. Não acumula consigo.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-12",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Redução de Bloqueio do alvo",
+      "N1 (Mundo 1-4)": "Reduz 2 de Bloqueio.",
+      "N2 (Mundo 5-9)": "Reduz 4 de Bloqueio.",
+      "N3 (Mundo 10)": "Alvo: -9 em todos os Bloqueios por 1 rodada. Área: diâmetro 12 m, -5 em todos os Bloqueios; cada criatura testa POD e sucesso anula.",
+      "Alvo": "Reduz Bloqueio, mínimo 0.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Reduz Bloqueio, mínimo 0. N1/N2 criam carga para o próximo Bloqueio; ativações adicionais criam cargas separadas. N3 pode afetar alvo ou área.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-13",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Dano ao realizar ação (sem/com Resistência; exceto livre)",
+      "N1 (Mundo 1-4)": "Sem: 5 por ação. Com POD: 7 por ação; sucesso reduz para 3.",
+      "N2 (Mundo 5-9)": "Sem: 10 por ação. Com POD: 13 por ação; sucesso reduz para 6.",
+      "N3 (Mundo 10)": "Sem: 20 por ação, máximo 60. Com POD: 27 por ação, máximo 80; sucesso causa 13 por ação, máximo 40.",
+      "Alvo": "Marca 1 alvo até o início do próximo turno.",
+      "Resistência sugerida": "Conforme regra comum",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Marca 1 alvo até o início do próximo turno. Dispara quando ele usa ação padrão, bônus, reação ou movimento, até 3 vezes. Ações livres não disparam.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-14",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Penalidade em forma de alcance (sem/com Resistência)",
+      "N1 (Mundo 1-4)": "Sem: -5. Com: -10 em falha; sucesso anula.",
+      "N2 (Mundo 5-9)": "Sem: -10. Com: -20 em falha; sucesso anula.",
+      "N3 (Mundo 10)": "Sem: -25. Com: -45 em falha; sucesso anula.",
+      "Alvo": "Projeta cone ou linha de 1,5 m de largura com comprimento 3/6/12 m conforme N1/N2/N3.",
+      "Resistência sugerida": "POD",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Projeta cone ou linha de 1,5 m de largura com comprimento 3/6/12 m conforme N1/N2/N3. Não seletiva e dura uma rodada; na versão resistida, cada criatura testa POD.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-15",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Acerto extra",
+      "N1 (Mundo 1-4)": "+10 no teste; dano máximo 15.",
+      "N2 (Mundo 5-9)": "+20 no teste; dano máximo 30.",
+      "N3 (Mundo 10)": "+45 no teste; dano máximo 60.",
+      "Alvo": "O usuário realiza imediatamente um ataque físico, de arma ou natural.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "O usuário realiza imediatamente um ataque físico, de arma ou natural. O alvo pode usar defesas normalmente. O ataque recebe bônus, mas o dano total após modificadores fica limitado pelo nível da Lei. Incompatível com Acerto em Alvo no mesmo ataque.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-16",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Cópia (clone) de material",
+      "N1 (Mundo 1-4)": "Até 5 kg; bronze, ferro, ouro e aços de Vila/Castelo.",
+      "N2 (Mundo 5-9)": "Até 15 kg; inclui Damasco, Vangos e Kaishiro.",
+      "N3 (Mundo 10)": "Até 45 kg; inclui Aço Marufiano, sem absorção ou propriedades mágicas especiais.",
+      "Alvo": "Copia material que o usuário tenha tocado nesta cena.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Copia material que o usuário tenha tocado nesta cena. A cópia é não mágica, não tem valor comercial e desaparece com o Mundo. Uma cópia ativa; nova ativação substitui. Metal Divino e propriedades únicas são proibidos.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-17",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Cópias (clone) de material - até 6",
+      "N1 (Mundo 1-4)": "Massa total 5 kg; materiais comuns.",
+      "N2 (Mundo 5-9)": "Massa total 20 kg; inclui aços raros de +3.",
+      "N3 (Mundo 10)": "Até 6 peças, massa total 60 kg; inclui Aço Marufiano sem propriedades mágicas.",
+      "Alvo": "Como Cópia de Material, mas divide a massa total entre peças.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Como Cópia de Material, mas divide a massa total entre peças. N1/N2 mantêm até quatro cópias; N3 permite seis. Nova ativação substitui o conjunto.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-18",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Acerto surpresa (com Resistência)",
+      "N1 (Mundo 1-4)": "+10 no ataque; cobertura ainda se aplica.",
+      "N2 (Mundo 5-9)": "+20 e ignora cobertura de 1/3.",
+      "N3 (Mundo 10)": "+45 e ignora cobertura de até 2/3.",
+      "Alvo": "Um alvo testa POD ou SAB.",
+      "Resistência sugerida": "POD ou SAB",
+      "Se falhar": "Em falha, o próximo ataque do usuário contra ele até o fim da rodada não pode receber Esquiva, Aparar, Bloquear ou Contra-atacar.",
+      "Se passar": "O ataque ainda precisa acertar; uso gasto mesmo em sucesso.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Um alvo testa POD ou SAB. Em falha, o próximo ataque do usuário contra ele até o fim da rodada não pode receber Esquiva, Aparar, Bloquear ou Contra-atacar. O ataque ainda precisa acertar; uso gasto mesmo em sucesso.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-19",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Bônus de acerto",
+      "N1 (Mundo 1-4)": "+10 no ataque.",
+      "N2 (Mundo 5-9)": "+20 no ataque.",
+      "N3 (Mundo 10)": "+45 no ataque.",
+      "Alvo": "O usuário recebe bônus no próximo teste de ataque realizado antes do início do seu próximo turno.",
+      "Resistência sugerida": "Conforme regra comum",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "O usuário recebe bônus no próximo teste de ataque realizado antes do início do seu próximo turno. Não acumula consigo; nova ativação apenas renova a carga.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-20",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Bônus em alvos",
+      "N1 (Mundo 1-4)": "Até 2 alvos recebem +5.",
+      "N2 (Mundo 5-9)": "Até 3 alvos recebem +10.",
+      "N3 (Mundo 10)": "Até 6 alvos recebem +25.",
+      "Alvo": "Concede bônus ao próximo ataque de criaturas escolhidas no Mundo, válido até o início do próximo turno do usuário.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Concede bônus ao próximo ataque de criaturas escolhidas no Mundo, válido até o início do próximo turno do usuário. Não acumula com outra ativação desta Lei.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-21",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Empurrão (sem/com Resistência)",
+      "N1 (Mundo 1-4)": "Sem: 3 m. Com: 4,5 m em falha.",
+      "N2 (Mundo 5-9)": "Sem: 6 m. Com: 9 m em falha.",
+      "N3 (Mundo 10)": "Sem: 12 m. Com: 18 m em falha.",
+      "Alvo": "Move alvo em linha reta para longe do usuário.",
+      "Resistência sugerida": "FOR ou CON",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Na versão resistida, testa FOR ou CON; sucesso anula.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Move alvo em linha reta para longe do usuário. Na versão resistida, testa FOR ou CON; sucesso anula. Colisão só interrompe o movimento e nunca leva para fora do Mundo.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-22",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Redução de CA (sem/com Resistência)",
+      "N1 (Mundo 1-4)": "Sem: -5 CA. Com: -10 em falha; sucesso anula.",
+      "N2 (Mundo 5-9)": "Sem: -10 CA. Com: -20 em falha; sucesso anula.",
+      "N3 (Mundo 10)": "Sem: -25 CA. Com: -45 em falha; sucesso anula.",
+      "Alvo": "Reduz a CA de um alvo até o início do próximo turno do usuário.",
+      "Resistência sugerida": "DES ou POD",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Reduz a CA de um alvo até o início do próximo turno do usuário. Na versão com Resistência, use DES ou POD. Não acumula consigo; a maior redução prevalece.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-23",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Puxão (sem/com Resistência)",
+      "N1 (Mundo 1-4)": "Sem: 3 m. Com: 4,5 m em falha.",
+      "N2 (Mundo 5-9)": "Sem: 6 m. Com: 9 m em falha.",
+      "N3 (Mundo 10)": "Sem: 12 m. Com: 18 m em falha.",
+      "Alvo": "Move alvo em linha reta na direção do usuário.",
+      "Resistência sugerida": "FOR ou CON",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Na versão resistida, testa FOR ou CON; sucesso anula.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Move alvo em linha reta na direção do usuário. Na versão resistida, testa FOR ou CON; sucesso anula. Termina em espaço livre, sem dano de colisão e sem atravessar o limite.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "OFE-24",
+      "Categoria": "Ofensivo",
+      "Lei do Mundo": "Aumento de dano para alvo",
+      "N1 (Mundo 1-4)": "+5 nos próximos 3 acertos; máximo +15.",
+      "N2 (Mundo 5-9)": "+10 nos próximos 3 acertos; máximo +30.",
+      "N3 (Mundo 10)": "+20 nos próximos 3 acertos; máximo +60.",
+      "Alvo": "Marca 1 criatura.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Marca 1 criatura. Os três primeiros acertos de qualquer fonte recebem dano adicional. Dura até os três acertos acontecerem ou o Mundo acabar; ativações simultâneas não acumulam.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-01",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Escudo de Mana",
+      "N1 (Mundo 1-4)": "Escudo com 15 PV.",
+      "N2 (Mundo 5-9)": "Escudo com 30 PV.",
+      "N3 (Mundo 10)": "Escudo com 70 PV.",
+      "Alvo": "Cria uma barreira aderida ao usuário, com PV próprios, que recebe dano antes da Vida e não conta para Lesão Grave.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Cria uma barreira aderida ao usuário, com PV próprios, que recebe dano antes da Vida e não conta para Lesão Grave. Dano excedente atravessa. Um escudo ativo; nova ativação substitui os PV restantes, sem somar. Some com o Mundo.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-02",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Aumento de Bloqueio",
+      "N1 (Mundo 1-4)": "+2 de Bloqueio.",
+      "N2 (Mundo 5-9)": "+4 de Bloqueio.",
+      "N3 (Mundo 10)": "+9 de Bloqueio; uma reação protege contra todos os ataques até o próximo turno.",
+      "Alvo": "O Bloqueio do usuário aumenta até o início do próximo turno e não acumula.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "O Bloqueio do usuário aumenta até o início do próximo turno e não acumula. No N3, a primeira reação para Bloquear ativa guarda contra todos os ataques válidos do período.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-03",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Aumento de Bloqueio em alvos",
+      "N1 (Mundo 1-4)": "Até 2 alvos: +1.",
+      "N2 (Mundo 5-9)": "Até 3 alvos: +2.",
+      "N3 (Mundo 10)": "Até 6 alvos: +5 e guarda de rodada.",
+      "Alvo": "Criaturas escolhidas aumentam Bloqueio até o início do próximo turno.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Criaturas escolhidas aumentam Bloqueio até o início do próximo turno. Não acumula. No N3, cada alvo usa uma reação para ativar guarda contra todos os ataques do período.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-04",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Aumento de CA",
+      "N1 (Mundo 1-4)": "+10 CA.",
+      "N2 (Mundo 5-9)": "+20 CA.",
+      "N3 (Mundo 10)": "+45 CA.",
+      "Alvo": "A CA do usuário aumenta até o início do próximo turno.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "A CA do usuário aumenta até o início do próximo turno. Não acumula consigo nem com Magia Forte: use o maior entre Forte e esta Lei. O bônus inato de CA do Mundo soma normalmente com esse maior valor. Não recalcula outras habilidades baseadas em CA.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-05",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Aumento de CA em alvos",
+      "N1 (Mundo 1-4)": "Até 2 alvos: +5 CA.",
+      "N2 (Mundo 5-9)": "Até 3 alvos: +10 CA.",
+      "N3 (Mundo 10)": "Até 6 alvos: +25 CA.",
+      "Alvo": "Concede CA a criaturas escolhidas até o início do próximo turno do usuário.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Concede CA a criaturas escolhidas até o início do próximo turno do usuário. Em cada alvo, não acumula com Magia Forte nem com outra ativação desta Lei; use o maior bônus. Apenas o conjurador soma a CA inata do próprio Mundo.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-06",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Redução de dano",
+      "N1 (Mundo 1-4)": "Reduz 15 do próximo dano.",
+      "N2 (Mundo 5-9)": "Reduz 30 do próximo dano.",
+      "N3 (Mundo 10)": "Reduz 70 do próximo dano.",
+      "Alvo": "Cada ativação cria uma carga que reduz a próxima instância de dano sofrida pelo usuário.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Cada ativação cria uma carga que reduz a próxima instância de dano sofrida pelo usuário. Cargas podem coexistir, mas apenas uma é consumida por instância. Excesso de redução é perdido.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-07",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Redução de dano físico",
+      "N1 (Mundo 1-4)": "Reduz 20 de dano físico.",
+      "N2 (Mundo 5-9)": "Reduz 40 de dano físico.",
+      "N3 (Mundo 10)": "Reduz 90 de dano físico.",
+      "Alvo": "Como Redução de Dano, mas só contra dano físico.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Como Redução de Dano, mas só contra dano físico. Cada ativação cria uma carga; uma carga por instância.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-08",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Redução de dano mágico",
+      "N1 (Mundo 1-4)": "Reduz 20 de dano mágico.",
+      "N2 (Mundo 5-9)": "Reduz 40 de dano mágico.",
+      "N3 (Mundo 10)": "Reduz 90 de dano mágico.",
+      "Alvo": "Como Redução de Dano, mas só contra dano mágico.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Como Redução de Dano, mas só contra dano mágico. Cada ativação cria uma carga; uma carga por instância.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-09",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Redução de dano em alvos",
+      "N1 (Mundo 1-4)": "Até 2 alvos: reduz 8 cada.",
+      "N2 (Mundo 5-9)": "Até 3 alvos: reduz 15 cada.",
+      "N3 (Mundo 10)": "Até 6 alvos: reduz 35 cada.",
+      "Alvo": "Cada alvo escolhido recebe uma carga para reduzir sua próxima instância de dano antes do início do próximo turno do usuário.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Cada alvo escolhido recebe uma carga para reduzir sua próxima instância de dano antes do início do próximo turno do usuário. Uma carga por instância; valores não usados não são redistribuídos.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-10",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Redução de dano físico em alvos",
+      "N1 (Mundo 1-4)": "Até 2 alvos: reduz 10 cada.",
+      "N2 (Mundo 5-9)": "Até 3 alvos: reduz 20 cada.",
+      "N3 (Mundo 10)": "Até 6 alvos: reduz 45 cada.",
+      "Alvo": "Como Redução de Dano em Alvos, mas apenas para a próxima instância de dano físico.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Como Redução de Dano em Alvos, mas apenas para a próxima instância de dano físico.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-11",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Redução de dano mágico em alvos",
+      "N1 (Mundo 1-4)": "Até 2 alvos: reduz 10 cada.",
+      "N2 (Mundo 5-9)": "Até 3 alvos: reduz 20 cada.",
+      "N3 (Mundo 10)": "Até 6 alvos: reduz 45 cada.",
+      "Alvo": "Como Redução de Dano em Alvos, mas apenas para a próxima instância de dano mágico.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Como Redução de Dano em Alvos, mas apenas para a próxima instância de dano mágico.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-12",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Cura",
+      "N1 (Mundo 1-4)": "Cura 15 PV.",
+      "N2 (Mundo 5-9)": "Cura 30 PV.",
+      "N3 (Mundo 10)": "Cura integral de 70 PV e remove Lesão Grave.",
+      "Alvo": "Cura instantaneamente o próprio usuário.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Cura instantaneamente o próprio usuário. Pode ser repetida com usos diferentes; a cura permanece depois do Mundo. N1/N2 sofrem as limitações normais de Lesão Grave. N3 cura o valor integral, remove Lesão Grave e essa remoção permanece após o Mundo.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-13",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Cura em alvo",
+      "N1 (Mundo 1-4)": "Cura 15 PV.",
+      "N2 (Mundo 5-9)": "Cura 30 PV.",
+      "N3 (Mundo 10)": "Cura integral de 70 PV e remove Lesão Grave.",
+      "Alvo": "Cura instantaneamente uma criatura no Mundo, inclusive o usuário.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Cura instantaneamente uma criatura no Mundo, inclusive o usuário. Pode ser repetida. N1/N2 sofrem as limitações normais de Lesão Grave. N3 cura o valor integral, remove Lesão Grave e essa remoção permanece após o Mundo.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-14",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Cura em alvos",
+      "N1 (Mundo 1-4)": "5 PV por alvo.",
+      "N2 (Mundo 5-9)": "10 PV por alvo.",
+      "N3 (Mundo 10)": "Até 6 alvos: 25 PV integrais; aliados ou voluntários também removem Lesão Grave.",
+      "Alvo": "Cura instantaneamente até 4 criaturas escolhidas.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Cura instantaneamente até 4 criaturas escolhidas. Valor não usado não pode ser concentrado em menos alvos. A cura permanece depois do Mundo. No N3, a cura é integral e remove Lesão Grave de todos os alvos aliados ou voluntários; inimigos curados mantêm a condição.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-15",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Cura em área",
+      "N1 (Mundo 1-4)": "Cura 5 PV por criatura.",
+      "N2 (Mundo 5-9)": "Cura 10 PV por criatura.",
+      "N3 (Mundo 10)": "Cura integral de 25 PV por criatura; aliados ou voluntários também removem Lesão Grave.",
+      "Alvo": "Círculo de 3/6/12 m de diâmetro conforme N1/N2/N3, instantâneo e não seletivo.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Círculo de 3/6/12 m de diâmetro conforme N1/N2/N3, instantâneo e não seletivo. Cura todas as criaturas; só aliados ou voluntários removem Lesão Grave.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-16",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Aumento de Percepção",
+      "N1 (Mundo 1-4)": "+10 Percepção.",
+      "N2 (Mundo 5-9)": "+20 Percepção.",
+      "N3 (Mundo 10)": "+45 Percepção e contra-ataque mágico gratuito quando esquivar.",
+      "Alvo": "A Percepção do usuário aumenta até o início do próximo turno.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "A Percepção do usuário aumenta até o início do próximo turno. N3, ao esquivar de magia, permite um contra-ataque gratuito com Fina ou Impacto conhecida, pagando PM. Compartilha limite de 1 contra-ataque por rodada com Aumento de Esquiva.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-17",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Aumento de Percepção em alvos",
+      "N1 (Mundo 1-4)": "Até 2 alvos: +5.",
+      "N2 (Mundo 5-9)": "Até 3 alvos: +10.",
+      "N3 (Mundo 10)": "Até 6 alvos: +25.",
+      "Alvo": "Criaturas escolhidas aumentam Percepção até o início do próximo turno do usuário.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Criaturas escolhidas aumentam Percepção até o início do próximo turno do usuário. Não acumula consigo.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-18",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Aumento de Esquiva",
+      "N1 (Mundo 1-4)": "+10 Esquivar.",
+      "N2 (Mundo 5-9)": "+20 Esquivar.",
+      "N3 (Mundo 10)": "+45 Esquivar e contra-ataque corpo a corpo gratuito quando esquivar.",
+      "Alvo": "Esquivar do usuário aumenta até o início do próximo turno.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Esquivar do usuário aumenta até o início do próximo turno. N3, ao esquivar de ataque adjacente enquanto empunha arma corpo a corpo, permite um ataque gratuito. Compartilha limite de 1 contra-ataque por rodada com Percepção.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-19",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Aumento de Esquiva em alvos",
+      "N1 (Mundo 1-4)": "Até 2 alvos: +5.",
+      "N2 (Mundo 5-9)": "Até 3 alvos: +10.",
+      "N3 (Mundo 10)": "Até 6 alvos: +25.",
+      "Alvo": "Criaturas escolhidas aumentam Esquivar até o início do próximo turno do usuário.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Criaturas escolhidas aumentam Esquivar até o início do próximo turno do usuário. Não concede reações adicionais.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-20",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Totem de Defesa",
+      "N1 (Mundo 1-4)": "CA 25, 15 PV, alcance 3 m; redireciona até 5.",
+      "N2 (Mundo 5-9)": "CA 30, 30 PV, alcance 6 m; redireciona até 10.",
+      "N3 (Mundo 10)": "CA 55, 70 PV, aura 12 m; redireciona até 25 por rodada.",
+      "Alvo": "Cria totem em espaço livre com aura de 3/6/12 m conforme N1/N2/N3.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Cria totem em espaço livre com aura de 3/6/12 m conforme N1/N2/N3. Uma vez por rodada redireciona para si parte do dano sofrido por criatura na aura. Um totem ativo; nova ativação substitui; some com o Mundo.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-21",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Vida Temporária (Anestesia)",
+      "N1 (Mundo 1-4)": "15 de Vida Temporária.",
+      "N2 (Mundo 5-9)": "30 de Vida Temporária.",
+      "N3 (Mundo 10)": "70 de Vida Temporária.",
+      "Alvo": "O usuário recebe Vida Temporária até ser consumida ou por 5 minutos (50 rodadas), mesmo após o Mundo terminar.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "O usuário recebe Vida Temporária até ser consumida ou por 5 minutos (50 rodadas), mesmo após o Mundo terminar. Não é cura, sofre Lesão Grave e não acumula.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-22",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Vida Temporária (Anestesia) em alvos",
+      "N1 (Mundo 1-4)": "5 por alvo.",
+      "N2 (Mundo 5-9)": "10 por alvo.",
+      "N3 (Mundo 10)": "Até 6 alvos: 25 cada.",
+      "Alvo": "Criaturas escolhidas recebem Vida Temporária até ser consumida ou por 5 minutos.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Criaturas escolhidas recebem Vida Temporária até ser consumida ou por 5 minutos. Não é cura, sofre Lesão Grave e não acumula.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "DEF-23",
+      "Categoria": "Defensivo",
+      "Lei do Mundo": "Totem de Cura",
+      "N1 (Mundo 1-4)": "CA 25, 15 PV, aura 3 m; cura 5.",
+      "N2 (Mundo 5-9)": "CA 30, 30 PV, aura 6 m; cura 10.",
+      "N3 (Mundo 10)": "CA 55, 70 PV, aura 12 m; cura 15.",
+      "Alvo": "Cria totem em espaço livre com aura seletiva para aliados.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Cria totem em espaço livre com aura seletiva para aliados. Cura ao surgir e no início de cada turno do usuário, no máximo uma vez por rodada. Não remove Lesão Grave; um ativo e some com o Mundo.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-01",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Área de condição (com Resistência)",
+      "N1 (Mundo 1-4)": "Escolha uma condição leve de N1.",
+      "N2 (Mundo 5-9)": "Escolha condição leve ou moderada de N2.",
+      "N3 (Mundo 10)": "Qualquer condição N3, inclusive Atordoado ou Horrorizado, por até 2 rodadas.",
+      "Alvo": "Círculo não seletivo de 3/6/12 m de diâmetro conforme N1/N2/N3.",
+      "Resistência sugerida": "Atributo apropriado",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Círculo não seletivo de 3/6/12 m de diâmetro conforme N1/N2/N3. Cada criatura testa o atributo apropriado. N3 dura até 2 rodadas e permite novo teste ao fim de cada turno.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-02",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Condição em alvo (com Resistência)",
+      "N1 (Mundo 1-4)": "Condição leve de N1 por 1 rodada.",
+      "N2 (Mundo 5-9)": "Condição leve/moderada de N2 por até 2 rodadas.",
+      "N3 (Mundo 10)": "Condição N3 por até 3 rodadas, inclusive Atordoado ou Horrorizado.",
+      "Alvo": "Um alvo testa o atributo apropriado.",
+      "Resistência sugerida": "Atributo apropriado",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Um alvo testa o atributo apropriado. N1 dura 1 rodada; N2 até 2; N3 até 3, com novo teste ao fim de cada turno para encerrar. Dano de condição ocorre no máximo uma vez.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-03",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Aumento de Vigor Efetivo",
+      "N1 (Mundo 1-4)": "+10 de Vigor Efetivo.",
+      "N2 (Mundo 5-9)": "+20 de Vigor Efetivo.",
+      "N3 (Mundo 10)": "+45 de Vigor Efetivo em todos os testes permitidos durante a duração.",
+      "Alvo": "O usuário recebe Vigor Efetivo até o início do próximo turno.",
+      "Resistência sugerida": "Conforme regra comum",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "O usuário recebe Vigor Efetivo até o início do próximo turno. Aplica-se a FOR, CON, Atletismo ou Cavalgar e pode alterar Corpo. N3 vale para todos os testes permitidos durante a duração.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-04",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Aumento de movimento",
+      "N1 (Mundo 1-4)": "+3 m de movimento.",
+      "N2 (Mundo 5-9)": "+6 m de movimento.",
+      "N3 (Mundo 10)": "+12 m e passagem segura por espaços inimigos.",
+      "Alvo": "O deslocamento do usuário aumenta até o início do próximo turno.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "O deslocamento do usuário aumenta até o início do próximo turno. Não concede nova ação. N3 permite atravessar espaços inimigos sem Ataque de Oportunidade, mas não terminar neles.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-05",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Aumento de movimentos em alvos",
+      "N1 (Mundo 1-4)": "Até 2 alvos: +1,5 m.",
+      "N2 (Mundo 5-9)": "Até 3 alvos: +3 m.",
+      "N3 (Mundo 10)": "Até 6 alvos: +7,5 m.",
+      "Alvo": "Aumenta o deslocamento de criaturas escolhidas até o início do próximo turno do usuário.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Aumenta o deslocamento de criaturas escolhidas até o início do próximo turno do usuário. Não concede ações de movimento adicionais.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-06",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Movimento instantâneo",
+      "N1 (Mundo 1-4)": "Até 9 m, limitado pelo Mundo.",
+      "N2 (Mundo 5-9)": "Até 18 m, limitado pelo Mundo.",
+      "N3 (Mundo 10)": "Qualquer ponto percebido dentro do Mundo; pode levar 1 criatura voluntária adjacente.",
+      "Alvo": "Teleporta o usuário para espaço livre que ele perceba dentro do Mundo.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Teleporta o usuário para espaço livre que ele perceba dentro do Mundo. Não provoca Ataque de Oportunidade, não atravessa o limite e não pode terminar dentro de objeto ou sem apoio seguro.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-07",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Movimento instantâneo em alvo (com Resistência)",
+      "N1 (Mundo 1-4)": "Até 9 m, limitado pelo Mundo.",
+      "N2 (Mundo 5-9)": "Até 18 m, limitado pelo Mundo.",
+      "N3 (Mundo 10)": "Até 2 alvos voluntários ou 1 involuntário, para qualquer ponto percebido do Mundo.",
+      "Alvo": "Teleporta criaturas para espaços livres percebidos.",
+      "Resistência sugerida": "DES ou POD",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Teleporta criaturas para espaços livres percebidos. Voluntários não testam; involuntário testa DES ou POD. Não atravessa limite nem termina em objeto ou perigo inevitável.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-08",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Reter dano e contra-atacar",
+      "N1 (Mundo 1-4)": "Retém e devolve até 8.",
+      "N2 (Mundo 5-9)": "Retém e devolve até 15.",
+      "N3 (Mundo 10)": "Retém e devolve até 35.",
+      "Alvo": "Até o início do próximo turno, a próxima instância de dano de uma criatura é parcialmente retida: reduz o dano e devolve a mesma quantidade ao causador como dano mágico garantido.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Até o início do próximo turno, a próxima instância de dano de uma criatura é parcialmente retida: reduz o dano e devolve a mesma quantidade ao causador como dano mágico garantido. Não funciona com dano próprio, ambiental ou refletido.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-09",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Ação extra",
+      "N1 (Mundo 1-4)": "1 ação bônus adicional.",
+      "N2 (Mundo 5-9)": "1 ação bônus ou 1 movimento adicional.",
+      "N3 (Mundo 10)": "1 ação padrão ou 2 ações bônus adicionais por uso.",
+      "Alvo": "Concede imediatamente componente adicional.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Concede imediatamente componente adicional. Todos os quatro usos podem ser gastos na mesma rodada e criatura. A ação não abre Mundo, recupera Usos nem gera novas ações por efeito equivalente.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-10",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Ação extra em alvo",
+      "N1 (Mundo 1-4)": "1 ação bônus adicional.",
+      "N2 (Mundo 5-9)": "1 ação bônus ou 1 movimento adicional.",
+      "N3 (Mundo 10)": "1 ação padrão ou 2 ações bônus adicionais por uso.",
+      "Alvo": "Concede componente a criatura voluntária.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Concede componente a criatura voluntária. Todos os quatro usos podem ir para a mesma criatura. A ação não abre Mundo, recupera Usos nem gera novas ações por efeito equivalente.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-11",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Remover ação em alvo (com Resistência)",
+      "N1 (Mundo 1-4)": "Remove a reação.",
+      "N2 (Mundo 5-9)": "Remove reação, ação bônus ou movimento, à escolha.",
+      "N3 (Mundo 10)": "Remove 1 ação padrão e, à escolha, reação, ação bônus ou movimento.",
+      "Alvo": "O alvo testa POD.",
+      "Resistência sugerida": "POD",
+      "Se falhar": "Em falha, perde um componente ainda não usado até o fim do próximo turno.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "O alvo testa POD. Em falha, perde um componente ainda não usado até o fim do próximo turno. Usos diferentes podem remover componentes distintos, mas remover duas vezes o mesmo componente não gera efeito adicional.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-12",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Redução de movimento em área fixa (com Resistência)",
+      "N1 (Mundo 1-4)": "Reduz 3 m.",
+      "N2 (Mundo 5-9)": "Reduz 6 m.",
+      "N3 (Mundo 10)": "Reduz 13,5 m, mínimo 0.",
+      "Alvo": "Área não seletiva de 3/6/12 m de diâmetro conforme N1/N2/N3 até o Mundo acabar.",
+      "Resistência sugerida": "FOR ou CON",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Ao entrar ou iniciar turno, testa FOR ou CON; sucesso concede imunidade por uma rodada.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Área não seletiva de 3/6/12 m de diâmetro conforme N1/N2/N3 até o Mundo acabar. Ao entrar ou iniciar turno, testa FOR ou CON; sucesso concede imunidade por uma rodada.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-13",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Redução de movimento em alvo (com Resistência)",
+      "N1 (Mundo 1-4)": "Reduz 3 m.",
+      "N2 (Mundo 5-9)": "Reduz 6 m.",
+      "N3 (Mundo 10)": "Reduz 13,5 m.",
+      "Alvo": "Um alvo testa FOR ou CON.",
+      "Resistência sugerida": "FOR ou CON",
+      "Se falhar": "Em falha, perde deslocamento até o início do próximo turno do usuário; sucesso anula.",
+      "Se passar": "Em falha, perde deslocamento até o início do próximo turno do usuário; sucesso anula.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Um alvo testa FOR ou CON. Em falha, perde deslocamento até o início do próximo turno do usuário; sucesso anula. Mínimo 0 e não acumula consigo.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-14",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Condição em acerto (com Resistência)",
+      "N1 (Mundo 1-4)": "Condição leve de N1.",
+      "N2 (Mundo 5-9)": "Condição leve ou moderada de N2.",
+      "N3 (Mundo 10)": "Qualquer condição N3 por até 2 rodadas, inclusive Atordoado ou Horrorizado.",
+      "Alvo": "Depois de acertar, gaste uso; alvo testa atributo apropriado.",
+      "Resistência sugerida": "Atributo apropriado",
+      "Se falhar": "Em falha recebe condição permitida.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Depois de acertar, gaste uso; alvo testa atributo apropriado. Em falha recebe condição permitida. N3 dura até 2 rodadas e permite novo teste ao fim de cada turno.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-15",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Aumento de magia",
+      "N1 (Mundo 1-4)": "+1 dado ou +5 fixo.",
+      "N2 (Mundo 5-9)": "+2 dados ou +10 fixo.",
+      "N3 (Mundo 10)": "+5 dados ou +25 fixo.",
+      "Alvo": "A próxima magia do usuário recebe dados adicionais em um único componente: dano, cura ou penalidade.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "A próxima magia do usuário recebe dados adicionais em um único componente: dano, cura ou penalidade. Efeitos fixos recebem o equivalente numérico. Múltiplos usos não acumulam na mesma magia.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-16",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Aumento de magia em alvo",
+      "N1 (Mundo 1-4)": "+1 dado ou +5 fixo.",
+      "N2 (Mundo 5-9)": "+2 dados ou +10 fixo.",
+      "N3 (Mundo 10)": "+5 dados ou +25 fixo.",
+      "Alvo": "A próxima magia de uma criatura voluntária recebe dados adicionais em um único componente.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "A próxima magia de uma criatura voluntária recebe dados adicionais em um único componente. Múltiplos usos não acumulam na mesma magia e a carga termina no início do próximo turno do usuário.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-17",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Aumento de magia em área",
+      "N1 (Mundo 1-4)": "+1 dado ou +5 fixo.",
+      "N2 (Mundo 5-9)": "+2 dados ou +10 fixo.",
+      "N3 (Mundo 10)": "+5 dados ou +25 fixo.",
+      "Alvo": "Círculo não seletivo de 3/6/12 m de diâmetro conforme N1/N2/N3 por 1 rodada.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Círculo não seletivo de 3/6/12 m de diâmetro conforme N1/N2/N3 por 1 rodada. Cada criatura recebe uma carga para a próxima magia; sem acumulação.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-18",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Redução de magia em alvo (com Resistência)",
+      "N1 (Mundo 1-4)": "-1 dado ou -5 fixo.",
+      "N2 (Mundo 5-9)": "-2 dados ou -10 fixo.",
+      "N3 (Mundo 10)": "-5 dados ou -25 fixo.",
+      "Alvo": "Um alvo testa POD.",
+      "Resistência sugerida": "POD",
+      "Se falhar": "Em falha, sua próxima magia antes do início do próximo turno perde dados de um componente; efeitos fixos perdem valor.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Um alvo testa POD. Em falha, sua próxima magia antes do início do próximo turno perde dados de um componente; efeitos fixos perdem valor. Mínimo de 1 dado quando a magia ainda produzir efeito.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-19",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Redução de magia em área (com Resistência)",
+      "N1 (Mundo 1-4)": "-1 dado ou -5 fixo.",
+      "N2 (Mundo 5-9)": "-2 dados ou -10 fixo.",
+      "N3 (Mundo 10)": "-5 dados ou -25 fixo.",
+      "Alvo": "Círculo não seletivo de 3/6/12 m de diâmetro conforme N1/N2/N3, instantâneo.",
+      "Resistência sugerida": "POD",
+      "Se falhar": "Cada criatura testa POD; em falha a próxima magia perde dados.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Círculo não seletivo de 3/6/12 m de diâmetro conforme N1/N2/N3, instantâneo. Cada criatura testa POD; em falha a próxima magia perde dados.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-20",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Aumento de magia em área fixa (com Resistência)",
+      "N1 (Mundo 1-4)": "+1 dado ou +5 fixo contra o ocupante.",
+      "N2 (Mundo 5-9)": "+2 dados ou +10 fixo contra o ocupante.",
+      "N3 (Mundo 10)": "+5 dados ou +25 fixo contra o ocupante.",
+      "Alvo": "Cria área de 3/6/12 m de diâmetro conforme N1/N2/N3 até o Mundo acabar.",
+      "Resistência sugerida": "POD",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Cria área de 3/6/12 m de diâmetro conforme N1/N2/N3 até o Mundo acabar. Magias do usuário ganham dados contra ocupante; ele testa POD na primeira vez por rodada.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-21",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Redução de magia em área fixa (com Resistência)",
+      "N1 (Mundo 1-4)": "-1 dado ou -5 fixo.",
+      "N2 (Mundo 5-9)": "-2 dados ou -10 fixo.",
+      "N3 (Mundo 10)": "-5 dados ou -25 fixo.",
+      "Alvo": "Cria área não seletiva de 3/6/12 m de diâmetro conforme N1/N2/N3 até o Mundo acabar.",
+      "Resistência sugerida": "POD",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Cria área não seletiva de 3/6/12 m de diâmetro conforme N1/N2/N3 até o Mundo acabar. Magias lançadas ou resolvidas nela perdem dados; conjurador testa POD a cada magia.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-22",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Acerto em alvo (com Resistência)",
+      "N1 (Mundo 1-4)": "Somente ataque físico; conta como sucesso Normal e não dobra dano.",
+      "N2 (Mundo 5-9)": "Ataque físico ou magia direcionada; acerto automático, dano normal.",
+      "N3 (Mundo 10)": "Primeiro ataque acerta como Extremo e duplica apenas dados originais; segundo ataque elegível acerta como sucesso Normal.",
+      "Alvo": "Alvo testa POD ou SAB.",
+      "Resistência sugerida": "POD ou SAB",
+      "Se falhar": "Em falha, ataques elegíveis ignoram CA e defesas ativas.",
+      "Se passar": "Não combina com Acerto Extra; uso é gasto mesmo em sucesso.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Alvo testa POD ou SAB. Em falha, ataques elegíveis ignoram CA e defesas ativas. Não combina com Acerto Extra; uso é gasto mesmo em sucesso.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-23",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Aumento de Mana Temporária",
+      "N1 (Mundo 1-4)": "+5 PM temporários.",
+      "N2 (Mundo 5-9)": "+10 PM temporários.",
+      "N3 (Mundo 10)": "+25 PM temporários.",
+      "Alvo": "Gera PM temporários gastos antes dos reais.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Gera PM temporários gastos antes dos reais. Podem pagar magias e manutenção do Mundo atual, mas não ativação, reabertura ou outro Mundo. Duram até serem gastos ou por 5 minutos.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-24",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Redução de Sabedoria em alvo (com Resistência)",
+      "N1 (Mundo 1-4)": "-10 SAB.",
+      "N2 (Mundo 5-9)": "-20 SAB.",
+      "N3 (Mundo 10)": "-45 SAB.",
+      "Alvo": "Um alvo testa POD.",
+      "Resistência sugerida": "POD",
+      "Se falhar": "Em falha, sua SAB é reduzida até o início do próximo turno do usuário, mínimo 5.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Um alvo testa POD. Em falha, sua SAB é reduzida até o início do próximo turno do usuário, mínimo 5. Afeta testes e fórmulas posteriores, mas não recalcula retroativamente a penalidade do Mundo já aberto.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-25",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Aumento de Sabedoria",
+      "N1 (Mundo 1-4)": "+10 SAB.",
+      "N2 (Mundo 5-9)": "+20 SAB.",
+      "N3 (Mundo 10)": "+45 SAB; bloqueia a supressão de Densa 5-9 por 1 rodada.",
+      "Alvo": "A SAB do usuário aumenta até o início do próximo turno.",
+      "Resistência sugerida": "Conforme regra comum",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "A SAB do usuário aumenta até o início do próximo turno. N3 pode ser declarado na abertura do Mundo: consome um uso, impede Densa 5-9 por uma rodada e não remove supressão já ativa. Densa 10 testa normalmente.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-26",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Redução de Esquiva em alvo (com Resistência)",
+      "N1 (Mundo 1-4)": "-10 Esquivar.",
+      "N2 (Mundo 5-9)": "-20 Esquivar.",
+      "N3 (Mundo 10)": "-45 Esquivar.",
+      "Alvo": "Um alvo testa DES ou POD.",
+      "Resistência sugerida": "DES ou POD",
+      "Se falhar": "Em falha, sua perícia Esquivar é reduzida até o início do próximo turno do usuário, mínimo 0.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Um alvo testa DES ou POD. Em falha, sua perícia Esquivar é reduzida até o início do próximo turno do usuário, mínimo 0. Não acumula consigo.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-27",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Criar arma",
+      "N1 (Mundo 1-4)": "Arma comum de até 1d8, Aço de Castelo ou inferior.",
+      "N2 (Mundo 5-9)": "Arma comum/cultural de até 1d12 ou 2d6; pode usar aço raro de +3.",
+      "N3 (Mundo 10)": "Até 2 armas não artefato do manual; Aço Marufiano de +8, sem propriedades mágicas extras.",
+      "Alvo": "Cria arma temporária conhecida, exige proficiência e não cria artefatos.",
+      "Resistência sugerida": "Não se aplica",
+      "Se falhar": "Sem teste direto.",
+      "Se passar": "Sem teste direto.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Cria arma temporária conhecida, exige proficiência e não cria artefatos. Some com o Mundo. Munição simples é parte da criação.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-28",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Destruir arma em alvo (com Resistência)",
+      "N1 (Mundo 1-4)": "Arma leve/simples de material comum.",
+      "N2 (Mundo 5-9)": "Qualquer arma mundana ou cultural, exceto Aço Marufiano.",
+      "N3 (Mundo 10)": "Até 2 armas não artefato carregadas pelo alvo, incluindo Aço Marufiano; Metal Divino e itens únicos são imunes.",
+      "Alvo": "Portador testa POD; arma sem portador não resiste.",
+      "Resistência sugerida": "POD",
+      "Se falhar": "Em falha, armas ficam inutilizáveis até o Mundo acabar.",
+      "Se passar": "Reduz ou evita o efeito conforme a regra comum.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Portador testa POD; arma sem portador não resiste. Em falha, armas ficam inutilizáveis até o Mundo acabar. Não afeta Metal Divino, artefatos, partes do corpo ou armas naturais.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    },
+    {
+      "ID": "UTI-29",
+      "Categoria": "Utilitário",
+      "Lei do Mundo": "Sifão de Mana",
+      "N1 (Mundo 1-4)": "Retira até 10 PM (5 em sucesso). Recupera 25% do efetivamente retirado: máximo 2/1 por inimigo.",
+      "N2 (Mundo 5-9)": "Retira até 20 PM (10 em sucesso). Recupera 50% do efetivamente retirado: máximo 10/5 por inimigo.",
+      "N3 (Mundo 10)": "Retira até 45 PM (22 em sucesso). Recupera 100% do efetivamente retirado: máximo 45/22 por inimigo.",
+      "Alvo": "Área instantânea seletiva para criaturas hostis, com diâmetro 3/6/12 m.",
+      "Resistência sugerida": "POD",
+      "Se falhar": "Aplica o efeito integral descrito na Lei.",
+      "Se passar": "Cada inimigo testa POD; sucesso reduz retirada e recuperação à metade, para baixo.",
+      "Força": "Conforme v1.2",
+      "Observações de equilíbrio": "Área instantânea seletiva para criaturas hostis, com diâmetro 3/6/12 m. Aliados e voluntários não podem ser declarados hostis para transferir PM. Cada inimigo testa POD; sucesso reduz retirada e recuperação à metade, para baixo. Cada criatura fornece PM uma vez por rodada. Recupera PM reais até o máximo, utilizáveis inclusive em futura abertura após o encerramento normal. Não há teto total além dos PM disponíveis, do limite por inimigo e do máximo do usuário; excesso dissipa.",
+      "Fonte": "Leis_do_Mundo_Balanceadas_Marufia_v1.2.docx"
+    }
   ]
 };

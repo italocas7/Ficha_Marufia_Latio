@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "appId": "marufia-latio",
+    "schemaVersion": 1,
+    "started": true
+  },
+  "character": {
+    "name": "Fixture Latio",
+    "level": 3
+  },
+  "attributes": {
+    "FOR": 50,
+    "DES": 50,
+    "CON": 60,
+    "APA": 50,
+    "POD": 55,
+    "INT": 50,
+    "CAR": 50,
+    "SAB": 50
+  },
+  "resources": {
+    "hpCurrent": 10,
+    "pmCurrent": 8
+  }
+}
+

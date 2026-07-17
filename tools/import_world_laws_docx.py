@@ -1,14 +1,13 @@
-"""Import the balanced Mundo laws from the official DOCX into data.js."""
+"""Import balanced Mundo laws into Latio's canonical JSON source."""
 
 from __future__ import annotations
 
 import argparse
-import json
 import re
-import unicodedata
 from pathlib import Path
 
 from docx import Document
+from data_io import write_json
 
 
 EXPECTED_TABLE_SIZES = (24, 23, 24, 5)
@@ -135,77 +134,19 @@ def parse_laws(source: Path) -> list[dict[str, str]]:
     return laws
 
 
-def category_key(value: str) -> str:
-    normalized = unicodedata.normalize("NFD", value or "")
-    return "".join(char for char in normalized if unicodedata.category(char) != "Mn").upper()
-
-
-def find_array_end(text: str, start: int) -> int:
-    depth = 0
-    in_string = False
-    escaped = False
-    for index in range(start, len(text)):
-        char = text[index]
-        if in_string:
-            if escaped:
-                escaped = False
-            elif char == "\\":
-                escaped = True
-            elif char == '"':
-                in_string = False
-            continue
-        if char == '"':
-            in_string = True
-        elif char == "[":
-            depth += 1
-        elif char == "]":
-            depth -= 1
-            if depth == 0:
-                return index
-    raise ValueError("Fim do array worldLaws não encontrado em data.js.")
-
-
-def replace_world_laws(data_path: Path, imported_laws: list[dict[str, str]]) -> int:
-    raw = data_path.read_bytes()
-    has_bom = raw.startswith(b"\xef\xbb\xbf")
-    text = raw.decode("utf-8-sig")
-    marker = '"worldLaws":'
-    marker_index = text.find(marker)
-    if marker_index < 0:
-        raise ValueError("Chave worldLaws não encontrada em data.js.")
-    array_start = text.find("[", marker_index + len(marker))
-    array_end = find_array_end(text, array_start)
-    current_laws = json.loads(text[array_start : array_end + 1])
-    hybrid_laws = [
-        law for law in current_laws if "HIBRIDO" in category_key(law.get("Categoria", ""))
-    ]
-    replacement = json.dumps(imported_laws + hybrid_laws, ensure_ascii=False, indent=2)
-    newline = "\r\n" if "\r\n" in text else "\n"
-    replacement = replacement.replace("\n", newline + "  ")
-    updated = text[:array_start] + replacement + text[array_end + 1 :]
-    encoded = updated.encode("utf-8")
-    if has_bom:
-        encoded = b"\xef\xbb\xbf" + encoded
-    data_path.write_bytes(encoded)
-    return len(hybrid_laws)
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path, help="Arquivo DOCX com o catálogo balanceado.")
     parser.add_argument(
-        "--data",
+        "--output",
         type=Path,
-        default=Path(__file__).resolve().parents[1] / "data.js",
-        help="Arquivo data.js da ficha.",
+        default=Path(__file__).resolve().parents[1] / "data-src" / "world_laws.json",
+        help="Fonte JSON canônica das Leis.",
     )
     args = parser.parse_args()
     laws = parse_laws(args.source)
-    hybrid_count = replace_world_laws(args.data, laws)
-    print(
-        "Importação concluída: "
-        f"{len(laws)} leis não híbridas e {hybrid_count} leis híbridas preservadas."
-    )
+    write_json(args.output, laws)
+    print(f"Importação concluída: {len(laws)} Leis gravadas em {args.output}.")
 
 
 if __name__ == "__main__":

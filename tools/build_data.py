@@ -1,10 +1,15 @@
+import argparse
 import json
 import re
 from pathlib import Path
 
+from data_io import load_json, write_data_js, write_json
+from data_rules import normalize_database
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "tmp" / "source_extracts"
+DATA_SOURCE = ROOT / "data-src"
 
 
 def read_text(name):
@@ -34,7 +39,7 @@ def normalize_magic_type(value):
     for key in ["Fina", "Impacto", "Densa", "Mundo", "Forte", "Etérea"]:
         if key.lower() in value.lower():
             return key
-    return value
+    raise ValueError(f"Tipo de magia regional não reconhecido: {value!r}.")
 
 
 def parse_bonuses(text):
@@ -57,20 +62,25 @@ def parse_levels(block):
             break
     levels = []
     current = None
+    expected = 1
     for line in lines[start:]:
         if line.startswith("Nível de Aptidão"):
             continue
         match = re.match(r"^(10|[1-9])(?:\s+\([^)]+\))?\s+(.+)", line)
-        if match:
+        if match and int(match.group(1)) == expected:
             if current:
                 current["text"] = compact(current["text"])
                 levels.append(current)
             current = {"level": int(match.group(1)), "text": match.group(2).strip()}
+            expected += 1
         elif current:
             current["text"] += " " + line
     if current:
         current["text"] = compact(current["text"])
         levels.append(current)
+    parsed = [entry["level"] for entry in levels]
+    if parsed != list(range(1, 11)):
+        raise ValueError(f"Trilha de magia inválida: {parsed}; esperado 1 a 10.")
     return levels
 
 
@@ -155,7 +165,13 @@ def parse_culture(name, block, region_code, region_name):
 def parse_region_magic(title, block, region_code, region_name):
     joined = "\n".join(block)
     base_match = re.search(r"Base:\s*Magia\s+([A-Za-zÀ-ÿ]+)", joined)
-    base_type = normalize_magic_type(base_match.group(1)) if base_match else "Base"
+    if base_match:
+        base_type = normalize_magic_type(base_match.group(1))
+    else:
+        inferred = next((kind for kind in ("Fina", "Impacto", "Densa", "Mundo", "Forte", "Etérea") if re.search(rf"\b{kind}\b", joined, re.IGNORECASE)), None)
+        if not inferred:
+            raise ValueError(f"{title}: tipo regional ausente e não inferível.")
+        base_type = inferred
     lines = clean_lines(joined)
     first_level = len(lines)
     for idx, line in enumerate(lines):
@@ -342,7 +358,7 @@ def talent_tags_and_effects(talent):
     return {**talent, "tag": tag, "skillMods": skill_mods, "attributeMods": stat_mods, "resourceMods": resource_mods, "acMod": ac_mod}
 
 
-def build_database():
+def build_database_from_extracts():
     manual = read_text("manual_pages.txt")
     talents = json.loads(read_text("talentos.json"))
     book = json.loads(read_text("book.json"))
@@ -446,15 +462,25 @@ def build_database():
     return db
 
 
+def load_canonical_database():
+    database = load_json(DATA_SOURCE / "database.json")
+    database["worldLaws"] = load_json(DATA_SOURCE / "world_laws.json")
+    return normalize_database(database)
+
+
 def main():
-    db = build_database()
+    parser = argparse.ArgumentParser(description="Gera data.js a partir da fonte canônica.")
+    parser.add_argument("--refresh-sources", action="store_true", help="Recria database.json a partir dos extratos em tmp/source_extracts.")
+    args = parser.parse_args()
+    if args.refresh_sources:
+        db = normalize_database(build_database_from_extracts())
+        laws = load_json(DATA_SOURCE / "world_laws.json") if (DATA_SOURCE / "world_laws.json").exists() else db.pop("worldLaws", [])
+        db.pop("worldLaws", None)
+        write_json(DATA_SOURCE / "database.json", db)
+        write_json(DATA_SOURCE / "world_laws.json", laws)
+    db = load_canonical_database()
     target = ROOT / "data.js"
-    target.write_text(
-        "window.MARUFIA_DB = "
-        + json.dumps(db, ensure_ascii=False, indent=2)
-        + ";\n",
-        encoding="utf-8",
-    )
+    write_data_js(target, db)
     print(
         json.dumps(
             {

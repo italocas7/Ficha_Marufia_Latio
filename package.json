@@ -1,0 +1,17 @@
+{
+  "name": "ficha-marufia-latio",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Ficha interativa offline para o sistema Mundo de Marufia.",
+  "scripts": {
+    "validate:data": "python tools/validate_data.py",
+    "test": "python -m unittest discover -s tests -p test_*.py && node --test tests/js/*.test.cjs",
+    "build": "python tools/build.py",
+    "test:e2e": "node tests/e2e/smoke.cjs",
+    "release": "python tools/build.py --release"
+  },
+  "devDependencies": {
+    "playwright": "1.61.1"
+  }
+}
+

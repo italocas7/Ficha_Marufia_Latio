@@ -141,7 +141,7 @@ function createDefaultState() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
-    ui: { activeTab: "resumo", printMode: false, extraMagicType: "Fina", extraMagicRegion: "Sem Região", showExtraMagic: false, lawCategory: "Ofensivo", lawId: "", coreRestHours: 1 },
+    ui: { activeTab: "resumo", printMode: false, extraMagicType: "Fina", extraMagicRegion: "Sem Região", showExtraMagic: false, lawCategory: "Ofensivo", lawResistanceMode: "sem", lawId: "", coreRestHours: 1 },
     character: {
       name: "",
       age: "",
@@ -155,12 +155,12 @@ function createDefaultState() {
       useIntForSkillPoints: false,
     },
     attributes: { FOR: 50, DES: 50, CON: 50, APA: 50, POD: 50, INT: 50, CAR: 50, SAB: 50 },
-    resources: { hpCurrent: null, pmCurrent: null, injury: false, unconscious: false, dying: false, deathSuccess: 0, deathFail: 0 },
+    resources: { hpCurrent: null, pmCurrent: null, hpMaxBonus: 0, pmMaxBonus: 0, injury: false, unconscious: false, dying: false, deathSuccess: 0, deathFail: 0 },
     settings: { theme: "light", skillLimit: 70 },
     skills: skillState,
     skillExtraPoints: 0,
     effects: [],
-    inventory: { money: { X: 0, D: 0, L: 0 }, patrimonio: "", weapons: [], equipment: [], armorId: "", shield: false, selectedWeaponId: "" },
+    inventory: { money: { X: 0, D: 0, L: 0 }, patrimonio: "", weapons: [], equipment: [], armorId: "", customArmors: [], shield: false, selectedWeaponId: "" },
     magic: { extraAptitudes: 0, baseLevels: Object.fromEntries(MAGIC_TYPES.map((type) => [type, 0])), knownExtras: [] },
     magicCore: { selectedId: "", preparedBoost: "", caBoostTurns: 0 },
     combat: { actions: { standard: true, bonus: true, movement: true, reaction: true }, log: [], activeSpells: [], defenseAdjustments: { ca: 0, block: 0 } },
@@ -437,19 +437,30 @@ function aptitudeCost(type, level) {
   return base + 2;
 }
 
-function aptitudeUpgradeCost(type, fromLevel, toLevel = fromLevel + 1) {
+function aptitudeUpgradeCost(type, fromLevel, toLevel = fromLevel + 1, options = {}) {
   let total = 0;
   const start = clamp(fromLevel, 0, 10);
   const end = clamp(toLevel, 0, 10);
   for (let level = start + 1; level <= end; level += 1) {
-    if (level > 1) total += aptitudeCost(type, level);
+    if (options.freeFirstLevel && level === 1) continue;
+    total += aptitudeCost(type, level);
   }
   return total;
 }
 
-function spellCostTotal(type, level) {
+function spellCostTotal(type, level, options = {}) {
   let total = 0;
-  for (let current = 1; current <= level; current += 1) total += aptitudeUpgradeCost(type, current - 1, current);
+  for (let current = 1; current <= level; current += 1) total += aptitudeUpgradeCost(type, current - 1, current, options);
+  return total;
+}
+
+function extraSpellUpgradeCost(type, fromLevel, toLevel = fromLevel + 1) {
+  return aptitudeUpgradeCost(type, fromLevel, toLevel, { freeFirstLevel: true });
+}
+
+function extraSpellCostTotal(type, level) {
+  let total = 0;
+  for (let current = 1; current <= level; current += 1) total += extraSpellUpgradeCost(type, current - 1, current);
   return total;
 }
 
@@ -461,7 +472,7 @@ function aptitudeTotal() {
 function aptitudeSpent() {
   let total = 0;
   for (const type of MAGIC_TYPES) total += spellCostTotal(type, num(state.magic.baseLevels[type], 0));
-  for (const spell of state.magic.knownExtras) total += spellCostTotal(spell.type, num(spell.level, 0));
+  for (const spell of state.magic.knownExtras) total += extraSpellCostTotal(spell.type, num(spell.level, 0));
   return total;
 }
 
@@ -480,7 +491,7 @@ function worldTier() {
   return 1;
 }
 
-function maxHp() {
+function calculatedMaxHp() {
   const con = attr("CON");
   const level = Math.max(1, num(state.character.level, 1));
   let hp = Math.floor(con / 10) + 12;
@@ -490,7 +501,11 @@ function maxHp() {
   return Math.max(1, hp);
 }
 
-function maxPm() {
+function maxHp() {
+  return Math.max(1, calculatedMaxHp() + num(state.resources.hpMaxBonus, 0));
+}
+
+function calculatedMaxPm() {
   const pod = attr("POD");
   const level = Math.max(1, num(state.character.level, 1));
   let pm = Math.floor(pod / 3) + (level - 1) * Math.floor(pod / 10);
@@ -498,6 +513,10 @@ function maxPm() {
   for (const talent of activeTalents()) pm += num(talent.resourceMods?.pm, 0);
   pm -= corePermanentPmPenalty();
   return Math.max(0, pm);
+}
+
+function maxPm() {
+  return Math.max(0, calculatedMaxPm() + num(state.resources.pmMaxBonus, 0));
 }
 
 function resourceCurrent(key, maxValue) {
@@ -524,6 +543,49 @@ function adjustResource(key, delta) {
   render();
 }
 
+function resourceMaxBonusKey(key) {
+  return key === "hpCurrent" ? "hpMaxBonus" : "pmMaxBonus";
+}
+
+function resourceCalculatedMax(key) {
+  return key === "hpCurrent" ? calculatedMaxHp() : calculatedMaxPm();
+}
+
+function resourceMaxLabel(key) {
+  return key === "hpCurrent" ? "Vida" : "PM";
+}
+
+function openResourceMaxModal(key) {
+  if (!["hpCurrent", "pmCurrent"].includes(key)) return;
+  const bonusKey = resourceMaxBonusKey(key);
+  const label = resourceMaxLabel(key);
+  const calculated = resourceCalculatedMax(key);
+  const bonus = num(state.resources[bonusKey], 0);
+  const total = key === "hpCurrent" ? maxHp() : maxPm();
+  openModal(`Ajustar ${label} máximo`, `
+    <div class="grid three">
+      ${miniStat("Calculado", calculated)}
+      ${miniStat("Bônus manual", bonus)}
+      ${miniStat("Total", total)}
+    </div>
+    <div class="field">
+      <label>Bônus no máximo</label>
+      <input id="resourceMaxBonus" type="number" value="${esc(bonus)}">
+    </div>
+    <p class="muted small">Este valor soma ao máximo calculado. O valor atual continua sendo alterado pelos botões rápidos.</p>
+  `, `<button class="button" type="button" data-action="save-resource-max" data-resource="${esc(key)}">Salvar</button><button class="ghost" type="button" data-action="close-modal">Cancelar</button>`);
+}
+
+function saveResourceMaxBonus(key) {
+  if (!["hpCurrent", "pmCurrent"].includes(key)) return;
+  const bonusKey = resourceMaxBonusKey(key);
+  state.resources[bonusKey] = num($("#resourceMaxBonus")?.value, 0);
+  const maxValue = key === "hpCurrent" ? maxHp() : maxPm();
+  state.resources[key] = resourceCurrent(key, maxValue);
+  closeModal();
+  render();
+}
+
 function spendPm(amount, label) {
   const current = pmCurrent();
   if (current < amount) {
@@ -541,8 +603,65 @@ function worldCosts(level = worldLevel()) {
   return { activation, maintenance };
 }
 
+function ensureCustomArmors() {
+  state.inventory.customArmors ??= [];
+  return state.inventory.customArmors;
+}
+
+function customArmorKey(id) {
+  return `custom:${id}`;
+}
+
+function isCustomArmorKey(id = "") {
+  return String(id).startsWith("custom:");
+}
+
+function armorSelectId(armor) {
+  return armor?.custom ? customArmorKey(armor.id) : armor?.name ?? "";
+}
+
+function selectedArmor() {
+  const armorId = state.inventory.armorId;
+  if (!armorId) return null;
+  if (isCustomArmorKey(armorId)) {
+    const id = armorId.slice("custom:".length);
+    return ensureCustomArmors().find((item) => item.id === id) ?? null;
+  }
+  return DB.armors.find((item) => item.name === armorId && item.category !== "Escudo") ?? null;
+}
+
+function armorIconPreset(armor) {
+  if (armor?.custom && armor.iconPreset) return armor.iconPreset;
+  const text = fold(`${armor?.name ?? ""} ${armor?.category ?? ""}`);
+  if (text.includes("ESCAMA")) return "scale";
+  if (text.includes("PLACA")) return "plate";
+  if (text.includes("MALHA")) return "chain";
+  if (text.includes("COURO")) return "leather";
+  if (text.includes("PEITORAL")) return "breastplate";
+  return armor?.iconPreset ?? "plate";
+}
+
+function armorIconColor(armor) {
+  const fallbackByPreset = {
+    plate: "#b8c0cc",
+    scale: "#8f6b3d",
+    chain: "#9aa4b2",
+    leather: "#8b5a35",
+    breastplate: "#c39a52",
+  };
+  const preset = armorIconPreset(armor);
+  const color = armor?.iconColor || fallbackByPreset[preset] || "#b8c0cc";
+  return /^#[0-9a-f]{6}$/i.test(color) ? color : "#b8c0cc";
+}
+
+function armorIcon(armor, extraClass = "") {
+  const preset = armorIconPreset(armor);
+  const color = armorIconColor(armor);
+  return `<span class="armor-icon armor-${esc(preset)} ${extraClass}" style="--armor-color:${esc(color)}" aria-hidden="true"><i></i></span>`;
+}
+
 function armorPieces() {
-  const armor = DB.armors.find((item) => item.name === state.inventory.armorId);
+  const armor = selectedArmor();
   const shield = state.inventory.shield ? DB.armors.find((item) => item.category === "Escudo") : null;
   return [armor, shield].filter(Boolean);
 }
@@ -763,6 +882,8 @@ function renderCombate() {
       </div>
     </section>
     ${renderCorePanel("combat")}
+    ${combatQuickSkillsPanel()}
+    ${combatExtrasPanel()}
     <section class="panel">
       <div class="section-title"><h2>Magias em combate</h2></div>
       <div class="grid three">
@@ -819,7 +940,6 @@ function renderMagia() {
 }
 
 function renderInventario() {
-  const armorOptions = DB.armors.filter((item) => item.category !== "Escudo").map((item) => [item.name, `${item.name} (+${item.ca} CA)`]);
   const shieldOn = Boolean(state.inventory.shield);
   return `
     <section class="panel">
@@ -836,7 +956,7 @@ function renderInventario() {
         <div class="card defense-card">
           <h3>Proteção</h3>
           <div class="defense-grid">
-            ${selectField("Armadura", "inventory.armorId", armorOptions, "Sem armadura")}
+            ${armorEquipCard()}
             <button class="shield-toggle ${shieldOn ? "on" : ""}" type="button" role="switch" aria-checked="${shieldOn}" data-action="toggle-shield">
               <span class="shield-glyph" aria-hidden="true"></span>
               <span><strong>Escudo</strong><small>${shieldOn ? "Equipado" : "Guardado"}</small></span>
@@ -921,10 +1041,14 @@ function renderMundo() {
   const area = level ? `${1.5 + level * 1.5}m de raio` : "3m de raio";
   const difficulty = Math.floor((attr("POD") + Math.max(attr("SAB"), attr("INT"))) / 10) + (level >= 9 ? 20 : level >= 7 ? 15 : level >= 5 ? 10 : level >= 3 ? 5 : 0);
   const categories = ["Ofensivo", "Defensivo", "Utilitário", "Híbrido"];
-  const filtered = lawsForCategory(state.ui.lawCategory);
+  const resistanceMode = normalizeLawResistanceMode(state.ui.lawResistanceMode);
+  const hybridCategory = isHybridCategory(state.ui.lawCategory);
+  const filtered = lawsForCategory(state.ui.lawCategory, resistanceMode);
   const selectedLaw = filtered.find((law) => law.ID === state.ui.lawId) ?? filtered[0];
   const customLaw = selectedLaw?.ID === "CUSTOM-HYB";
   const effectKey = tier === 3 ? "N3 (Mundo 10)" : tier === 2 ? "N2 (Mundo 5-9)" : "N1 (Mundo 1-4)";
+  const selectedName = selectedLaw ? lawNameForResistance(selectedLaw, resistanceMode) : "";
+  const selectedDetails = selectedLaw && !customLaw ? lawDetailsForResistance(selectedLaw, effectKey, resistanceMode) : null;
   const costs = worldCosts(level);
   return `
     <section class="panel">
@@ -960,23 +1084,30 @@ function renderMundo() {
     </section>
     <section class="panel">
       <div class="section-title"><h2>Lei do Mundo</h2></div>
-      <div class="grid four">
+      <div class="grid three">
         ${selectRaw("Categoria", "ui.lawCategory", categories.map((cat) => [cat, cat]))}
-        ${selectRaw("Tipo da Lei", "ui.lawId", filtered.map((law) => [law.ID, law["Lei do Mundo"]]))}
-        <div class="field"><label>Nome da Lei</label><input id="lawNameDraft" value="${esc(selectedLaw?.["Lei do Mundo"] ?? "")}"></div>
-        <div class="field"><label>&nbsp;</label><button class="button" type="button" data-action="add-world-law">Add Nova Lei</button></div>
+        ${hybridCategory
+          ? `<div class="field"><label>Resistência da Lei</label><input value="Personalizada" disabled></div>`
+          : selectRaw("Resistência da Lei", "ui.lawResistanceMode", [["sem", "SEM"], ["com", "COM"]])}
+        ${selectRaw("Tipo da Lei", "ui.lawId", filtered.map((law) => [law.ID, lawNameForResistance(law, resistanceMode)]), filtered.length ? "" : "Nenhuma lei disponível")}
+      </div>
+      <div class="grid two" style="margin-top: 12px;">
+        <div class="field"><label>Nome da Lei</label><input id="lawNameDraft" value="${esc(selectedName)}" ${selectedLaw ? "" : "disabled"}></div>
+        <div class="field"><label>&nbsp;</label><button class="button" type="button" data-action="add-world-law" ${selectedLaw ? "" : "disabled"}>Add Nova Lei</button></div>
       </div>
       <div class="card law-preview" style="margin-top: 12px;">
-        <strong>${esc(selectedLaw?.["Lei do Mundo"] ?? "Selecione uma lei")}</strong>
-        ${customLaw ? `
-          <div class="grid three" style="margin-top: 10px;">
-            <div class="field"><label>Alvo</label><input id="customLawTarget" placeholder="Ex.: criatura, área, objeto"></div>
-            <div class="field"><label>Resistência</label><input id="customLawResistance" placeholder="Ex.: SAB, CON, DES"></div>
-            <div class="field"><label>Efeito</label><textarea id="customLawEffect" placeholder="Descreva o efeito mecânico da Lei"></textarea></div>
-          </div>
-        ` : `
-          <p>${esc(selectedLaw?.[effectKey] ?? "")}</p>
-          <p class="muted">Alvo: ${esc(selectedLaw?.Alvo ?? "-")} · Resistência: ${esc(selectedLaw?.["Resistência sugerida"] ?? "-")}</p>
+        ${!selectedLaw ? `<div class="empty">Nenhuma Lei ${esc(state.ui.lawCategory)} com o filtro ${resistanceMode.toUpperCase()}.</div>` : `
+          <div class="inline"><strong>${esc(selectedName)}</strong>${customLaw ? "" : `<span class="tag law-resistance-${resistanceMode}">${resistanceMode.toUpperCase()} Resistência</span>`}</div>
+          ${customLaw ? `
+            <div class="grid three" style="margin-top: 10px;">
+              <div class="field"><label>Alvo</label><input id="customLawTarget" placeholder="Ex.: criatura, área, objeto"></div>
+              <div class="field"><label>Resistência</label><input id="customLawResistance" placeholder="Ex.: SAB, CON, DES"></div>
+              <div class="field"><label>Efeito</label><textarea id="customLawEffect" placeholder="Descreva o efeito mecânico da Lei"></textarea></div>
+            </div>
+          ` : `
+            <p>${esc(selectedDetails?.effect ?? "")}</p>
+            <p class="muted">Alvo: ${esc(selectedLaw.Alvo ?? "-")} · Resistência: ${esc(selectedDetails?.resistance ?? "-")}</p>
+          `}
         `}
       </div>
     </section>
@@ -1064,6 +1195,34 @@ function miniStat(label, value) {
   return `<div class="stat"><span class="muted">${esc(label)}</span><strong>${esc(value)}</strong></div>`;
 }
 
+function armorBlockLabel(armor) {
+  const block = armor?.block ?? {};
+  return `C ${num(block.cortante, 0)} · P ${num(block.perfurante, 0)} · Cn ${num(block.contundente, 0)}`;
+}
+
+function armorEquipCard() {
+  const armor = selectedArmor();
+  return `<button class="armor-equip-card" type="button" data-action="open-armor-picker">
+    ${armor ? armorIcon(armor, "large") : `<span class="armor-icon armor-empty large" aria-hidden="true"><i></i></span>`}
+    <span class="armor-equip-copy">
+      <span class="muted small">Armadura</span>
+      <strong>${esc(armor?.name ?? "Sem armadura")}</strong>
+      <small>${armor ? `CA +${esc(armor.ca)} · ${esc(armorBlockLabel(armor))}` : "Clique para escolher ou criar"}</small>
+    </span>
+  </button>`;
+}
+
+function armorInfoGrid(armor) {
+  return `<div class="grid three">
+    ${miniStat("Nome do Item", armor?.name ?? "Sem armadura")}
+    ${miniStat("Bônus CA", armor?.ca ?? 0)}
+    ${miniStat("Peso", armor?.weight || "-")}
+    ${miniStat("Bloqueio C", armor?.block?.cortante ?? 0)}
+    ${miniStat("Bloqueio P", armor?.block?.perfurante ?? 0)}
+    ${miniStat("Bloqueio Cn", armor?.block?.contundente ?? 0)}
+  </div>`;
+}
+
 function defenseMiniStat(label, value, kind, adjustment) {
   const note = adjustment ? `Ajuste ${adjustment > 0 ? "+" : ""}${adjustment}` : "Clique para ajustar";
   return `<button class="stat" type="button" data-action="open-defense-adjust" data-defense="${esc(kind)}" aria-label="Ajustar ${esc(label)}"><span class="muted">${esc(label)}</span><strong>${esc(value)}</strong><small>${esc(note)}</small></button>`;
@@ -1075,7 +1234,9 @@ function resourceControl(label, key, maxValue) {
   const pct = maxValue ? clamp((value / maxValue) * 100, 0, 100) : 0;
   const deltas = [1, -1, 5, -5, 10, -10];
   return `<div class="resource-card">
-    <div class="resource-head"><strong>${esc(label)}</strong><span class="big-val">${esc(value)}/${esc(maxValue)}</span></div>
+    <button class="resource-head resource-max-button" type="button" data-action="open-resource-max" data-resource="${esc(key)}" title="Ajustar ${esc(label.replace(" atual", ""))} máximo">
+      <strong>${esc(label)}</strong><span class="big-val">${esc(value)}/${esc(maxValue)}</span>
+    </button>
     <div class="meter ${key === "pmCurrent" ? "mana" : ""}" aria-hidden="true"><i style="width:${pct}%"></i></div>
     <div class="field"><label>Alterar valor</label><input type="number" min="0" max="${maxValue}" data-path="${path}" value="${esc(value)}"></div>
     <div class="resource-adjust" aria-label="Ajustar ${esc(label)}">
@@ -1100,9 +1261,75 @@ function bestAttackSkill() {
   }, { name: "Lutar (Brigar)", value: skillFinal("Lutar (Brigar)") });
 }
 
+function topFightSkills(limit = 2) {
+  return DB.skills
+    .filter((skill) => /^Lutar\s*\(/i.test(skill.name))
+    .map((skill) => ({ name: skill.name, value: skillFinal(skill.name) }))
+    .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name))
+    .slice(0, limit);
+}
+
+function combatQuickSkillNames() {
+  const fixed = [
+    { label: "Arremesso", name: "Arremessar" },
+    { label: "Arte/Ofício", name: "Arte/Ofício" },
+    { label: "Atletismo", name: "Atletismo" },
+    { label: "Esquivar", name: "Esquivar" },
+    { label: "Percepção", name: "Percepção" },
+    { label: "Tática", name: "Tática" },
+  ];
+  return [...fixed.map((skill) => ({ ...skill, value: skillFinal(skill.name) })), ...topFightSkills().map((skill) => ({ ...skill, label: skill.name }))];
+}
+
+function skillRollButtons(name) {
+  return `<div class="roll-buttons">
+    <button class="ghost" type="button" data-action="roll-skill" data-skill="${esc(name)}" data-mode="normal" title="Rolar d100">N</button>
+    <button class="ghost" type="button" data-action="roll-skill" data-skill="${esc(name)}" data-mode="adv" title="Rolar com vantagem">V</button>
+    <button class="ghost" type="button" data-action="roll-skill" data-skill="${esc(name)}" data-mode="dis" title="Rolar com desvantagem">D</button>
+  </div>`;
+}
+
+function combatQuickSkillsPanel() {
+  return `<section class="panel combat-quick-panel">
+    <div class="section-title"><h2>Perícias de combate</h2><span class="muted small">N · V · D</span></div>
+    <div class="combat-skill-grid">
+      ${combatQuickSkillNames().map((skill) => `<div class="combat-skill-card">
+        <button class="ghost" type="button" data-action="open-skill" data-skill="${esc(skill.name)}"><strong>${esc(skill.label)}</strong><span>${esc(skill.value)}</span></button>
+        ${skillRollButtons(skill.name)}
+      </div>`).join("")}
+    </div>
+  </section>`;
+}
+
+function combatExtrasPanel() {
+  return `<section class="panel combat-extras-panel">
+    <div class="grid two">
+      <div>${summaryChips("Habilidades Extra", state.abilities, "open-ability")}</div>
+      <div>${summaryChips("Talentos", allKnownTalents(), "open-talent")}</div>
+    </div>
+  </section>`;
+}
+
+function normalizedSpellLevels(spell) {
+  const source = spell?.levels ?? [];
+  const levels = [];
+  for (const entry of source) {
+    const level = num(entry.level, 0);
+    const text = compact(entry.text ?? "");
+    const previous = levels.at(-1);
+    const alreadySeen = levels.some((item) => item.level === level);
+    if (previous && (level <= previous.level || alreadySeen)) {
+      previous.text = compact(`${previous.text} ${text}`);
+      continue;
+    }
+    levels.push({ ...entry, level, text });
+  }
+  return levels;
+}
+
 function currentLevelText(spell, level) {
   if (!level) return "Nenhum nível ativo ainda.";
-  return spell?.levels?.find((entry) => entry.level === level)?.text ?? "Nível ainda não cadastrado.";
+  return normalizedSpellLevels(spell).find((entry) => entry.level === level)?.text ?? "Nível ainda não cadastrado.";
 }
 
 function magicFallbackPmCost(type, level) {
@@ -1267,8 +1494,9 @@ function spellLevelCard(type) {
 }
 
 function renderLevels(spell, activeLevel = 0) {
-  if (!spell?.levels?.length) return `<div class="empty">Trilha ainda não cadastrada.</div>`;
-  return `<ol class="level-list">${spell.levels.map((level) => {
+  const levels = normalizedSpellLevels(spell);
+  if (!levels.length) return `<div class="empty">Trilha ainda não cadastrada.</div>`;
+  return `<ol class="level-list">${levels.map((level) => {
     const isActive = level.level <= activeLevel;
     const isCurrent = level.level === activeLevel;
     return `<li class="${isActive ? "active" : ""} ${isCurrent ? "current" : ""}">
@@ -1280,7 +1508,7 @@ function renderLevels(spell, activeLevel = 0) {
 
 function extraSpellCard(known) {
   const spell = getSpell(known.type, known.regionCode);
-  const next = known.level < 10 ? aptitudeUpgradeCost(known.type, known.level, known.level + 1) : 0;
+  const next = known.level < 10 ? extraSpellUpgradeCost(known.type, known.level, known.level + 1) : 0;
   return `<div class="spell-card">
     <header><div><strong>${esc(known.name)}</strong><br><span class="muted">${esc(spell?.name ?? known.type)}</span></div><span class="tag">N${known.level}</span></header>
     <p>${esc(spell?.description ?? "")}</p>
@@ -1303,7 +1531,7 @@ function spellCombatCard(item) {
   const active = activeSpellFor(item);
   return `<div class="spell-card">
     <header><div><strong>${esc(item.spell?.name ?? item.type)}</strong><br><span class="muted">Nível ${item.level}</span></div><span class="tag">${esc(item.type)}</span></header>
-    <p>${esc(item.spell?.levels?.find((level) => level.level === item.level)?.text ?? item.spell?.description ?? "")}</p>
+    <p>${esc(currentLevelText(item.spell, item.level) || item.spell?.description || "")}</p>
     <div class="inline">
       <span class="tag warn">${pmCost} PM</span>
       ${prepared ? `<span class="tag ok">${esc(prepared.preparedLabel)}</span>` : ""}
@@ -1354,8 +1582,10 @@ function talentCard(talent) {
 }
 
 function worldLawCard(law) {
+  const resistanceMode = ["sem", "com"].includes(law.resistanceMode) ? law.resistanceMode : "";
+  const resistanceTag = resistanceMode ? `<span class="tag law-resistance-${resistanceMode}">${resistanceMode.toUpperCase()} Resistência</span>` : "";
   return `<div class="law-card">
-    <header><div><strong>${esc(law.name)}</strong><br><span class="tag">${esc(law.category)}</span></div><button class="danger" type="button" data-action="remove-world-law" data-id="${law.id}">Remover</button></header>
+    <header><div><strong>${esc(law.name)}</strong><br><span class="tag">${esc(law.category)}</span> ${resistanceTag}</div><button class="danger" type="button" data-action="remove-world-law" data-id="${law.id}">Remover</button></header>
     ${["target", "resistance", "effect"].map((fieldName) => `<p><strong>${fieldLabel(fieldName)}:</strong> ${esc(law[fieldName])} <button class="icon-button" type="button" data-action="edit-law-field" data-id="${law.id}" data-field="${fieldName}" title="Editar">🖋</button></p>`).join("")}
   </div>`;
 }
@@ -1388,11 +1618,80 @@ function isHybridCategory(value) {
   return key.includes("HIBRIDO") || key.includes("HBRIDO") || key.endsWith("BRIDO");
 }
 
-function lawsForCategory(category) {
+function normalizeLawResistanceMode(value) {
+  return value === "com" ? "com" : "sem";
+}
+
+function lawResistanceModes(law) {
+  const title = fold(law?.["Lei do Mundo"] ?? "");
+  if (title.includes("SEM/COM RESISTENCIA") || title.includes("COM/SEM RESISTENCIA")) return ["sem", "com"];
+  if (law?.ID === "UTI-29" || title.includes("COM RESISTENCIA")) return ["com"];
+  return ["sem"];
+}
+
+function isDualResistanceLaw(law) {
+  return lawResistanceModes(law).length === 2;
+}
+
+function lawNameForResistance(law, resistanceMode) {
+  const name = law?.["Lei do Mundo"] ?? "";
+  const mode = normalizeLawResistanceMode(resistanceMode);
+  if (isDualResistanceLaw(law)) {
+    const label = mode === "com" ? "COM" : "SEM";
+    return name.replace(/\((?:sem\/com|com\/sem)\s+Resistência([^)]*)\)/i, `(${label} Resistência$1)`);
+  }
+  if (law?.ID === "UTI-29") return `${name} (COM Resistência)`;
+  if (lawResistanceModes(law)[0] === "com") return name.replace(/\(com Resistência([^)]*)\)/i, "(COM Resistência$1)");
+  return name;
+}
+
+function splitDualLawEffect(effect) {
+  const text = String(effect ?? "").trim();
+  const semMatch = /\bSem:\s*/i.exec(text);
+  if (!semMatch) return null;
+  const afterSem = text.slice(semMatch.index + semMatch[0].length);
+  const comMatch = /\bCom(?:\s+([A-Z]{2,}))?:\s*/i.exec(afterSem);
+  if (!comMatch) return null;
+  return {
+    prefix: text.slice(0, semMatch.index).trim(),
+    sem: afterSem.slice(0, comMatch.index).trim(),
+    com: afterSem.slice(comMatch.index + comMatch[0].length).trim(),
+    comResistance: comMatch[1]?.toUpperCase() ?? "",
+  };
+}
+
+function lawDetailsForResistance(law, effectKey, resistanceMode) {
+  const mode = normalizeLawResistanceMode(resistanceMode);
+  const rawEffect = law?.[effectKey] ?? "";
+  if (!isDualResistanceLaw(law)) {
+    return {
+      effect: rawEffect,
+      resistance: law?.["Resistência sugerida"] ?? "Não se aplica",
+      fail: law?.["Se falhar"] ?? "Sem teste direto.",
+      pass: law?.["Se passar"] ?? "Sem teste direto.",
+    };
+  }
+  const split = splitDualLawEffect(rawEffect);
+  const selectedEffect = split ? [split.prefix, split[mode]].filter(Boolean).join(" ") : rawEffect;
+  if (mode === "sem") {
+    return { effect: selectedEffect, resistance: "Não se aplica", fail: "Sem teste direto.", pass: "Sem teste direto." };
+  }
+  return {
+    effect: selectedEffect,
+    resistance: split?.comResistance || law?.["Resistência sugerida"] || "Conforme regra comum",
+    fail: law?.["Se falhar"] ?? "Aplica o efeito integral descrito na Lei.",
+    pass: law?.["Se passar"] ?? "Reduz ou evita o efeito conforme a regra comum.",
+  };
+}
+
+function lawsForCategory(category, resistanceMode = state.ui.lawResistanceMode) {
   const normalized = categoryKey(category);
   if (isHybridCategory(category)) return [customWorldLawOption(), ...DB.worldLaws.filter((law) => isHybridCategory(law.Categoria))];
-  if (normalized.startsWith("UTILIT")) return DB.worldLaws.filter((law) => categoryKey(law.Categoria).startsWith("UTILIT") || categoryKey(law.Categoria) === "UTILIDADE");
-  return DB.worldLaws.filter((law) => categoryKey(law.Categoria) === normalized);
+  const categoryLaws = normalized.startsWith("UTILIT")
+    ? DB.worldLaws.filter((law) => categoryKey(law.Categoria).startsWith("UTILIT") || categoryKey(law.Categoria) === "UTILIDADE")
+    : DB.worldLaws.filter((law) => categoryKey(law.Categoria) === normalized);
+  const mode = normalizeLawResistanceMode(resistanceMode);
+  return categoryLaws.filter((law) => lawResistanceModes(law).includes(mode));
 }
 
 function actionCostLabel(cost) {
@@ -1464,6 +1763,116 @@ function openSkillModal(name) {
 function openModifiersModal(name) {
   const mods = skillModifiers(name);
   openModal(`Modificadores: ${name}`, `<div class="stack">${mods.map((mod) => `<div class="card"><strong>${esc(mod.detail)}</strong><p class="muted">${esc(mod.source)}</p></div>`).join("") || `<div class="empty">Nenhum modificador automático.</div>`}</div>`);
+}
+
+function armorIconOptions() {
+  return [
+    ["plate", "Armadura de Placas"],
+    ["scale", "Armadura de Escamas"],
+    ["chain", "Cota de Malha"],
+    ["leather", "Couro"],
+    ["breastplate", "Peitoral"],
+  ];
+}
+
+function armorPickerCard(armor) {
+  const id = armorSelectId(armor);
+  const selected = state.inventory.armorId === id;
+  return `<div class="armor-picker-card ${selected ? "selected" : ""}">
+    <button class="armor-picker-main" type="button" data-action="select-armor" data-armor-id="${esc(id)}">
+      ${armorIcon(armor)}
+      <span>
+        <strong>${esc(armor.name)}</strong>
+        <small>${esc(armor.category || (armor.custom ? "Personalizada" : "Armadura"))}</small>
+      </span>
+    </button>
+    ${armorInfoGrid(armor)}
+    <p class="muted">${esc(armor.property || armor.description || "Sem propriedade cadastrada.")}</p>
+    <div class="inline">
+      <button class="${selected ? "button" : "ghost"}" type="button" data-action="select-armor" data-armor-id="${esc(id)}">${selected ? "Selecionada" : "Selecionar"}</button>
+      ${armor.custom ? `<button class="ghost" type="button" data-action="open-custom-armor" data-id="${esc(armor.id)}">Editar</button><button class="danger" type="button" data-action="remove-custom-armor" data-id="${esc(armor.id)}">Remover</button>` : ""}
+    </div>
+  </div>`;
+}
+
+function openArmorPicker() {
+  const official = DB.armors.filter((item) => item.category !== "Escudo");
+  const custom = ensureCustomArmors();
+  openModal("Armaduras", `
+    <div class="armor-picker-actions">
+      <button class="ghost" type="button" data-action="select-armor" data-armor-id="">Sem armadura</button>
+      <button class="button" type="button" data-action="open-custom-armor">Armadura personalizada</button>
+    </div>
+    <h3>Armaduras oficiais</h3>
+    <div class="armor-picker-grid">${official.map((armor) => armorPickerCard(armor)).join("")}</div>
+    <h3>Armaduras personalizadas</h3>
+    <div class="armor-picker-grid">${custom.map((armor) => armorPickerCard(armor)).join("") || `<div class="empty">Nenhuma armadura personalizada criada.</div>`}</div>
+  `, `<button class="ghost" type="button" data-action="close-modal">Fechar</button>`);
+}
+
+function openCustomArmorModal(id = "") {
+  const existing = ensureCustomArmors().find((armor) => armor.id === id);
+  const iconPreset = existing?.iconPreset ?? "plate";
+  const iconColor = armorIconColor(existing ?? { custom: true, iconPreset });
+  const iconOptions = armorIconOptions().map(([value, label]) => `<option value="${esc(value)}" ${iconPreset === value ? "selected" : ""}>${esc(label)}</option>`).join("");
+  openModal(existing ? "Editar armadura personalizada" : "Armadura personalizada", `
+    <div class="armor-custom-preview">
+      ${armorIcon({ custom: true, iconPreset, iconColor }, "large")}
+      <div><strong>${esc(existing?.name ?? "Nova armadura")}</strong><p class="muted">A cor abaixo altera o ícone visual da armadura.</p></div>
+    </div>
+    <div class="grid two">
+      <div class="field"><label>Nome</label><input id="customArmorName" value="${esc(existing?.name ?? "")}"></div>
+      <div class="field"><label>Ícone</label><select id="customArmorIconPreset">${iconOptions}</select></div>
+      <div class="field"><label>CA</label><input id="customArmorCa" type="number" value="${esc(existing?.ca ?? 0)}"></div>
+      <div class="field"><label>Cor do ícone</label><input id="customArmorIconColor" type="color" value="${esc(iconColor)}"></div>
+      <div class="field"><label>Bloqueio Cortante</label><input id="customArmorBlockCortante" type="number" value="${esc(existing?.block?.cortante ?? 0)}"></div>
+      <div class="field"><label>Bloqueio Perfurante</label><input id="customArmorBlockPerfurante" type="number" value="${esc(existing?.block?.perfurante ?? 0)}"></div>
+      <div class="field"><label>Bloqueio Contundente</label><input id="customArmorBlockContundente" type="number" value="${esc(existing?.block?.contundente ?? 0)}"></div>
+    </div>
+    <div class="field"><label>Descrição</label><textarea id="customArmorDescription">${esc(existing?.description ?? "")}</textarea></div>
+  `, `<button class="button" type="button" data-action="save-custom-armor" data-id="${esc(existing?.id ?? "")}">Salvar</button><button class="ghost" type="button" data-action="open-armor-picker">Voltar</button>`);
+}
+
+function selectArmor(id = "") {
+  state.inventory.armorId = id;
+  closeModal();
+  render();
+}
+
+function saveCustomArmor(id = "") {
+  const name = $("#customArmorName")?.value.trim();
+  if (!name) return addError("LAT-UI-002", "Nome da armadura vazio.");
+  const armor = {
+    id: id || uid(),
+    custom: true,
+    name,
+    description: $("#customArmorDescription")?.value.trim() ?? "",
+    property: $("#customArmorDescription")?.value.trim() ?? "",
+    ca: num($("#customArmorCa")?.value, 0),
+    weight: "Personalizada",
+    category: "Personalizada",
+    block: {
+      cortante: num($("#customArmorBlockCortante")?.value, 0),
+      perfurante: num($("#customArmorBlockPerfurante")?.value, 0),
+      contundente: num($("#customArmorBlockContundente")?.value, 0),
+    },
+    iconPreset: $("#customArmorIconPreset")?.value || "plate",
+    iconColor: $("#customArmorIconColor")?.value || "#b8c0cc",
+  };
+  const custom = ensureCustomArmors();
+  const index = custom.findIndex((item) => item.id === armor.id);
+  if (index >= 0) custom[index] = armor;
+  else custom.push(armor);
+  state.inventory.armorId = customArmorKey(armor.id);
+  closeModal();
+  render();
+}
+
+function removeCustomArmor(id = "") {
+  state.inventory.customArmors = ensureCustomArmors().filter((armor) => armor.id !== id);
+  if (state.inventory.armorId === customArmorKey(id)) state.inventory.armorId = "";
+  saveState();
+  openArmorPicker();
 }
 
 function ensureDefenseAdjustments() {
@@ -1843,6 +2252,8 @@ function handleClick(event) {
     "core-reduce-damage": coreReduceDamage,
     "recover-core-rest": recoverCoreRest,
     "recover-core-flat": recoverCoreFlat,
+    "open-resource-max": () => openResourceMaxModal(button.dataset.resource),
+    "save-resource-max": () => saveResourceMaxBonus(button.dataset.resource),
     "adjust-resource": () => adjustResource(button.dataset.resource, num(button.dataset.delta, 0)),
     "pass-turn": passTurn,
     "finish-combat": finishCombat,
@@ -1850,6 +2261,11 @@ function handleClick(event) {
     "toggle-action": () => { const key = button.dataset.actionKey; state.combat.actions[key] = !state.combat.actions[key]; render(); },
     "clear-combat-log": () => { state.combat.log = []; render(); },
     "remove-active-spell": () => removeActiveSpell(button.dataset.id),
+    "open-armor-picker": openArmorPicker,
+    "select-armor": () => selectArmor(button.dataset.armorId ?? ""),
+    "open-custom-armor": () => openCustomArmorModal(button.dataset.id ?? ""),
+    "save-custom-armor": () => saveCustomArmor(button.dataset.id ?? ""),
+    "remove-custom-armor": () => removeCustomArmor(button.dataset.id ?? ""),
     "toggle-shield": () => { state.inventory.shield = !state.inventory.shield; render(); },
     "open-weapon-picker": () => openWeaponPicker(button.dataset.kind),
     "open-custom-weapon": () => openCustomWeapon(),
@@ -1898,6 +2314,13 @@ function handleClick(event) {
 
 function handleChange(event) {
   const target = event.target;
+  if (target.id === "customArmorIconPreset") {
+    const icon = $(".armor-custom-preview .armor-icon");
+    if (icon) {
+      for (const [preset] of armorIconOptions()) icon.classList.remove(`armor-${preset}`);
+      icon.classList.add(`armor-${target.value || "plate"}`);
+    }
+  }
   if (target.dataset.path) {
     let value = target.type === "checkbox" ? target.checked : target.value;
     if (target.type === "number") value = num(value, 0);
@@ -1915,8 +2338,8 @@ function handleChange(event) {
       const region = getRegion(value);
       if (region && !region.cultures.some((culture) => culture.id === state.character.cultureId)) state.character.cultureId = "";
     }
-    if (target.dataset.path === "ui.lawCategory") {
-      const first = lawsForCategory(value)[0];
+    if (["ui.lawCategory", "ui.lawResistanceMode"].includes(target.dataset.path)) {
+      const first = lawsForCategory(state.ui.lawCategory, state.ui.lawResistanceMode)[0];
       state.ui.lawId = first?.ID ?? "";
     }
     saveState();
@@ -1928,6 +2351,9 @@ function handleChange(event) {
 
 function handleInput(event) {
   const target = event.target;
+  if (target.id === "customArmorIconColor") {
+    $(".armor-custom-preview .armor-icon")?.style.setProperty("--armor-color", target.value);
+  }
   if (target.dataset.path && target.dataset.live) {
     setPath(target.dataset.path, target.value);
     saveState();
@@ -1969,7 +2395,7 @@ function addExtraMagic() {
 function evolveExtraMagic(id) {
   const known = state.magic.knownExtras.find((spell) => spell.id === id);
   if (!known || known.level >= 10) return;
-  const cost = aptitudeUpgradeCost(known.type, known.level, known.level + 1);
+  const cost = extraSpellUpgradeCost(known.type, known.level, known.level + 1);
   if (aptitudeTotal() - aptitudeSpent() < cost) return addError("LAT-MAG-001", known.name);
   known.level += 1;
   render();
@@ -2106,11 +2532,46 @@ function openWeaponDescription(index) {
 }
 
 function parseCulturalWeapons(text) {
-  return text.split(";").map((part) => {
-    const name = part.split("–")[0].split("-")[0].trim();
-    const damage = part.match(/\d+d\d+(?:[+-]\d+)?\s*[A-Za-zÀ-ÿ]*/)?.[0] ?? "";
-    return { name, damage, weight: "", property: compact(part.replace(name, "")), description: part };
-  }).filter((weapon) => weapon.name);
+  const weapons = [];
+  for (const part of splitCulturalWeaponEntries(text)) {
+    if (!part) continue;
+    if (!weapons.length || looksLikeCulturalWeapon(part)) {
+      weapons.push(culturalWeaponFromText(part));
+      continue;
+    }
+    const previous = weapons.at(-1);
+    previous.property = compact(`${previous.property} ${part}`);
+    previous.description = compact(`${previous.description} ${part}`);
+  }
+  return weapons.filter((weapon) => weapon.name && weapon.damage);
+}
+
+function splitCulturalWeaponEntries(text) {
+  const value = compact(text);
+  if (!value) return [];
+  const starts = [...value.matchAll(/[A-ZÀ-Ý][^;.]*?\([^)]*(?:Arma|Arco|Besta|Haste|Curta|Longa|Grande|Cultural|Espada)[^)]*\)\s*(?:[–-]\s*)?(?=(?:Causa\s+)?\d+d\d+)/g)];
+  if (starts.length <= 1) return value.split(";").map((part) => compact(part));
+  return starts.map((match, index) => {
+    const next = starts[index + 1]?.index ?? value.length;
+    return compact(value.slice(match.index, next).replace(/^;\s*/, "").replace(/;\s*$/, ""));
+  });
+}
+
+function looksLikeCulturalWeapon(text) {
+  const hasDamage = /\d+d\d+(?:[+-]\d+)?\s*[A-Za-zÀ-ÿ]*/i.test(text);
+  const hasWeaponCategory = /\([^)]*(?:Arma|Arco|Besta|Haste|Curta|Longa|Grande|Cultural)[^)]*\)/i.test(text);
+  const hasNameSeparator = /\s+[–-]\s+/.test(text) || /\)\s*(?:Causa\s+)?\d+d\d+/i.test(text);
+  return hasDamage && hasWeaponCategory && hasNameSeparator;
+}
+
+function culturalWeaponFromText(text) {
+  const separator = text.search(/\s+[–-]\s+/);
+  const name = separator >= 0 ? text.slice(0, separator).trim() : text.trim();
+  const fallbackName = text.match(/^[^(]+\([^)]*\)/)?.[0]?.trim() ?? name;
+  const finalName = separator >= 0 ? name : fallbackName;
+  const details = separator >= 0 ? text.slice(separator).trim() : compact(text.replace(finalName, ""));
+  const damage = text.match(/\d+d\d+(?:[+-]\d+)?\s*[A-Za-zÀ-ÿ]*/i)?.[0] ?? "";
+  return { name: finalName, damage, weight: "", property: details, description: text };
 }
 
 function addWeaponFromModal(index) {
@@ -2285,22 +2746,30 @@ function toggleTalent(name) {
 }
 
 function addWorldLaw() {
-  const candidates = lawsForCategory(state.ui.lawCategory);
+  const resistanceMode = normalizeLawResistanceMode(state.ui.lawResistanceMode);
+  const candidates = lawsForCategory(state.ui.lawCategory, resistanceMode);
   const selected = candidates.find((law) => law.ID === state.ui.lawId) ?? candidates[0];
   if (!selected) return addError("LAT-MUN-005");
   const tier = worldTier();
   const effectKey = tier === 3 ? "N3 (Mundo 10)" : tier === 2 ? "N2 (Mundo 5-9)" : "N1 (Mundo 1-4)";
   const custom = selected.ID === "CUSTOM-HYB";
+  const details = custom ? {
+    effect: $("#customLawEffect")?.value.trim(),
+    resistance: $("#customLawResistance")?.value.trim(),
+    fail: "",
+    pass: "",
+  } : lawDetailsForResistance(selected, effectKey, resistanceMode);
   const law = {
     id: uid(),
     sourceId: selected.ID,
     category: state.ui.lawCategory,
-    name: $("#lawNameDraft")?.value.trim() || selected["Lei do Mundo"],
+    ...(custom ? {} : { resistanceMode }),
+    name: $("#lawNameDraft")?.value.trim() || lawNameForResistance(selected, resistanceMode),
     target: custom ? $("#customLawTarget")?.value.trim() : selected.Alvo,
-    resistance: custom ? $("#customLawResistance")?.value.trim() : selected["Resistência sugerida"],
-    effect: custom ? $("#customLawEffect")?.value.trim() : selected[effectKey],
-    fail: selected["Se falhar"],
-    pass: selected["Se passar"],
+    resistance: details.resistance,
+    effect: details.effect,
+    fail: details.fail,
+    pass: details.pass,
   };
   if (!law.name || !law.target || !law.resistance || !law.effect) return addError("LAT-MUN-003");
   state.world.laws.push(law);

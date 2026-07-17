@@ -1,0 +1,13 @@
+{
+  "schema": "latio-data-source-1",
+  "sources": [
+    "Manual do Jogador Mundo de Marufia 3.1.pdf",
+    "TALENTOS.docx",
+    "Book.xlsx",
+    "Ficha Marufia Automática.pdf usada como referência visual e de campos."
+  ],
+  "bootstrap": {
+    "file": "data.js",
+    "sha256": "f801c201536d59914affa212d9219128f1bf65b9a55c6ba477f178960c1ba78d"
+  }
+}
