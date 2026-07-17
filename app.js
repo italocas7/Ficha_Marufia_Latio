@@ -141,7 +141,7 @@ function createDefaultState() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
-    ui: { activeTab: "resumo", printMode: false, extraMagicType: "Fina", extraMagicRegion: "Sem Região", showExtraMagic: false, lawCategory: "Ofensivo", lawId: "", coreRestHours: 1 },
+    ui: { activeTab: "resumo", printMode: false, extraMagicType: "Fina", extraMagicRegion: "Sem Região", showExtraMagic: false, lawCategory: "Ofensivo", lawResistanceMode: "sem", lawId: "", coreRestHours: 1 },
     character: {
       name: "",
       age: "",
@@ -1041,10 +1041,14 @@ function renderMundo() {
   const area = level ? `${1.5 + level * 1.5}m de raio` : "3m de raio";
   const difficulty = Math.floor((attr("POD") + Math.max(attr("SAB"), attr("INT"))) / 10) + (level >= 9 ? 20 : level >= 7 ? 15 : level >= 5 ? 10 : level >= 3 ? 5 : 0);
   const categories = ["Ofensivo", "Defensivo", "Utilitário", "Híbrido"];
-  const filtered = lawsForCategory(state.ui.lawCategory);
+  const resistanceMode = normalizeLawResistanceMode(state.ui.lawResistanceMode);
+  const hybridCategory = isHybridCategory(state.ui.lawCategory);
+  const filtered = lawsForCategory(state.ui.lawCategory, resistanceMode);
   const selectedLaw = filtered.find((law) => law.ID === state.ui.lawId) ?? filtered[0];
   const customLaw = selectedLaw?.ID === "CUSTOM-HYB";
   const effectKey = tier === 3 ? "N3 (Mundo 10)" : tier === 2 ? "N2 (Mundo 5-9)" : "N1 (Mundo 1-4)";
+  const selectedName = selectedLaw ? lawNameForResistance(selectedLaw, resistanceMode) : "";
+  const selectedDetails = selectedLaw && !customLaw ? lawDetailsForResistance(selectedLaw, effectKey, resistanceMode) : null;
   const costs = worldCosts(level);
   return `
     <section class="panel">
@@ -1080,23 +1084,30 @@ function renderMundo() {
     </section>
     <section class="panel">
       <div class="section-title"><h2>Lei do Mundo</h2></div>
-      <div class="grid four">
+      <div class="grid three">
         ${selectRaw("Categoria", "ui.lawCategory", categories.map((cat) => [cat, cat]))}
-        ${selectRaw("Tipo da Lei", "ui.lawId", filtered.map((law) => [law.ID, law["Lei do Mundo"]]))}
-        <div class="field"><label>Nome da Lei</label><input id="lawNameDraft" value="${esc(selectedLaw?.["Lei do Mundo"] ?? "")}"></div>
-        <div class="field"><label>&nbsp;</label><button class="button" type="button" data-action="add-world-law">Add Nova Lei</button></div>
+        ${hybridCategory
+          ? `<div class="field"><label>Resistência da Lei</label><input value="Personalizada" disabled></div>`
+          : selectRaw("Resistência da Lei", "ui.lawResistanceMode", [["sem", "SEM"], ["com", "COM"]])}
+        ${selectRaw("Tipo da Lei", "ui.lawId", filtered.map((law) => [law.ID, lawNameForResistance(law, resistanceMode)]), filtered.length ? "" : "Nenhuma lei disponível")}
+      </div>
+      <div class="grid two" style="margin-top: 12px;">
+        <div class="field"><label>Nome da Lei</label><input id="lawNameDraft" value="${esc(selectedName)}" ${selectedLaw ? "" : "disabled"}></div>
+        <div class="field"><label>&nbsp;</label><button class="button" type="button" data-action="add-world-law" ${selectedLaw ? "" : "disabled"}>Add Nova Lei</button></div>
       </div>
       <div class="card law-preview" style="margin-top: 12px;">
-        <strong>${esc(selectedLaw?.["Lei do Mundo"] ?? "Selecione uma lei")}</strong>
-        ${customLaw ? `
-          <div class="grid three" style="margin-top: 10px;">
-            <div class="field"><label>Alvo</label><input id="customLawTarget" placeholder="Ex.: criatura, área, objeto"></div>
-            <div class="field"><label>Resistência</label><input id="customLawResistance" placeholder="Ex.: SAB, CON, DES"></div>
-            <div class="field"><label>Efeito</label><textarea id="customLawEffect" placeholder="Descreva o efeito mecânico da Lei"></textarea></div>
-          </div>
-        ` : `
-          <p>${esc(selectedLaw?.[effectKey] ?? "")}</p>
-          <p class="muted">Alvo: ${esc(selectedLaw?.Alvo ?? "-")} · Resistência: ${esc(selectedLaw?.["Resistência sugerida"] ?? "-")}</p>
+        ${!selectedLaw ? `<div class="empty">Nenhuma Lei ${esc(state.ui.lawCategory)} com o filtro ${resistanceMode.toUpperCase()}.</div>` : `
+          <div class="inline"><strong>${esc(selectedName)}</strong>${customLaw ? "" : `<span class="tag law-resistance-${resistanceMode}">${resistanceMode.toUpperCase()} Resistência</span>`}</div>
+          ${customLaw ? `
+            <div class="grid three" style="margin-top: 10px;">
+              <div class="field"><label>Alvo</label><input id="customLawTarget" placeholder="Ex.: criatura, área, objeto"></div>
+              <div class="field"><label>Resistência</label><input id="customLawResistance" placeholder="Ex.: SAB, CON, DES"></div>
+              <div class="field"><label>Efeito</label><textarea id="customLawEffect" placeholder="Descreva o efeito mecânico da Lei"></textarea></div>
+            </div>
+          ` : `
+            <p>${esc(selectedDetails?.effect ?? "")}</p>
+            <p class="muted">Alvo: ${esc(selectedLaw.Alvo ?? "-")} · Resistência: ${esc(selectedDetails?.resistance ?? "-")}</p>
+          `}
         `}
       </div>
     </section>
@@ -1571,8 +1582,10 @@ function talentCard(talent) {
 }
 
 function worldLawCard(law) {
+  const resistanceMode = ["sem", "com"].includes(law.resistanceMode) ? law.resistanceMode : "";
+  const resistanceTag = resistanceMode ? `<span class="tag law-resistance-${resistanceMode}">${resistanceMode.toUpperCase()} Resistência</span>` : "";
   return `<div class="law-card">
-    <header><div><strong>${esc(law.name)}</strong><br><span class="tag">${esc(law.category)}</span></div><button class="danger" type="button" data-action="remove-world-law" data-id="${law.id}">Remover</button></header>
+    <header><div><strong>${esc(law.name)}</strong><br><span class="tag">${esc(law.category)}</span> ${resistanceTag}</div><button class="danger" type="button" data-action="remove-world-law" data-id="${law.id}">Remover</button></header>
     ${["target", "resistance", "effect"].map((fieldName) => `<p><strong>${fieldLabel(fieldName)}:</strong> ${esc(law[fieldName])} <button class="icon-button" type="button" data-action="edit-law-field" data-id="${law.id}" data-field="${fieldName}" title="Editar">🖋</button></p>`).join("")}
   </div>`;
 }
@@ -1605,11 +1618,80 @@ function isHybridCategory(value) {
   return key.includes("HIBRIDO") || key.includes("HBRIDO") || key.endsWith("BRIDO");
 }
 
-function lawsForCategory(category) {
+function normalizeLawResistanceMode(value) {
+  return value === "com" ? "com" : "sem";
+}
+
+function lawResistanceModes(law) {
+  const title = fold(law?.["Lei do Mundo"] ?? "");
+  if (title.includes("SEM/COM RESISTENCIA") || title.includes("COM/SEM RESISTENCIA")) return ["sem", "com"];
+  if (law?.ID === "UTI-29" || title.includes("COM RESISTENCIA")) return ["com"];
+  return ["sem"];
+}
+
+function isDualResistanceLaw(law) {
+  return lawResistanceModes(law).length === 2;
+}
+
+function lawNameForResistance(law, resistanceMode) {
+  const name = law?.["Lei do Mundo"] ?? "";
+  const mode = normalizeLawResistanceMode(resistanceMode);
+  if (isDualResistanceLaw(law)) {
+    const label = mode === "com" ? "COM" : "SEM";
+    return name.replace(/\((?:sem\/com|com\/sem)\s+Resistência([^)]*)\)/i, `(${label} Resistência$1)`);
+  }
+  if (law?.ID === "UTI-29") return `${name} (COM Resistência)`;
+  if (lawResistanceModes(law)[0] === "com") return name.replace(/\(com Resistência([^)]*)\)/i, "(COM Resistência$1)");
+  return name;
+}
+
+function splitDualLawEffect(effect) {
+  const text = String(effect ?? "").trim();
+  const semMatch = /\bSem:\s*/i.exec(text);
+  if (!semMatch) return null;
+  const afterSem = text.slice(semMatch.index + semMatch[0].length);
+  const comMatch = /\bCom(?:\s+([A-Z]{2,}))?:\s*/i.exec(afterSem);
+  if (!comMatch) return null;
+  return {
+    prefix: text.slice(0, semMatch.index).trim(),
+    sem: afterSem.slice(0, comMatch.index).trim(),
+    com: afterSem.slice(comMatch.index + comMatch[0].length).trim(),
+    comResistance: comMatch[1]?.toUpperCase() ?? "",
+  };
+}
+
+function lawDetailsForResistance(law, effectKey, resistanceMode) {
+  const mode = normalizeLawResistanceMode(resistanceMode);
+  const rawEffect = law?.[effectKey] ?? "";
+  if (!isDualResistanceLaw(law)) {
+    return {
+      effect: rawEffect,
+      resistance: law?.["Resistência sugerida"] ?? "Não se aplica",
+      fail: law?.["Se falhar"] ?? "Sem teste direto.",
+      pass: law?.["Se passar"] ?? "Sem teste direto.",
+    };
+  }
+  const split = splitDualLawEffect(rawEffect);
+  const selectedEffect = split ? [split.prefix, split[mode]].filter(Boolean).join(" ") : rawEffect;
+  if (mode === "sem") {
+    return { effect: selectedEffect, resistance: "Não se aplica", fail: "Sem teste direto.", pass: "Sem teste direto." };
+  }
+  return {
+    effect: selectedEffect,
+    resistance: split?.comResistance || law?.["Resistência sugerida"] || "Conforme regra comum",
+    fail: law?.["Se falhar"] ?? "Aplica o efeito integral descrito na Lei.",
+    pass: law?.["Se passar"] ?? "Reduz ou evita o efeito conforme a regra comum.",
+  };
+}
+
+function lawsForCategory(category, resistanceMode = state.ui.lawResistanceMode) {
   const normalized = categoryKey(category);
   if (isHybridCategory(category)) return [customWorldLawOption(), ...DB.worldLaws.filter((law) => isHybridCategory(law.Categoria))];
-  if (normalized.startsWith("UTILIT")) return DB.worldLaws.filter((law) => categoryKey(law.Categoria).startsWith("UTILIT") || categoryKey(law.Categoria) === "UTILIDADE");
-  return DB.worldLaws.filter((law) => categoryKey(law.Categoria) === normalized);
+  const categoryLaws = normalized.startsWith("UTILIT")
+    ? DB.worldLaws.filter((law) => categoryKey(law.Categoria).startsWith("UTILIT") || categoryKey(law.Categoria) === "UTILIDADE")
+    : DB.worldLaws.filter((law) => categoryKey(law.Categoria) === normalized);
+  const mode = normalizeLawResistanceMode(resistanceMode);
+  return categoryLaws.filter((law) => lawResistanceModes(law).includes(mode));
 }
 
 function actionCostLabel(cost) {
@@ -2256,8 +2338,8 @@ function handleChange(event) {
       const region = getRegion(value);
       if (region && !region.cultures.some((culture) => culture.id === state.character.cultureId)) state.character.cultureId = "";
     }
-    if (target.dataset.path === "ui.lawCategory") {
-      const first = lawsForCategory(value)[0];
+    if (["ui.lawCategory", "ui.lawResistanceMode"].includes(target.dataset.path)) {
+      const first = lawsForCategory(state.ui.lawCategory, state.ui.lawResistanceMode)[0];
       state.ui.lawId = first?.ID ?? "";
     }
     saveState();
@@ -2664,22 +2746,30 @@ function toggleTalent(name) {
 }
 
 function addWorldLaw() {
-  const candidates = lawsForCategory(state.ui.lawCategory);
+  const resistanceMode = normalizeLawResistanceMode(state.ui.lawResistanceMode);
+  const candidates = lawsForCategory(state.ui.lawCategory, resistanceMode);
   const selected = candidates.find((law) => law.ID === state.ui.lawId) ?? candidates[0];
   if (!selected) return addError("LAT-MUN-005");
   const tier = worldTier();
   const effectKey = tier === 3 ? "N3 (Mundo 10)" : tier === 2 ? "N2 (Mundo 5-9)" : "N1 (Mundo 1-4)";
   const custom = selected.ID === "CUSTOM-HYB";
+  const details = custom ? {
+    effect: $("#customLawEffect")?.value.trim(),
+    resistance: $("#customLawResistance")?.value.trim(),
+    fail: "",
+    pass: "",
+  } : lawDetailsForResistance(selected, effectKey, resistanceMode);
   const law = {
     id: uid(),
     sourceId: selected.ID,
     category: state.ui.lawCategory,
-    name: $("#lawNameDraft")?.value.trim() || selected["Lei do Mundo"],
+    ...(custom ? {} : { resistanceMode }),
+    name: $("#lawNameDraft")?.value.trim() || lawNameForResistance(selected, resistanceMode),
     target: custom ? $("#customLawTarget")?.value.trim() : selected.Alvo,
-    resistance: custom ? $("#customLawResistance")?.value.trim() : selected["Resistência sugerida"],
-    effect: custom ? $("#customLawEffect")?.value.trim() : selected[effectKey],
-    fail: selected["Se falhar"],
-    pass: selected["Se passar"],
+    resistance: details.resistance,
+    effect: details.effect,
+    fail: details.fail,
+    pass: details.pass,
   };
   if (!law.name || !law.target || !law.resistance || !law.effect) return addError("LAT-MUN-003");
   state.world.laws.push(law);
