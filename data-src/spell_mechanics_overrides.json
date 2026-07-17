@@ -1,0 +1,16 @@
+{
+  "schema": "latio-spell-mechanics-overrides-1",
+  "levels": [
+    { "spellId": "n-tra-o-de-jade", "level": 1, "activationAction": "bonus", "secondaryActions": ["reaction"] },
+    { "spellId": "p-cargas-de-t-mpera", "level": 1, "activationAction": "bonus", "secondaryActions": ["reaction"] },
+    { "spellId": "p-cargas-de-t-mpera", "level": 7, "activationAction": "bonus", "secondaryActions": ["reaction"] },
+    { "spellId": "p-cargas-de-t-mpera", "level": 10, "activationAction": "bonus", "secondaryActions": ["reaction"] },
+    { "spellId": "b-juramento-de-ferro", "level": 2, "activationAction": "standard", "secondaryActions": ["bonus", "reaction"] },
+    { "spellId": "n-meridianos-serenos", "level": 3, "activationAction": "standard", "secondaryActions": ["reaction"] },
+    { "spellId": "c-raiz-da-terra", "level": 8, "activationAction": "standard", "secondaryActions": ["movement"] },
+    { "spellId": "c-raiz-da-terra", "level": 10, "activationAction": "standard", "secondaryActions": ["movement"] },
+    { "spellId": "i-prece-do-sono-branco", "level": 6, "activationAction": "standard", "secondaryActions": ["reaction"] },
+    { "spellId": "i-prece-do-sono-branco", "level": 10, "activationAction": "standard", "secondaryActions": ["reaction"] },
+    { "spellId": "d-vig-lia-dos-cl-s", "level": 10, "activationAction": "standard", "secondaryActions": ["reaction"] }
+  ]
+}

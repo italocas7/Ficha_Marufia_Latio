@@ -950,7 +950,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -959,7 +970,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -968,7 +990,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": 2,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -977,7 +1010,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -986,7 +1030,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "reaction",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "reaction",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -995,7 +1050,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": 3,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -1004,7 +1070,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -1013,7 +1090,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -1022,7 +1110,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 4,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -1031,7 +1130,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 5,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -1051,7 +1161,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -1060,7 +1181,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -1069,7 +1201,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -1078,7 +1221,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -1087,7 +1241,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": 4,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -1096,16 +1261,38 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
               "text": "A magia causa 3d8 de dano. O Eco causa 3d6. Enquanto a arma estiver imbuída, você pode manter o mesmo alvo Marcado pelo Fio por até 2 turnos, desde que acerte pelo menos um ataque contra ele nesse período.",
-              "activationCost": 5,
+              "activationCost": 4,
               "maintenanceCost": 0,
               "durationTurns": 2,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -1114,7 +1301,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -1123,7 +1321,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -1132,7 +1341,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         }
@@ -1245,7 +1465,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -1253,8 +1484,22 @@ window.MARUFIA_DB = {
               "activationCost": 1,
               "maintenanceCost": 0,
               "durationTurns": null,
-              "action": "reaction",
-              "automation": "complete"
+              "action": "standard",
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [
+                "bonus",
+                "reaction"
+              ],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "override",
+                "secondaryActions": "override"
+              }
             },
             {
               "level": 3,
@@ -1263,7 +1508,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -1272,7 +1528,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -1281,7 +1548,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -1290,7 +1568,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -1299,7 +1588,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -1308,7 +1608,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N7",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -1317,7 +1628,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -1326,7 +1648,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -1346,7 +1679,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -1355,7 +1699,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -1364,7 +1719,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -1373,7 +1739,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": 1,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -1382,7 +1759,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -1391,7 +1779,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -1400,7 +1799,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -1409,7 +1819,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -1418,7 +1839,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -1427,7 +1859,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         }
@@ -1540,7 +1983,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -1549,7 +2003,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -1558,7 +2023,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": 2,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -1567,7 +2043,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -1576,7 +2063,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "reaction",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "reaction",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -1585,7 +2083,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": 3,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -1594,7 +2103,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -1603,7 +2123,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -1612,7 +2143,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 4,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -1621,7 +2163,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 5,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -1641,7 +2194,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -1650,7 +2214,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -1659,7 +2234,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -1668,7 +2254,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": 1,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -1677,7 +2274,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -1686,7 +2294,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -1695,7 +2314,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -1704,7 +2334,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -1713,7 +2354,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -1722,7 +2374,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -1742,7 +2405,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -1751,7 +2425,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -1760,7 +2445,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -1769,7 +2465,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -1778,7 +2485,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -1787,7 +2505,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -1796,7 +2525,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -1804,8 +2544,21 @@ window.MARUFIA_DB = {
               "activationCost": 4,
               "maintenanceCost": 3,
               "durationTurns": null,
-              "action": "movement",
-              "automation": "complete"
+              "action": "standard",
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [
+                "movement"
+              ],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "override",
+                "secondaryActions": "override"
+              }
             },
             {
               "level": 9,
@@ -1814,7 +2567,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -1822,8 +2586,21 @@ window.MARUFIA_DB = {
               "activationCost": 8,
               "maintenanceCost": 3,
               "durationTurns": null,
-              "action": "movement",
-              "automation": "complete"
+              "action": "standard",
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [
+                "movement"
+              ],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "override",
+                "secondaryActions": "override"
+              }
             }
           ]
         }
@@ -2071,7 +2848,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -2080,7 +2868,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -2089,7 +2888,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -2098,7 +2908,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -2107,7 +2928,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -2116,25 +2948,58 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
               "text": "A magia causa 3d8 de dano. O Eco funciona normalmente; se o Eco acertar depois de Deslocamento Total, ele também pode ativar Passo do Vento, mas ainda respeitando o limite de uma vez por rodada. O passo de vento aumenta para 6m",
-              "activationCost": 5,
+              "activationCost": 4,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
               "text": "Você cria uma arma natural de Magia Fina na mão. No Estilo Slawio, ela toma forma de sabre de vento, machado de ar, garra de estepe ou lâmina de neve. A magia causa 4d8 de dano. Quando usa Passo do Vento, você",
-              "activationCost": 5,
+              "activationCost": 4,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -2143,7 +3008,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -2152,7 +3028,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N9",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -2172,7 +3059,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -2181,7 +3079,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -2190,7 +3099,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -2199,7 +3119,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -2208,7 +3139,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -2217,7 +3159,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -2226,7 +3179,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -2235,7 +3199,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -2244,7 +3219,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -2252,8 +3238,21 @@ window.MARUFIA_DB = {
               "activationCost": 8,
               "maintenanceCost": 4,
               "durationTurns": null,
-              "action": "reaction",
-              "automation": "complete"
+              "action": "standard",
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [
+                "reaction"
+              ],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "override",
+                "secondaryActions": "override"
+              }
             }
           ]
         }
@@ -2478,7 +3477,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -2487,7 +3497,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -2496,7 +3517,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -2505,7 +3537,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -2514,7 +3557,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": 4,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -2523,25 +3577,58 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
               "text": "A magia causa 3d8 de dano. A Brecha de Coorte permanece +15. Se o aliado consumir a Brecha e acertar o alvo, ele pode se mover até o limite de seu movimento disponível sem provocar ataque de oportunidade desse alvo. Esse movimento ainda provoca ataques de oportunidade de outros inimigos.",
-              "activationCost": 5,
+              "activationCost": 4,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
               "text": "Você cria uma arma natural de Magia Fina na mão. No Estilo Romanius, ela assume forma de gládio, estilete, ponta de pilum, lâmina curta ou fio de cinzel. A Brecha aumenta para +20, e o redutor de Esquivar aumenta para -10 contra o ataque que consumir a Brecha.",
-              "activationCost": 5,
+              "activationCost": 4,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -2550,7 +3637,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -2559,7 +3657,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N9",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -2579,7 +3688,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -2588,7 +3708,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -2597,7 +3728,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": 2,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -2606,7 +3748,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -2615,7 +3768,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "reaction",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "reaction",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -2624,7 +3788,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -2633,7 +3808,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -2642,16 +3828,38 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
               "text": "A penalidade aumenta para 5d10 e o dano para 3d8. Consome PM e 4 PM para manter.",
-              "activationCost": 8,
+              "activationCost": 6,
               "maintenanceCost": 4,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N8",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -2660,7 +3868,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 5,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         }
@@ -2801,7 +4020,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -2810,7 +4040,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -2819,7 +4060,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -2828,43 +4080,98 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
               "text": "A magia causa 2d8 de dano e pode ficar imbuída por 4 turnos. A Pressão de Duelo aumenta para -10 em Esquivar. Consome PM e 1 PM por turno mantido.",
-              "activationCost": 4,
+              "activationCost": 2,
               "maintenanceCost": 1,
               "durationTurns": 4,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
               "text": "-",
-              "activationCost": 4,
+              "activationCost": 2,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
               "text": "A magia causa 3d8 de dano. Se o alvo estiver sangrando, você recebe +5 em Aparar contra ataques dele até o início do seu próximo turno.",
-              "activationCost": 5,
+              "activationCost": 2,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
               "text": "Você cria uma arma natural de Magia Fina na mão. No Estilo Hisbérico, ela assume forma de espada asturiana, tizona, colada, cimitarra, adaga curva ou lâmina estreita de duelo, que causa 3d6 de dano. o dano de sangramento é aumentado para 1d6 de sangramento, desde que esteja usando lâmina cortante ou perfurante, esse valor não estaca com outros efeitos de sangramento.",
-              "activationCost": 5,
+              "activationCost": 2,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -2873,7 +4180,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -2882,7 +4200,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N9",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -2902,7 +4231,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -2911,7 +4251,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -2920,7 +4271,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -2929,7 +4291,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -2938,7 +4311,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -2947,7 +4331,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -2956,7 +4351,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -2965,7 +4371,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N7",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -2974,7 +4391,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -2983,7 +4411,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         }
@@ -3152,7 +4591,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -3161,7 +4611,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N1",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -3170,7 +4631,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -3179,7 +4651,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": 1,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -3188,7 +4671,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -3197,7 +4691,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -3206,7 +4711,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -3215,7 +4731,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -3224,7 +4751,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -3233,7 +4771,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -3253,7 +4802,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -3262,7 +4822,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -3271,7 +4842,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": 2,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -3280,7 +4862,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -3289,7 +4882,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "reaction",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "reaction",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -3298,7 +4902,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -3307,7 +4922,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -3316,7 +4942,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -3325,7 +4962,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 4,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -3334,7 +4982,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 5,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         }
@@ -3498,7 +5157,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -3507,7 +5177,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -3516,7 +5197,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -3525,7 +5217,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -3534,7 +5237,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -3543,7 +5257,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -3552,7 +5277,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -3561,7 +5297,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -3570,7 +5317,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -3579,7 +5337,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 4,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -3599,7 +5368,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -3608,7 +5388,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -3617,7 +5408,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -3626,7 +5428,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -3635,7 +5448,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -3644,7 +5468,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -3653,7 +5488,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -3662,16 +5508,38 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
               "text": "Cura 5d8 em si, além de poder curar doenças raras em 1d4 horas, . Durante esse processo de cura prolongada, o alvo tratado recebe Vigor Efetivo +20 em testes contra agravamento da doença, febre, exaustão, veneno ou fraqueza física. Consome PM.",
-              "activationCost": 6,
+              "activationCost": 8,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N8",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -3680,7 +5548,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         }
@@ -3821,7 +5700,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -3830,7 +5720,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -3839,7 +5740,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -3848,7 +5760,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": 1,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -3857,7 +5780,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -3866,7 +5800,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -3875,7 +5820,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -3884,7 +5840,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -3893,7 +5860,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -3902,7 +5880,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -3922,7 +5911,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -3931,7 +5931,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -3940,7 +5951,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -3949,7 +5971,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -3958,7 +5991,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -3966,8 +6010,21 @@ window.MARUFIA_DB = {
               "activationCost": 6,
               "maintenanceCost": 0,
               "durationTurns": null,
-              "action": "reaction",
-              "automation": "complete"
+              "action": "standard",
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [
+                "reaction"
+              ],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "override",
+                "secondaryActions": "override"
+              }
             },
             {
               "level": 7,
@@ -3976,7 +6033,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -3984,8 +6052,21 @@ window.MARUFIA_DB = {
               "activationCost": 8,
               "maintenanceCost": 0,
               "durationTurns": null,
-              "action": "bonus",
-              "automation": "complete"
+              "action": "standard",
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [
+                "bonus"
+              ],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "text"
+              }
             },
             {
               "level": 9,
@@ -3994,7 +6075,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -4002,8 +6094,21 @@ window.MARUFIA_DB = {
               "activationCost": 12,
               "maintenanceCost": 0,
               "durationTurns": null,
-              "action": "reaction",
-              "automation": "complete"
+              "action": "standard",
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [
+                "reaction"
+              ],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "override",
+                "secondaryActions": "override"
+              }
             }
           ]
         }
@@ -4256,7 +6361,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -4265,7 +6381,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -4274,7 +6401,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -4283,7 +6421,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": 1,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -4292,7 +6441,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -4301,7 +6461,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -4310,7 +6481,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -4319,7 +6501,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -4328,7 +6521,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -4337,7 +6541,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -4357,16 +6572,38 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
               "text": "Em vez de reduzir movimento, o Veredito pode pesar sobre uma defesa ativa. Se o alvo afetado tentar Esquivar ou Aparar uma ação de alguém que ele atacou, feriu, enganou ou ameaçou nesta cena, sofre a penalidade da Densa nesse teste. Consome",
-              "activationCost": 3,
+              "activationCost": 2,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N1",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -4375,7 +6612,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": 2,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -4384,7 +6632,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -4393,7 +6652,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "reaction",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "reaction",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -4402,7 +6672,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -4411,7 +6692,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -4420,7 +6712,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -4429,7 +6732,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 4,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -4438,7 +6752,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 5,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         }
@@ -4523,7 +6848,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -4532,7 +6868,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -4541,16 +6888,38 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
               "text": "Cura 2d6 em um alvo, além de doenças leves, sangramento e envenenamento. Se remover sangramento, envenenamento ou doença leve de um alvo, outro alvo adjacente recebe +5 no próximo teste contra a mesma fonte até o fim da cena. Consome PM.",
-              "activationCost": 2,
+              "activationCost": 3,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -4559,7 +6928,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -4568,7 +6948,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -4577,7 +6968,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -4586,7 +6988,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -4595,7 +7008,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -4604,7 +7028,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -4624,7 +7059,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -4633,7 +7079,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -4642,7 +7099,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": 2,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -4651,7 +7119,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -4660,7 +7139,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "reaction",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "reaction",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -4669,16 +7159,38 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
               "text": "A penalidade aumenta para 4d10. Se o alvo falhar na ação prevista por causa do Presságio, sofre 2d6 de dano mágico Denso. Se resistir ao Presságio, não sofre esse dano. Consome PM e 2 PM para manter.",
-              "activationCost": 6,
+              "activationCost": 5,
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N6",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -4687,7 +7199,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -4696,7 +7219,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 4,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -4705,7 +7239,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 5,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         }
@@ -4790,7 +7335,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -4799,7 +7355,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -4808,7 +7375,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": 2,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -4817,7 +7395,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -4826,7 +7415,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "reaction",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "reaction",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -4835,7 +7435,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -4844,7 +7455,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -4853,7 +7475,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -4862,7 +7495,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 4,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -4871,7 +7515,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 5,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -4891,7 +7546,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -4900,7 +7566,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -4909,7 +7586,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -4918,7 +7606,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": 1,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -4927,16 +7626,38 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
               "text": "Você pode descarregar o Pulso por uma superfície em até 3m de diâmetro. Criaturas escolhidas por você sobre essa superfície fazem CON; em falha, são empurradas 1m e sofrem metade do dano. Apenas um alvo principal sofre dano completo. Consome PM.",
-              "activationCost": 5,
+              "activationCost": 4,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -4945,16 +7666,38 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
               "text": "Com uma ação padrão, você realiza um Pulso pesado. Os dados se tornam d10 e o alvo tem o teste dificultado em 15. Se o Pulso for conduzido por convés, mastro, porta, pedra ou estrutura, você não é empurrado; a superfície absorve o recuo. Consome PM.",
-              "activationCost": 8,
+              "activationCost": 6,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N7",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -4963,7 +7706,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -4972,7 +7726,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         }
@@ -5049,7 +7814,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -5058,7 +7834,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -5067,7 +7854,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -5076,16 +7874,38 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": 1,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
               "text": "A magia causa 3d8 de dano. Você pode escolher entre uma Finta, dificultando Esquiva em 10, ou o Sopro Aberto: se o alvo falhar em CON, além de ser empurrado, sofre -5 no próximo ataque contra você até o início do seu próximo turno. Consome PM.",
-              "activationCost": 4,
+              "activationCost": 3,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N4",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -5094,7 +7914,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -5103,7 +7934,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -5112,7 +7954,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -5121,7 +7974,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -5130,7 +7994,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         }
@@ -5242,8 +8117,21 @@ window.MARUFIA_DB = {
               "activationCost": 1,
               "maintenanceCost": 0,
               "durationTurns": null,
-              "action": "reaction",
-              "automation": "complete"
+              "action": "bonus",
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [
+                "reaction"
+              ],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "override",
+                "secondaryActions": "override"
+              }
             },
             {
               "level": 2,
@@ -5252,7 +8140,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -5261,7 +8160,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -5270,7 +8180,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -5278,8 +8199,21 @@ window.MARUFIA_DB = {
               "activationCost": 4,
               "maintenanceCost": 1,
               "durationTurns": 4,
-              "action": "full",
-              "automation": "complete"
+              "action": "bonus",
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [
+                "full"
+              ],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "text"
+              }
             },
             {
               "level": 6,
@@ -5288,16 +8222,38 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
               "text": "A magia causa 3d8 de dano. A Varredura do Guandao permanece em 2 inimigos adjacentes, mas agora ambos recebem o dano completo.",
-              "activationCost": 5,
+              "activationCost": 4,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -5306,7 +8262,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -5315,7 +8282,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -5324,7 +8302,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -5344,7 +8333,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -5353,7 +8353,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -5361,8 +8372,21 @@ window.MARUFIA_DB = {
               "activationCost": 3,
               "maintenanceCost": 0,
               "durationTurns": null,
-              "action": "reaction",
-              "automation": "complete"
+              "action": "standard",
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [
+                "reaction"
+              ],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "override",
+                "secondaryActions": "override"
+              }
             },
             {
               "level": 4,
@@ -5371,7 +8395,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -5379,8 +8414,21 @@ window.MARUFIA_DB = {
               "activationCost": 5,
               "maintenanceCost": 0,
               "durationTurns": null,
-              "action": "full",
-              "automation": "complete"
+              "action": "standard",
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [
+                "full"
+              ],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "text"
+              }
             },
             {
               "level": 6,
@@ -5389,7 +8437,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -5398,7 +8457,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -5407,7 +8477,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -5416,7 +8497,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -5425,7 +8517,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         }
@@ -5538,7 +8641,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -5547,16 +8661,38 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
               "text": "A magia causa 2d8 de dano. Se o alvo estiver sob Quebra de Fôlego, o próximo ataque desarmado feito por você contra ele recebe +5 de acerto até o início do seu próximo turno. Consome PM.",
-              "activationCost": 2,
+              "activationCost": 1,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N2",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -5565,7 +8701,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": 1,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -5574,7 +8721,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -5583,7 +8741,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -5592,7 +8761,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -5601,7 +8781,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -5610,7 +8801,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -5619,7 +8821,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -5639,7 +8852,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -5648,7 +8872,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -5657,16 +8892,38 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": 2,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
               "text": "Você pode escolher até POD/10 alvos para serem imunes ao Rasa. Normalmente são aliados, músicos, dançarinos, discípulos, monges, guardas ou pessoas que entendem a encenação.",
-              "activationCost": 4,
+              "activationCost": 3,
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -5675,7 +8932,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": null,
               "action": "reaction",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "reaction",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -5684,7 +8952,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -5693,7 +8972,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -5702,7 +8992,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 2,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -5711,7 +9012,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -5720,7 +9032,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 4,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         }
@@ -5832,8 +9155,21 @@ window.MARUFIA_DB = {
               "activationCost": 1,
               "maintenanceCost": 0,
               "durationTurns": null,
-              "action": "reaction",
-              "automation": "complete"
+              "action": "bonus",
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [
+                "reaction"
+              ],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "override",
+                "secondaryActions": "override"
+              }
             },
             {
               "level": 2,
@@ -5842,7 +9178,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -5851,7 +9198,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -5860,7 +9218,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -5869,7 +9238,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": 4,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -5878,7 +9258,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -5886,8 +9277,21 @@ window.MARUFIA_DB = {
               "activationCost": 5,
               "maintenanceCost": 0,
               "durationTurns": null,
-              "action": "reaction",
-              "automation": "complete"
+              "action": "bonus",
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [
+                "reaction"
+              ],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "override",
+                "secondaryActions": "override"
+              }
             },
             {
               "level": 8,
@@ -5896,7 +9300,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -5905,7 +9320,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -5913,8 +9339,21 @@ window.MARUFIA_DB = {
               "activationCost": 5,
               "maintenanceCost": 0,
               "durationTurns": null,
-              "action": "reaction",
-              "automation": "complete"
+              "action": "bonus",
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [
+                "reaction"
+              ],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "override",
+                "secondaryActions": "override"
+              }
             }
           ]
         },
@@ -5934,7 +9373,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -5943,7 +9393,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -5952,7 +9413,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -5961,7 +9433,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": 1,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -5970,7 +9453,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -5979,7 +9473,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -5988,7 +9493,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -5997,7 +9513,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -6006,7 +9533,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -6015,7 +9553,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         }
@@ -6128,7 +9677,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "text",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -6137,7 +9697,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -6146,7 +9717,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -6155,7 +9737,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -6164,7 +9757,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": 4,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "text",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -6173,7 +9777,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N5",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -6182,7 +9797,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -6191,7 +9817,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -6200,7 +9837,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -6209,7 +9857,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "bonus",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "bonus",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         },
@@ -6229,7 +9888,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 2,
@@ -6238,7 +9908,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 3,
@@ -6247,7 +9928,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 4,
@@ -6256,7 +9948,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "partial"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "inherited:N3",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 5,
@@ -6265,7 +9968,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 6,
@@ -6274,7 +9988,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 7,
@@ -6283,7 +10008,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 0,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "not-stated",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 8,
@@ -6292,7 +10028,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 9,
@@ -6301,7 +10048,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 1,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             },
             {
               "level": 10,
@@ -6310,7 +10068,18 @@ window.MARUFIA_DB = {
               "maintenanceCost": 3,
               "durationTurns": null,
               "action": "standard",
-              "automation": "complete"
+              "automation": "complete",
+              "durationFormula": "",
+              "activationAction": "standard",
+              "secondaryActions": [],
+              "automationLevel": "complete",
+              "mechanicsSource": {
+                "activationCost": "text",
+                "maintenanceCost": "text",
+                "duration": "not-stated",
+                "activationAction": "type-rule",
+                "secondaryActions": "not-stated"
+              }
             }
           ]
         }
@@ -6332,7 +10101,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "text",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 2,
@@ -6341,7 +10121,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 3,
@@ -6350,7 +10141,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 4,
@@ -6359,7 +10161,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "partial"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "inherited:N3",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 5,
@@ -6368,7 +10181,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 1,
           "durationTurns": 4,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "text",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 6,
@@ -6377,7 +10201,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "partial"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "inherited:N5",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 7,
@@ -6386,7 +10221,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 8,
@@ -6395,7 +10241,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "partial"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "inherited:N7",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "text",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 9,
@@ -6404,7 +10261,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 3,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 10,
@@ -6413,7 +10281,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         }
       ]
     },
@@ -6431,7 +10310,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 2,
@@ -6440,7 +10330,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 3,
@@ -6449,7 +10350,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 4,
@@ -6458,7 +10370,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": 1,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "text",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 5,
@@ -6467,7 +10390,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 6,
@@ -6476,7 +10410,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 7,
@@ -6485,7 +10430,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 8,
@@ -6493,8 +10449,21 @@ window.MARUFIA_DB = {
           "activationCost": 8,
           "maintenanceCost": 0,
           "durationTurns": null,
-          "action": "standard",
-          "automation": "complete"
+          "action": "bonus",
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [
+            "standard"
+          ],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "text"
+          }
         },
         {
           "level": 9,
@@ -6503,7 +10472,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "text",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 10,
@@ -6512,7 +10492,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "text",
+            "secondaryActions": "not-stated"
+          }
         }
       ]
     },
@@ -6530,7 +10521,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": 1,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "text",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 2,
@@ -6539,7 +10541,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 3,
@@ -6548,7 +10561,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": 2,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "text",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 4,
@@ -6557,7 +10581,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "partial"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "inherited:N3",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 5,
@@ -6566,7 +10601,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 2,
           "durationTurns": null,
           "action": "reaction",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "reaction",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "not-stated",
+            "activationAction": "text",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 6,
@@ -6575,7 +10621,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 2,
           "durationTurns": 3,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "text",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 7,
@@ -6584,7 +10641,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 2,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 8,
@@ -6593,7 +10661,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 3,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 9,
@@ -6602,7 +10681,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 4,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 10,
@@ -6611,7 +10701,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 5,
           "durationTurns": null,
           "action": "bonus",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "bonus",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         }
       ]
     },
@@ -6629,7 +10730,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 2,
@@ -6638,7 +10750,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 3,
@@ -6647,7 +10770,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 4,
@@ -6656,7 +10790,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 5,
@@ -6665,7 +10810,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 6,
@@ -6674,16 +10830,38 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 7,
           "text": "A magia agora cura 4d8 de si, ou 15 de vida temporária. Além de poder tirar a condição de Lesão Grave. Consome PM.",
-          "activationCost": 4,
+          "activationCost": 6,
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "partial"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "inherited:N6",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 8,
@@ -6692,7 +10870,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 9,
@@ -6701,7 +10890,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 10,
@@ -6710,7 +10910,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         }
       ]
     },
@@ -6728,7 +10939,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 2,
@@ -6737,7 +10959,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 3,
@@ -6746,7 +10979,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 4,
@@ -6755,7 +10999,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "partial"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "inherited:N3",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 5,
@@ -6764,7 +11019,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 1,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 6,
@@ -6773,7 +11039,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "partial"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "inherited:N5",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 7,
@@ -6782,7 +11059,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 8,
@@ -6791,7 +11079,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 2,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 9,
@@ -6800,7 +11099,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 0,
           "durationTurns": null,
           "action": "standard",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "not-stated",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 10,
@@ -6809,7 +11119,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 3,
           "durationTurns": null,
           "action": "standard",
-          "automation": "partial"
+          "automation": "complete",
+          "durationFormula": "",
+          "activationAction": "standard",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "not-stated",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         }
       ]
     },
@@ -6827,7 +11148,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 2,
           "durationTurns": null,
           "action": "full",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "1d4",
+          "activationAction": "full",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "manual-rule",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 2,
@@ -6836,7 +11168,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 2,
           "durationTurns": null,
           "action": "full",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "1d4",
+          "activationAction": "full",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "manual-rule",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 3,
@@ -6845,7 +11188,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 3,
           "durationTurns": null,
           "action": "full",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "1d4",
+          "activationAction": "full",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "manual-rule",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 4,
@@ -6854,7 +11208,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 3,
           "durationTurns": null,
           "action": "full",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "1d4",
+          "activationAction": "full",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "manual-rule",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 5,
@@ -6863,7 +11228,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 4,
           "durationTurns": null,
           "action": "full",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "1d4+2",
+          "activationAction": "full",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "manual-rule",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 6,
@@ -6872,7 +11248,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 4,
           "durationTurns": null,
           "action": "full",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "1d4+2",
+          "activationAction": "full",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "manual-rule",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 7,
@@ -6881,7 +11268,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 5,
           "durationTurns": null,
           "action": "full",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "1d4+2",
+          "activationAction": "full",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "manual-rule",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 8,
@@ -6890,7 +11288,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 5,
           "durationTurns": null,
           "action": "full",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "1d4+2",
+          "activationAction": "full",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "manual-rule",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 9,
@@ -6899,7 +11308,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 6,
           "durationTurns": null,
           "action": "full",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "1d4+2",
+          "activationAction": "full",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "manual-rule",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         },
         {
           "level": 10,
@@ -6908,7 +11328,18 @@ window.MARUFIA_DB = {
           "maintenanceCost": 6,
           "durationTurns": null,
           "action": "full",
-          "automation": "complete"
+          "automation": "complete",
+          "durationFormula": "1d4+2",
+          "activationAction": "full",
+          "secondaryActions": [],
+          "automationLevel": "complete",
+          "mechanicsSource": {
+            "activationCost": "text",
+            "maintenanceCost": "text",
+            "duration": "manual-rule",
+            "activationAction": "type-rule",
+            "secondaryActions": "not-stated"
+          }
         }
       ]
     }
@@ -6917,7 +11348,7 @@ window.MARUFIA_DB = {
     {
       "name": "Adepto Marcial",
       "description": "Você tem +10 em Brigar e em Esquiva. Sua esquiva agora só precisa ser igual ao sucesso do oponente para esquivar. Você pode usar Esquiva para gerar um Contra-Ataque.",
-      "tag": "Ativável/Condicionável",
+      "tag": "Misto",
       "skillMods": [
         {
           "skill": "Lutar (Brigar)",
@@ -6933,8 +11364,16 @@ window.MARUFIA_DB = {
       "attributeMods": {},
       "resourceMods": {},
       "acMod": 0,
-      "mode": "conditional",
-      "automationLevel": "partial"
+      "mode": "mixed",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Alerta",
@@ -6956,20 +11395,36 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "passive",
-      "automationLevel": "complete"
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Amado Pela Magia",
       "description": "Seu valor de PM aumenta em 5. Esse talento pode ser escolhido várias vezes.",
-      "tag": "Ativável/Condicionável",
+      "tag": "Passivo",
       "skillMods": [],
       "attributeMods": {},
       "resourceMods": {
         "pm": 5
       },
       "acMod": 0,
-      "mode": "conditional",
-      "automationLevel": "partial"
+      "mode": "passive",
+      "stackable": true,
+      "automationLevel": "complete",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Ambidestro",
@@ -6980,7 +11435,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 5,
+        "attackMod": 0
+      }
     },
     {
       "name": "Arremesso Múltiplo",
@@ -6991,7 +11454,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Atacante Agressivo",
@@ -7002,7 +11473,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Atacante Furioso",
@@ -7013,7 +11492,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": -8,
+        "attackMod": 0
+      }
     },
     {
       "name": "Atirador Aguçado",
@@ -7024,12 +11511,20 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Atleta",
       "description": "Aumenta FOR e DES em +5 (Até o max de 99). Quando caído você levanta apenas usando 1,5m de deslocamento, +15 em testes de Atletismo.",
-      "tag": "Ativável/Condicionável",
+      "tag": "Misto",
       "skillMods": [
         {
           "skill": "Atletismo",
@@ -7043,30 +11538,46 @@ window.MARUFIA_DB = {
       },
       "resourceMods": {},
       "acMod": 0,
-      "mode": "conditional",
-      "automationLevel": "partial"
+      "mode": "mixed",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Cavaleiro de Justas",
       "description": "Ao combater montado, você ganha +10 em acertos e +10 em Cavalgar.",
       "tag": "Ativável/Condicionável",
-      "skillMods": [
-        {
-          "skill": "Cavalgar",
-          "value": 10,
-          "source": "Cavaleiro de Justas"
-        }
-      ],
+      "skillMods": [],
       "attributeMods": {},
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditionalMods": {
+        "skillMods": [
+          {
+            "skill": "Cavalgar",
+            "value": 10,
+            "source": "Cavaleiro de Justas"
+          }
+        ],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Curandeiro",
       "description": "+10 de medicina, pode estabilizar um alvo sem kit de primeiros-socorros, mas se usar o alvo recupera +1d6+3 de vida.",
-      "tag": "Ativável/Condicionável",
+      "tag": "Misto",
       "skillMods": [
         {
           "skill": "Medicina",
@@ -7077,8 +11588,16 @@ window.MARUFIA_DB = {
       "attributeMods": {},
       "resourceMods": {},
       "acMod": 0,
-      "mode": "conditional",
-      "automationLevel": "partial"
+      "mode": "mixed",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Duelista",
@@ -7087,9 +11606,17 @@ window.MARUFIA_DB = {
       "skillMods": [],
       "attributeMods": {},
       "resourceMods": {},
-      "acMod": 0,
+      "acMod": 5,
       "mode": "passive",
-      "automationLevel": "manual"
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Especialista em Armadura Pesada",
@@ -7100,7 +11627,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "passive",
-      "automationLevel": "manual"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Especialista em Besta",
@@ -7111,7 +11646,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Especialista em Concussão",
@@ -7122,7 +11665,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Especialista em Cortes",
@@ -7133,7 +11684,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Especialista em Perfuração",
@@ -7144,7 +11703,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Inexpugnável",
@@ -7155,7 +11722,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 2,
+        "attackMod": 0
+      }
     },
     {
       "name": "Investida Aprimorada",
@@ -7166,7 +11741,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Líder",
@@ -7198,7 +11781,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "passive",
-      "automationLevel": "complete"
+      "stackable": false,
+      "automationLevel": "complete",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Lobo Solitário",
@@ -7209,7 +11800,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 5,
+        "attackMod": 10
+      }
     },
     {
       "name": "Mestre de Escudo",
@@ -7220,7 +11819,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Mestre em Armas Grandes",
@@ -7231,18 +11838,34 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Mobilidade",
       "description": "Seu deslocamento aumenta em 3m, quando você ataca uma criatura, você não toma ataque de oportunidade dela pelo resto do turno. Terreno difícil não reduz seu movimento.",
-      "tag": "Ativável/Condicionável",
+      "tag": "Misto",
       "skillMods": [],
       "attributeMods": {},
       "resourceMods": {},
       "acMod": 0,
-      "mode": "conditional",
-      "automationLevel": "partial"
+      "mode": "mixed",
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Perito",
@@ -7253,7 +11876,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "passive",
-      "automationLevel": "manual"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Piqueiro",
@@ -7264,18 +11895,34 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Resiliente",
       "description": "Vantagem em testes de CON e SAB. Só ficam exaustos ao tirar falha crítica no dado e toda condição de exaustão é reduzido em um passo. Pode despertar de um atordoamento com um sucesso em CON ou SAB.",
-      "tag": "Ativável/Condicionável",
+      "tag": "Passivo",
       "skillMods": [],
       "attributeMods": {},
       "resourceMods": {},
       "acMod": 0,
-      "mode": "conditional",
-      "automationLevel": "partial"
+      "mode": "passive",
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Retalhador",
@@ -7286,7 +11933,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Robusto",
@@ -7297,12 +11952,20 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "passive",
-      "automationLevel": "manual"
+      "stackable": false,
+      "automationLevel": "complete",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Sorrateiro",
       "description": "Você tem +15 em Furtividade. Quando estiver escondido atacar e errar um ataque à distância não revela sua posição.",
-      "tag": "Ativável/Condicionável",
+      "tag": "Misto",
       "skillMods": [
         {
           "skill": "Furtividade",
@@ -7313,8 +11976,16 @@ window.MARUFIA_DB = {
       "attributeMods": {},
       "resourceMods": {},
       "acMod": 0,
-      "mode": "conditional",
-      "automationLevel": "partial"
+      "mode": "mixed",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Técnicas Agressivas de Escudo",
@@ -7325,7 +11996,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Técnicas do Sentinela",
@@ -7336,7 +12015,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Trespassar",
@@ -7347,7 +12034,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Rho Aias",
@@ -7358,7 +12053,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Ungido pela Magia",
@@ -7369,7 +12072,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "passive",
-      "automationLevel": "manual"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Mana Residual",
@@ -7380,7 +12091,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Fissura Celeste",
@@ -7391,7 +12110,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Forja Divina",
@@ -7402,7 +12129,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "conditional",
-      "automationLevel": "partial"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Mundo Extensivo",
@@ -7413,7 +12148,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "passive",
-      "automationLevel": "manual"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     },
     {
       "name": "Veia Densa",
@@ -7424,7 +12167,15 @@ window.MARUFIA_DB = {
       "resourceMods": {},
       "acMod": 0,
       "mode": "passive",
-      "automationLevel": "manual"
+      "stackable": false,
+      "automationLevel": "manual",
+      "conditionalMods": {
+        "skillMods": [],
+        "attributeMods": {},
+        "resourceMods": {},
+        "acMod": 0,
+        "attackMod": 0
+      }
     }
   ],
   "weapons": [

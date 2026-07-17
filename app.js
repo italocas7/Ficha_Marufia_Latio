@@ -6,7 +6,7 @@ const RULES = window.LATIO_RULES;
 const STORAGE_KEY = "marufia-latio-state-v1";
 const BACKUP_STORAGE_KEY = "marufia-latio-backups-v1";
 const APP_ID = "marufia-latio";
-const STATE_SCHEMA_VERSION = 2;
+const STATE_SCHEMA_VERSION = 3;
 const APP_BASE_URL = new URL(".", document.currentScript?.src || window.location.href).href;
 const MAGIC_TYPES = ["Fina", "Impacto", "Densa", "Mundo", "Forte", "Etérea"];
 const TABS = [
@@ -180,7 +180,7 @@ function createDefaultState() {
     combat: { actions: { standard: true, bonus: true, movement: true, reaction: true }, log: [], activeSpells: [], defenseAdjustments: { ca: 0, block: 0 } },
     talents: [],
     abilities: [],
-    world: { name: "", phrase: "", description: "", status: "closed", turns: 0, lawUses: null, laws: [], narrative: "" },
+    world: { name: "", phrase: "", description: "", status: "closed", maintenancePaidForTurn: false, lawUses: null, laws: [], narrative: "" },
     notes: {
       traits: "", ideal: "", flaws: "", bonds: "", eyes: "", age: "", height: "", hair: "", skin: "", weight: "",
       appearance: "", history: "", allies: "", patron: "", other: "",
@@ -351,15 +351,11 @@ function isAttackSkill(skillName) {
 
 function conditionalAttackMod(talent, skillName) {
   if (!isAttackSkill(skillName)) return 0;
-  const text = talent.description ?? "";
-  const match = text.match(/([+-]\s*\d+)\s+em\s+todos\s+os\s+ataques/i);
-  return match ? num(match[1].replace(/\s+/g, ""), 0) : 0;
+  return num(talent.conditionalMods?.attackMod, 0);
 }
 
 function conditionalCaMod(talent) {
-  const text = talent.description ?? "";
-  const match = text.match(/([+-]\s*\d+)\s+de\s+C\.?A\.?/i);
-  return match ? num(match[1].replace(/\s+/g, ""), 0) : 0;
+  return num(talent.conditionalMods?.acMod, 0);
 }
 
 function currentCore(source = state) {
@@ -395,6 +391,7 @@ function attr(name, source = state) {
   let value = num(source.attributes[name], 0);
   if (name === "CON" && hasCore("amago", source)) value += 10;
   for (const talent of activeTalents(source)) value += num(talent.attributeMods?.[name], 0);
+  for (const talent of enabledConditionalTalents(source)) value += num(talent.conditionalMods?.attributeMods?.[name], 0);
   return value;
 }
 
@@ -408,15 +405,23 @@ function baseSkillValue(skill, source = state) {
   return num(skill.base, 0);
 }
 
-function activeTalents(source = state) {
+function knownTalents(source = state) {
   return source.talents.map((known) => {
     const base = DB.talents.find((talent) => talent.name === known.name) ?? {};
     return { ...base, ...known };
-  }).filter((talent) => talent.tag !== "Ativável/Condicionável" || talent.enabled);
+  });
+}
+
+function activeTalents(source = state) {
+  return knownTalents(source);
+}
+
+function enabledConditionalTalents(source = state) {
+  return knownTalents(source).filter((talent) => ["conditional", "mixed"].includes(talent.mode) && talent.enabled);
 }
 
 function allKnownTalents() {
-  return state.talents.map((known) => ({ ...(DB.talents.find((talent) => talent.name === known.name) ?? {}), ...known }));
+  return knownTalents(state);
 }
 
 function skillModifiers(skillName, source = state) {
@@ -436,7 +441,8 @@ function skillModifiers(skillName, source = state) {
   pushMods(family?.bonuses, `A. Familiar: ${family?.name}`);
   pushMods(personal?.bonuses, `A. Pessoal: ${personal?.name}`);
   for (const talent of activeTalents(source)) pushMods(talent.skillMods, `Talento: ${talent.name}`);
-  for (const talent of activeTalents(source)) {
+  for (const talent of enabledConditionalTalents(source)) {
+    pushMods(talent.conditionalMods?.skillMods, `Talento ativo: ${talent.name}`);
     const attackValue = conditionalAttackMod(talent, normalized);
     if (attackValue) mods.push({ source: `Talento: ${talent.name}`, value: attackValue, detail: `${talent.name}: ${attackValue > 0 ? "+" : ""}${attackValue} em todos os ataques` });
   }
@@ -561,7 +567,9 @@ function maxHp(source = state) {
 function calculatedMaxPm(source = state) {
   const pod = attr("POD", source);
   const level = Math.max(1, num(source.character.level, 1));
-  const talentBonus = activeTalents(source).reduce((sum, talent) => sum + num(talent.resourceMods?.pm, 0), 0);
+  const passiveBonus = activeTalents(source).reduce((sum, talent) => sum + num(talent.resourceMods?.pm, 0), 0);
+  const conditionalBonus = enabledConditionalTalents(source).reduce((sum, talent) => sum + num(talent.conditionalMods?.resourceMods?.pm, 0), 0);
+  const talentBonus = passiveBonus + conditionalBonus;
   return RULES.calculateMaxPm({ pod, level, umbilicusCore: hasCore("umbigo", source), talentBonus, permanentPenalty: corePermanentPmPenalty(source) });
 }
 
@@ -719,7 +727,9 @@ function caBreakdown(source = state) {
     const base = 20 + Math.floor(attr("DES", source) / 5) - 30;
     const armor = armorPieces(source).reduce((sum, item) => sum + num(item.ca, 0), 0);
     const effects = source.effects.reduce((sum, effect) => sum + num(effect.ca, 0), 0);
-    const talents = activeTalents(source).reduce((sum, talent) => sum + num(talent.acMod, 0) + conditionalCaMod(talent), 0);
+    const passiveTalents = activeTalents(source).reduce((sum, talent) => sum + num(talent.acMod, 0), 0);
+    const conditionalTalents = enabledConditionalTalents(source).reduce((sum, talent) => sum + conditionalCaMod(talent), 0);
+    const talents = passiveTalents + conditionalTalents;
     const core = coreCaBonus(source);
     const perceptionOverride = isCoreEffectActive("olhos", source);
     const calculatedTotal = perceptionOverride ? skillFinal("Percepção", source) : base + armor + effects + talents + core;
@@ -1146,7 +1156,8 @@ function renderMundo() {
         <div class="stat-grid">
           ${miniStat("Nível", level)}
           ${miniStat("Estado", worldStatusLabel)}
-          ${miniStat("Turnos ativo", state.world.turns || "1d4")}
+          ${miniStat("Duração manual", level <= 4 ? "1d4 rodadas" : "1d4+2 rodadas")}
+          ${miniStat("Manutenção", !worldActive ? "Inativa" : state.world.maintenancePaidForTurn ? "Paga neste turno" : "Pendente")}
           ${miniStat("Usos da Lei", state.world.lawUses ?? (tier + 1))}
           ${miniStat("Área", area)}
           ${miniStat("Dificuldade", difficulty)}
@@ -1154,7 +1165,7 @@ function renderMundo() {
         </div>
         <div class="inline">
           <button class="button" type="button" data-action="world-open" ${worldActive ? "disabled" : ""}>Abrir Mundo (-${costs.activation} PM)</button>
-          <button class="ghost" type="button" data-action="world-maintain" ${worldActive ? "" : "disabled"}>Manter Mundo (-${costs.maintenance} PM)</button>
+          <button class="${state.world.maintenancePaidForTurn ? "ghost" : "button"}" type="button" data-action="world-maintain" ${worldActive && !state.world.maintenancePaidForTurn ? "" : "disabled"}>${state.world.maintenancePaidForTurn ? "Manutenção paga" : `Manter Mundo (-${costs.maintenance} PM)`}</button>
           <button class="ghost" type="button" data-action="world-law" ${worldActive && state.world.laws.length && num(state.world.lawUses, 0) > 0 ? "" : "disabled"}>Usar Lei (livre)</button>
           <button class="danger" type="button" data-action="world-close" ${worldActive ? "" : "disabled"}>Encerrar Mundo</button>
           <button class="ghost" type="button" data-action="world-collapse" ${worldActive ? "" : "disabled"}>Colapsar Mundo</button>
@@ -1417,20 +1428,7 @@ function combatExtrasPanel() {
 }
 
 function normalizedSpellLevels(spell) {
-  const source = spell?.levels ?? [];
-  const levels = [];
-  for (const entry of source) {
-    const level = num(entry.level, 0);
-    const text = compact(entry.text ?? "");
-    const previous = levels.at(-1);
-    const alreadySeen = levels.some((item) => item.level === level);
-    if (previous && (level <= previous.level || alreadySeen)) {
-      previous.text = compact(`${previous.text} ${text}`);
-      continue;
-    }
-    levels.push({ ...entry, level, text });
-  }
-  return levels;
+  return (spell?.levels ?? []).map((entry) => ({ ...entry, level: num(entry.level, 0), text: compact(entry.text ?? "") }));
 }
 
 function currentLevelText(spell, level) {
@@ -1443,18 +1441,6 @@ function currentLevelEntry(item) {
   return normalizedSpellLevels(item.spell).find((entry) => entry.level === item.level) ?? null;
 }
 
-function magicFallbackPmCost(type, level) {
-  const costs = {
-    Fina: [0, 1, 1, 2, 2, 4, 4, 5, 5, 8, 8],
-    Impacto: [0, 1, 1, 2, 3, 4, 5, 6, 8, 10, 12],
-    Densa: [0, 2, 3, 4, 4, 5, 5, 6, 6, 8, 12],
-    Forte: [0, 1, 1, 2, 2, 3, 3, 4, 4, 6, 8],
-    Etérea: [0, 1, 1, 2, 2, 3, 3, 4, 4, 6, 8],
-    Mundo: [0, 5, 6, 7, 8, 10, 12, 14, 16, 18, 20],
-  };
-  return costs[type]?.[clamp(level, 0, 10)] ?? 0;
-}
-
 function magicPmCost(item) {
   if (!item?.level) return 0;
   if (item.type === "Mundo") return worldCosts(item.level).activation;
@@ -1462,12 +1448,7 @@ function magicPmCost(item) {
   if (Number.isFinite(Number(entry?.activationCost))) {
     return magicCostAfterCore(Math.max(0, Number(entry.activationCost)));
   }
-  const text = currentLevelText(item.spell, item.level);
-  const direct = text.match(/(?:consome|custa|ativa com|ativar com)\s*(\d+)\s*PM/i);
-  if (direct) return magicCostAfterCore(num(direct[1], magicFallbackPmCost(item.type, item.level)));
-  if (/consome\s*PM/i.test(text)) return magicCostAfterCore(magicFallbackPmCost(item.type, item.level));
-  const firstPm = text.match(/(\d+)\s*PM\b/i);
-  return magicCostAfterCore(firstPm ? num(firstPm[1], magicFallbackPmCost(item.type, item.level)) : magicFallbackPmCost(item.type, item.level));
+  return Number.NaN;
 }
 
 function magicMaintenanceCost(item) {
@@ -1477,17 +1458,6 @@ function magicMaintenanceCost(item) {
   if (Number.isFinite(Number(entry?.maintenanceCost))) {
     return magicCostAfterCore(Math.max(0, Number(entry.maintenanceCost)));
   }
-  const text = currentLevelText(item.spell, item.level);
-  const patterns = [
-    /(\d+)\s*PM\s*(?:\/|por\s*)turno/i,
-    /(\d+)\s*PM\s*(?:para|pra)\s*manter/i,
-    /(\d+)\s*PM\s*por\s*cada\s*turno/i,
-    /mant(?:er|ido)[\s\S]{0,18}?(\d+)\s*PM/i,
-  ];
-  for (const pattern of patterns) {
-    const match = text.match(pattern);
-    if (match) return magicCostAfterCore(num(match[1], 0));
-  }
   return 0;
 }
 
@@ -1496,9 +1466,7 @@ function magicDurationTurns(item) {
   if (entry && Object.hasOwn(entry, "durationTurns")) {
     return entry.durationTurns === null ? null : Math.max(1, num(entry.durationTurns, 1));
   }
-  const text = currentLevelText(item?.spell, item?.level);
-  const match = text.match(/(?:dura|duração(?: de)?|ativo por)\s*(\d+)\s*turnos?/i) ?? text.match(/(\d+)\s*turnos?/i);
-  return match ? Math.max(1, num(match[1], 1)) : null;
+  return null;
 }
 
 function preparedBoostForItem(item) {
@@ -1514,7 +1482,12 @@ function magicPreparedExtraCost(item) {
 }
 
 function magicTotalPmCost(item) {
-  return magicPmCost(item) + magicPreparedExtraCost(item);
+  const base = magicPmCost(item);
+  return Number.isFinite(base) ? base + magicPreparedExtraCost(item) : Number.NaN;
+}
+
+function automationLabel(level) {
+  return { complete: "Automação confirmada", partial: "Automação parcial", manual: "Controle manual" }[level?.automationLevel ?? level?.automation] ?? "Controle manual";
 }
 
 function renderCurrentLevel(spell, level) {
@@ -1522,7 +1495,7 @@ function renderCurrentLevel(spell, level) {
 }
 
 function summaryChips(title, items, action) {
-  return `<h3>${esc(title)}</h3><div class="inline">${items.slice(0, 8).map((item) => `<button class="chip" type="button" data-action="${action}" data-id="${esc(action === "open-talent" ? item.name : (item.id ?? item.name))}">${esc(item.name)}</button>`).join("") || `<span class="muted small">Nada registrado.</span>`}</div>`;
+  return `<h3>${esc(title)}</h3><div class="inline">${items.slice(0, 8).map((item) => `<button class="chip" type="button" data-action="${action}" data-id="${esc(item.id ?? item.name)}">${esc(item.name)}</button>`).join("") || `<span class="muted small">Nada registrado.</span>`}</div>`;
 }
 
 function coreSelectControl() {
@@ -1623,7 +1596,8 @@ function renderLevels(spell, activeLevel = 0) {
     const isActive = level.level <= activeLevel;
     const isCurrent = level.level === activeLevel;
     return `<li class="${isActive ? "active" : ""} ${isCurrent ? "current" : ""}">
-      <div class="level-head"><strong>N${level.level}</strong>${isCurrent ? `<span class="tag ok">nível atual</span>` : isActive ? `<span class="tag ok">ativo</span>` : ""}</div>
+      <div class="level-head"><strong>N${level.level}</strong>${isCurrent ? `<span class="tag ok">nível atual</span>` : isActive ? `<span class="tag ok">ativo</span>` : ""}<span class="tag ${level.automationLevel === "complete" ? "ok" : "warn"}">${esc(automationLabel(level))}</span></div>
+      <p class="muted small">Ativação: ${esc(actionCostLabel(level.activationAction ?? level.action))}${level.secondaryActions?.length ? ` · Secundárias: ${level.secondaryActions.map(actionCostLabel).join(", ")}` : ""}</p>
       <p>${esc(level.text)}</p>
     </li>`;
   }).join("")}</ol>`;
@@ -1656,7 +1630,7 @@ function spellCombatCard(item) {
     <header><div><strong>${esc(item.spell?.name ?? item.type)}</strong><br><span class="muted">Nível ${item.level}</span></div><span class="tag">${esc(item.type)}</span></header>
     <p>${esc(currentLevelText(item.spell, item.level) || item.spell?.description || "")}</p>
     <div class="inline">
-      <span class="tag warn">${pmCost} PM</span>
+      <span class="tag warn">${Number.isFinite(pmCost) ? `${pmCost} PM` : "Custo manual"}</span>
       ${prepared ? `<span class="tag ok">${esc(prepared.preparedLabel)}</span>` : ""}
       ${active ? `<span class="tag ok">ativa · ${active.turns ?? "manual"} turno(s)</span>` : ""}
       <button class="icon-button" type="button" data-action="open-combat-spell" data-spell-id="${esc(item.id)}" title="Ver trilha" aria-label="Ver trilha da magia">🔍</button>
@@ -1698,8 +1672,9 @@ function abilityCard(ability) {
 }
 
 function talentCard(talent) {
+  const hasConditional = ["conditional", "mixed"].includes(talent.mode);
   return `<div class="talent-card">
-    <header><div><strong>${esc(talent.name)}</strong><br><span class="tag ${talent.tag === "Ativável/Condicionável" ? "pink" : "ok"}">${esc(talent.tag)}</span> <span class="chip">Nível ${esc(talent.level)}</span></div><div class="inline">${talent.tag === "Ativável/Condicionável" ? `<button class="switch small-switch ${talent.enabled ? "on" : ""}" type="button" role="switch" aria-checked="${Boolean(talent.enabled)}" data-action="toggle-talent" data-name="${esc(talent.name)}"><span class="switch-track"><span class="switch-knob"></span></span><span>${talent.enabled ? "Ligado" : "Desligado"}</span></button>` : ""}<button class="ghost" type="button" data-action="open-talent" data-id="${esc(talent.name)}">Ver</button><button class="danger" type="button" data-action="remove-talent" data-name="${esc(talent.name)}">Remover</button></div></header>
+    <header><div><strong>${esc(talent.name)}</strong><br><span class="tag ${hasConditional ? "pink" : "ok"}">${esc(talent.tag)}</span> <span class="chip">Nível ${esc(talent.level)}</span>${talent.stackable ? ` <span class="tag">acumulável</span>` : ""}</div><div class="inline">${hasConditional ? `<button class="switch small-switch ${talent.enabled ? "on" : ""}" type="button" role="switch" aria-checked="${Boolean(talent.enabled)}" data-action="toggle-talent" data-id="${esc(talent.id)}"><span class="switch-track"><span class="switch-knob"></span></span><span>${talent.enabled ? "Ligado" : "Desligado"}</span></button>` : ""}<button class="ghost" type="button" data-action="open-talent" data-id="${esc(talent.id)}">Ver</button><button class="danger" type="button" data-action="remove-talent" data-id="${esc(talent.id)}">Remover</button></div></header>
     <p>${esc(talent.description)}</p>
   </div>`;
 }
@@ -2251,6 +2226,10 @@ function registerActiveSpell(item, overrides = {}) {
 function activateSpellItem(item, actionCost, options = {}) {
   if (!item) return false;
   const pmCost = magicTotalPmCost(item);
+  if (!Number.isFinite(pmCost)) {
+    addError("LAT-DB-005", `${item.spell?.name ?? item.type} N${item.level}: custo de ativação não confirmado.`);
+    return false;
+  }
   if (pmCurrent() < pmCost) {
     toast(`PM insuficiente para ${item.spell?.name ?? item.type}: precisa de ${pmCost} PM.`, "warn");
     return false;
@@ -2293,11 +2272,10 @@ function activateForte(spellId, mode) {
 
 function passTurn() {
   const remaining = [];
-  for (const spell of state.combat.activeSpells ?? []) {
+  for (const spell of (state.combat.activeSpells ?? []).filter((item) => item.type !== "Mundo")) {
     if (num(spell.maintenanceCost, 0) > 0) {
       if (!spendPm(spell.maintenanceCost, `Manter ${spell.name}`)) {
         state.combat.log.unshift(`${spell.name} foi encerrada por falta de PM.`);
-        if (spell.type === "Mundo") state.world.status = "closed";
         continue;
       }
     }
@@ -2309,10 +2287,19 @@ function passTurn() {
     if (nextTurns > 0) remaining.push({ ...spell, turns: nextTurns });
     else {
       state.combat.log.unshift(`${spell.name} encerrou.`);
-      if (spell.type === "Mundo") state.world.status = "closed";
     }
   }
   state.combat.activeSpells = remaining;
+  if (state.world.status === "active") {
+    if (state.world.maintenancePaidForTurn) {
+      state.world.maintenancePaidForTurn = false;
+      state.combat.log.unshift("Mundo mantido. A manutenção do próximo turno está pendente.");
+    } else {
+      state.world.status = "closed";
+      state.world.maintenancePaidForTurn = false;
+      state.combat.log.unshift("Mundo encerrado: a manutenção não foi paga antes de passar o turno.");
+    }
+  }
   if (num(state.magicCore.caBoostTurns, 0) > 0) {
     state.magicCore.caBoostTurns = Math.max(0, num(state.magicCore.caBoostTurns, 0) - 1);
     if (!state.magicCore.caBoostTurns) state.combat.log.unshift("Núcleo Antebraço: bônus de +10 CA encerrado.");
@@ -2329,6 +2316,7 @@ function finishCombat() {
   state.magicCore.preparedBoost = "";
   state.magicCore.caBoostTurns = 0;
   state.world.status = "closed";
+  state.world.maintenancePaidForTurn = false;
   state.combat.log.unshift("Combate finalizado. Magias ativas, preparos e ações foram resetados.");
   render();
 }
@@ -2336,7 +2324,6 @@ function finishCombat() {
 function removeActiveSpell(id) {
   const removed = (state.combat.activeSpells ?? []).find((spell) => spell.id === id);
   state.combat.activeSpells = (state.combat.activeSpells ?? []).filter((spell) => spell.id !== id);
-  if (removed?.type === "Mundo") state.world.status = "closed";
   if (removed) state.combat.log.unshift(`${removed.name} encerrada manualmente.`);
   render();
 }
@@ -2356,10 +2343,14 @@ function openAbilityModal(existing = null) {
   `, `<button class="button" type="button" data-action="save-ability" data-id="${esc(existing?.id ?? "")}">Salvar</button><button class="ghost" type="button" data-action="close-modal">Cancelar</button>`);
 }
 
-function openTalentModal(name) {
-  const talent = allKnownTalents().find((item) => item.name === name) ?? DB.talents.find((item) => item.name === name);
-  if (!talent) return addError("LAT-DB-004", name);
-  openModal(talent.name, `<span class="tag ${talent.tag === "Ativável/Condicionável" ? "pink" : "ok"}">${esc(talent.tag)}</span><p>${esc(talent.description)}</p>${talent.tag === "Ativável/Condicionável" ? `<p class="muted">Quando ligado, a ficha considera que a condição do talento está ativa e aplica os bônus automatizados cadastrados.</p>` : ""}`);
+function openTalentModal(id) {
+  const talent = allKnownTalents().find((item) => item.id === id) ?? DB.talents.find((item) => item.name === id);
+  if (!talent) return addError("LAT-DB-004", id);
+  const hasConditional = ["conditional", "mixed"].includes(talent.mode);
+  const note = talent.mode === "mixed"
+    ? "Os bônus passivos permanecem aplicados. O switch controla apenas a parte condicional."
+    : "Quando ligado, a ficha aplica somente os bônus condicionais automatizados cadastrados.";
+  openModal(talent.name, `<span class="tag ${hasConditional ? "pink" : "ok"}">${esc(talent.tag)}</span><p>${esc(talent.description)}</p>${hasConditional ? `<p class="muted">${esc(note)}</p>` : ""}`);
 }
 
 function openWorldDetails() {
@@ -2461,8 +2452,8 @@ function handleClick(event) {
     "remove-ability": () => { state.abilities = state.abilities.filter((ability) => ability.id !== button.dataset.id); render(); },
     "add-talent": addTalent,
     "open-talent": () => openTalentModal(button.dataset.id),
-    "toggle-talent": () => toggleTalent(button.dataset.name),
-    "remove-talent": () => { state.talents = state.talents.filter((talent) => talent.name !== button.dataset.name); render(); },
+    "toggle-talent": () => toggleTalent(button.dataset.id),
+    "remove-talent": () => removeTalent(button.dataset.id),
     "go-magic": () => { sessionUi.activeTab = "magia"; render(); },
     "world-open": openWorldAction,
     "world-maintain": maintainWorldAction,
@@ -2613,7 +2604,7 @@ function activateMagic(type, spellId = "") {
   const item = knownSpells().find((spell) => spell.id === spellId) ?? knownSpells().find((spell) => spell.type === type);
   if (type === "Forte") return openForteActivationModal(item?.id ?? spellId);
   const map = { Mundo: "full", Fina: "bonus", Impacto: "bonus", Densa: "bonus", Forte: "standard", Etérea: "standard" };
-  const structuredAction = currentLevelEntry(item)?.action;
+  const structuredAction = currentLevelEntry(item)?.activationAction ?? currentLevelEntry(item)?.action;
   return activateSpellItem(item, ["full", "standard", "bonus", "movement", "reaction"].includes(structuredAction) ? structuredAction : (map[type] ?? "bonus"));
 }
 
@@ -2640,10 +2631,10 @@ function openWorldAction() {
   if (!useAction("full", "Abrir Mundo", false)) return false;
   spendPm(costs.activation, "Abrir Mundo");
   state.world.status = "active";
-  state.world.turns ||= "1d4";
+  state.world.maintenancePaidForTurn = false;
   state.world.lawUses = worldTier() + 1;
-  const item = knownSpells().find((spell) => spell.type === "Mundo");
-  if (item) registerActiveSpell(item, { turns: null, maintenanceCost: costs.maintenance });
+  state.combat.activeSpells = (state.combat.activeSpells ?? []).filter((spell) => spell.type !== "Mundo");
+  state.combat.log.unshift("Mundo aberto. A manutenção do primeiro turno está pendente.");
   render();
   return true;
 }
@@ -2654,8 +2645,13 @@ function maintainWorldAction() {
     addError("LAT-MUN-002", "O Mundo precisa estar ativo antes da manutenção.");
     return false;
   }
+  if (state.world.maintenancePaidForTurn) {
+    toast("A manutenção deste turno já foi paga.", "warn");
+    return false;
+  }
   if (!spendPm(costs.maintenance, "Manter Mundo")) return false;
-  state.combat.log.unshift("Manter Mundo não gastou ação.");
+  state.world.maintenancePaidForTurn = true;
+  state.combat.log.unshift("Manter Mundo: manutenção paga sem gastar ação.");
   render();
   return true;
 }
@@ -2676,6 +2672,7 @@ function useWorldLawAction() {
 function endWorld(status, message) {
   if (!RULES.validateWorldAction({ status: state.world.status, action: status === "collapsed" ? "collapse" : "close" }).valid) return false;
   state.world.status = status;
+  state.world.maintenancePaidForTurn = false;
   state.combat.activeSpells = (state.combat.activeSpells ?? []).filter((spell) => spell.type !== "Mundo");
   state.combat.log.unshift(message);
   render();
@@ -2970,30 +2967,35 @@ function addTalent() {
   const name = select?.value;
   const base = DB.talents.find((talent) => talent.name === name);
   if (!base) return addError("LAT-DB-004", name);
-  if (state.talents.some((talent) => talent.name === name)) return toast("Talento já adicionado.", "warn");
-  const talent = { id: uid(), name, level: num($("#talentLevelDraft").value, 1), enabled: base.tag !== "Ativável/Condicionável" };
+  if (!base.stackable && state.talents.some((talent) => talent.name === name)) return toast("Talento já adicionado.", "warn");
+  const talent = { id: uid(), name, level: num($("#talentLevelDraft").value, 1), enabled: !["conditional", "mixed"].includes(base.mode) };
   state.talents.push(talent);
   const issue = sheetSkillValidationIssue();
   if (issue) {
     state.talents = state.talents.filter((item) => item.id !== talent.id);
     return addError(issue.reason === "limit" ? "LAT-CALC-004" : "LAT-PT-002", `${name}: ${issue.detail}`);
   }
-  if (!base.skillMods?.length && !Object.keys(base.attributeMods ?? {}).length && !Object.keys(base.resourceMods ?? {}).length) addError("LAT-PT-006", name, false);
+  if (base.automationLevel !== "complete") addError("LAT-PT-006", name, false);
   render();
 }
 
-function toggleTalent(name) {
-  const talent = state.talents.find((item) => item.name === name);
+function toggleTalent(id) {
+  const talent = state.talents.find((item) => item.id === id);
   if (talent) {
     const previous = talent.enabled;
     talent.enabled = !talent.enabled;
     const issue = sheetSkillValidationIssue();
     if (issue) {
       talent.enabled = previous;
-      return addError(issue.reason === "limit" ? "LAT-CALC-004" : "LAT-PT-002", `${name}: ${issue.detail}`);
+      return addError(issue.reason === "limit" ? "LAT-CALC-004" : "LAT-PT-002", `${talent.name}: ${issue.detail}`);
     }
   }
-  if (!talent?.enabled) addError("LAT-PT-005", name, false);
+  if (!talent?.enabled) addError("LAT-PT-005", talent?.name ?? id, false);
+  render();
+}
+
+function removeTalent(id) {
+  state.talents = state.talents.filter((talent) => talent.id !== id);
   render();
 }
 
@@ -3287,6 +3289,40 @@ async function importPdfWithStructuredReader(file) {
   showPdfImportReview(result.missing, differences, result, file.name);
 }
 
+function setImportedPath(target, path, value) {
+  const keys = path.split(".").filter(Boolean);
+  let cursor = target;
+  for (const key of keys.slice(0, -1)) {
+    cursor[key] ||= {};
+    cursor = cursor[key];
+  }
+  if (keys.length) cursor[keys.at(-1)] = value;
+}
+
+function resolvedPdfData(result) {
+  const data = STATE_TOOLS.cloneSafe(result.data);
+  for (const [index, conflict] of (result.conflicts ?? []).entries()) {
+    const choice = $(`#pdfConflict${index}`)?.value ?? "form";
+    setImportedPath(data, conflict.path, choice === "text" ? conflict.textValue : conflict.formValue);
+  }
+  return data;
+}
+
+function candidateFromPdfData(data, result, fileName) {
+  const candidate = createDefaultState();
+  candidate.settings = { ...candidate.settings, ...state.settings };
+  applyImportedPdfPayload(candidate, data);
+  candidate.meta.started = true;
+  candidate.meta.importedFromPdf = {
+    fileName,
+    importedAt: new Date().toISOString(),
+    source: result.source,
+    fieldCount: result.fieldCount,
+    importedValueCount: result.importedValueCount,
+  };
+  return normalizeState(candidate);
+}
+
 function applyImportedPdfPayload(targetState, data) {
   const character = data?.character ?? {};
   const attributes = data?.attributes ?? {};
@@ -3411,30 +3447,51 @@ function showPdfImportReview(missing, differences, result, fileName) {
   const diagnostics = result.diagnostics?.fieldObjectError || result.diagnostics?.annotationError
     ? `<p class="muted small">Aviso tecnico: ${esc([result.diagnostics.fieldObjectError, result.diagnostics.annotationError].filter(Boolean).join(" | "))}</p>`
     : "";
+  const conflictsHtml = result.conflicts?.length
+    ? `<h3>Valores ambíguos</h3><div class="stack">${result.conflicts.map((conflict, index) => `<div class="card"><strong>${esc(conflict.path)}</strong><div class="field"><label for="pdfConflict${index}">Valor que será importado</label><select id="pdfConflict${index}"><option value="form">Formulário: ${esc(conflict.formValue)}</option><option value="text">Texto visível: ${esc(conflict.textValue)}</option></select></div></div>`).join("")}</div>`
+    : "";
+  const hasUsefulData = num(result.importedValueCount, 0) > 0;
+  const sparseConfirmation = hasUsefulData && num(result.importedValueCount, 0) <= 2
+    ? `<label class="check-row"><input id="confirmSparsePdf" type="checkbox"> Confirmo que desejo substituir a ficha mesmo com poucos campos encontrados.</label>`
+    : "";
+  const footer = hasUsefulData
+    ? `<button class="button" type="button" data-action="apply-pdf-import" data-mode="merge">Mesclar</button><button class="danger" type="button" data-action="apply-pdf-import" data-mode="replace">Substituir</button><button class="ghost" type="button" data-action="cancel-import">Cancelar</button>`
+    : `<button class="ghost" type="button" data-action="cancel-import">Fechar sem importar</button>`;
   openModal("Revisao da importacao", `
     <p><strong>${esc(fileName)}</strong> foi lido, mas ainda não alterou a ficha. Revise os campos antes de continuar.</p>
     <p class="muted small">Origem da leitura: ${esc(result.source)}; campos lidos: ${esc(result.importedValueCount ?? 0)}/${esc(result.fieldCount ?? 0)}.</p>
     ${missingHtml}
     ${differencesHtml}
+    ${conflictsHtml}
+    ${!hasUsefulData ? `<div class="empty">Nenhum dado útil foi encontrado. A substituição foi bloqueada.</div>` : ""}
+    ${sparseConfirmation}
     ${diagnostics}
-  `, `<button class="button" type="button" data-action="apply-pdf-import" data-mode="merge">Mesclar</button><button class="danger" type="button" data-action="apply-pdf-import" data-mode="replace">Substituir</button><button class="ghost" type="button" data-action="cancel-import">Cancelar</button>`);
+  `, footer);
 }
 
 function applyPdfImport(mode) {
   if (pendingImport?.kind !== "pdf") return addError("LAT-PDF-001", "Importação pendente não encontrada.");
-  const { result, differences, fileName } = pendingImport;
+  const { result, fileName } = pendingImport;
+  if (num(result.importedValueCount, 0) <= 0) return addError("LAT-PDF-001", "Nenhum dado útil foi localizado no PDF.");
+  if (mode === "replace" && num(result.importedValueCount, 0) <= 2 && !$("#confirmSparsePdf")?.checked) {
+    toast("Confirme a substituição com poucos campos antes de continuar.", "warn");
+    return;
+  }
+  const importedData = resolvedPdfData(result);
+  const candidate = candidateFromPdfData(importedData, result, fileName);
+  const differences = pdfImportCalculatedDifferences(importedData?.calculated ?? {}, candidate);
   createBackup(`Antes de importar PDF ${fileName}`);
   if (mode === "replace") {
-    state = pendingImport.candidate;
+    state = candidate;
   } else {
     const merged = STATE_TOOLS.persistentPayload(state);
-    applyImportedPdfPayload(merged, result.data);
+    applyImportedPdfPayload(merged, importedData);
     merged.meta.started = true;
-    merged.meta.importedFromPdf = pendingImport.candidate.meta.importedFromPdf;
+    merged.meta.importedFromPdf = candidate.meta.importedFromPdf;
     state = normalizeState(merged);
   }
   if (result.missing.length) addError("LAT-PDF-002", result.missing.join(", "), false);
-  if (differences.length) addError("LAT-PDF-003", differences.map((item) => item.label).join(", "), false);
+  if (differences.length || result.conflicts?.length) addError("LAT-PDF-003", [...differences.map((item) => item.label), ...(result.conflicts ?? []).map((item) => item.path)].join(", "), false);
   pendingImport = null;
   closeModal();
   render();

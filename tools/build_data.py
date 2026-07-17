@@ -1,4 +1,5 @@
 import argparse
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -331,31 +332,7 @@ def parse_backgrounds(manual):
 
 
 def talent_tags_and_effects(talent):
-    desc = talent["description"]
-    lowered = desc.lower()
-    conditional_terms = ["se ", "quando ", "uma vez", "pode ", "caso ", "ao ", "montado", "ativ"]
-    tag = "Ativável/Condicionável" if any(term in lowered for term in conditional_terms) else "Passivo"
-    skill_mods = []
-    stat_mods = {}
-    resource_mods = {}
-    ac_mod = 0
-
-    known = {
-        "Adepto Marcial": {"skill": {"Lutar (Brigar)": 10, "Esquivar": 10}},
-        "Alerta": {"skill": {"Encontrar": 10, "Escutar": 10}},
-        "Amado Pela Magia": {"resource": {"pm": 5}},
-        "Atleta": {"attributes": {"FOR": 5, "DES": 5}, "skill": {"Atletismo": 15}},
-        "Curandeiro": {"skill": {"Medicina": 10}},
-        "Líder": {"skill": {"Tática": 20, "Charme": 10, "Persuasão": 10, "Diplomacia": 10}},
-        "Sorrateiro": {"skill": {"Furtividade": 15}},
-        "Cavaleiro de Justas": {"skill": {"Cavalgar": 10}},
-    }
-    data = known.get(talent["name"], {})
-    for skill, value in data.get("skill", {}).items():
-        skill_mods.append({"skill": skill, "value": value, "source": talent["name"]})
-    stat_mods.update(data.get("attributes", {}))
-    resource_mods.update(data.get("resource", {}))
-    return {**talent, "tag": tag, "skillMods": skill_mods, "attributeMods": stat_mods, "resourceMods": resource_mods, "acMod": ac_mod}
+    return dict(talent)
 
 
 def build_database_from_extracts():
@@ -465,7 +442,21 @@ def build_database_from_extracts():
 def load_canonical_database():
     database = load_json(DATA_SOURCE / "database.json")
     database["worldLaws"] = load_json(DATA_SOURCE / "world_laws.json")
-    return normalize_database(database)
+    return normalize_database(
+        database,
+        talent_rules=load_json(DATA_SOURCE / "talent_rules.json"),
+        spell_overrides=load_json(DATA_SOURCE / "spell_mechanics_overrides.json"),
+    )
+
+
+def update_source_manifest(target: Path) -> None:
+    manifest_path = DATA_SOURCE / "source_manifest.json"
+    manifest = load_json(manifest_path)
+    manifest["bootstrap"] = {
+        "file": target.name,
+        "sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
+    }
+    write_json(manifest_path, manifest)
 
 
 def main():
@@ -473,7 +464,11 @@ def main():
     parser.add_argument("--refresh-sources", action="store_true", help="Recria database.json a partir dos extratos em tmp/source_extracts.")
     args = parser.parse_args()
     if args.refresh_sources:
-        db = normalize_database(build_database_from_extracts())
+        db = normalize_database(
+            build_database_from_extracts(),
+            talent_rules=load_json(DATA_SOURCE / "talent_rules.json"),
+            spell_overrides=load_json(DATA_SOURCE / "spell_mechanics_overrides.json"),
+        )
         laws = load_json(DATA_SOURCE / "world_laws.json") if (DATA_SOURCE / "world_laws.json").exists() else db.pop("worldLaws", [])
         db.pop("worldLaws", None)
         write_json(DATA_SOURCE / "database.json", db)
@@ -481,6 +476,7 @@ def main():
     db = load_canonical_database()
     target = ROOT / "data.js"
     write_data_js(target, db)
+    update_source_manifest(target)
     print(
         json.dumps(
             {

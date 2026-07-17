@@ -75,7 +75,7 @@ function createSandbox(initialState = null) {
 test("migrates the representative v1 fixture without losing sheet data", () => {
   const fixture = JSON.parse(fs.readFileSync(path.join(root, "tests", "fixtures", "state-v1.json"), "utf8"));
   const { sandbox } = createSandbox(fixture);
-  assert.equal(vm.runInContext("state.meta.schemaVersion", sandbox), 2);
+  assert.equal(vm.runInContext("state.meta.schemaVersion", sandbox), 3);
   assert.equal(vm.runInContext("state.character.name", sandbox), "Fixture Latio");
   assert.equal(vm.runInContext("state.attributes.CON", sandbox), 60);
   assert.equal(vm.runInContext("state.resources.hpCurrent", sandbox), 10);
@@ -93,7 +93,7 @@ test("starts and renders every tab without a runtime error", () => {
 test("keeps JSON import transactional when cancelled", () => {
   const { sandbox } = createSandbox();
   const before = vm.runInContext("persistentSignature()", sandbox);
-  vm.runInContext('importJsonText(JSON.stringify({ meta: { appId: APP_ID, schemaVersion: 2 }, character: { name: "Nao aplicar" } }), "cancelar.json")', sandbox);
+  vm.runInContext('importJsonText(JSON.stringify({ meta: { appId: APP_ID, schemaVersion: 3 }, character: { name: "Nao aplicar" } }), "cancelar.json")', sandbox);
   assert.equal(vm.runInContext("state.character.name", sandbox), "");
   vm.runInContext("cancelImport()", sandbox);
   assert.equal(vm.runInContext("persistentSignature()", sandbox), before);
@@ -106,14 +106,66 @@ test("does not recurse when localStorage fails", () => {
   assert.equal(vm.runInContext('state.errors.filter((item) => item.code === "LAT-UI-003").length', sandbox), 1);
 });
 
-test("enforces explicit World transitions and infinite duration", () => {
+test("charges World maintenance only through its button", () => {
   const { sandbox } = createSandbox();
-  vm.runInContext('state.magic.baseLevels.Mundo = 1; state.resources.pmCurrent = 100; openWorldAction()', sandbox);
+  vm.runInContext('state.magic.baseLevels.Mundo = 1; state.resources.pmMaxBonus = 100; state.resources.pmCurrent = 100; openWorldAction()', sandbox);
   assert.equal(vm.runInContext("state.world.status", sandbox), "active");
-  assert.equal(vm.runInContext('state.combat.activeSpells.find((spell) => spell.type === "Mundo").turns', sandbox), null);
-  vm.runInContext("closeWorldAction()", sandbox);
-  assert.equal(vm.runInContext("state.world.status", sandbox), "closed");
-  const pmBefore = vm.runInContext("pmCurrent()", sandbox);
+  assert.equal(vm.runInContext('state.combat.activeSpells.some((spell) => spell.type === "Mundo")', sandbox), false);
+  assert.equal(vm.runInContext("pmCurrent()", sandbox), 95);
   vm.runInContext("maintainWorldAction()", sandbox);
-  assert.equal(vm.runInContext("pmCurrent()", sandbox), pmBefore);
+  assert.equal(vm.runInContext("pmCurrent()", sandbox), 93);
+  assert.equal(vm.runInContext("state.world.maintenancePaidForTurn", sandbox), true);
+  vm.runInContext("maintainWorldAction()", sandbox);
+  assert.equal(vm.runInContext("pmCurrent()", sandbox), 93);
+  vm.runInContext("passTurn()", sandbox);
+  assert.equal(vm.runInContext("pmCurrent()", sandbox), 93);
+  assert.equal(vm.runInContext("state.world.status", sandbox), "active");
+  assert.equal(vm.runInContext("state.world.maintenancePaidForTurn", sandbox), false);
+  vm.runInContext("passTurn()", sandbox);
+  assert.equal(vm.runInContext("pmCurrent()", sandbox), 93);
+  assert.equal(vm.runInContext("state.world.status", sandbox), "closed");
+});
+
+test("keeps automatic maintenance for non-World spells", () => {
+  const { sandbox } = createSandbox();
+  vm.runInContext('state.resources.pmMaxBonus = 100; state.resources.pmCurrent = 20; state.combat.activeSpells = [{ id: "forte", spellId: "forte", type: "Forte", name: "Forte", level: 2, turns: 3, maintenanceCost: 2 }]; passTurn()', sandbox);
+  assert.equal(vm.runInContext("pmCurrent()", sandbox), 18);
+  assert.equal(vm.runInContext("state.combat.activeSpells[0].turns", sandbox), 2);
+});
+
+test("applies passive talent bonuses independently from conditional switches", () => {
+  const { sandbox } = createSandbox();
+  vm.runInContext(`state.talents = [
+    { id: "atleta", name: "Atleta", level: 1, enabled: false },
+    { id: "adepto", name: "Adepto Marcial", level: 1, enabled: false },
+    { id: "curandeiro", name: "Curandeiro", level: 1, enabled: false },
+    { id: "sorrateiro", name: "Sorrateiro", level: 1, enabled: false }
+  ]`, sandbox);
+  assert.equal(vm.runInContext('attr("FOR")', sandbox), 55);
+  assert.equal(vm.runInContext('skillModifiers("Atletismo").reduce((sum, item) => sum + item.value, 0)', sandbox), 15);
+  assert.equal(vm.runInContext('skillModifiers("Lutar (Brigar)").reduce((sum, item) => sum + item.value, 0)', sandbox), 10);
+  assert.equal(vm.runInContext('skillModifiers("Medicina").reduce((sum, item) => sum + item.value, 0)', sandbox), 10);
+  assert.equal(vm.runInContext('skillModifiers("Furtividade").reduce((sum, item) => sum + item.value, 0)', sandbox), 15);
+});
+
+test("stacks Amado Pela Magia and removes one instance by id", () => {
+  const { sandbox } = createSandbox();
+  const base = vm.runInContext("maxPm()", sandbox);
+  vm.runInContext('state.talents = [{ id: "amado-1", name: "Amado Pela Magia", level: 1, enabled: true }, { id: "amado-2", name: "Amado Pela Magia", level: 2, enabled: true }]', sandbox);
+  assert.equal(vm.runInContext("maxPm()", sandbox), base + 10);
+  vm.runInContext('removeTalent("amado-1")', sandbox);
+  assert.equal(vm.runInContext("maxPm()", sandbox), base + 5);
+  assert.equal(vm.runInContext("state.talents[0].id", sandbox), "amado-2");
+});
+
+test("applies Lobo Solitário attack and CA only while enabled", () => {
+  const { sandbox } = createSandbox();
+  const baseAttack = vm.runInContext('skillFinal("Lutar (Brigar)")', sandbox);
+  const baseCa = vm.runInContext("caBreakdown().total", sandbox);
+  vm.runInContext('state.talents = [{ id: "lobo", name: "Lobo Solitário", level: 1, enabled: false }]', sandbox);
+  assert.equal(vm.runInContext('skillFinal("Lutar (Brigar)")', sandbox), baseAttack);
+  assert.equal(vm.runInContext("caBreakdown().total", sandbox), baseCa);
+  vm.runInContext('toggleTalent("lobo")', sandbox);
+  assert.equal(vm.runInContext('skillFinal("Lutar (Brigar)")', sandbox), baseAttack + 10);
+  assert.equal(vm.runInContext("caBreakdown().total", sandbox), baseCa + 5);
 });

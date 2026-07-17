@@ -165,6 +165,7 @@
     const status = state.world.status;
     state.world.status = ["closed", "active", "collapsed"].includes(status) ? status : "closed";
     state.world.lawUses = state.world.lawUses === null ? null : clampNumber(state.world.lawUses, 0, 999, 0);
+    state.world.maintenancePaidForTurn = state.world.status === "active" && Boolean(state.world.maintenancePaidForTurn);
     state.errors = (Array.isArray(state.errors) ? state.errors : []).slice(0, 120).map((error) => ({
       code: String(error?.code ?? "LAT-INI-001").slice(0, 32),
       module: String(error?.module ?? "Sistema").slice(0, 100),
@@ -184,7 +185,12 @@
       error.code = "LAT-JSON-002";
       throw error;
     }
-    const sourceVersion = Number(safe.meta?.schemaVersion || 1);
+    const sourceVersion = Number(safe.meta?.schemaVersion);
+    if (!Number.isInteger(sourceVersion) || sourceVersion < 1) {
+      const error = new Error(`Versão de schema inválida: ${String(safe.meta?.schemaVersion)}.`);
+      error.code = "LAT-JSON-002";
+      throw error;
+    }
     if (sourceVersion > options.schemaVersion) {
       const error = new Error(`Versão futura não suportada: ${sourceVersion}.`);
       error.code = "LAT-JSON-003";
@@ -194,6 +200,14 @@
       safe.world ||= Object.create(null);
       safe.world.status = safe.world.active ? "active" : "closed";
       delete safe.world.active;
+    }
+    if (sourceVersion <= 2) {
+      safe.world ||= Object.create(null);
+      safe.world.maintenancePaidForTurn = false;
+      delete safe.world.turns;
+      if (Array.isArray(safe.combat?.activeSpells)) {
+        safe.combat.activeSpells = safe.combat.activeSpells.filter((spell) => spell?.type !== "Mundo");
+      }
     }
     delete safe.ui;
     const state = normalizeDomain(mergeKnown(defaults, safe), options.appId, options.schemaVersion);

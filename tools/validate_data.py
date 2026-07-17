@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import unicodedata
 from collections import Counter
 from pathlib import Path
@@ -56,7 +57,10 @@ def validate_database(database: dict) -> list[str]:
         if levels != list(range(1, 11)):
             errors.append(f"{name}: níveis {levels}; esperado 1 a 10.")
         for entry in spell.get("levels", []):
-            required_mechanics = {"activationCost", "maintenanceCost", "durationTurns", "action", "automation"}
+            required_mechanics = {
+                "activationCost", "maintenanceCost", "durationTurns", "durationFormula", "activationAction",
+                "secondaryActions", "action", "automationLevel", "automation", "mechanicsSource",
+            }
             missing = sorted(required_mechanics - set(entry))
             if missing:
                 errors.append(f"{name} N{entry.get('level')}: campos mecânicos ausentes {missing}.")
@@ -64,6 +68,13 @@ def validate_database(database: dict) -> list[str]:
                 errors.append(f"{name} N{entry.get('level')}: ação inválida {entry.get('action')!r}.")
             if entry.get("automation") not in {"complete", "partial", "manual"}:
                 errors.append(f"{name} N{entry.get('level')}: automação inválida {entry.get('automation')!r}.")
+            if entry.get("activationCost") is None:
+                errors.append(f"{name} N{entry.get('level')}: custo de ativação sem origem confirmada.")
+            cost_source = entry.get("mechanicsSource", {}).get("activationCost", "")
+            if cost_source not in {"text", "override"} and not cost_source.startswith("inherited:N"):
+                errors.append(f"{name} N{entry.get('level')}: origem do custo de ativação inválida.")
+            if entry.get("action") != entry.get("activationAction"):
+                errors.append(f"{name} N{entry.get('level')}: alias action diverge de activationAction.")
 
     perception = next((skill for skill in database.get("skills", []) if skill.get("name") == "Percepção"), None)
     if not perception or perception.get("base") != 15:
@@ -108,13 +119,24 @@ def validate_database(database: dict) -> list[str]:
     cubit = next((spell for spell in spells if fold(spell.get("name")) == "CUBITO DA BALANCA"), None)
     if not cubit or cubit.get("baseType") != "Densa":
         errors.append("Cúbito da Balança deve usar o tipo Densa.")
+    for talent in database.get("talents", []):
+        if talent.get("mode") not in {"passive", "conditional", "mixed", "manual"}:
+            errors.append(f"{talent.get('name')}: modo de talento inválido.")
+        if not isinstance(talent.get("stackable"), bool):
+            errors.append(f"{talent.get('name')}: stackable deve ser booleano.")
+        if not isinstance(talent.get("conditionalMods"), dict):
+            errors.append(f"{talent.get('name')}: modificadores condicionais ausentes.")
     return errors
 
 
 def load_canonical() -> dict:
     database = load_json(ROOT / "data-src" / "database.json")
     database["worldLaws"] = load_json(ROOT / "data-src" / "world_laws.json")
-    return normalize_database(database)
+    return normalize_database(
+        database,
+        talent_rules=load_json(ROOT / "data-src" / "talent_rules.json"),
+        spell_overrides=load_json(ROOT / "data-src" / "spell_mechanics_overrides.json"),
+    )
 
 
 def logical_json(database: dict) -> str:
@@ -127,6 +149,10 @@ def main() -> None:
     errors = validate_database(canonical)
     if logical_json(canonical) != logical_json(generated):
         errors.append("data.js diverge da fonte canônica.")
+    manifest = load_json(ROOT / "data-src" / "source_manifest.json")
+    current_hash = hashlib.sha256((ROOT / "data.js").read_bytes()).hexdigest()
+    if manifest.get("bootstrap", {}).get("sha256") != current_hash:
+        errors.append("source_manifest.json não corresponde ao data.js atual.")
     if errors:
         print("Falhas de integridade:")
         for error in errors:

@@ -48,7 +48,14 @@ def run_tests() -> None:
 
 
 def validate_root() -> None:
-    obsolete = [path for path in [ROOT / "dist", ROOT / "release", ROOT / "Ficha_Marufia_Latio.zip"] if path.exists()]
+    obsolete = [path for path in [ROOT / "dist", ROOT / "release"] if path.exists()]
+    ignored_parts = {".git", "node_modules", "test-results", "playwright-report"}
+    obsolete.extend(
+        path for path in ROOT.rglob("*")
+        if path.is_file()
+        and not ignored_parts.intersection(path.relative_to(ROOT).parts)
+        and path.name.lower().endswith((".zip", ".rar", ".tar", ".tar.gz"))
+    )
     if obsolete:
         raise RuntimeError(f"Artefatos duplicados ainda existem: {', '.join(str(path.relative_to(ROOT)) for path in obsolete)}")
 

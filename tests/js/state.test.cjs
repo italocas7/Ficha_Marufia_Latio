@@ -4,7 +4,7 @@ const stateTools = require("../../src/core/state.js");
 
 function defaults() {
   return {
-    meta: { appId: "marufia-latio", schemaVersion: 2, started: false, importedFromPdf: null },
+    meta: { appId: "marufia-latio", schemaVersion: 3, started: false, importedFromPdf: null },
     character: { name: "", level: 1 },
     attributes: { FOR: 50 },
     resources: {},
@@ -15,11 +15,11 @@ function defaults() {
     effects: [],
     magic: { baseLevels: { Fina: 0 }, knownExtras: [] },
     combat: { activeSpells: [] },
-    world: { status: "closed", laws: [] },
+    world: { status: "closed", maintenancePaidForTurn: false, laws: [] },
   };
 }
 
-const options = { appId: "marufia-latio", schemaVersion: 2 };
+const options = { appId: "marufia-latio", schemaVersion: 3 };
 
 test("migrates v1 and removes session UI", () => {
   const prepared = stateTools.prepareImport({
@@ -28,10 +28,30 @@ test("migrates v1 and removes session UI", () => {
     world: { active: true },
     ui: { printMode: true, activeTab: "mundo" },
   }, defaults(), options);
-  assert.equal(prepared.state.meta.schemaVersion, 2);
+  assert.equal(prepared.state.meta.schemaVersion, 3);
   assert.equal(prepared.state.world.status, "active");
   assert.equal(Object.hasOwn(prepared.state, "ui"), false);
 });
+
+test("migrates v2 and removes legacy World combat state", () => {
+  const prepared = stateTools.prepareImport({
+    meta: { appId: "marufia-latio", schemaVersion: 2 },
+    world: { status: "active", turns: "1d4" },
+    combat: { activeSpells: [{ id: "world", spellId: "base-Mundo", type: "Mundo", name: "Mundo", level: 1, turns: null, maintenanceCost: 2 }] },
+  }, defaults(), options);
+  assert.equal(prepared.state.meta.schemaVersion, 3);
+  assert.equal(prepared.state.world.maintenancePaidForTurn, false);
+  assert.equal(Object.hasOwn(prepared.state.world, "turns"), false);
+  assert.equal(prepared.state.combat.activeSpells.length, 0);
+});
+
+for (const invalidVersion of [undefined, "banana", 0, -1, 1.5, 4]) {
+  test(`rejects invalid schema version ${String(invalidVersion)}`, () => {
+    const payload = { meta: { appId: "marufia-latio" } };
+    if (invalidVersion !== undefined) payload.meta.schemaVersion = invalidVersion;
+    assert.throws(() => stateTools.prepareImport(payload, defaults(), options), /schema inválida|futura não suportada/i);
+  });
+}
 
 test("rejects prototype pollution keys", () => {
   const malicious = JSON.parse('{"meta":{"appId":"marufia-latio","schemaVersion":1},"__proto__":{"polluted":true}}');

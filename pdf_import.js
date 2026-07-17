@@ -362,14 +362,63 @@
   }
 
   function hasImportedValues(data) {
-    return Boolean(
-      data.character.name ||
-      Object.keys(data.attributes).length ||
-      Object.keys(data.skills).length ||
-      Object.values(data.notes).some(Boolean) ||
-      data.inventory.weapons.length ||
-      data.inventory.equipment.length
-    );
+    return countImportedValues(data) > 0;
+  }
+
+  function importedEntries(value, path = "", result = []) {
+    if (Array.isArray(value)) {
+      for (const [index, item] of value.entries()) importedEntries(item, `${path}[${index}]`, result);
+      return result;
+    }
+    if (value && typeof value === "object") {
+      for (const [key, item] of Object.entries(value)) importedEntries(item, path ? `${path}.${key}` : key, result);
+      return result;
+    }
+    if (useful(value)) result.push([path, value]);
+    return result;
+  }
+
+  function countImportedValues(data) {
+    return importedEntries(data).filter(([path]) => !path.startsWith("calculated.")).length;
+  }
+
+  function sameImportedValue(left, right) {
+    if (typeof left === "number" || typeof right === "number") return Number(left) === Number(right);
+    return fold(left) === fold(right);
+  }
+
+  function mergeItemLists(formItems, textItems) {
+    const result = [];
+    const seen = new Set();
+    for (const item of [...(formItems ?? []), ...(textItems ?? [])]) {
+      const key = fold(item?.name || item?.description || JSON.stringify(item));
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      result.push(item);
+    }
+    return result;
+  }
+
+  function mergePdfData(formData, textData) {
+    const conflicts = [];
+    const merge = (formValue, textValue, path = "") => {
+      if (Array.isArray(formValue) || Array.isArray(textValue)) {
+        return mergeItemLists(Array.isArray(formValue) ? formValue : [], Array.isArray(textValue) ? textValue : []);
+      }
+      if ((formValue && typeof formValue === "object") || (textValue && typeof textValue === "object")) {
+        const result = {};
+        const keys = new Set([...Object.keys(formValue ?? {}), ...Object.keys(textValue ?? {})]);
+        for (const key of keys) result[key] = merge(formValue?.[key], textValue?.[key], path ? `${path}.${key}` : key);
+        return result;
+      }
+      const hasForm = useful(formValue);
+      const hasText = useful(textValue);
+      if (hasForm && hasText && !sameImportedValue(formValue, textValue)) {
+        conflicts.push({ path, formValue, textValue });
+      }
+      return hasForm ? formValue : hasText ? textValue : formValue ?? textValue ?? "";
+    };
+    return { data: merge(formData, textData), conflicts };
   }
 
   function valueAt(data, path) {
@@ -417,24 +466,23 @@
     const bytes = new Uint8Array(await file.arrayBuffer());
     const pdf = await pdfjsLib.getDocument({ data: bytes, disableWorker: true }).promise;
     const fields = await readFormFields(pdf);
-    let text = "";
-
+    const text = await extractText(pdf);
     const hasFields = hasFormStructure(fields);
-    let data = hasFields ? parseFromFields(fields, options.db) : null;
-    if (!data || (!hasFields && !hasImportedValues(data))) {
-      text = await extractText(pdf);
-      data = parseFromText(text, options.db);
-    }
-    if (!text && (!hasFields || !hasImportedValues(data))) text = await extractText(pdf);
-
+    const formData = parseFromFields(fields, options.db);
+    const textData = parseFromText(text, options.db);
+    const formHasValues = hasImportedValues(formData);
+    const textHasValues = hasImportedValues(textData);
+    const merged = mergePdfData(formData, textData);
     const recognized = hasFields || hasTextStructure(text);
+    const source = formHasValues && textHasValues ? "form+text" : formHasValues ? "form" : "text";
     return {
       recognized,
-      source: hasFields ? "form" : "text",
+      source,
       fieldCount: Object.keys(fields).filter((key) => !key.startsWith("__")).length,
-      importedValueCount: Object.values(fields).filter(useful).length,
-      data,
-      missing: recognized ? missingFields(data) : [],
+      importedValueCount: countImportedValues(merged.data),
+      data: merged.data,
+      conflicts: merged.conflicts,
+      missing: recognized ? missingFields(merged.data) : [],
       diagnostics: {
         fieldObjectError: fields.__fieldObjectError ?? "",
         annotationError: fields.__annotationError ?? "",
@@ -442,5 +490,5 @@
     };
   }
 
-  window.MARUFIA_PDF_IMPORTER = { importFromPdf };
+  window.MARUFIA_PDF_IMPORTER = { importFromPdf, mergePdfData, countImportedValues };
 })();

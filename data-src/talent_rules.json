@@ -1,0 +1,136 @@
+{
+  "schema": "latio-talent-rules-1",
+  "rules": {
+    "Adepto Marcial": {
+      "mode": "mixed",
+      "stackable": false,
+      "automationLevel": "partial",
+      "passive": {
+        "skillMods": [
+          { "skill": "Lutar (Brigar)", "value": 10 },
+          { "skill": "Esquivar", "value": 10 }
+        ]
+      }
+    },
+    "Alerta": {
+      "mode": "passive",
+      "stackable": false,
+      "automationLevel": "partial",
+      "passive": {
+        "skillMods": [
+          { "skill": "Encontrar", "value": 10 },
+          { "skill": "Escutar", "value": 10 }
+        ]
+      }
+    },
+    "Amado Pela Magia": {
+      "mode": "passive",
+      "stackable": true,
+      "automationLevel": "complete",
+      "passive": { "resourceMods": { "pm": 5 } }
+    },
+    "Ambidestro": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditional": { "acMod": 5 }
+    },
+    "Arremesso Múltiplo": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Atacante Agressivo": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Atacante Furioso": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditional": { "acMod": -8 }
+    },
+    "Atirador Aguçado": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Atleta": {
+      "mode": "mixed",
+      "stackable": false,
+      "automationLevel": "partial",
+      "passive": {
+        "skillMods": [{ "skill": "Atletismo", "value": 15 }],
+        "attributeMods": { "FOR": 5, "DES": 5 }
+      }
+    },
+    "Cavaleiro de Justas": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditional": {
+        "skillMods": [{ "skill": "Cavalgar", "value": 10 }]
+      }
+    },
+    "Curandeiro": {
+      "mode": "mixed",
+      "stackable": false,
+      "automationLevel": "partial",
+      "passive": {
+        "skillMods": [{ "skill": "Medicina", "value": 10 }]
+      }
+    },
+    "Duelista": {
+      "mode": "passive",
+      "stackable": false,
+      "automationLevel": "partial",
+      "passive": { "acMod": 5 }
+    },
+    "Especialista em Armadura Pesada": { "mode": "passive", "stackable": false, "automationLevel": "manual" },
+    "Especialista em Besta": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Especialista em Concussão": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Especialista em Cortes": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Especialista em Perfuração": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Inexpugnável": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditional": { "acMod": 2 }
+    },
+    "Investida Aprimorada": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Líder": {
+      "mode": "passive",
+      "stackable": false,
+      "automationLevel": "complete",
+      "passive": {
+        "skillMods": [
+          { "skill": "Tática", "value": 20 },
+          { "skill": "Charme", "value": 10 },
+          { "skill": "Persuasão", "value": 10 },
+          { "skill": "Diplomacia", "value": 10 }
+        ]
+      }
+    },
+    "Lobo Solitário": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditional": { "acMod": 5, "attackMod": 10 }
+    },
+    "Mestre de Escudo": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Mestre em Armas Grandes": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Mobilidade": { "mode": "mixed", "stackable": false, "automationLevel": "manual" },
+    "Perito": { "mode": "passive", "stackable": false, "automationLevel": "manual" },
+    "Piqueiro": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Resiliente": { "mode": "passive", "stackable": false, "automationLevel": "manual" },
+    "Retalhador": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Robusto": { "mode": "passive", "stackable": false, "automationLevel": "complete" },
+    "Sorrateiro": {
+      "mode": "mixed",
+      "stackable": false,
+      "automationLevel": "partial",
+      "passive": {
+        "skillMods": [{ "skill": "Furtividade", "value": 15 }]
+      }
+    },
+    "Técnicas Agressivas de Escudo": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Técnicas do Sentinela": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Trespassar": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Rho Aias": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Ungido pela Magia": { "mode": "passive", "stackable": false, "automationLevel": "manual" },
+    "Mana Residual": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Fissura Celeste": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Forja Divina": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Mundo Extensivo": { "mode": "passive", "stackable": false, "automationLevel": "manual" },
+    "Veia Densa": { "mode": "passive", "stackable": false, "automationLevel": "manual" }
+  }
+}

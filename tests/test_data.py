@@ -37,6 +37,25 @@ class DatabaseIntegrityTests(unittest.TestCase):
         self.assertIn(b"/AcroForm", payload)
         self.assertGreater(len(payload), 100_000)
 
+    def test_spell_actions_and_talent_rules_are_structured(self):
+        spells = {spell["id"]: spell for spell in all_spells(self.database)}
+        jade = spells["n-tra-o-de-jade"]["levels"][0]
+        temper = spells["p-cargas-de-t-mpera"]["levels"][0]
+        root = spells["c-raiz-da-terra"]["levels"][7]
+        self.assertEqual((jade["activationAction"], jade["secondaryActions"]), ("bonus", ["reaction"]))
+        self.assertEqual((temper["activationAction"], temper["secondaryActions"]), ("bonus", ["reaction"]))
+        self.assertEqual((root["activationAction"], root["secondaryActions"]), ("standard", ["movement"]))
+        for spell in spells.values():
+            for level in spell["levels"]:
+                self.assertIsNotNone(level["activationCost"])
+                self.assertNotEqual(level["mechanicsSource"]["activationCost"], "missing")
+
+        talents = {talent["name"]: talent for talent in self.database["talents"]}
+        self.assertEqual(talents["Atleta"]["mode"], "mixed")
+        self.assertEqual(talents["Amado Pela Magia"]["mode"], "passive")
+        self.assertTrue(talents["Amado Pela Magia"]["stackable"])
+        self.assertEqual(talents["Lobo Solitário"]["conditionalMods"]["attackMod"], 10)
+
 
 if __name__ == "__main__":
     unittest.main()
