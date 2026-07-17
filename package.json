@@ -7,11 +7,9 @@
     "validate:data": "python tools/validate_data.py",
     "test": "python -m unittest discover -s tests -p test_*.py && node --test tests/js/*.test.cjs",
     "build": "python tools/build.py",
-    "test:e2e": "node tests/e2e/smoke.cjs",
-    "release": "python tools/build.py --release"
+    "test:e2e": "node tests/e2e/smoke.cjs"
   },
   "devDependencies": {
     "playwright": "1.61.1"
   }
 }
-

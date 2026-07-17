@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import argparse
 import json
 import unicodedata
 from collections import Counter
@@ -123,18 +122,11 @@ def logical_json(database: dict) -> str:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check-dist", action="store_true")
-    args = parser.parse_args()
     canonical = load_canonical()
     generated = load_data_js(ROOT / "data.js")
     errors = validate_database(canonical)
     if logical_json(canonical) != logical_json(generated):
         errors.append("data.js diverge da fonte canônica.")
-    if args.check_dist:
-        dist_path = ROOT / "dist" / "data.js"
-        if not dist_path.exists() or logical_json(generated) != logical_json(load_data_js(dist_path)):
-            errors.append("dist/data.js diverge de data.js.")
     if errors:
         print("Falhas de integridade:")
         for error in errors:
