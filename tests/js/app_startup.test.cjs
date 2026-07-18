@@ -37,7 +37,13 @@ function createSandbox(initialState = null) {
     body,
     activeElement: body,
     currentScript: { src: "file:///latio/app.js" },
-    querySelector(selector) { return selector.startsWith("#") ? elements[selector.slice(1)] ?? null : null; },
+    querySelector(selector) {
+      if (selector === "#modalRoot .modal") {
+        const match = elements.modalRoot.innerHTML.match(/data-blocking="(true|false)"/);
+        return match ? { ...createElement(), dataset: { blocking: match[1] } } : null;
+      }
+      return selector.startsWith("#") ? elements[selector.slice(1)] ?? null : null;
+    },
     querySelectorAll() { return []; },
     createElement,
     addEventListener() {},
@@ -128,7 +134,7 @@ test("shows friendly PDF conflict names without technical paths", () => {
   assert.doesNotMatch(elements.modalRoot.innerHTML, /character\.name/);
 });
 
-test("charges World maintenance only through its button", () => {
+test("gives the opening World turn for free and blocks the next pending turn transactionally", () => {
   const { sandbox, elements } = createSandbox();
   vm.runInContext('state.magic.baseLevels.Mundo = 1; state.resources.pmMaxBonus = 100; state.resources.pmCurrent = 100; openWorldAction()', sandbox);
   assert.equal(vm.runInContext("state.world.status", sandbox), "closed");
@@ -137,20 +143,36 @@ test("charges World maintenance only through its button", () => {
   assert.equal(vm.runInContext("state.world.status", sandbox), "active");
   assert.equal(vm.runInContext('state.combat.activeSpells.some((spell) => spell.type === "Mundo")', sandbox), false);
   assert.equal(vm.runInContext("pmCurrent()", sandbox), 95);
-  vm.runInContext("maintainWorldAction()", sandbox);
-  assert.equal(vm.runInContext("pmCurrent()", sandbox), 93);
   assert.equal(vm.runInContext("state.world.maintenancePaidForTurn", sandbox), true);
-  vm.runInContext("maintainWorldAction()", sandbox);
-  assert.equal(vm.runInContext("pmCurrent()", sandbox), 93);
   vm.runInContext("passTurn()", sandbox);
-  assert.equal(vm.runInContext("pmCurrent()", sandbox), 93);
+  assert.equal(vm.runInContext("pmCurrent()", sandbox), 95);
   assert.equal(vm.runInContext("state.world.status", sandbox), "active");
   assert.equal(vm.runInContext("state.world.durationTurns", sandbox), 2);
   assert.equal(vm.runInContext("state.world.maintenancePaidForTurn", sandbox), false);
-  vm.runInContext("passTurn()", sandbox);
-  assert.equal(vm.runInContext("pmCurrent()", sandbox), 93);
-  assert.equal(vm.runInContext("state.world.status", sandbox), "closed");
-  assert.equal(vm.runInContext("state.world.durationTurns", sandbox), null);
+
+  vm.runInContext('state.combat.actions.bonus = false; state.combat.activeSpells = [{ id: "forte", type: "Forte", name: "Forte", turns: 3, maintenanceCost: 2 }]', sandbox);
+  assert.equal(vm.runInContext("passTurn()", sandbox), false);
+  assert.equal(vm.runInContext("pmCurrent()", sandbox), 95);
+  assert.equal(vm.runInContext("state.world.durationTurns", sandbox), 2);
+  assert.equal(vm.runInContext("state.combat.activeSpells[0].turns", sandbox), 3);
+  assert.equal(vm.runInContext("state.combat.actions.bonus", sandbox), false);
+  assert.match(elements.modalRoot.innerHTML, /data-blocking="true"/);
+  assert.match(elements.modalRoot.innerHTML, /Manutenção do Mundo pendente/);
+  assert.doesNotMatch(elements.modalRoot.innerHTML, /data-action="close-modal"|Cancelar/);
+  assert.match(elements.modalRoot.innerHTML, /data-resolution="break" disabled/);
+
+  assert.equal(vm.runInContext("closeModal()", sandbox), false);
+  assert.match(elements.modalRoot.innerHTML, /Manutenção do Mundo pendente/);
+  vm.runInContext("handleKeydown({ key: 'Escape', preventDefault() {}, target: {} })", sandbox);
+  assert.match(elements.modalRoot.innerHTML, /Manutenção do Mundo pendente/);
+
+  assert.equal(vm.runInContext("resolveWorldTurn('maintain')", sandbox), true);
+  assert.equal(elements.modalRoot.innerHTML, "");
+  assert.equal(vm.runInContext("pmCurrent()", sandbox), 91);
+  assert.equal(vm.runInContext("state.world.durationTurns", sandbox), 1);
+  assert.equal(vm.runInContext("state.world.maintenancePaidForTurn", sandbox), false);
+  assert.equal(vm.runInContext("state.combat.activeSpells[0].turns", sandbox), 2);
+  assert.equal(vm.runInContext("state.combat.actions.bonus", sandbox), true);
 });
 
 test("rolls the correct World duration and closes at zero", () => {
@@ -164,10 +186,74 @@ test("rolls the correct World duration and closes at zero", () => {
 
   vm.runInContext("state.magic.baseLevels.Mundo = 1; state.resources.pmMaxBonus = 100; state.resources.pmCurrent = 100; openWorldAction()", sandbox);
   elements.worldDurationTurns.value = "1";
-  vm.runInContext("confirmWorldOpen(); maintainWorldAction(); passTurn()", sandbox);
+  vm.runInContext("confirmWorldOpen(); passTurn()", sandbox);
   assert.equal(vm.runInContext("state.world.status", sandbox), "closed");
   assert.equal(vm.runInContext("state.world.durationTurns", sandbox), null);
   assert.match(vm.runInContext("state.combat.log.join(' ')", sandbox), /duração chegou a 0/i);
+});
+
+test("charges manual World maintenance only once in the same turn", () => {
+  const { sandbox } = createSandbox();
+  vm.runInContext('state.magic.baseLevels.Mundo = 1; state.world.status = "active"; state.world.durationTurns = 3; state.world.maintenancePaidForTurn = false; state.resources.pmMaxBonus = 100; state.resources.pmCurrent = 20', sandbox);
+  assert.equal(vm.runInContext("maintainWorldAction()", sandbox), true);
+  assert.equal(vm.runInContext("pmCurrent()", sandbox), 18);
+  assert.equal(vm.runInContext("maintainWorldAction()", sandbox), false);
+  assert.equal(vm.runInContext("pmCurrent()", sandbox), 18);
+  assert.equal(vm.runInContext("passTurn()", sandbox), true);
+  assert.equal(vm.runInContext("pmCurrent()", sandbox), 18);
+  assert.equal(vm.runInContext("state.world.durationTurns", sandbox), 2);
+});
+
+test("breaks a pending World with Bonus Action and automatically completes the turn", () => {
+  const { sandbox, elements } = createSandbox();
+  vm.runInContext('state.world.status = "active"; state.world.durationTurns = 4; state.world.maintenancePaidForTurn = false; state.resources.pmMaxBonus = 100; state.resources.pmCurrent = 100; state.combat.activeSpells = [{ id: "forte", type: "Forte", name: "Forte", turns: 3, maintenanceCost: 2 }]', sandbox);
+  assert.equal(vm.runInContext("passTurn()", sandbox), false);
+  assert.match(elements.modalRoot.innerHTML, /Quebrar Mundo \(Ação Bônus\)/);
+  assert.equal(vm.runInContext("resolveWorldTurn('break')", sandbox), true);
+  assert.equal(vm.runInContext("state.world.status", sandbox), "closed");
+  assert.equal(vm.runInContext("state.world.durationTurns", sandbox), null);
+  assert.equal(vm.runInContext("pmCurrent()", sandbox), 98);
+  assert.equal(vm.runInContext("state.combat.activeSpells[0].turns", sandbox), 2);
+  assert.match(vm.runInContext("state.combat.log.join(' ')", sandbox), /Quebrar Mundo: Ação Bônus usada/);
+  assert.match(vm.runInContext("state.combat.log.join(' ')", sandbox), /Turno passado/);
+});
+
+test("requires Bonus Action for normal World closure and keeps collapse free", () => {
+  const { sandbox } = createSandbox();
+  vm.runInContext('state.world.status = "active"; state.world.durationTurns = 3; state.world.maintenancePaidForTurn = true', sandbox);
+  assert.equal(vm.runInContext("closeWorldAction()", sandbox), true);
+  assert.equal(vm.runInContext("state.world.status", sandbox), "closed");
+  assert.equal(vm.runInContext("state.combat.actions.bonus", sandbox), false);
+
+  vm.runInContext('state.world.status = "active"; state.world.durationTurns = 3; state.world.maintenancePaidForTurn = true', sandbox);
+  assert.equal(vm.runInContext("closeWorldAction()", sandbox), false);
+  assert.equal(vm.runInContext("state.world.status", sandbox), "active");
+  assert.equal(vm.runInContext("collapseWorldAction()", sandbox), true);
+  assert.equal(vm.runInContext("state.world.status", sandbox), "collapsed");
+});
+
+test("offers forced World break when neither PM nor Bonus Action is available", () => {
+  const { sandbox, elements } = createSandbox();
+  vm.runInContext('state.world.status = "active"; state.world.durationTurns = 3; state.world.maintenancePaidForTurn = false; state.resources.pmCurrent = 0; state.combat.actions.bonus = false', sandbox);
+  assert.equal(vm.runInContext("passTurn()", sandbox), false);
+  assert.match(elements.modalRoot.innerHTML, /Quebra forçada/);
+  assert.match(elements.modalRoot.innerHTML, /data-resolution="maintain" disabled/);
+  assert.equal(vm.runInContext("resolveWorldTurn('break')", sandbox), true);
+  assert.equal(vm.runInContext("state.world.status", sandbox), "closed");
+  assert.match(vm.runInContext("state.combat.log.join(' ')", sandbox), /Quebra forçada/);
+});
+
+test("shows the compact Combat World card only while active", () => {
+  const { sandbox } = createSandbox();
+  assert.equal(vm.runInContext("combatWorldCard()", sandbox), "");
+  vm.runInContext('state.magic.baseLevels.Mundo = 2; state.world.status = "active"; state.world.durationTurns = 3; state.world.maintenancePaidForTurn = false', sandbox);
+  const pending = vm.runInContext("combatWorldCard()", sandbox);
+  assert.match(pending, /combat-world-panel pending/);
+  assert.match(pending, /Manter Mundo/);
+  vm.runInContext("state.world.maintenancePaidForTurn = true", sandbox);
+  const guaranteed = vm.runInContext("combatWorldCard()", sandbox);
+  assert.match(guaranteed, /Manutenção garantida/);
+  assert.match(guaranteed, /disabled/);
 });
 
 test("blocks an imported active World until its duration is defined", () => {

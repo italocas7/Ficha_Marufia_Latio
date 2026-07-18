@@ -1041,6 +1041,7 @@ function renderCombate() {
         </div>
       </div>
     </section>
+    ${combatWorldCard()}
     ${renderCorePanel("combat")}
     ${combatQuickSkillsPanel()}
     ${combatExtrasPanel()}
@@ -1224,7 +1225,7 @@ function renderMundo() {
           ${miniStat("Nível", level)}
           ${miniStat("Estado", worldStatusLabel)}
           ${miniStat(worldActive ? "Turnos restantes" : "Duração", worldActive ? (state.world.durationTurns ?? "Não informada") : `${durationFormula} rodadas`)}
-          ${miniStat("Manutenção", !worldActive ? "Inativa" : state.world.maintenancePaidForTurn ? "Paga neste turno" : "Pendente")}
+          ${miniStat("Manutenção", !worldActive ? "Inativa" : state.world.maintenancePaidForTurn ? "Garantida neste turno" : "Pendente")}
           ${miniStat("Usos da Lei", state.world.lawUses ?? (tier + 1))}
           ${miniStat("Área", area)}
           ${miniStat("Dificuldade", difficulty)}
@@ -1233,9 +1234,9 @@ function renderMundo() {
         <div class="inline">
           <button class="button" type="button" data-action="world-open" ${worldActive ? "disabled" : ""}>Abrir Mundo (-${costs.activation} PM)</button>
           ${worldActive && state.world.durationTurns === null ? `<button class="button" type="button" data-action="world-duration">Definir duração</button>` : ""}
-          <button class="${state.world.maintenancePaidForTurn ? "ghost" : "button"}" type="button" data-action="world-maintain" ${worldActive && !state.world.maintenancePaidForTurn ? "" : "disabled"}>${state.world.maintenancePaidForTurn ? "Manutenção paga" : `Manter Mundo (-${costs.maintenance} PM)`}</button>
+          <button class="${state.world.maintenancePaidForTurn ? "ghost" : "button"}" type="button" data-action="world-maintain" ${worldActive && !state.world.maintenancePaidForTurn ? "" : "disabled"}>${state.world.maintenancePaidForTurn ? "Manutenção garantida" : `Manter Mundo (-${costs.maintenance} PM)`}</button>
           <button class="ghost" type="button" data-action="world-law" ${worldActive && state.world.laws.length && num(state.world.lawUses, 0) > 0 ? "" : "disabled"}>Usar Lei (livre)</button>
-          <button class="danger" type="button" data-action="world-close" ${worldActive ? "" : "disabled"}>Encerrar Mundo</button>
+          <button class="danger" type="button" data-action="world-close" ${worldActive ? "" : "disabled"}>Encerrar Mundo (Ação Bônus)</button>
           <button class="ghost" type="button" data-action="world-collapse" ${worldActive ? "" : "disabled"}>Colapsar Mundo</button>
         </div>
       </div>
@@ -1552,6 +1553,32 @@ function magicPreparedExtraCost(item) {
 function magicTotalPmCost(item) {
   const base = magicPmCost(item);
   return Number.isFinite(base) ? base + magicPreparedExtraCost(item) : Number.NaN;
+}
+
+function combatWorldCard() {
+  if (state.world.status !== "active") return "";
+  const costs = worldCosts();
+  const guaranteed = Boolean(state.world.maintenancePaidForTurn);
+  return `
+    <section class="panel combat-world-panel ${guaranteed ? "guaranteed" : "pending"}">
+      <div class="section-title">
+        <div>
+          <span class="eyebrow">Mundo ativo</span>
+          <h2>${esc(state.world.name || "Mundo sem nome")}</h2>
+        </div>
+        <button class="ghost" type="button" data-action="open-world-details">Ver detalhes</button>
+      </div>
+      <div class="combat-world-card">
+        <div class="combat-world-stats">
+          ${miniStat("Nível", worldLevel())}
+          ${miniStat("Turnos", state.world.durationTurns ?? "Não informada")}
+          ${miniStat("Custo", `${costs.maintenance} PM`)}
+          ${miniStat("Manutenção", guaranteed ? "Garantida neste turno" : "Pendente")}
+        </div>
+        <button class="${guaranteed ? "ghost" : "button world-maintain-button"}" type="button" data-action="world-maintain" ${guaranteed ? "disabled" : ""}>${guaranteed ? "Manutenção garantida" : `Manter Mundo (-${costs.maintenance} PM)`}</button>
+      </div>
+    </section>
+  `;
 }
 
 function automationLabel(level) {
@@ -1883,19 +1910,24 @@ function actionCostLabel(cost) {
   return { standard: "Ação Padrão", bonus: "Ação Bônus", movement: "Ação de Movimento", reaction: "Reação", full: "Ação completa", free: "Ação livre" }[cost] ?? cost;
 }
 
-function openModal(title, body, footer = `<button class="ghost" type="button" data-action="close-modal">Fechar</button>`) {
+function openModal(title, body, footer = `<button class="ghost" type="button" data-action="close-modal">Fechar</button>`, options = {}) {
   if (!$("#modalRoot .modal")) modalReturnFocus = document.activeElement;
   const titleId = nextControlId("modal-title");
-  $("#modalRoot").innerHTML = `<div class="modal-backdrop" data-action="close-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="${titleId}" data-stop-close><header><h2 id="${titleId}">${esc(title)}</h2><button class="icon-button" type="button" data-action="close-modal" aria-label="Fechar">×</button></header><div class="modal-body">${body}</div><footer>${footer}</footer></div></div>`;
+  const dismissible = options.dismissible !== false;
+  const backdropAction = dismissible ? ` data-action="close-modal"` : "";
+  const closeButton = dismissible ? `<button class="icon-button" type="button" data-action="close-modal" aria-label="Fechar">×</button>` : "";
+  $("#modalRoot").innerHTML = `<div class="modal-backdrop ${dismissible ? "" : "required-decision"}"${backdropAction}><div class="modal" role="dialog" aria-modal="true" aria-labelledby="${titleId}" data-stop-close data-blocking="${dismissible ? "false" : "true"}"><header><h2 id="${titleId}">${esc(title)}</h2>${closeButton}</header><div class="modal-body">${body}</div><footer>${footer}</footer></div></div>`;
   associateLabels($("#modalRoot"));
   requestAnimationFrame(() => modalFocusable()[0]?.focus());
 }
 
-function closeModal() {
+function closeModal(force = false) {
+  if (!force && $("#modalRoot .modal")?.dataset.blocking === "true") return false;
   $("#modalRoot").innerHTML = "";
   const returnTarget = modalReturnFocus;
   modalReturnFocus = null;
   if (returnTarget?.isConnected && typeof returnTarget.focus === "function") requestAnimationFrame(() => returnTarget.focus());
+  return true;
 }
 
 function modalFocusable() {
@@ -1905,7 +1937,7 @@ function modalFocusable() {
 function handleKeydown(event) {
   const modal = $("#modalRoot .modal");
   if (event.key === "Escape" && modal) {
-    closeModal();
+    if (modal.dataset.blocking !== "true") closeModal();
     event.preventDefault();
     return;
   }
@@ -2414,6 +2446,14 @@ function passTurn() {
     toast("Defina a duração do Mundo antes de passar o turno.", "warn");
     return false;
   }
+  if (state.world.status === "active" && !state.world.maintenancePaidForTurn) {
+    openWorldMaintenanceDecision();
+    return false;
+  }
+  return completePassTurn();
+}
+
+function completePassTurn() {
   const remaining = [];
   for (const spell of (state.combat.activeSpells ?? []).filter((item) => item.type !== "Mundo")) {
     if (num(spell.maintenanceCost, 0) > 0) {
@@ -2434,22 +2474,15 @@ function passTurn() {
   }
   state.combat.activeSpells = remaining;
   if (state.world.status === "active") {
-    if (state.world.maintenancePaidForTurn) {
-      const nextDuration = num(state.world.durationTurns, 0) - 1;
-      state.world.maintenancePaidForTurn = false;
-      if (nextDuration <= 0) {
-        state.world.status = "closed";
-        state.world.durationTurns = null;
-        state.combat.log.unshift("Mundo encerrado: a duração chegou a 0 turnos.");
-      } else {
-        state.world.durationTurns = nextDuration;
-        state.combat.log.unshift(`Mundo mantido por mais um turno. Restam ${nextDuration} turno(s); a próxima manutenção está pendente.`);
-      }
-    } else {
+    const nextDuration = num(state.world.durationTurns, 0) - 1;
+    state.world.maintenancePaidForTurn = false;
+    if (nextDuration <= 0) {
       state.world.status = "closed";
       state.world.durationTurns = null;
-      state.world.maintenancePaidForTurn = false;
-      state.combat.log.unshift("Mundo encerrado: a manutenção não foi paga antes de passar o turno.");
+      state.combat.log.unshift("Mundo encerrado: a duração chegou a 0 turnos.");
+    } else {
+      state.world.durationTurns = nextDuration;
+      state.combat.log.unshift(`Mundo avançou um turno. Restam ${nextDuration} turno(s); a próxima manutenção está pendente.`);
     }
   }
   if (num(state.magicCore.caBoostTurns, 0) > 0) {
@@ -2459,6 +2492,7 @@ function passTurn() {
   state.combat.actions = { standard: true, bonus: true, movement: true, reaction: true };
   state.combat.log.unshift("Turno passado.");
   render();
+  return true;
 }
 
 function finishCombat() {
@@ -2617,6 +2651,7 @@ function handleClick(event) {
     "confirm-world-open": confirmWorldOpen,
     "save-world-duration": saveWorldDuration,
     "world-maintain": maintainWorldAction,
+    "resolve-world-turn": () => resolveWorldTurn(button.dataset.resolution),
     "world-law": useWorldLawAction,
     "world-close": closeWorldAction,
     "world-collapse": collapseWorldAction,
@@ -2883,10 +2918,10 @@ function confirmWorldOpen() {
   spendPm(costs.activation, "Abrir Mundo");
   state.world.status = "active";
   state.world.durationTurns = duration;
-  state.world.maintenancePaidForTurn = false;
+  state.world.maintenancePaidForTurn = true;
   state.world.lawUses = worldTier() + 1;
   state.combat.activeSpells = (state.combat.activeSpells ?? []).filter((spell) => spell.type !== "Mundo");
-  state.combat.log.unshift(`Mundo aberto por ${duration} turno(s). A manutenção do primeiro turno está pendente.`);
+  state.combat.log.unshift(`Mundo aberto por ${duration} turno(s). O turno inicial está garantido; a próxima manutenção será exigida no turno seguinte.`);
   closeModal();
   render();
   return true;
@@ -2907,7 +2942,7 @@ function saveWorldDuration() {
   return true;
 }
 
-function maintainWorldAction() {
+function payWorldMaintenance(renderAfter = true) {
   const costs = worldCosts();
   if (!RULES.validateWorldAction({ status: state.world.status, action: "maintain" }).valid) {
     addError("LAT-MUN-002", "O Mundo precisa estar ativo antes da manutenção.");
@@ -2920,8 +2955,63 @@ function maintainWorldAction() {
   if (!spendPm(costs.maintenance, "Manter Mundo")) return false;
   state.world.maintenancePaidForTurn = true;
   state.combat.log.unshift("Manter Mundo: manutenção paga sem gastar ação.");
-  render();
+  if (renderAfter) render();
   return true;
+}
+
+function maintainWorldAction() {
+  return payWorldMaintenance(true);
+}
+
+function openWorldMaintenanceDecision() {
+  const costs = worldCosts();
+  const canMaintain = pmCurrent() >= costs.maintenance;
+  const bonusAvailable = Boolean(state.combat.actions.bonus);
+  const forcedBreak = !canMaintain && !bonusAvailable;
+  const breakLabel = forcedBreak ? "Quebra forçada" : "Quebrar Mundo (Ação Bônus)";
+  const breakDisabled = !bonusAvailable && !forcedBreak;
+  openModal("Manutenção do Mundo pendente", `
+    <div class="world-maintenance-decision stack">
+      <p>Você precisa resolver o Mundo antes de passar o turno. Escolha entre pagar a manutenção ou quebrar o Mundo.</p>
+      <div class="grid three">
+        ${miniStat("PM atual", pmCurrent())}
+        ${miniStat("Manutenção", `${costs.maintenance} PM`)}
+        ${miniStat("Ação Bônus", bonusAvailable ? "Disponível" : "Usada")}
+      </div>
+      ${forcedBreak ? `<div class="decision-warning"><strong>Quebra forçada disponível.</strong><span>Não há PM suficiente nem Ação Bônus disponível. O Mundo será encerrado sem custo de ação para impedir o bloqueio da ficha.</span></div>` : ""}
+      ${!canMaintain && bonusAvailable ? `<div class="decision-warning"><strong>PM insuficiente para manter.</strong><span>Quebre o Mundo usando sua Ação Bônus para continuar.</span></div>` : ""}
+      ${canMaintain && !bonusAvailable ? `<div class="decision-note"><strong>Ação Bônus já usada.</strong><span>Neste turno, somente Manter está disponível.</span></div>` : ""}
+    </div>
+  `, `<button class="button" type="button" data-action="resolve-world-turn" data-resolution="maintain" ${canMaintain ? "" : "disabled"}>Manter (-${costs.maintenance} PM)</button><button class="${forcedBreak ? "danger" : "ghost"}" type="button" data-action="resolve-world-turn" data-resolution="break" ${breakDisabled ? "disabled" : ""}>${breakLabel}</button>`, { dismissible: false });
+}
+
+function resolveWorldTurn(resolution) {
+  if (state.world.status !== "active" || state.world.maintenancePaidForTurn) {
+    closeModal(true);
+    return completePassTurn();
+  }
+  if (resolution === "maintain") {
+    if (!payWorldMaintenance(false)) return false;
+    closeModal(true);
+    return completePassTurn();
+  }
+  if (resolution !== "break") return false;
+  const costs = worldCosts();
+  const canMaintain = pmCurrent() >= costs.maintenance;
+  const bonusAvailable = Boolean(state.combat.actions.bonus);
+  if (!bonusAvailable && canMaintain) {
+    toast("A Ação Bônus já foi usada. Mantenha o Mundo para continuar.", "warn");
+    return false;
+  }
+  if (bonusAvailable) {
+    if (!useAction("bonus", "Quebrar Mundo", false)) return false;
+    endWorld("closed", "Mundo quebrado usando Ação Bônus.", false);
+  } else {
+    state.combat.log.unshift("Quebra forçada: Mundo encerrado sem ação por falta de PM e indisponibilidade da Ação Bônus.");
+    endWorld("closed", "Mundo quebrado de forma forçada.", false);
+  }
+  closeModal(true);
+  return completePassTurn();
 }
 
 function useWorldLawAction() {
@@ -2937,19 +3027,21 @@ function useWorldLawAction() {
   return true;
 }
 
-function endWorld(status, message) {
+function endWorld(status, message, renderAfter = true) {
   if (!RULES.validateWorldAction({ status: state.world.status, action: status === "collapsed" ? "collapse" : "close" }).valid) return false;
   state.world.status = status;
   state.world.durationTurns = null;
   state.world.maintenancePaidForTurn = false;
   state.combat.activeSpells = (state.combat.activeSpells ?? []).filter((spell) => spell.type !== "Mundo");
   state.combat.log.unshift(message);
-  render();
+  if (renderAfter) render();
   return true;
 }
 
 function closeWorldAction() {
-  return endWorld("closed", "Mundo encerrado.");
+  if (!RULES.validateWorldAction({ status: state.world.status, action: "close" }).valid) return false;
+  if (!useAction("bonus", "Encerrar Mundo", false)) return false;
+  return endWorld("closed", "Mundo encerrado usando Ação Bônus.");
 }
 
 function collapseWorldAction() {
