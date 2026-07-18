@@ -6,7 +6,7 @@ const RULES = window.LATIO_RULES;
 const STORAGE_KEY = "marufia-latio-state-v1";
 const BACKUP_STORAGE_KEY = "marufia-latio-backups-v1";
 const APP_ID = "marufia-latio";
-const STATE_SCHEMA_VERSION = 4;
+const STATE_SCHEMA_VERSION = 5;
 const APP_BASE_URL = new URL(".", document.currentScript?.src || window.location.href).href;
 const MAGIC_TYPES = ["Fina", "Impacto", "Densa", "Mundo", "Forte", "Etérea"];
 const TABS = [
@@ -180,7 +180,7 @@ function createDefaultState() {
     combat: { actions: { standard: true, bonus: true, movement: true, reaction: true }, log: [], activeSpells: [], defenseAdjustments: { ca: 0, block: 0 } },
     talents: [],
     abilities: [],
-    world: { name: "", phrase: "", description: "", status: "closed", maintenancePaidForTurn: false, lawUses: null, laws: [], narrative: "" },
+    world: { name: "", phrase: "", description: "", status: "closed", durationTurns: null, maintenancePaidForTurn: false, lawUses: null, laws: [], narrative: "" },
     notes: {
       traits: "", ideal: "", flaws: "", bonds: "", eyes: "", age: "", height: "", hair: "", skin: "", weight: "",
       appearance: "", history: "", allies: "", patron: "", other: "",
@@ -395,9 +395,66 @@ function attr(name, source = state) {
   return value;
 }
 
+function normalizedRuleText(value) {
+  return compact(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+}
+
+function explicitForteCa(text) {
+  const match = normalizedRuleText(text).match(/\bAUMENTA(?:\s+(?:SUA|A))?\s+CA\s+EM\s+\+?(\d+)/);
+  return match ? num(match[1], 0) : null;
+}
+
+function explicitEffectiveVigor(text) {
+  const normalized = normalizedRuleText(text);
+  const vigor = "VIGOR\\s+(?:EFETIVO|FISICO)";
+  const patterns = [
+    new RegExp(`(?:RECEBE|GANHA)\\s+\\+?(\\d+)\\s+(?:DE\\s+)?${vigor}`),
+    new RegExp(`${vigor}\\s*\\+?(\\d+)`),
+    new RegExp(`${vigor}[^.]{0,40}?(?:AUMENTA\\s+PARA|PERMANECE(?:\\s+EM)?|PASSA\\s+A\\s+SER)\\s*\\+?(\\d+)`),
+  ];
+  for (const pattern of patterns) {
+    const match = normalized.match(pattern);
+    if (match) return num(match[1], 0);
+  }
+  return null;
+}
+
+function forteBonusesForItem(item) {
+  if (!item || item.type !== "Forte" || !item.spell) return { ca: 0, vigor: 0 };
+  let ca = 0;
+  let vigor = 0;
+  for (const entry of normalizedSpellLevels(item.spell).filter((level) => level.level <= num(item.level, 0))) {
+    const nextCa = explicitForteCa(entry.text);
+    const nextVigor = explicitEffectiveVigor(entry.text);
+    if (nextCa !== null) ca = nextCa;
+    if (nextVigor !== null) vigor = nextVigor;
+  }
+  return { ca, vigor };
+}
+
+function spellItemForActive(active, source = state) {
+  if (!active || active.type !== "Forte") return null;
+  if (String(active.spellId).startsWith("base-")) {
+    return { id: active.spellId, type: "Forte", level: active.level, spell: getSpell("Forte", source.character?.regionCode) };
+  }
+  const known = source.magic?.knownExtras?.find((spell) => spell.id === active.spellId);
+  return known ? { ...known, spell: getSpell(known.type, known.regionCode) } : null;
+}
+
+function activeForteBonuses(source = state) {
+  return (source.combat?.activeSpells ?? []).filter((spell) => spell.type === "Forte").reduce((total, spell) => {
+    const fallback = forteBonusesForItem(spellItemForActive(spell, source));
+    total.ca += Object.hasOwn(spell, "caBonus") ? num(spell.caBonus, 0) : fallback.ca;
+    total.vigor += Object.hasOwn(spell, "effectiveVigor") ? num(spell.effectiveVigor, 0) : fallback.vigor;
+    return total;
+  }, { ca: 0, vigor: 0 });
+}
+
 function bodyInfo(source = state) {
-  const total = attr("FOR", source) + attr("CON", source);
-  return DB.bodyTable.find((row) => total >= row.min && total <= row.max) ?? DB.bodyTable.at(-1);
+  const vigor = activeForteBonuses(source).vigor;
+  const total = attr("FOR", source) + attr("CON", source) + vigor;
+  const row = DB.bodyTable.find((entry) => total >= entry.min && total <= entry.max) ?? DB.bodyTable.at(-1);
+  return { ...row, total, vigor };
 }
 
 function baseSkillValue(skill, source = state) {
@@ -731,8 +788,9 @@ function caBreakdown(source = state) {
     const conditionalTalents = enabledConditionalTalents(source).reduce((sum, talent) => sum + conditionalCaMod(talent), 0);
     const talents = passiveTalents + conditionalTalents;
     const core = coreCaBonus(source);
+    const forte = activeForteBonuses(source).ca;
     const perceptionOverride = isCoreEffectActive("olhos", source);
-    const calculatedTotal = perceptionOverride ? skillFinal("Percepção", source) : base + armor + effects + talents + core;
+    const calculatedTotal = (perceptionOverride ? skillFinal("Percepção", source) : base + armor + effects + talents + core) + forte;
     const adjustments = source.combat?.defenseAdjustments ?? {};
     const caAdjustment = num(adjustments.ca, 0);
     const blockAdjustment = num(adjustments.block, 0);
@@ -746,10 +804,10 @@ function caBreakdown(source = state) {
     }
     const calculatedBlock = { ...block };
     for (const type of Object.keys(block)) block[type] += blockAdjustment;
-    return { total, calculatedTotal, base, armor, effects, talents, core, perceptionOverride, block, calculatedBlock, adjustments: { ca: caAdjustment, block: blockAdjustment } };
+    return { total, calculatedTotal, base, armor, effects, talents, core, forte, perceptionOverride, block, calculatedBlock, adjustments: { ca: caAdjustment, block: blockAdjustment } };
   } catch (error) {
     if (source === state) addError("LAT-CALC-001", error.message);
-    return { total: 0, calculatedTotal: 0, base: 0, armor: 0, effects: 0, talents: 0, core: 0, perceptionOverride: false, block: { cortante: 0, perfurante: 0, contundente: 0 }, calculatedBlock: { cortante: 0, perfurante: 0, contundente: 0 }, adjustments: { ca: 0, block: 0 } };
+    return { total: 0, calculatedTotal: 0, base: 0, armor: 0, effects: 0, talents: 0, core: 0, forte: 0, perceptionOverride: false, block: { cortante: 0, perfurante: 0, contundente: 0 }, calculatedBlock: { cortante: 0, perfurante: 0, contundente: 0 }, adjustments: { ca: 0, block: 0 } };
   }
 }
 
@@ -772,6 +830,14 @@ function rollD100(mode = "normal") {
   }
   const result = one();
   return { rolls: [result], result, label: "Normal" };
+}
+
+function d100Outcome(result, target) {
+  if (num(result, 0) === 1) return "Crítico natural";
+  if (result <= Math.floor(target / 5)) return "Extremo";
+  if (result <= Math.floor(target / 2)) return "Bom/Sólido";
+  if (result <= target) return "Normal";
+  return "Falha";
 }
 
 function render() {
@@ -926,7 +992,7 @@ function renderResumo() {
           ${stat("CA", ca.total, "Clique para ver cálculo e efeitos.", "open-ca")}
           ${stat("Vida", `${hpCurrent()}/${maxHp()}`, "(CON ÷ 10) + 12 e níveis.", "")}
           ${stat("PM", `${pmCurrent()}/${maxPm()}`, "POD ÷ 3 e níveis.", "")}
-          ${stat("Corpo", `${body.body} (${body.mod})`, `${body.label}; Bloqueio base ${body.block}.`, "")}
+          ${stat("Corpo", `${body.body} (${body.mod})`, `${body.label}; Bloqueio base ${body.block}${body.vigor ? `; Vigor +${body.vigor}` : ""}.`, "")}
           ${stat("Esquiva", skillFinal("Esquivar"), "Meia DES + modificadores.", "open-skill", "Esquivar")}
           ${stat("Aptidões", `${aptitudeTotal() - aptitudeSpent()}/${aptitudeTotal()}`, "Disponíveis / total.", "")}
           ${stat("Perícias", `${skillPointsTotal() - skillPointsSpent()}/${skillPointsTotal()}`, "Pontos restantes / total.", "")}
@@ -970,7 +1036,7 @@ function renderCombate() {
             ${defenseMiniStat("CA", ca.total, "ca", ca.adjustments.ca)}
             ${defenseMiniStat("Bloqueio", `C ${ca.block.cortante} · P ${ca.block.perfurante} · Cn ${ca.block.contundente}`, "block", ca.adjustments.block)}
             ${miniStat(fight.name, fight.value)}
-            ${miniStat("Corpo", bodyInfo().mod)}
+            ${miniStat("Corpo", `${bodyInfo().mod}${bodyInfo().vigor ? ` · Vigor +${bodyInfo().vigor}` : ""}`)}
           </div>
         </div>
       </div>
@@ -1145,6 +1211,7 @@ function renderMundo() {
   const selectedDetails = selectedLaw && !customLaw ? lawDetailsForResistance(selectedLaw, effectKey, resistanceMode) : null;
   const costs = worldCosts(level);
   const worldActive = state.world.status === "active";
+  const durationFormula = worldDurationFormula(level);
   const worldStatusLabel = { closed: "Fechado", active: "Ativo", collapsed: "Colapsado" }[state.world.status] ?? "Fechado";
   return `
     <section class="panel">
@@ -1156,7 +1223,7 @@ function renderMundo() {
         <div class="stat-grid">
           ${miniStat("Nível", level)}
           ${miniStat("Estado", worldStatusLabel)}
-          ${miniStat("Duração manual", level <= 4 ? "1d4 rodadas" : "1d4+2 rodadas")}
+          ${miniStat(worldActive ? "Turnos restantes" : "Duração", worldActive ? (state.world.durationTurns ?? "Não informada") : `${durationFormula} rodadas`)}
           ${miniStat("Manutenção", !worldActive ? "Inativa" : state.world.maintenancePaidForTurn ? "Paga neste turno" : "Pendente")}
           ${miniStat("Usos da Lei", state.world.lawUses ?? (tier + 1))}
           ${miniStat("Área", area)}
@@ -1165,6 +1232,7 @@ function renderMundo() {
         </div>
         <div class="inline">
           <button class="button" type="button" data-action="world-open" ${worldActive ? "disabled" : ""}>Abrir Mundo (-${costs.activation} PM)</button>
+          ${worldActive && state.world.durationTurns === null ? `<button class="button" type="button" data-action="world-duration">Definir duração</button>` : ""}
           <button class="${state.world.maintenancePaidForTurn ? "ghost" : "button"}" type="button" data-action="world-maintain" ${worldActive && !state.world.maintenancePaidForTurn ? "" : "disabled"}>${state.world.maintenancePaidForTurn ? "Manutenção paga" : `Manter Mundo (-${costs.maintenance} PM)`}</button>
           <button class="ghost" type="button" data-action="world-law" ${worldActive && state.world.laws.length && num(state.world.lawUses, 0) > 0 ? "" : "disabled"}>Usar Lei (livre)</button>
           <button class="danger" type="button" data-action="world-close" ${worldActive ? "" : "disabled"}>Encerrar Mundo</button>
@@ -1408,7 +1476,7 @@ function skillRollButtons(name) {
 
 function combatQuickSkillsPanel() {
   return `<section class="panel combat-quick-panel">
-    <div class="section-title"><h2>Perícias de combate</h2><span class="muted small">N · V · D</span></div>
+    <div class="section-title"><h2>Perícias de combate</h2><div class="inline"><span class="muted small">N · V · D</span><button class="icon-button combat-dice-button" type="button" data-action="open-combat-roll" title="Teste de combate contra CA" aria-label="Abrir teste de combate contra CA">⚄</button></div></div>
     <div class="combat-skill-grid">
       ${combatQuickSkillNames().map((skill) => `<div class="combat-skill-card">
         <button class="ghost" type="button" data-action="open-skill" data-skill="${esc(skill.name)}"><strong>${esc(skill.label)}</strong><span>${esc(skill.value)}</span></button>
@@ -1557,13 +1625,32 @@ function activeSpellsPanel() {
   const active = state.combat.activeSpells ?? [];
   return `<section class="panel">
     <div class="section-title"><h2>Magias ativas</h2></div>
-    <div class="stack">${active.map((spell) => `<div class="chip active-spell-chip">
-      <strong>${esc(spell.name)}</strong>
-      <span>${spell.maintenanceCost ? `${spell.maintenanceCost} PM/turno` : "sem manutenção"}</span>
-      <span>${spell.turns ?? "manual"} turno(s)</span>
-      <button class="ghost" type="button" data-action="remove-active-spell" data-id="${esc(spell.id)}">Encerrar</button>
-    </div>`).join("") || `<div class="empty">Nenhuma magia mantida no momento.</div>`}</div>
+    <div class="stack">${active.map((spell) => {
+      const fallback = forteBonusesForItem(spellItemForActive(spell));
+      const caBonus = Object.hasOwn(spell, "caBonus") ? num(spell.caBonus, 0) : fallback.ca;
+      const vigor = Object.hasOwn(spell, "effectiveVigor") ? num(spell.effectiveVigor, 0) : fallback.vigor;
+      return `<div class="chip active-spell-chip">
+        <strong>${esc(spell.name)}</strong>
+        <span>${spell.maintenanceCost ? `${spell.maintenanceCost} PM/turno` : "sem manutenção"}</span>
+        <span>${spell.turns ?? "manual"} turno(s)</span>
+        ${spell.type === "Forte" ? `<span class="tag ok">CA +${esc(caBonus)}</span><span class="tag">Vigor +${esc(vigor)}</span>` : ""}
+        <button class="ghost" type="button" data-action="remove-active-spell" data-id="${esc(spell.id)}">Encerrar</button>
+      </div>`;
+    }).join("") || `<div class="empty">Nenhuma magia mantida no momento.</div>`}</div>
   </section>`;
+}
+
+function combatTestSkills() {
+  const fixed = [
+    { label: "Arremesso", name: "Arremessar" },
+    { label: "Arte/Ofício", name: "Arte/Ofício" },
+    { label: "Atletismo", name: "Atletismo" },
+    { label: "Tática", name: "Tática" },
+  ];
+  const fighting = DB.skills
+    .filter((skill) => /^Lutar\s*\(/i.test(skill.name))
+    .map((skill) => ({ label: skill.name, name: skill.name }));
+  return [...fixed, ...fighting].filter((entry) => DB.skills.some((skill) => skill.name === entry.name));
 }
 
 function knownSpells() {
@@ -1882,7 +1969,54 @@ function openStartModal() {
 
 function openAttributeModal(name) {
   const value = attr(name);
-  openModal(name, `<div class="stack"><div class="stat"><span class="muted">Valor atual</span><strong>${value}</strong></div><p>${esc(successText(value))}</p><p class="muted">Use os mesmos limites para rolagens d100 de atributo.</p></div>`);
+  openModal(name, `<div class="stack">
+    <div class="stat"><span class="muted">Valor atual</span><strong>${value}</strong></div>
+    <p>${esc(successText(value))}</p>
+    <div class="inline">
+      <button class="button" type="button" data-action="roll-attribute" data-attribute="${esc(name)}" data-mode="normal">Rolar d100</button>
+      <button class="ghost" type="button" data-action="roll-attribute" data-attribute="${esc(name)}" data-mode="adv">Com vantagem</button>
+      <button class="ghost" type="button" data-action="roll-attribute" data-attribute="${esc(name)}" data-mode="dis">Com desvantagem</button>
+    </div>
+  </div>`);
+}
+
+function openCombatRollModal() {
+  const skills = combatTestSkills();
+  const selected = skills[0];
+  if (!selected) return addError("LAT-PT-001", "Nenhuma perícia de combate disponível.");
+  const skillValue = skillFinal(selected.name);
+  openModal("Teste de combate contra CA", `
+    <div class="combat-roll-form stack">
+      <div class="dice-mark" aria-hidden="true">⚄</div>
+      <div class="grid two">
+        <div class="field"><label>Perícia</label><select id="combatRollSkill">${skills.map((skill) => `<option value="${esc(skill.name)}">${esc(skill.label)}</option>`).join("")}</select></div>
+        <div class="field"><label>CA da criatura</label><input id="combatTargetCa" type="number" step="1" value="0" inputmode="numeric"></div>
+      </div>
+      <div class="combat-roll-equation" aria-live="polite">
+        <div class="stat"><span class="muted">Perícia final</span><strong id="combatSkillValue">${esc(skillValue)}</strong></div>
+        <span aria-hidden="true">−</span>
+        <div class="stat"><span class="muted">CA</span><strong id="combatCaValue">0</strong></div>
+        <span aria-hidden="true">=</span>
+        <div class="stat"><span class="muted">Valor-alvo</span><strong id="combatTargetValue">${esc(skillValue)}</strong></div>
+      </div>
+      <p class="muted small">CA negativa aumenta o valor-alvo. Um resultado natural 01 sempre acerta.</p>
+    </div>
+  `, `<button class="button" type="button" data-action="roll-combat-test" data-mode="normal">Normal</button><button class="ghost" type="button" data-action="roll-combat-test" data-mode="adv">Vantagem</button><button class="ghost" type="button" data-action="roll-combat-test" data-mode="dis">Desvantagem</button><button class="ghost" type="button" data-action="close-modal">Fechar</button>`);
+}
+
+function combatAdjustedTarget(skillName, targetCa) {
+  return skillFinal(skillName) - num(targetCa, 0);
+}
+
+function updateCombatRollPreview() {
+  const skillName = $("#combatRollSkill")?.value;
+  if (!combatTestSkills().some((skill) => skill.name === skillName)) return;
+  const ca = num($("#combatTargetCa")?.value, 0);
+  const skillValue = skillFinal(skillName);
+  const target = combatAdjustedTarget(skillName, ca);
+  if ($("#combatSkillValue")) $("#combatSkillValue").textContent = String(skillValue);
+  if ($("#combatCaValue")) $("#combatCaValue").textContent = String(ca);
+  if ($("#combatTargetValue")) $("#combatTargetValue").textContent = String(target);
 }
 
 function openSkillModal(name) {
@@ -2080,13 +2214,14 @@ function openCaModal() {
     <div class="grid two">
       <div class="card">
         <h3>Cálculo</h3>
-        <p>${ca.perceptionOverride ? "Núcleo dos Olhos ativo: CA = Percepção final." : "20 + (DES ÷ 5) - 30 + armadura + escudo + efeitos + talentos + núcleo"}</p>
+        <p>${ca.perceptionOverride ? "Núcleo dos Olhos ativo: CA = Percepção final + Magia Forte." : "20 + (DES ÷ 5) - 30 + armadura + escudo + efeitos + talentos + núcleo + Magia Forte"}</p>
         <ul>
           <li>Base DES: ${ca.base}</li>
           <li>Armadura/Escudo: ${ca.armor}</li>
           <li>Efeitos temporários: ${ca.effects}</li>
           <li>Talentos ativos: ${ca.talents}</li>
           <li>Núcleo: ${ca.perceptionOverride ? `Percepção ${skillFinal("Percepção")}` : ca.core}</li>
+          <li>Magias Fortes ativas: ${ca.forte}</li>
         </ul>
         <p class="muted">Ajuste manual de CA: ${signedValue(ca.adjustments.ca)}</p>
         <div class="stat"><span class="muted">CA final</span><strong>${ca.total}</strong></div>
@@ -2210,6 +2345,7 @@ function registerActiveSpell(item, overrides = {}) {
   if (!item) return;
   const maintenanceCost = Object.hasOwn(overrides, "maintenanceCost") ? overrides.maintenanceCost : magicMaintenanceCost(item);
   const turns = Object.hasOwn(overrides, "turns") ? overrides.turns : magicDurationTurns(item);
+  const forte = forteBonusesForItem(item);
   if (!maintenanceCost && !turns && item.type !== "Mundo") return;
   state.combat.activeSpells = (state.combat.activeSpells ?? []).filter((spell) => spell.spellId !== item.id);
   state.combat.activeSpells.unshift({
@@ -2220,6 +2356,8 @@ function registerActiveSpell(item, overrides = {}) {
     level: item.level,
     turns,
     maintenanceCost,
+    caBonus: item.type === "Forte" ? forte.ca : 0,
+    effectiveVigor: item.type === "Forte" ? forte.vigor : 0,
   });
 }
 
@@ -2271,6 +2409,11 @@ function activateForte(spellId, mode) {
 }
 
 function passTurn() {
+  if (state.world.status === "active" && !Number.isInteger(state.world.durationTurns)) {
+    openWorldDurationModal(true);
+    toast("Defina a duração do Mundo antes de passar o turno.", "warn");
+    return false;
+  }
   const remaining = [];
   for (const spell of (state.combat.activeSpells ?? []).filter((item) => item.type !== "Mundo")) {
     if (num(spell.maintenanceCost, 0) > 0) {
@@ -2292,10 +2435,19 @@ function passTurn() {
   state.combat.activeSpells = remaining;
   if (state.world.status === "active") {
     if (state.world.maintenancePaidForTurn) {
+      const nextDuration = num(state.world.durationTurns, 0) - 1;
       state.world.maintenancePaidForTurn = false;
-      state.combat.log.unshift("Mundo mantido. A manutenção do próximo turno está pendente.");
+      if (nextDuration <= 0) {
+        state.world.status = "closed";
+        state.world.durationTurns = null;
+        state.combat.log.unshift("Mundo encerrado: a duração chegou a 0 turnos.");
+      } else {
+        state.world.durationTurns = nextDuration;
+        state.combat.log.unshift(`Mundo mantido por mais um turno. Restam ${nextDuration} turno(s); a próxima manutenção está pendente.`);
+      }
     } else {
       state.world.status = "closed";
+      state.world.durationTurns = null;
       state.world.maintenancePaidForTurn = false;
       state.combat.log.unshift("Mundo encerrado: a manutenção não foi paga antes de passar o turno.");
     }
@@ -2316,6 +2468,7 @@ function finishCombat() {
   state.magicCore.preparedBoost = "";
   state.magicCore.caBoostTurns = 0;
   state.world.status = "closed";
+  state.world.durationTurns = null;
   state.world.maintenancePaidForTurn = false;
   state.combat.log.unshift("Combate finalizado. Magias ativas, preparos e ações foram resetados.");
   render();
@@ -2388,9 +2541,12 @@ function handleClick(event) {
       render();
     },
     "open-attribute": () => openAttributeModal(button.dataset.attribute),
+    "roll-attribute": () => rollAttribute(button.dataset.attribute, button.dataset.mode),
     "open-skill": () => openSkillModal(button.dataset.skill),
     "open-modifiers": () => openModifiersModal(button.dataset.skill),
     "roll-skill": () => rollSkill(button.dataset.skill, button.dataset.mode),
+    "open-combat-roll": openCombatRollModal,
+    "roll-combat-test": () => rollCombatTest(button.dataset.mode),
     "open-ca": openCaModal,
     "open-defense-adjust": () => openDefenseAdjustmentModal(button.dataset.defense),
     "adjust-defense": () => adjustDefense(button.dataset.defense, num(button.dataset.delta, 0)),
@@ -2456,6 +2612,10 @@ function handleClick(event) {
     "remove-talent": () => removeTalent(button.dataset.id),
     "go-magic": () => { sessionUi.activeTab = "magia"; render(); },
     "world-open": openWorldAction,
+    "world-duration": () => openWorldDurationModal(true),
+    "roll-world-duration": rollWorldDuration,
+    "confirm-world-open": confirmWorldOpen,
+    "save-world-duration": saveWorldDuration,
     "world-maintain": maintainWorldAction,
     "world-law": useWorldLawAction,
     "world-close": closeWorldAction,
@@ -2490,6 +2650,7 @@ function handleClick(event) {
 
 function handleChange(event) {
   const target = event.target;
+  if (target.id === "combatRollSkill") updateCombatRollPreview();
   if (target.id === "customArmorIconPreset") {
     const icon = $(".armor-custom-preview .armor-icon");
     if (icon) {
@@ -2546,6 +2707,7 @@ function handleChange(event) {
 
 function handleInput(event) {
   const target = event.target;
+  if (target.id === "combatTargetCa") updateCombatRollPreview();
   if (target.id === "customArmorIconColor") {
     $(".armor-custom-preview .armor-icon")?.style.setProperty("--armor-color", target.value);
   }
@@ -2564,8 +2726,41 @@ function handleInput(event) {
 function rollSkill(name, mode) {
   const value = skillFinal(name);
   const roll = rollD100(mode);
-  const outcome = roll.result <= Math.floor(value / 5) ? "Extremo" : roll.result <= Math.floor(value / 2) ? "Bom/Sólido" : roll.result <= value ? "Normal" : "Falha";
+  const outcome = d100Outcome(roll.result, value);
   openModal(`Rolagem: ${name}`, `<div class="stat"><span class="muted">${esc(roll.label)}</span><strong>${roll.result}</strong><small>Dados: ${roll.rolls.join(", ")}</small></div><p>Resultado contra ${value}: <strong>${outcome}</strong></p><p>${esc(successText(value))}</p>`);
+}
+
+function rollAttribute(name, mode) {
+  if (!Object.hasOwn(state.attributes, name)) return addError("LAT-UI-002", `Atributo inválido: ${name}.`);
+  const value = attr(name);
+  const roll = rollD100(mode);
+  const outcome = d100Outcome(roll.result, value);
+  openModal(`Rolagem de atributo: ${name}`, `<div class="stat"><span class="muted">${esc(roll.label)}</span><strong>${roll.result}</strong><small>Dados: ${roll.rolls.join(", ")}</small></div><p>Resultado contra ${value}: <strong>${outcome}</strong></p><p>${esc(successText(value))}</p>`);
+}
+
+function rollCombatTest(mode) {
+  const skillName = $("#combatRollSkill")?.value;
+  const skill = combatTestSkills().find((entry) => entry.name === skillName);
+  if (!skill) return addError("LAT-PT-001", skillName || "Perícia de combate não selecionada.");
+  const ca = num($("#combatTargetCa")?.value, 0);
+  const skillValue = skillFinal(skill.name);
+  const target = combatAdjustedTarget(skill.name, ca);
+  const roll = rollD100(mode);
+  const outcome = d100Outcome(roll.result, target);
+  const hit = outcome !== "Falha";
+  state.combat.log.unshift(`${skill.label} contra CA ${ca}: ${roll.result} (${roll.label}), alvo ${target} — ${hit ? `Acerto · ${outcome}` : "Falha"}.`);
+  openModal(`Teste: ${skill.label}`, `
+    <div class="combat-roll-result stack">
+      <div class="stat"><span class="muted">${esc(roll.label)}</span><strong>${roll.result}</strong><small>Dados: ${roll.rolls.join(", ")}</small></div>
+      <div class="grid three">
+        ${miniStat("Perícia", skillValue)}
+        ${miniStat("CA", ca)}
+        ${miniStat("Valor-alvo", target)}
+      </div>
+      <p class="roll-verdict ${hit ? "hit" : "miss"}"><strong>${hit ? "Acerto" : "Falha"}</strong>${hit ? ` · ${esc(outcome)}` : ""}</p>
+      <p>${esc(successText(target))}</p>
+    </div>
+  `, `<button class="button" type="button" data-action="open-combat-roll">Novo teste</button><button class="ghost" type="button" data-action="close-modal">Fechar</button>`);
 }
 
 function changeMagicLevel(type, delta) {
@@ -2621,6 +2816,47 @@ function useAction(cost, label, rerender = true) {
   return true;
 }
 
+function worldDurationFormula(level = worldLevel()) {
+  return num(level, 0) <= 4 ? "1d4" : "1d4+2";
+}
+
+function rollWorldDurationValue(level = worldLevel()) {
+  return Math.floor(Math.random() * 4) + 1 + (num(level, 0) >= 5 ? 2 : 0);
+}
+
+function validWorldDuration(value) {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed >= 1 && parsed <= 999 ? parsed : null;
+}
+
+function openWorldDurationModal(adjustOnly = false) {
+  const formula = worldDurationFormula();
+  const current = adjustOnly ? state.world.durationTurns ?? "" : "";
+  openModal(adjustOnly ? "Definir duração do Mundo" : "Abrir Mundo", `
+    <div class="world-duration-card stack">
+      <div class="dice-mark" aria-hidden="true">⚄</div>
+      <div>
+        <h3>Determine a duração do Mundo</h3>
+        <p>Role <strong>${esc(formula)}</strong> ou informe manualmente quantos turnos o Mundo permanecerá ativo.</p>
+      </div>
+      <div class="field">
+        <label>Turnos de duração</label>
+        <input id="worldDurationTurns" type="number" min="1" max="999" step="1" inputmode="numeric" value="${esc(current)}">
+      </div>
+      <p id="worldDurationFeedback" class="muted small" aria-live="polite">A rolagem preencherá este campo automaticamente.</p>
+    </div>
+  `, `<button class="ghost" type="button" data-action="roll-world-duration">Rolar ${esc(formula)}</button><button class="button" type="button" data-action="${adjustOnly ? "save-world-duration" : "confirm-world-open"}">${adjustOnly ? "Salvar duração" : "Confirmar e abrir"}</button><button class="ghost" type="button" data-action="close-modal">Cancelar</button>`);
+}
+
+function rollWorldDuration() {
+  const result = rollWorldDurationValue();
+  const input = $("#worldDurationTurns");
+  if (input) input.value = String(result);
+  const feedback = $("#worldDurationFeedback");
+  if (feedback) feedback.textContent = `${worldDurationFormula()} resultou em ${result} turno(s).`;
+  return result;
+}
+
 function openWorldAction() {
   if (!RULES.validateWorldAction({ status: state.world.status, action: "open" }).valid) {
     addError("LAT-MUN-002", "O Mundo já está ativo.");
@@ -2628,13 +2864,45 @@ function openWorldAction() {
   }
   const costs = worldCosts();
   if (pmCurrent() < costs.activation) return addError("LAT-MUN-002", `Abrir Mundo: PM insuficiente (${pmCurrent()}/${costs.activation}).`);
+  if (!["standard", "bonus", "movement"].every((key) => state.combat.actions[key])) return addError("LAT-MUN-002", "Abrir Mundo exige Ação Padrão, Ação Bônus e Ação de Movimento disponíveis.");
+  openWorldDurationModal(false);
+  return true;
+}
+
+function confirmWorldOpen() {
+  const duration = validWorldDuration($("#worldDurationTurns")?.value);
+  if (duration === null) {
+    toast("Informe uma duração inteira entre 1 e 999 turnos.", "warn");
+    $("#worldDurationTurns")?.focus();
+    return false;
+  }
+  if (!RULES.validateWorldAction({ status: state.world.status, action: "open" }).valid) return addError("LAT-MUN-002", "O Mundo já está ativo.");
+  const costs = worldCosts();
+  if (pmCurrent() < costs.activation) return addError("LAT-MUN-002", `Abrir Mundo: PM insuficiente (${pmCurrent()}/${costs.activation}).`);
   if (!useAction("full", "Abrir Mundo", false)) return false;
   spendPm(costs.activation, "Abrir Mundo");
   state.world.status = "active";
+  state.world.durationTurns = duration;
   state.world.maintenancePaidForTurn = false;
   state.world.lawUses = worldTier() + 1;
   state.combat.activeSpells = (state.combat.activeSpells ?? []).filter((spell) => spell.type !== "Mundo");
-  state.combat.log.unshift("Mundo aberto. A manutenção do primeiro turno está pendente.");
+  state.combat.log.unshift(`Mundo aberto por ${duration} turno(s). A manutenção do primeiro turno está pendente.`);
+  closeModal();
+  render();
+  return true;
+}
+
+function saveWorldDuration() {
+  if (state.world.status !== "active") return false;
+  const duration = validWorldDuration($("#worldDurationTurns")?.value);
+  if (duration === null) {
+    toast("Informe uma duração inteira entre 1 e 999 turnos.", "warn");
+    $("#worldDurationTurns")?.focus();
+    return false;
+  }
+  state.world.durationTurns = duration;
+  state.combat.log.unshift(`Duração do Mundo definida em ${duration} turno(s).`);
+  closeModal();
   render();
   return true;
 }
@@ -2672,6 +2940,7 @@ function useWorldLawAction() {
 function endWorld(status, message) {
   if (!RULES.validateWorldAction({ status: state.world.status, action: status === "collapsed" ? "collapse" : "close" }).valid) return false;
   state.world.status = status;
+  state.world.durationTurns = null;
   state.world.maintenancePaidForTurn = false;
   state.combat.activeSpells = (state.combat.activeSpells ?? []).filter((spell) => spell.type !== "Mundo");
   state.combat.log.unshift(message);

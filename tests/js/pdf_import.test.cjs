@@ -33,6 +33,18 @@ test("uses friendly import labels and converts Escalar to Atletismo", () => {
   assert.equal(api.importedSkillName("Escalar", { skills: [{ name: "Atletismo" }] }), "Atletismo");
 });
 
+test("preserves and imports every cultural Lutar label", () => {
+  const api = importer();
+  const db = { skills: [
+    { name: "Lutar (Culturais)" },
+    { name: "Lutar (Armas Longas)" },
+  ] };
+  for (const label of ["Lutar (Cultural)", "Lutar (Culturais)", "Lutar (Cult.)", "Lutar (Cult)", "Lutar (Cult.) 45%", "Lutar (Cultural) (45%)"]) {
+    assert.equal(api.importedSkillName(label, db), "Lutar (Culturais)");
+  }
+  assert.equal(api.importedSkillName("Lutar (Armas Longas) 35%", db), "Lutar (Armas Longas)");
+});
+
 test("falls back to visible text when recognized form fields are empty", async () => {
   const api = importer();
   const page = {

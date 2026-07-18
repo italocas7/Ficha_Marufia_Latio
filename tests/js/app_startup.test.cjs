@@ -28,7 +28,10 @@ function createElement() {
 }
 
 function createSandbox(initialState = null) {
-  const elements = Object.fromEntries(["tabs", "statusLine", "app", "modalRoot", "toastRoot"].map((id) => [id, createElement()]));
+  const elements = Object.fromEntries([
+    "tabs", "statusLine", "app", "modalRoot", "toastRoot", "worldDurationTurns", "worldDurationFeedback",
+    "combatRollSkill", "combatTargetCa", "combatSkillValue", "combatCaValue", "combatTargetValue",
+  ].map((id) => [id, createElement()]));
   const body = createElement();
   const document = {
     body,
@@ -75,7 +78,7 @@ function createSandbox(initialState = null) {
 test("migrates the representative v1 fixture without losing sheet data", () => {
   const fixture = JSON.parse(fs.readFileSync(path.join(root, "tests", "fixtures", "state-v1.json"), "utf8"));
   const { sandbox } = createSandbox(fixture);
-  assert.equal(vm.runInContext("state.meta.schemaVersion", sandbox), 4);
+  assert.equal(vm.runInContext("state.meta.schemaVersion", sandbox), 5);
   assert.equal(vm.runInContext("state.character.name", sandbox), "Fixture Latio");
   assert.equal(vm.runInContext("state.attributes.CON", sandbox), 60);
   assert.equal(vm.runInContext("state.resources.hpCurrent", sandbox), 10);
@@ -126,8 +129,11 @@ test("shows friendly PDF conflict names without technical paths", () => {
 });
 
 test("charges World maintenance only through its button", () => {
-  const { sandbox } = createSandbox();
+  const { sandbox, elements } = createSandbox();
   vm.runInContext('state.magic.baseLevels.Mundo = 1; state.resources.pmMaxBonus = 100; state.resources.pmCurrent = 100; openWorldAction()', sandbox);
+  assert.equal(vm.runInContext("state.world.status", sandbox), "closed");
+  elements.worldDurationTurns.value = "3";
+  vm.runInContext("confirmWorldOpen()", sandbox);
   assert.equal(vm.runInContext("state.world.status", sandbox), "active");
   assert.equal(vm.runInContext('state.combat.activeSpells.some((spell) => spell.type === "Mundo")', sandbox), false);
   assert.equal(vm.runInContext("pmCurrent()", sandbox), 95);
@@ -139,10 +145,37 @@ test("charges World maintenance only through its button", () => {
   vm.runInContext("passTurn()", sandbox);
   assert.equal(vm.runInContext("pmCurrent()", sandbox), 93);
   assert.equal(vm.runInContext("state.world.status", sandbox), "active");
+  assert.equal(vm.runInContext("state.world.durationTurns", sandbox), 2);
   assert.equal(vm.runInContext("state.world.maintenancePaidForTurn", sandbox), false);
   vm.runInContext("passTurn()", sandbox);
   assert.equal(vm.runInContext("pmCurrent()", sandbox), 93);
   assert.equal(vm.runInContext("state.world.status", sandbox), "closed");
+  assert.equal(vm.runInContext("state.world.durationTurns", sandbox), null);
+});
+
+test("rolls the correct World duration and closes at zero", () => {
+  const { sandbox, elements } = createSandbox();
+  vm.runInContext("Math.random = () => 0; state.magic.baseLevels.Mundo = 1", sandbox);
+  assert.equal(vm.runInContext("worldDurationFormula()", sandbox), "1d4");
+  assert.equal(vm.runInContext("rollWorldDurationValue()", sandbox), 1);
+  vm.runInContext("state.magic.baseLevels.Mundo = 5", sandbox);
+  assert.equal(vm.runInContext("worldDurationFormula()", sandbox), "1d4+2");
+  assert.equal(vm.runInContext("rollWorldDurationValue()", sandbox), 3);
+
+  vm.runInContext("state.magic.baseLevels.Mundo = 1; state.resources.pmMaxBonus = 100; state.resources.pmCurrent = 100; openWorldAction()", sandbox);
+  elements.worldDurationTurns.value = "1";
+  vm.runInContext("confirmWorldOpen(); maintainWorldAction(); passTurn()", sandbox);
+  assert.equal(vm.runInContext("state.world.status", sandbox), "closed");
+  assert.equal(vm.runInContext("state.world.durationTurns", sandbox), null);
+  assert.match(vm.runInContext("state.combat.log.join(' ')", sandbox), /duração chegou a 0/i);
+});
+
+test("blocks an imported active World until its duration is defined", () => {
+  const { sandbox } = createSandbox();
+  vm.runInContext('state.world.status = "active"; state.world.durationTurns = null; state.world.maintenancePaidForTurn = true', sandbox);
+  assert.equal(vm.runInContext("passTurn()", sandbox), false);
+  assert.equal(vm.runInContext("state.world.status", sandbox), "active");
+  assert.equal(vm.runInContext("state.world.maintenancePaidForTurn", sandbox), true);
 });
 
 test("keeps automatic maintenance for non-World spells", () => {
@@ -150,6 +183,61 @@ test("keeps automatic maintenance for non-World spells", () => {
   vm.runInContext('state.resources.pmMaxBonus = 100; state.resources.pmCurrent = 20; state.combat.activeSpells = [{ id: "forte", spellId: "forte", type: "Forte", name: "Forte", level: 2, turns: 3, maintenanceCost: 2 }]; passTurn()', sandbox);
   assert.equal(vm.runInContext("pmCurrent()", sandbox), 18);
   assert.equal(vm.runInContext("state.combat.activeSpells[0].turns", sandbox), 2);
+});
+
+test("limits combat CA tests to requested skills and accepts negative CA", () => {
+  const { sandbox, elements } = createSandbox();
+  const names = JSON.parse(vm.runInContext("JSON.stringify(combatTestSkills().map((skill) => skill.name))", sandbox));
+  assert.deepEqual(names.slice(0, 4), ["Arremessar", "Arte/Ofício", "Atletismo", "Tática"]);
+  assert.ok(names.slice(4).length > 0);
+  assert.ok(names.slice(4).every((name) => /^Lutar\s*\(/.test(name)));
+  assert.equal(vm.runInContext('combatAdjustedTarget("Atletismo", -10)', sandbox), vm.runInContext('skillFinal("Atletismo") + 10', sandbox));
+
+  elements.combatRollSkill.value = "Atletismo";
+  elements.combatTargetCa.value = "999";
+  vm.runInContext("Math.random = () => 0; rollCombatTest('normal')", sandbox);
+  assert.match(vm.runInContext("state.combat.log[0]", sandbox), /Acerto · Crítico natural/);
+});
+
+test("treats natural 01 as critical for attributes and skills", () => {
+  const { sandbox } = createSandbox();
+  assert.equal(vm.runInContext("d100Outcome(1, -500)", sandbox), "Crítico natural");
+  assert.equal(vm.runInContext("d100Outcome(2, -500)", sandbox), "Falha");
+  assert.match(vm.runInContext("openAttributeModal('FOR'); document.querySelector('#modalRoot').innerHTML", sandbox), /roll-attribute/);
+});
+
+test("extracts and stacks Forte CA and effective Vigor", () => {
+  const { sandbox } = createSandbox();
+  const base = JSON.parse(vm.runInContext(`JSON.stringify(forteBonusesForItem({
+    type: "Forte", level: 5, spell: DB.baseSpells.find((spell) => spell.baseType === "Forte")
+  }))`, sandbox));
+  assert.deepEqual(base, { ca: 15, vigor: 0 });
+
+  const regional = JSON.parse(vm.runInContext(`JSON.stringify(DB.regions.flatMap((region) => region.magics || [])
+    .filter((spell) => ["Juramento De Ferro", "Raiz Da Terra"].includes(spell.name))
+    .map((spell) => forteBonusesForItem({ type: "Forte", level: spell.name === "Raiz Da Terra" ? 10 : 5, spell })))`, sandbox));
+  assert.deepEqual(regional, [{ ca: 15, vigor: 10 }, { ca: 30, vigor: 25 }]);
+
+  const baseCa = vm.runInContext("caBreakdown().total", sandbox);
+  vm.runInContext(`state.combat.activeSpells = [
+    { id: "f1", spellId: "one", type: "Forte", name: "Forte 1", level: 5, turns: 10, maintenanceCost: 0, caBonus: 15, effectiveVigor: 10 },
+    { id: "f2", spellId: "two", type: "Forte", name: "Forte 2", level: 7, turns: 10, maintenanceCost: 0, caBonus: 20, effectiveVigor: 15 }
+  ]`, sandbox);
+  assert.equal(vm.runInContext("caBreakdown().forte", sandbox), 35);
+  assert.equal(vm.runInContext("caBreakdown().total", sandbox), baseCa + 35);
+  assert.equal(vm.runInContext("bodyInfo().total", sandbox), 125);
+  vm.runInContext('state.magicCore.selectedId = "olhos"', sandbox);
+  assert.equal(vm.runInContext("caBreakdown().total", sandbox), vm.runInContext('skillFinal("Percepção") + 35', sandbox));
+});
+
+test("snapshots Forte bonuses for reaction and standard activation", () => {
+  const { sandbox } = createSandbox();
+  vm.runInContext("state.magic.baseLevels.Forte = 5; state.resources.pmMaxBonus = 100; state.resources.pmCurrent = 100; activateForte('base-Forte', 'reaction')", sandbox);
+  assert.equal(vm.runInContext("state.combat.activeSpells[0].turns", sandbox), 1);
+  assert.equal(vm.runInContext("state.combat.activeSpells[0].caBonus", sandbox), 15);
+  vm.runInContext("activateForte('base-Forte', 'standard')", sandbox);
+  assert.equal(vm.runInContext("state.combat.activeSpells.length", sandbox), 1);
+  assert.equal(vm.runInContext("state.combat.activeSpells[0].turns", sandbox), 10);
 });
 
 test("applies passive talent bonuses independently from conditional switches", () => {

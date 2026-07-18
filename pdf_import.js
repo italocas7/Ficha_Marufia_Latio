@@ -238,7 +238,10 @@
   }
 
   function importedSkillName(name, db) {
-    const stripped = compact(name).replace(/\([^)]*%?\)/g, "").trim();
+    const stripped = compact(name)
+      .replace(/\s*\(\s*-?\d+(?:[.,]\d+)?\s*%?\s*\)\s*$/g, "")
+      .replace(/\s+-?\d+(?:[.,]\d+)?\s*%?\s*$/g, "")
+      .trim();
     const aliases = {
       "ARTE/OFICIO": "Arte/Oficio",
       ATUACAO: "Atuacao",
@@ -249,7 +252,9 @@
       NAVEGACAO: "Navegacao",
       PERSUASAO: "Persuasao",
       "LUTAR (CULT.)": "Lutar (Culturais)",
+      "LUTAR (CULT)": "Lutar (Culturais)",
       "LUTAR (CULTURAL)": "Lutar (Culturais)",
+      "LUTAR (CULTURAIS)": "Lutar (Culturais)",
       "LUTAR (ARREMESSO)": "Lutar (Armas de Arremesso)",
       "LUTAR (ARREMESSOS)": "Lutar (Armas de Arremesso)",
       "LUTAR (ARMA LONGA)": "Lutar (Armas Longas)",

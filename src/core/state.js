@@ -16,7 +16,7 @@
     effects: new Set(["id", "name", "ca", "block"]),
     laws: new Set(["id", "sourceId", "category", "resistanceMode", "name", "target", "resistance", "effect", "fail", "pass", "edited"]),
     knownExtras: new Set(["id", "name", "type", "regionCode", "level"]),
-    activeSpells: new Set(["id", "spellId", "type", "name", "level", "turns", "maintenanceCost"]),
+    activeSpells: new Set(["id", "spellId", "type", "name", "level", "turns", "maintenanceCost", "caBonus", "effectiveVigor"]),
   };
 
   function isPlainObject(value) {
@@ -184,6 +184,10 @@
     for (const key of ["eyes", "age", "height", "hair", "skin", "weight"]) if (state.notes) state.notes[key] = String(state.notes[key] ?? "").slice(0, 250);
     const status = state.world.status;
     state.world.status = ["closed", "active", "collapsed"].includes(status) ? status : "closed";
+    const durationTurns = state.world.durationTurns;
+    state.world.durationTurns = state.world.status === "active" && durationTurns !== null && durationTurns !== ""
+      ? clampNumber(durationTurns, 1, 999, 1)
+      : null;
     state.world.lawUses = state.world.lawUses === null ? null : clampNumber(state.world.lawUses, 0, 999, 0);
     state.world.maintenancePaidForTurn = state.world.status === "active" && Boolean(state.world.maintenancePaidForTurn);
     state.errors = (Array.isArray(state.errors) ? state.errors : []).slice(0, 120).map((error) => ({
@@ -195,7 +199,12 @@
       suggestedSolution: String(error?.suggestedSolution ?? "").slice(0, 1000),
       at: String(error?.at ?? "").slice(0, 64),
     }));
-    return normalizeStateCollections(state);
+    normalizeStateCollections(state);
+    for (const spell of state.combat.activeSpells) {
+      if (Object.hasOwn(spell, "caBonus")) spell.caBonus = clampNumber(spell.caBonus, 0, 999, 0);
+      if (Object.hasOwn(spell, "effectiveVigor")) spell.effectiveVigor = clampNumber(spell.effectiveVigor, 0, 999, 0);
+    }
+    return state;
   }
 
   function prepareImport(raw, defaults, options) {
@@ -228,6 +237,10 @@
       if (Array.isArray(safe.combat?.activeSpells)) {
         safe.combat.activeSpells = safe.combat.activeSpells.filter((spell) => spell?.type !== "Mundo");
       }
+    }
+    if (sourceVersion <= 4) {
+      safe.world ||= Object.create(null);
+      safe.world.durationTurns = null;
     }
     migrateEscalarToAtletismo(safe);
     delete safe.ui;
