@@ -15,7 +15,7 @@ function loadDatabase(relativePath = "data.js") {
 test("generated database exposes the offline global", () => {
   const database = loadDatabase();
   assert.equal(database.schema, "latio-db-1");
-  assert.equal(database.worldLaws.length, 76);
+  assert.equal(database.worldLaws.length, 74);
   assert.equal(database.skills.find((skill) => skill.name === "Percepção").base, 15);
 });
 

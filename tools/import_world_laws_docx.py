@@ -1,4 +1,4 @@
-"""Import balanced Mundo laws into Latio's canonical JSON source."""
+"""Importa o catálogo legado v1.2 para comparação, sem alterar a fonte definitiva."""
 
 from __future__ import annotations
 
@@ -140,8 +140,8 @@ def main() -> None:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path(__file__).resolve().parents[1] / "data-src" / "world_laws.json",
-        help="Fonte JSON canônica das Leis.",
+        default=Path(__file__).resolve().parents[1] / "tmp" / "world_laws_legacy_v1_2.json",
+        help="Saída comparativa do catálogo legado. A fonte canônica é world_laws_definitive.txt.",
     )
     args = parser.parse_args()
     laws = parse_laws(args.source)

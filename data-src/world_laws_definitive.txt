@@ -1,0 +1,447 @@
+LEIS OFENSIVAS:
+
+DANO EM ALVO
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: Você causa dano mágico instantâneo a uma criatura. O tipo de dano é escolhido ao aprender esta Lei. Você pode escolher entre causar 30 de dano sem Resistência ou permitir uma Resistência de CON ou POD, definida ao aprender a Lei. Com Resistência, o alvo sofre 45 de dano em uma falha ou 20 de dano em um sucesso. Usos diferentes podem atingir a mesma criatura.
+PRÓXIMOS NÍVEIS: No Nível 2, causa 60 sem Resistência, ou 80 na falha e 50 no sucesso. No Nível 3, causa 85 sem Resistência, ou 110 na falha e 75 no sucesso.
+
+
+DANO EM ÁREA
+ALCANCE: Círculo de 3 m de raio, centrado em um ponto percebido dentro do Mundo.
+DESCRIÇÃO: Você cria uma explosão instantânea e não seletiva. Todas as criaturas na área são afetadas, embora você possa declarar a si mesmo imune. Você pode causar 15 de dano por criatura sem Resistência ou permitir Resistência, causando 30 na falha e 10 no sucesso.
+PRÓXIMOS NÍVEIS: No Nível 2, o raio aumenta para 6 m e o dano para 30 sem Resistência ou 50/20 com Resistência. No Nível 3, o raio aumenta para 12 m e o dano para 45 sem Resistência ou 70/35 com Resistência.
+
+
+DANO EM ALVO DUPLO
+ALCANCE: 2 criaturas distintas percebidas dentro do Mundo.
+DESCRIÇÃO: Escolha exatamente duas criaturas. Cada uma sofre 20 de dano instantâneo e garantido. Caso exista apenas um alvo válido, a parcela destinada ao segundo é perdida e não pode ser concentrada.
+PRÓXIMOS NÍVEIS: O dano aumenta para 40 por alvo no Nível 2 e 55 por alvo no Nível 3.
+
+
+ÁREA DE DANO FIXA
+ALCANCE: Círculo de 3 m de raio dentro do Mundo.
+DESCRIÇÃO: Você cria uma zona persistente e não seletiva que permanece até o Mundo acabar. No início do turno de cada criatura dentro da área, ela sofre 10 de dano garantido. Apenas uma área desta Lei pode existir.
+PRÓXIMOS NÍVEIS: No Nível 2, o raio aumenta para 6 m e o dano para 20 por rodada. No Nível 3, o raio aumenta para 12 m e o dano para 30 por rodada.
+
+
+ÁREA DE DANO AJUSTÁVEL
+ALCANCE: Círculo de 1,5 m ou 3 m de raio dentro do Mundo.
+DESCRIÇÃO: Escolha o tamanho da área ao ativar a Lei. Quanto menor a área, maior o dano. Sem Resistência, causa respectivamente 20 ou 15 de dano. Com Resistência, causa 35/10 em 1,5 m ou 25/5 em 3 m, sendo o primeiro valor aplicado em falha e o segundo em sucesso. A área é não seletiva.
+PRÓXIMOS NÍVEIS: No Nível 2, os raios disponíveis são 1,5/3/6 m, causando 50/40/25 sem Resistência ou 70/60/45 na falha e 40/30/15 no sucesso. No Nível 3, os raios são 3/6/12 m, causando 70/55/40 sem Resistência ou 95/80/65 na falha e 60/45/30 no sucesso.
+
+
+DANO EM MÚLTIPLOS ALVOS
+ALCANCE: Até 4 criaturas percebidas dentro do Mundo.
+DESCRIÇÃO: Escolha até quatro criaturas. Cada uma realiza uma Resistência de CON ou POD. Cada alvo que falhar sofre 15 de dano, enquanto um sucesso reduz o dano para 5. O valor destinado a alvos não escolhidos não pode ser concentrado nos demais.
+PRÓXIMOS NÍVEIS: O dano passa para 25/15 no Nível 2 e 40/30 no Nível 3.
+
+
+MAIS DANO AO ACERTAR
+ALCANCE: O alvo de um ataque ou magia que você tenha acabado de acertar.
+DESCRIÇÃO: Depois de acertar um ataque ou magia, gaste um uso desta Lei para acrescentar 30 de dano do mesmo tipo. Apenas uma ativação desta Lei pode ocorrer por acerto. O dano adicional não é duplicado por Extremo ou Crítico.
+PRÓXIMOS NÍVEIS: O dano adicional aumenta para +60 no Nível 2 e +85 no Nível 3.
+
+
+AUMENTO DE PENALIDADE
+ALCANCE: 1 criatura percebida dentro do Mundo que já esteja sofrendo uma penalidade numérica.
+DESCRIÇÃO: Você aumenta uma penalidade existente em 15, até o início do seu próximo turno ou até a penalidade original acabar. Como alternativa, o alvo pode fazer Resistência de POD: a penalidade aumenta em 20 na falha ou 10 no sucesso. Esta Lei não acumula consigo.
+PRÓXIMOS NÍVEIS: No Nível 2, aumenta em 30 sem Resistência ou 40/25 com Resistência. No Nível 3, aumenta em 60 sem Resistência ou 85/45 com Resistência.
+
+
+AUMENTO DE CORPO
+ALCANCE: Pessoal.
+DESCRIÇÃO: Seu Corpo efetivo aumenta em 1 categoria até o início do seu próximo turno. Isso altera MOD, Carga, Empurrar/Erguer e Bloqueio, mas não altera FOR, CON ou Vida. O limite é a categoria 6.
+PRÓXIMOS NÍVEIS: Aumenta em 2 categorias no Nível 2 e 3 categorias no Nível 3. No Nível 3, caso já esteja na categoria 3, você também recebe +1d6 de MOD durante o efeito.
+
+
+ÁREA DE PENALIDADE FIXA
+ALCANCE: Círculo de 3 m de raio dentro do Mundo.
+DESCRIÇÃO: Você cria uma área persistente e não seletiva. Criaturas dentro dela sofrem -10 em todos os testes d100. Apenas uma área desta Lei pode existir; uma nova ativação reposiciona a anterior.
+PRÓXIMOS NÍVEIS: O raio e a penalidade passam para 6 m e -20 no Nível 2, e 12 m e -30 no Nível 3.
+
+
+PENALIDADE EM ALVO
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: Ao aprender esta Lei, escolha uma família: Ataques, Defesas Ativas ou um Atributo específico. O alvo sofre -30 nos testes escolhidos até o início do seu próximo turno. Não acumula consigo.
+PRÓXIMOS NÍVEIS: A penalidade aumenta para -60 no Nível 2 e -85 no Nível 3.
+
+
+REDUÇÃO DE BLOQUEIO
+ALCANCE: Alvos percebidos dentro do Mundo.
+DESCRIÇÃO: O próximo Bloqueio realizado pelos alvos sofre uma redução de 6, mínimo 0. Ativações adicionais geram cargas para Bloqueios posteriores, mas não aumentam a redução aplicada ao mesmo Bloqueio.
+PRÓXIMOS NÍVEIS: A redução aumenta para 12 no Nível 2 e 24 no Nível 3.
+
+
+DANO AO REALIZAR AÇÃO
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: Você marca uma criatura até o início do seu próximo turno. Sempre que ela utilizar uma ação padrão, ação bônus, reação ou movimento, sofre 10 de dano, até três vezes por ativação. Ações livres não ativam a Lei. Com Resistência de POD, cada disparo causa 25 na falha e 0 no sucesso.
+PRÓXIMOS NÍVEIS: No Nível 2, causa 20 sem Resistência ou 40/10 com Resistência. No Nível 3, causa 30 ou 55/20.
+
+
+PENALIDADE EM FORMA DE ALCANCE
+ALCANCE: Cone ou linha de 1,5 m de largura e 6 m de comprimento.
+DESCRIÇÃO: Você projeta uma área não seletiva a partir de si até o início do seu próximo turno. Criaturas afetadas sofrem -15. Com Resistência de POD, sofrem -30 na falha ou -5 no sucesso.
+PRÓXIMOS NÍVEIS: O alcance aumenta para 12 m e os valores para -30 ou -50/-20 no Nível 2. No Nível 3, alcança 24 m e aplica -45 ou -70/-35.
+
+
+ACERTO EXTRA
+ALCANCE: Alcance da arma ou ataque utilizado.
+DESCRIÇÃO: Você realiza imediatamente um ataque físico, de arma ou natural, recebendo +20 no teste. O alvo pode utilizar suas defesas normalmente. O dano total do ataque não pode ultrapassar 30. Não pode ser combinado com Acerto em Alvo no mesmo ataque.
+PRÓXIMOS NÍVEIS: O bônus e limite passam para +35/60 no Nível 2 e +55/85 no Nível 3.
+
+
+CLONE DE MATERIAL
+ALCANCE: Espaço permitido dentro do Mundo.
+DESCRIÇÃO: Você cria um clone temporária de qualquer material desejado. Ele tem seu POD ÷10 +20 de vida e 10 de CA. Todos os outros status são equivalentes aos seus, ele não fica com nenhuma condição que envolva sentidos. Esse clone tem a mesma movimentação que você e pode se mover até 30m do usuário. A criação desaparece quando o Mundo termina.
+PRÓXIMOS NÍVEIS: No Nível 2, a vida aumenta para POD ÷5+30 e 20 de CA. No Nível 3, aumenta para POD ÷2+40 e 35 de CA.
+
+
+CLONES DE MATERIAL
+ALCANCE: Espaços livres em até 9 m, dentro do Mundo.
+DESCRIÇÃO: Você cria até quatro clones, dividindo livremente um total de 80 de vida e cada um tem 5 de CA. No máximo quatro cópias podem existir; uma nova ativação substitui as anteriores.
+PRÓXIMOS NÍVEIS: A vida total aumenta para 180 e CA para 15 no Nível 2. No Nível 3, aumenta para 320 e 30 de CA.
+
+
+ACERTO SURPRESA
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: O alvo realiza Resistência de POD ou SAB. Em falha, o próximo ataque que você realizar contra ele até o fim da rodada recebe +20 e não pode ser respondido com Esquiva, Aparar, Bloquear ou Contra-atacar. O ataque ainda precisa acertar e cobertura continua funcionando.
+PRÓXIMOS NÍVEIS: O bônus aumenta para +35 e ignora cobertura de 1/3 no Nível 2. No Nível 3, aumenta para +55 e ignora cobertura de até 2/3.
+
+
+BÔNUS DE ACERTO
+ALCANCE: Pessoal.
+DESCRIÇÃO: Seu próximo teste de ataque antes do início do seu próximo turno recebe +20. Esta Lei não acumula consigo.
+PRÓXIMOS NÍVEIS: O bônus aumenta para +35 no Nível 2 e +55 no Nível 3.
+
+
+BÔNUS EM ALVOS
+ALCANCE: Até 2 criaturas percebidas dentro do Mundo.
+DESCRIÇÃO: O próximo ataque de cada alvo recebe +15, desde que seja realizado antes do início do seu próximo turno.
+PRÓXIMOS NÍVEIS: No Nível 2, afeta até 3 criaturas com +20. No Nível 3, afeta até 4 criaturas com +25.
+
+
+EMPURRÃO
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: Você move o alvo 6 m para longe de você, em linha reta. Alternativamente, ele pode realizar Resistência de FOR ou CON; nesse caso é movido 21 m na falha e 0 m no sucesso. O movimento não causa dano por colisão e não pode levar o alvo para fora do Mundo.
+PRÓXIMOS NÍVEIS: No Nível 2, os valores tornam-se 12 m sem Resistência ou 32/2 m com Resistência. No Nível 3, 18 m ou 43/8 m.
+
+
+REDUÇÃO DE CA
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: A CA do alvo é reduzida em 20 até o início do seu próximo turno. Alternativamente, ele pode realizar Resistência de DES ou POD, sofrendo -35 na falha ou -10 no sucesso. Não acumula consigo.
+PRÓXIMOS NÍVEIS: No Nível 2, aplica -35 ou -55/-25. No Nível 3, -55 ou -80/-45.
+
+
+PUXÃO
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: Você move o alvo 6 m em sua direção, terminando em um espaço livre. Com Resistência de FOR ou CON, o movimento passa para 21 m na falha e 0 m no sucesso. Não causa dano por colisão nem atravessa o limite do Mundo.
+PRÓXIMOS NÍVEIS: No Nível 2, os valores tornam-se 12 m ou 32/2 m. No Nível 3, 18 m ou 43/8 m.
+
+
+AUMENTO DE DANO PARA ALVO
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: Você marca uma criatura até o início do seu próximo turno. Os próximos três acertos de qualquer fonte contra ela causam +10 de dano cada, até um máximo de +30. Ativações simultâneas não acumulam.
+PRÓXIMOS NÍVEIS: No Nível 2, concede +20 por acerto, máximo +60. No Nível 3, concede +30 por acerto, máximo +85.
+ 
+LEIS DEFENSIVAS
+
+ESCUDO DE MANA
+ALCANCE: Pessoal.
+DESCRIÇÃO: Você cria uma barreira com 30 PV próprios. O Escudo recebe dano antes da sua Vida e não conta para Lesão Grave. Dano excedente atravessa normalmente. Apenas um Escudo pode existir; uma nova ativação substitui seus PV atuais.
+PRÓXIMOS NÍVEIS: O Escudo passa a ter 60 PV no Nível 2 e 95 PV no Nível 3.
+
+
+AUMENTO DE BLOQUEIO
+ALCANCE: Pessoal.
+DESCRIÇÃO: Seu Bloqueio aumenta em +4 até o início do seu próximo turno.
+PRÓXIMOS NÍVEIS: +8 no Nível 2 e +12 no Nível 3.
+
+
+AUMENTO DE BLOQUEIO EM ALVOS
+ALCANCE: Até 2 criaturas percebidas dentro do Mundo.
+DESCRIÇÃO: Os alvos recebem +3 de Bloqueio até o início do seu próximo turno.
+PRÓXIMOS NÍVEIS: No Nível 2, até 3 alvos recebem +5. No Nível 3, até 4 recebem +6.
+
+
+AUMENTO DE CA
+ALCANCE: Pessoal.
+DESCRIÇÃO: Sua CA aumenta em +20 até o início do seu próximo turno. O efeito não recalcula outras habilidades baseadas em CA.
+PRÓXIMOS NÍVEIS: +35 no Nível 2 e +55 no Nível 3.
+
+
+AUMENTO DE CA EM ALVOS
+ALCANCE: Até 2 criaturas percebidas dentro do Mundo.
+DESCRIÇÃO: Cada alvo recebe +15 de CA até o início do seu próximo turno.
+PRÓXIMOS NÍVEIS: Até 3 alvos recebem +20 no Nível 2; até 4 recebem +25 no Nível 3.
+
+
+REDUÇÃO DE DANO
+ALCANCE: Pessoal.
+DESCRIÇÃO: Você recebe uma carga que reduz em 20 a próxima instância de dano sofrida. Várias cargas podem existir, mas apenas uma é consumida por instância.
+PRÓXIMOS NÍVEIS: A redução aumenta para 30 no Nível 2 e 45 no Nível 3.
+
+
+REDUÇÃO DE DANO FÍSICO
+ALCANCE: Pessoal.
+DESCRIÇÃO: Como Redução de Dano, mas funciona apenas contra dano físico e reduz 25.
+PRÓXIMOS NÍVEIS: Reduz 40 no Nível 2 e 60 no Nível 3.
+
+
+REDUÇÃO DE DANO MÁGICO
+ALCANCE: Pessoal.
+DESCRIÇÃO: Como Redução de Dano, mas funciona apenas contra dano mágico e reduz 25.
+PRÓXIMOS NÍVEIS: Reduz 40 no Nível 2 e 60 no Nível 3.
+
+
+REDUÇÃO DE DANO EM ALVOS
+ALCANCE: Até 2 criaturas percebidas dentro do Mundo.
+DESCRIÇÃO: Cada alvo recebe uma carga que reduz em 15 sua próxima instância de dano antes do início do seu próximo turno.
+PRÓXIMOS NÍVEIS: No Nível 2, afeta até 3 alvos e reduz 15. No Nível 3, afeta até 4 e reduz 20.
+
+
+REDUÇÃO DE DANO FÍSICO EM ALVOS
+ALCANCE: Até 2 criaturas percebidas dentro do Mundo.
+DESCRIÇÃO: Cada alvo reduz em 15 sua próxima instância de dano físico.
+PRÓXIMOS NÍVEIS: Até 3 alvos reduzem 20 no Nível 2; até 4 reduzem 25 no Nível 3.
+
+
+REDUÇÃO DE DANO MÁGICO EM ALVOS
+ALCANCE: Até 2 criaturas percebidas dentro do Mundo.
+DESCRIÇÃO: Cada alvo reduz em 15 sua próxima instância de dano mágico.
+PRÓXIMOS NÍVEIS: Até 3 alvos reduzem 20 no Nível 2; até 4 reduzem 25 no Nível 3.
+
+
+CURA
+ALCANCE: Pessoal.
+DESCRIÇÃO: Você recupera imediatamente 30 PV. A cura permanece após o Mundo terminar, mas não remove condições nem ignora as regras de Lesão Grave.
+PRÓXIMOS NÍVEIS: Cura 45 PV no Nível 2 e 65 PV no Nível 3.
+
+
+CURA EM ALVO
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: O alvo recupera imediatamente 30 PV. Você pode escolher a si mesmo. A cura não remove condições nem ignora Lesão Grave.
+PRÓXIMOS NÍVEIS: Cura 45 PV no Nível 2 e 65 PV no Nível 3.
+
+
+CURA EM ALVOS
+ALCANCE: Até 4 criaturas percebidas dentro do Mundo.
+DESCRIÇÃO: Cada criatura escolhida recupera 15 PV. O valor destinado a alvos não escolhidos não pode ser concentrado.
+PRÓXIMOS NÍVEIS: Cura 20 PV por alvo no Nível 2 e 30 PV no Nível 3.
+
+
+CURA EM ÁREA
+ALCANCE: Círculo de 3 m de raio.
+DESCRIÇÃO: Todas as criaturas na área recuperam 15 PV. A área é não seletiva e pode curar inimigos; você escolhe se será afetado.
+PRÓXIMOS NÍVEIS: No Nível 2, raio de 6 m e cura de 25. No Nível 3, raio de 12 m e cura de 35.
+
+
+AUMENTO DE PERCEPÇÃO
+ALCANCE: Pessoal.
+DESCRIÇÃO: Sua Percepção aumenta em +20 até o início do seu próximo turno. Isso pode alterar sua Esquiva de Magia, mas não recalcula CA concedida pelo Núcleo dos Olhos.
+PRÓXIMOS NÍVEIS: +35 no Nível 2 e +55 no Nível 3.
+
+
+AUMENTO DE PERCEPÇÃO EM ALVOS
+ALCANCE: Até 2 criaturas percebidas dentro do Mundo.
+DESCRIÇÃO: Cada alvo recebe +15 em Percepção até o início do seu próximo turno.
+PRÓXIMOS NÍVEIS: Até 3 alvos recebem +20 no Nível 2; até 4 recebem +25 no Nível 3.
+
+
+AUMENTO DE ESQUIVA
+ALCANCE: Pessoal.
+DESCRIÇÃO: Sua perícia Esquivar aumenta em +20 até o início do seu próximo turno. Não concede Reações adicionais.
+PRÓXIMOS NÍVEIS: +35 no Nível 2 e +55 no Nível 3.
+
+
+AUMENTO DE ESQUIVA EM ALVOS
+ALCANCE: Até 2 criaturas percebidas dentro do Mundo.
+DESCRIÇÃO: Os alvos recebem +15 em Esquivar até o início do seu próximo turno.
+PRÓXIMOS NÍVEIS: Até 3 alvos recebem +20 no Nível 2; até 4 recebem +25 no Nível 3.
+
+
+TOTEM DE DANO
+ALCANCE: Espaço livre percebido dentro do Mundo; aura de 6 m.
+DESCRIÇÃO: Você cria um Totem com 30 PV. Uma vez por rodada, ele pode redirecionar para si até 10 de dano sofrido por uma criatura dentro de sua aura. Apenas um Totem pode existir.
+PRÓXIMOS NÍVEIS: No Nível 2, possui 60 PV, aura de 12 m e redireciona até 20. No Nível 3, possui 90 PV, aura de 18 m e redireciona até 45.
+
+
+VIDA TEMPORÁRIA — ANESTESIA
+ALCANCE: Pessoal.
+DESCRIÇÃO: Você recebe 30 de Vida Temporária até que seja consumida ou até o Mundo terminar. Não é cura e não acumula consigo.
+PRÓXIMOS NÍVEIS: 45 de Vida Temporária no Nível 2 e 90 no Nível 3.
+
+
+VIDA TEMPORÁRIA — ANESTESIA EM ALVOS
+ALCANCE: Até 4 criaturas percebidas dentro do Mundo.
+DESCRIÇÃO: Cada alvo recebe 10 de Vida Temporária. Todo valor restante desaparece quando o Mundo acaba.
+PRÓXIMOS NÍVEIS: 20 por alvo no Nível 2 e 40 por alvo no Nível 3.
+ 
+
+LEIS UTILITÁRIAS
+
+ÁREA DE CONDIÇÃO
+ALCANCE: Círculo de 3 m de raio.
+DESCRIÇÃO: Você cria uma área não seletiva. Cada adversário realiza uma Resistência apropriada à condição escolhida. Em falha, sofre uma Condição Leve de Nível 1 por 1 rodada. Sucesso anula o efeito.
+PRÓXIMOS NÍVEIS: No Nível 2, o raio aumenta para 6 m e permite condições leves ou moderadas por até 2 rodadas. No Nível 3, o raio aumenta para 12 m e permite qualquer condição permitida, inclusive Atordoado ou Horrorizado, por até 3 rodadas.
+
+
+CONDIÇÃO EM ALVO
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: O alvo realiza a Resistência apropriada. Em falha, sofre uma Condição Leve de Nível 1 por até 2 rodadas. Ao fim de cada rodada adicional, realiza novo teste para encerrar a condição.
+PRÓXIMOS NÍVEIS: No Nível 2, permite condições leves ou moderadas por até 3 rodadas. No Nível 3, qualquer condição permitida por até 3 rodadas, inclusive Atordoado ou Horrorizado.
+
+
+AUMENTO DE VIGOR EFETIVO
+ALCANCE: Pessoal.
+DESCRIÇÃO: Você recebe +25 de Vigor Efetivo para um único teste de FOR, CON, Atletismo ou Cavalgar realizado antes do início do seu próximo turno.
+PRÓXIMOS NÍVEIS: +40 no Nível 2 e +60 no Nível 3.
+
+
+AUMENTO DE MOVIMENTO
+ALCANCE: Pessoal.
+DESCRIÇÃO: Seu deslocamento aumenta em 6 m até o início do seu próximo turno.
+PRÓXIMOS NÍVEIS: +12 m no Nível 2 e +18 m no Nível 3.
+
+
+AUMENTO DE MOVIMENTO EM ALVOS
+ALCANCE: Até 2 criaturas percebidas dentro do Mundo.
+DESCRIÇÃO: O deslocamento dos alvos aumenta em 4 m até o início do seu próximo turno.
+PRÓXIMOS NÍVEIS: Até 3 alvos recebem +6 m no Nível 2; até 4 recebem +9 m no Nível 3.
+
+
+MOVIMENTO INSTANTÂNEO
+ALCANCE: Pessoal; destino em até 9 m.
+DESCRIÇÃO: Você se teleporta para um espaço livre percebido dentro do Mundo. Não provoca Ataques de Oportunidade e não pode terminar em objeto ou local sem apoio seguro.
+PRÓXIMOS NÍVEIS: Alcance de 18 m no Nível 2. No Nível 3, pode alcançar qualquer ponto percebido dentro do Mundo.
+
+
+MOVIMENTO INSTANTÂNEO EM ALVO
+ALCANCE: 1 criatura percebida; destino em até 9 m.
+DESCRIÇÃO: Você teleporta uma criatura para um espaço livre dentro do Mundo. Um alvo voluntário não realiza teste; um alvo involuntário realiza Resistência de DES ou POD.
+PRÓXIMOS NÍVEIS: Alcance de 18 m no Nível 2 e qualquer ponto percebido do Mundo no Nível 3.
+
+
+RETER DANO E CONTRA-ATACAR
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: Até o início do seu próximo turno, a próxima instância de dano sofrida pelo alvo é reduzida em até 30, e a mesma quantidade é devolvida ao causador como dano mágico garantido. Não funciona contra dano próprio, ambiental ou refletido.
+PRÓXIMOS NÍVEIS: Retém e devolve até 60 no Nível 2 e 90 no Nível 3.
+
+
+AÇÃO EXTRA
+ALCANCE: Pessoal.
+DESCRIÇÃO: Você recebe imediatamente 1 Ação Bônus adicional. A ação extra não pode abrir outro Mundo nem recuperar Usos de Lei.
+PRÓXIMOS NÍVEIS: No Nível 2, recebe 1 Ação Bônus e uma Reação ou Movimento adicional. No Nível 3, recebe duas ações de qualquer tipo permitido.
+
+
+AÇÃO EXTRA EM ALVO
+ALCANCE: 1 criatura voluntária percebida dentro do Mundo.
+DESCRIÇÃO: O alvo recebe imediatamente 1 Ação Bônus adicional. Caso seu turno já tenha ocorrido, utiliza o componente imediatamente.
+PRÓXIMOS NÍVEIS: No Nível 2, recebe uma Ação Bônus e uma Reação ou Movimento adicional. No Nível 3, recebe duas ações de qualquer tipo permitido.
+
+
+REMOVER AÇÃO EM ALVO
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: O alvo realiza Resistência de POD. Em falha, perde sua Reação ainda não utilizada. Sucesso anula a Lei.
+PRÓXIMOS NÍVEIS: No Nível 2, remove Reação e Ação Bônus ou Movimento, à escolha. No Nível 3, pode remover qualquer ação.
+
+
+REDUÇÃO DE MOVIMENTO EM ÁREA FIXA
+ALCANCE: Círculo de 3 m de raio.
+DESCRIÇÃO: A área permanece até o Mundo acabar. Ao entrar ou começar o turno nela, uma criatura realiza Resistência de FOR ou CON. Em falha, perde 6 m de movimento até seu próximo turno.
+PRÓXIMOS NÍVEIS: Raio de 6 m e redução de 12 m no Nível 2; raio de 12 m e redução de 18 m no Nível 3.
+
+
+REDUÇÃO DE MOVIMENTO EM ALVO
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: O alvo realiza Resistência de FOR ou CON. Em falha, seu deslocamento é reduzido em 8 m, mínimo 0, até o início do seu próximo turno.
+PRÓXIMOS NÍVEIS: Reduz 14 m no Nível 2 e 20 m no Nível 3.
+
+
+CONDIÇÃO EM ACERTO
+ALCANCE: O alvo de um ataque que você acabou de acertar.
+DESCRIÇÃO: Depois de acertar, gaste um uso. O alvo realiza a Resistência apropriada. Em falha, sofre uma Condição Leve de N1 por até 2 rodadas.
+PRÓXIMOS NÍVEIS: No Nível 2, permite condições leves ou moderadas por até 2 rodadas. No Nível 3, qualquer condição permitida por até 3 rodadas, inclusive Atordoado ou Horrorizado.
+
+
+AUMENTO DE MAGIA
+ALCANCE: Pessoal.
+DESCRIÇÃO: Sua próxima magia recebe +2 dados em um único componente de dano, cura ou penalidade. Efeitos fixos recebem +10. Múltiplos usos não acumulam na mesma magia.
+PRÓXIMOS NÍVEIS: +3 dados ou +20 no Nível 2; +4 dados ou +30 no Nível 3.
+
+
+AUMENTO DE MAGIA EM ALVO
+ALCANCE: 1 criatura voluntária percebida dentro do Mundo.
+DESCRIÇÃO: A próxima magia do alvo recebe +2 dados ou +10 fixo em um único componente.
+PRÓXIMOS NÍVEIS: +3 dados/+20 no Nível 2 e +4 dados/+30 no Nível 3.
+
+
+AUMENTO DE MAGIA EM ÁREA
+ALCANCE: Círculo de 3 m de diâmetro.
+DESCRIÇÃO: Durante 1 rodada, cada criatura dentro da área recebe uma carga que acrescenta +1 dado ou +5 fixo à próxima magia. A área é não seletiva.
+PRÓXIMOS NÍVEIS: Diâmetro de 6 m e +2 dados/+10 no Nível 2; 12 m e +3 dados/+15 no Nível 3.
+
+
+REDUÇÃO DE MAGIA EM ALVO
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: O alvo realiza Resistência de POD. Em falha, sua próxima magia perde 2 dados ou 10 de efeito fixo.
+PRÓXIMOS NÍVEIS: -4 dados/-20 no Nível 2 e -6 dados/-30 no Nível 3.
+
+
+REDUÇÃO DE MAGIA EM ÁREA
+ALCANCE: Círculo instantâneo de 3 m de diâmetro.
+DESCRIÇÃO: Cada criatura realiza Resistência de POD. Em falha, sua próxima magia antes do início do seu próximo turno perde 2 dados ou 5 de efeito fixo.
+PRÓXIMOS NÍVEIS: Diâmetro 6 m e -4 dados/-10 no Nível 2; 12 m e -6 dados/-15 no Nível 3.
+
+
+AUMENTO DE MAGIA EM ÁREA FIXA
+ALCANCE: Círculo de 3 m de diâmetro.
+DESCRIÇÃO: A área permanece até o Mundo acabar. Suas magias contra uma criatura dentro dela recebem +2 dados ou +5 fixo. O ocupante pode realizar Resistência de POD uma vez por rodada para impedir o aumento.
+PRÓXIMOS NÍVEIS: Diâmetro 6 m e +4 dados/+10 no Nível 2; 12 m e +6 dados/+15 no Nível 3.
+
+
+REDUÇÃO DE MAGIA EM ÁREA FIXA
+ALCANCE: Círculo de 3 m de diâmetro.
+DESCRIÇÃO: A área permanece até o Mundo acabar. Magias lançadas ou resolvidas dentro dela perdem 2 dados ou 10 de efeito fixo. O conjurador pode realizar Resistência de POD a cada magia para ignorar o efeito.
+PRÓXIMOS NÍVEIS: Diâmetro 6 m e -4 dados/-20 no Nível 2; 12 m e -6 dados/-30 no Nível 3.
+
+
+ACERTO EM ALVO
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: O alvo realiza Resistência de POD ou SAB. Em falha, seu próximo ataque físico até o fim da rodada ignora CA e Defesas Ativas e acerta automaticamente. É considerado um Sucesso Normal e não duplica dano. Não pode ser combinado com Acerto Extra.
+PRÓXIMOS NÍVEIS: No Nível 2, pode afetar um ataque físico ou magia direcionada. No Nível 3, funciona com qualquer ataque direcionado e o acerto é considerado Extremo, duplicando somente os dados originais do ataque.
+
+
+AUMENTO DE MANA TEMPORÁRIA
+ALCANCE: Pessoal.
+DESCRIÇÃO: Você recebe 15 PM Temporários. Eles são gastos antes dos PM reais e podem pagar a manutenção do Mundo ou outras magias, mas não podem pagar a abertura ou reabertura de um Mundo. Desaparecem quando o Mundo termina.
+PRÓXIMOS NÍVEIS: 25 PM Temporários no Nível 2 e 40 no Nível 3.
+
+
+REDUÇÃO DE SABEDORIA EM ALVO
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: O alvo realiza Resistência de POD. Em falha, sua SAB é reduzida em 25, mínimo 5, até o início do seu próximo turno. Não recalcula retroativamente a penalidade do Mundo já aberto.
+PRÓXIMOS NÍVEIS: -40 SAB no Nível 2 e -65 SAB no Nível 3.
+
+
+AUMENTO DE SABEDORIA
+ALCANCE: Pessoal.
+DESCRIÇÃO: Sua SAB aumenta em +25 até o início do seu próximo turno. Não recalcula retroativamente a penalidade do Mundo já estabelecida.
+PRÓXIMOS NÍVEIS: +40 SAB no Nível 2 e +65 SAB no Nível 3.
+
+
+REDUÇÃO DE ESQUIVA EM ALVO
+ALCANCE: 1 criatura percebida dentro do Mundo.
+DESCRIÇÃO: O alvo realiza Resistência de DES ou POD. Em falha, sofre -25 em Esquivar, mínimo 0, até o início do seu próximo turno.
+PRÓXIMOS NÍVEIS: -40 no Nível 2 e -60 no Nível 3.
+
+
+CRIAR ARMA
+ALCANCE: Espaço livre em até 1,5 m.
+DESCRIÇÃO: Você cria temporariamente uma arma comum ou cultural cujo modelo conheça, de até 1d10 de dano, feita de Aço de Castelo ou Aço Raro. Proficiência ainda é necessária. Munição simples suficiente para a cena acompanha a criação. A arma desaparece com o Mundo.
+PRÓXIMOS NÍVEIS: No Nível 2, pode criar qualquer arma não artefato do Manual e utilizar Aço Marufiano de +8. No Nível 3, pode utilizar Aço Divino.
+
+
+DESTRUIR ARMA EM ALVO
+ALCANCE: 1 arma percebida dentro do Mundo.
+DESCRIÇÃO: Escolha uma arma leve ou simples feita de material comum. Caso possua um portador, ele realiza Resistência de POD. Em falha, a arma é desfeita e permanece inutilizável até o Mundo acabar. Armas sem portador não resistem. Metal Divino, artefatos, partes do corpo e armas naturais são imunes.
+PRÓXIMOS NÍVEIS: No Nível 2, pode afetar qualquer arma mundana ou cultural, exceto Aço Marufiano. No Nível 3, também pode afetar Aço Marufiano; itens mágicos únicos e Metal Divino continuam imunes.

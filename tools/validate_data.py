@@ -14,14 +14,15 @@ from data_rules import normalize_database
 
 ROOT = Path(__file__).resolve().parents[1]
 VALID_MAGIC_TYPES = {"Fina", "Impacto", "Densa", "Mundo", "Forte", "Etérea"}
-EXPECTED_LAWS = {"Ofensivo": 24, "Defensivo": 23, "Utilitário": 29}
+EXPECTED_LAWS = {"Ofensivo": 24, "Defensivo": 22, "Utilitário": 28}
+EXPECTED_TALENTS = 88
 EXPECTED_LAW_FILTERS = {
     ("Ofensivo", "sem"): 22,
     ("Ofensivo", "com"): 11,
-    ("Defensivo", "sem"): 23,
+    ("Defensivo", "sem"): 22,
     ("Defensivo", "com"): 0,
     ("Utilitário", "sem"): 13,
-    ("Utilitário", "com"): 16,
+    ("Utilitário", "com"): 15,
 }
 
 
@@ -134,19 +135,14 @@ def validate_database(database: dict) -> list[str]:
         missing = [key for key in required if not str(law.get(key, "")).strip()]
         if missing:
             errors.append(f"{law.get('ID', 'Lei')}: campos ausentes {missing}.")
-    siphon = next((law for law in laws if law.get("ID") == "UTI-29"), None)
-    if not siphon or fold(siphon.get("Resistência sugerida")) in {"", "NAO SE APLICA"}:
-        errors.append("UTI-29 Sifão de Mana deve ser uma Lei COM resistência.")
+        modes = law.get("Modos de Resistência")
+        if not isinstance(modes, list) or not modes or any(mode not in {"sem", "com"} for mode in modes):
+            errors.append(f"{law.get('ID', 'Lei')}: Modos de Resistência inválidos {modes!r}.")
+    if any("SIFAO DE MANA" in fold(law.get("Lei do Mundo")) for law in laws):
+        errors.append("Sifão de Mana não pertence ao catálogo definitivo.")
     filter_counts: Counter = Counter()
     for law in laws:
-        title = fold(law.get("Lei do Mundo"))
-        if "SEM/COM RESISTENCIA" in title or "COM/SEM RESISTENCIA" in title:
-            modes = ("sem", "com")
-        elif law.get("ID") == "UTI-29" or "COM RESISTENCIA" in title:
-            modes = ("com",)
-        else:
-            modes = ("sem",)
-        for mode in modes:
+        for mode in law.get("Modos de Resistência", []):
             filter_counts[(law.get("Categoria"), mode)] += 1
     for key, expected in EXPECTED_LAW_FILTERS.items():
         if filter_counts[key] != expected:
@@ -155,7 +151,12 @@ def validate_database(database: dict) -> list[str]:
     cubit = next((spell for spell in spells if fold(spell.get("name")) == "CUBITO DA BALANCA"), None)
     if not cubit or cubit.get("baseType") != "Densa":
         errors.append("Cúbito da Balança deve usar o tipo Densa.")
-    for talent in database.get("talents", []):
+    talents = database.get("talents", [])
+    if len(talents) != EXPECTED_TALENTS:
+        errors.append(f"Talentos: {len(talents)}; esperado {EXPECTED_TALENTS}.")
+    for talent in talents:
+        if not str(talent.get("prerequisite", "")).strip():
+            errors.append(f"{talent.get('name')}: pré-requisito ausente.")
         if talent.get("mode") not in {"passive", "conditional", "mixed", "manual"}:
             errors.append(f"{talent.get('name')}: modo de talento inválido.")
         if not isinstance(talent.get("stackable"), bool):

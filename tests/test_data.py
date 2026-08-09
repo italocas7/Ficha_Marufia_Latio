@@ -9,6 +9,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
 from validate_data import all_spells, load_canonical, validate_database  # noqa: E402
+from import_talents_text import parse_talents  # noqa: E402
+from import_world_laws_text import parse_laws  # noqa: E402
 
 
 class DatabaseIntegrityTests(unittest.TestCase):
@@ -27,9 +29,12 @@ class DatabaseIntegrityTests(unittest.TestCase):
     def test_perception_and_world_laws(self):
         perception = next(skill for skill in self.database["skills"] if skill["name"] == "Percepção")
         self.assertEqual(perception["base"], 15)
-        self.assertEqual(len(self.database["worldLaws"]), 76)
-        siphon = next(law for law in self.database["worldLaws"] if law["ID"] == "UTI-29")
-        self.assertIn("POD", siphon["Resistência sugerida"].upper())
+        self.assertEqual(len(self.database["worldLaws"]), 74)
+        self.assertFalse(any(law["Lei do Mundo"] == "Sifão de Mana" for law in self.database["worldLaws"]))
+        self.assertEqual(self.database["worldLaws"][-1]["ID"], "UTI-28")
+        self.assertEqual(self.database["worldLaws"][-1]["Lei do Mundo"], "Destruir Arma em Alvo")
+        definitive = parse_laws(ROOT / "data-src" / "world_laws_definitive.txt")
+        self.assertEqual(self.database["worldLaws"], definitive)
 
     def test_escalar_is_replaced_and_background_bonuses_are_structured(self):
         skill_names = {skill["name"] for skill in self.database["skills"]}
@@ -78,7 +83,27 @@ class DatabaseIntegrityTests(unittest.TestCase):
         self.assertEqual(talents["Atleta"]["mode"], "mixed")
         self.assertEqual(talents["Amado Pela Magia"]["mode"], "passive")
         self.assertTrue(talents["Amado Pela Magia"]["stackable"])
-        self.assertEqual(talents["Lobo Solitário"]["conditionalMods"]["attackMod"], 10)
+        self.assertEqual(talents["Lobo Solitário"]["conditionalMods"]["attackMod"], 5)
+
+    def test_definitive_talent_catalog_and_automatic_values(self):
+        definitive = parse_talents(ROOT / "data-src" / "talents_definitive.txt")
+        canonical = [
+            {
+                "name": talent["name"],
+                "prerequisite": talent["prerequisite"],
+                "description": talent["description"],
+            }
+            for talent in self.database["talents"]
+        ]
+        self.assertEqual(len(canonical), 88)
+        self.assertEqual(canonical, definitive)
+
+        talents = {talent["name"]: talent for talent in self.database["talents"]}
+        self.assertNotIn("Fissura Celeste", talents)
+        self.assertEqual(talents["Adepto Marcial"]["skillMods"][0]["value"], 5)
+        self.assertEqual(talents["Atleta"]["skillMods"][0]["value"], 10)
+        self.assertEqual(talents["Alerta"]["skillMods"][0]["skill"], "Percepção")
+        self.assertEqual(talents["Ungido pela Magia"]["resourceMods"]["pm"], 20)
 
 
 if __name__ == "__main__":

@@ -256,6 +256,33 @@ test("shows the compact Combat World card only while active", () => {
   assert.match(guaranteed, /disabled/);
 });
 
+test("filters the definitive World laws by explicit resistance mode", () => {
+  const { sandbox } = createSandbox();
+  const counts = JSON.parse(vm.runInContext(`JSON.stringify({
+    offensiveSem: lawsForCategory("Ofensivo", "sem").length,
+    offensiveCom: lawsForCategory("Ofensivo", "com").length,
+    defensiveSem: lawsForCategory("Defensivo", "sem").length,
+    defensiveCom: lawsForCategory("Defensivo", "com").length,
+    utilitySem: lawsForCategory("Utilitário", "sem").length,
+    utilityCom: lawsForCategory("Utilitário", "com").length
+  })`, sandbox));
+  assert.deepEqual(counts, {
+    offensiveSem: 22,
+    offensiveCom: 11,
+    defensiveSem: 22,
+    defensiveCom: 0,
+    utilitySem: 13,
+    utilityCom: 15,
+  });
+
+  assert.equal(vm.runInContext('lawNameForResistance(DB.worldLaws.find((law) => law.ID === "OFE-01"), "sem")', sandbox), "Dano em Alvo (SEM Resistência)");
+  assert.equal(vm.runInContext('lawNameForResistance(DB.worldLaws.find((law) => law.ID === "OFE-01"), "com")', sandbox), "Dano em Alvo (COM Resistência)");
+  assert.match(vm.runInContext('lawDetailsForResistance(DB.worldLaws.find((law) => law.ID === "OFE-01"), "N2 (Mundo 5-9)", "sem").effect', sandbox), /60 de dano/);
+  assert.match(vm.runInContext('lawDetailsForResistance(DB.worldLaws.find((law) => law.ID === "OFE-01"), "N2 (Mundo 5-9)", "com").effect', sandbox), /80 de dano.*50/);
+  assert.equal(vm.runInContext('DB.worldLaws.some((law) => law["Lei do Mundo"] === "Sifão de Mana")', sandbox), false);
+  assert.equal(vm.runInContext('lawsForCategory("Híbrido", "sem")[0].ID', sandbox), "CUSTOM-HYB");
+});
+
 test("blocks an imported active World until its duration is defined", () => {
   const { sandbox } = createSandbox();
   vm.runInContext('state.world.status = "active"; state.world.durationTurns = null; state.world.maintenancePaidForTurn = true', sandbox);
@@ -331,14 +358,12 @@ test("applies passive talent bonuses independently from conditional switches", (
   vm.runInContext(`state.talents = [
     { id: "atleta", name: "Atleta", level: 1, enabled: false },
     { id: "adepto", name: "Adepto Marcial", level: 1, enabled: false },
-    { id: "curandeiro", name: "Curandeiro", level: 1, enabled: false },
     { id: "sorrateiro", name: "Sorrateiro", level: 1, enabled: false }
   ]`, sandbox);
   assert.equal(vm.runInContext('attr("FOR")', sandbox), 55);
-  assert.equal(vm.runInContext('skillModifiers("Atletismo").reduce((sum, item) => sum + item.value, 0)', sandbox), 15);
-  assert.equal(vm.runInContext('skillModifiers("Lutar (Brigar)").reduce((sum, item) => sum + item.value, 0)', sandbox), 10);
-  assert.equal(vm.runInContext('skillModifiers("Medicina").reduce((sum, item) => sum + item.value, 0)', sandbox), 10);
-  assert.equal(vm.runInContext('skillModifiers("Furtividade").reduce((sum, item) => sum + item.value, 0)', sandbox), 15);
+  assert.equal(vm.runInContext('skillModifiers("Atletismo").reduce((sum, item) => sum + item.value, 0)', sandbox), 10);
+  assert.equal(vm.runInContext('skillModifiers("Lutar (Brigar)").reduce((sum, item) => sum + item.value, 0)', sandbox), 5);
+  assert.equal(vm.runInContext('skillModifiers("Furtividade").reduce((sum, item) => sum + item.value, 0)', sandbox), 10);
 });
 
 test("stacks Amado Pela Magia and removes one instance by id", () => {
@@ -359,6 +384,6 @@ test("applies Lobo Solitário attack and CA only while enabled", () => {
   assert.equal(vm.runInContext('skillFinal("Lutar (Brigar)")', sandbox), baseAttack);
   assert.equal(vm.runInContext("caBreakdown().total", sandbox), baseCa);
   vm.runInContext('toggleTalent("lobo")', sandbox);
-  assert.equal(vm.runInContext('skillFinal("Lutar (Brigar)")', sandbox), baseAttack + 10);
+  assert.equal(vm.runInContext('skillFinal("Lutar (Brigar)")', sandbox), baseAttack + 5);
   assert.equal(vm.runInContext("caBreakdown().total", sandbox), baseCa + 5);
 });

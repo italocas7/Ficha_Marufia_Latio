@@ -1,5 +1,5 @@
 {
-  "schema": "latio-talent-rules-1",
+  "schema": "latio-talent-rules-2",
   "rules": {
     "Adepto Marcial": {
       "mode": "mixed",
@@ -7,50 +7,96 @@
       "automationLevel": "partial",
       "passive": {
         "skillMods": [
-          { "skill": "Lutar (Brigar)", "value": 10 },
-          { "skill": "Esquivar", "value": 10 }
+          {
+            "skill": "Lutar (Brigar)",
+            "value": 5
+          },
+          {
+            "skill": "Esquivar",
+            "value": 5
+          }
         ]
       }
     },
     "Alerta": {
       "mode": "passive",
       "stackable": false,
-      "automationLevel": "partial",
+      "automationLevel": "complete",
       "passive": {
         "skillMods": [
-          { "skill": "Encontrar", "value": 10 },
-          { "skill": "Escutar", "value": 10 }
+          {
+            "skill": "Percepção",
+            "value": 10
+          },
+          {
+            "skill": "Encontrar",
+            "value": 10
+          },
+          {
+            "skill": "Escutar",
+            "value": 10
+          }
         ]
       }
-    },
-    "Amado Pela Magia": {
-      "mode": "passive",
-      "stackable": true,
-      "automationLevel": "complete",
-      "passive": { "resourceMods": { "pm": 5 } }
     },
     "Ambidestro": {
       "mode": "conditional",
       "stackable": false,
       "automationLevel": "partial",
-      "conditional": { "acMod": 5 }
+      "conditional": {
+        "acMod": 5
+      }
     },
-    "Arremesso Múltiplo": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Atacante Agressivo": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Arremesso Múltiplo": {
+      "mode": "mixed",
+      "stackable": false,
+      "automationLevel": "partial",
+      "passive": {
+        "skillMods": [
+          {
+            "skill": "Arremessar",
+            "value": 5
+          },
+          {
+            "skill": "Lutar (Armas de Arremesso)",
+            "value": 5
+          }
+        ]
+      }
+    },
+    "Atacante Agressivo": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
     "Atacante Furioso": {
       "mode": "conditional",
       "stackable": false,
       "automationLevel": "partial",
-      "conditional": { "acMod": -8 }
+      "conditional": {
+        "acMod": -10
+      }
     },
-    "Atirador Aguçado": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
+    "Atirador Aguçado": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
     "Atleta": {
       "mode": "mixed",
       "stackable": false,
       "automationLevel": "partial",
       "passive": {
-        "skillMods": [{ "skill": "Atletismo", "value": 15 }],
-        "attributeMods": { "FOR": 5, "DES": 5 }
+        "skillMods": [
+          {
+            "skill": "Atletismo",
+            "value": 10
+          }
+        ],
+        "attributeMods": {
+          "FOR": 5,
+          "DES": 5
+        }
       }
     },
     "Cavaleiro de Justas": {
@@ -58,45 +104,100 @@
       "stackable": false,
       "automationLevel": "partial",
       "conditional": {
-        "skillMods": [{ "skill": "Cavalgar", "value": 10 }]
+        "skillMods": [
+          {
+            "skill": "Cavalgar",
+            "value": 10
+          }
+        ],
+        "attackMod": 10
       }
     },
     "Curandeiro": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditional": {
+        "skillMods": [
+          {
+            "skill": "Medicina",
+            "value": 10
+          }
+        ]
+      }
+    },
+    "Duelista": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditional": {
+        "skillMods": [
+          {
+            "skill": "Esquivar",
+            "value": 5
+          }
+        ],
+        "acMod": 5,
+        "attackMod": 5
+      }
+    },
+    "Especialista em Armadura Pesada": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Especialista em Besta": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Especialista em Concussão": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Especialista em Cortes": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Especialista em Perfuração": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Inexpugnável": {
+      "mode": "passive",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Investida Aprimorada": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Líder": {
       "mode": "mixed",
       "stackable": false,
       "automationLevel": "partial",
       "passive": {
-        "skillMods": [{ "skill": "Medicina", "value": 10 }]
-      }
-    },
-    "Duelista": {
-      "mode": "passive",
-      "stackable": false,
-      "automationLevel": "partial",
-      "passive": { "acMod": 5 }
-    },
-    "Especialista em Armadura Pesada": { "mode": "passive", "stackable": false, "automationLevel": "manual" },
-    "Especialista em Besta": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Especialista em Concussão": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Especialista em Cortes": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Especialista em Perfuração": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Inexpugnável": {
-      "mode": "conditional",
-      "stackable": false,
-      "automationLevel": "partial",
-      "conditional": { "acMod": 2 }
-    },
-    "Investida Aprimorada": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Líder": {
-      "mode": "passive",
-      "stackable": false,
-      "automationLevel": "complete",
-      "passive": {
         "skillMods": [
-          { "skill": "Tática", "value": 20 },
-          { "skill": "Charme", "value": 10 },
-          { "skill": "Persuasão", "value": 10 },
-          { "skill": "Diplomacia", "value": 10 }
+          {
+            "skill": "Tática",
+            "value": 10
+          },
+          {
+            "skill": "Charme",
+            "value": 5
+          },
+          {
+            "skill": "Persuasão",
+            "value": 5
+          },
+          {
+            "skill": "Diplomacia",
+            "value": 5
+          }
         ]
       }
     },
@@ -104,33 +205,417 @@
       "mode": "conditional",
       "stackable": false,
       "automationLevel": "partial",
-      "conditional": { "acMod": 5, "attackMod": 10 }
+      "conditional": {
+        "acMod": 5,
+        "attackMod": 5
+      }
     },
-    "Mestre de Escudo": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Mestre em Armas Grandes": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Mobilidade": { "mode": "mixed", "stackable": false, "automationLevel": "manual" },
-    "Perito": { "mode": "passive", "stackable": false, "automationLevel": "manual" },
-    "Piqueiro": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Resiliente": { "mode": "passive", "stackable": false, "automationLevel": "manual" },
-    "Retalhador": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Robusto": { "mode": "passive", "stackable": false, "automationLevel": "complete" },
+    "Mestre de Escudo": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Mestre em Armas Grandes": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Mobilidade": {
+      "mode": "passive",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Perito": {
+      "mode": "passive",
+      "stackable": true,
+      "automationLevel": "manual"
+    },
+    "Piqueiro": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Resiliente": {
+      "mode": "passive",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Retalhador": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Robusto": {
+      "mode": "passive",
+      "stackable": false,
+      "automationLevel": "complete"
+    },
     "Sorrateiro": {
       "mode": "mixed",
       "stackable": false,
       "automationLevel": "partial",
       "passive": {
-        "skillMods": [{ "skill": "Furtividade", "value": 15 }]
+        "skillMods": [
+          {
+            "skill": "Furtividade",
+            "value": 10
+          }
+        ]
       }
     },
-    "Técnicas Agressivas de Escudo": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Técnicas do Sentinela": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Trespassar": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Rho Aias": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Ungido pela Magia": { "mode": "passive", "stackable": false, "automationLevel": "manual" },
-    "Mana Residual": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Fissura Celeste": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Forja Divina": { "mode": "conditional", "stackable": false, "automationLevel": "manual" },
-    "Mundo Extensivo": { "mode": "passive", "stackable": false, "automationLevel": "manual" },
-    "Veia Densa": { "mode": "passive", "stackable": false, "automationLevel": "manual" }
+    "Técnicas Agressivas de Escudo": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Técnicas do Sentinela": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Trespassar": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Guardião de Linha": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Punho de Contenção": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Quebra-Guarda": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Escudo de Ombro": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Aparador Preciso": {
+      "mode": "passive",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Queda Controlada": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditional": {
+        "skillMods": [
+          {
+            "skill": "Atletismo",
+            "value": 5
+          }
+        ]
+      }
+    },
+    "Mestre de Formação": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Passo de Flanco": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Corredor de Cerco": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditional": {
+        "skillMods": [
+          {
+            "skill": "Atletismo",
+            "value": 10
+          }
+        ],
+        "acMod": 10
+      }
+    },
+    "Cavaleiro Arqueiro": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditional": {
+        "attackMod": 10
+      }
+    },
+    "Rédea de Ferro": {
+      "mode": "mixed",
+      "stackable": false,
+      "automationLevel": "partial",
+      "passive": {
+        "skillMods": [
+          {
+            "skill": "Cavalgar",
+            "value": 10
+          }
+        ]
+      }
+    },
+    "Batedor Incansável": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Saque Rápido": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Arqueiro de Cobertura": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Olho de Distância": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Ricochete Calculado": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Carregador Metódico": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Herbalista de Campo": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Cirurgião de Guerra": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Rastreador de Caça": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditional": {
+        "skillMods": [
+          {
+            "skill": "Rastrear",
+            "value": 10
+          },
+          {
+            "skill": "Encontrar",
+            "value": 5
+          }
+        ],
+        "attackMod": 5
+      }
+    },
+    "Artesão de Campanha": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "partial",
+      "conditional": {
+        "skillMods": [
+          {
+            "skill": "Arte/Ofício",
+            "value": 5
+          }
+        ]
+      }
+    },
+    "Comandante de Retirada": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Porta-Estandarte": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Socorrista de Linha": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Orador Preparado": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Investigador Metódico": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Mãos de Mestre": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Amado Pela Magia": {
+      "mode": "passive",
+      "stackable": true,
+      "automationLevel": "complete",
+      "passive": {
+        "resourceMods": {
+          "pm": 5
+        }
+      }
+    },
+    "Rho Aias": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Ungido pela Magia": {
+      "mode": "mixed",
+      "stackable": false,
+      "automationLevel": "partial",
+      "passive": {
+        "resourceMods": {
+          "pm": 20
+        }
+      }
+    },
+    "Mana Residual": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Forja Divina": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Mundo Extensivo": {
+      "mode": "passive",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Veia Densa": {
+      "mode": "passive",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Resíduo de Mana": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Sangria Arcana": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Sobrecarga Consciente": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Cicatriz de Lecitül": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Pulso Recursivo": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Absorção Completa": {
+      "mode": "passive",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Égide Imbuída": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Casca de Mana": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Devorador de Feitiços": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Manto do Núcleo": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Convergência Dolorosa": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Olhar da Fenda": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Trovoada Interna": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Passo do Cavaleiro": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Âncora de Vórtice": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Caminho de Névoa": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Laço de Vigília": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Partilha de Fôlego": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Memória Curativa": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Juramento de Presença": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Olho do Presságio": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    },
+    "Relicário Vivo": {
+      "mode": "conditional",
+      "stackable": false,
+      "automationLevel": "manual"
+    }
   }
 }

@@ -4,10 +4,12 @@
     "Manual do Jogador Mundo de Marufia 3.1.pdf",
     "TALENTOS.docx",
     "Book.xlsx",
+    "Leis do Mundo definitivas fornecidas pelo usuário em 2026-08-08",
+    "Talentos definitivos fornecidos pelo usuário em 2026-08-09",
     "Ficha Marufia Automática.pdf usada como referência visual e de campos."
   ],
   "bootstrap": {
     "file": "data.js",
-    "sha256": "e3a8e6cf4248594e1bbb0d5eada01c1d98b93e94a01a14b308a5715c733fb37a"
+    "sha256": "d8b607f32811308a6dfd01718a27d0350549517fec5ccd482d874282ff06fb4b"
   }
 }

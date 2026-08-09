@@ -6,6 +6,7 @@ from pathlib import Path
 
 from data_io import load_json, write_data_js, write_json
 from data_rules import normalize_database
+from import_talents_text import parse_talents
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -361,7 +362,7 @@ def talent_tags_and_effects(talent):
 
 def build_database_from_extracts():
     manual = read_text("manual_pages.txt")
-    talents = json.loads(read_text("talentos.json"))
+    talents = parse_talents(DATA_SOURCE / "talents_definitive.txt")
     book = json.loads(read_text("book.json"))
 
     laws_header = book["Leis Balanceadas"][0]

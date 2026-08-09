@@ -1,0 +1,356 @@
+TALENTOS
+
+ADEPTO MARCIAL
+Pré-requisito: Brigar 40
+Descrição: Você tem +5 em Brigar e em Esquiva. Sua esquiva agora só precisa ser igual ao sucesso do oponente para esquivar. Você pode usar Esquiva para gerar um Contra-Ataque.
+
+ALERTA
+Pré-requisito: Nenhum
+Descrição: Sua Percepção é aumentada em +10, Encontrar e Escutar em +10.
+
+ AMBIDESTRO
+Pré-requisito: Lutar 40
+Descrição: Uma vez por rodada, enquanto estiver empunhando duas armas de uma mão, você pode usar sua ação bônus para realizar um ataque com a segunda arma. Caso escolha não realizar esse ataque adicional, recebe +5 de CA contra ataques corpo a corpo até o início do seu próximo turno.
+
+ ARREMESSO MÚLTIPLO
+Pré-requisito: Arremessar 40 ou Lutar (Armas de Arremesso) 40
+Descrição: Uma vez por rodada, após realizar um ataque à distância com uma arma arremessável, arco ou funda, você pode usar sua ação bônus e consumir outra munição ou uma segunda arma para realizar um ataque adicional. Você recebe +5 em Arremessar e em Lutar com Armas de Arremesso, e o ataque adicional pode ter como alvo a mesma criatura ou outra que esteja a até 3 metros dela. Esse ataque não pode acionar outro ataque adicional nem duplicar dados extras concedidos por Talentos.
+
+ ATACANTE AGRESSIVO
+Pré-requisito: Lutar 40
+Descrição: Uma vez por rodada, quando acertar um ataque corpo a corpo após se mover pelo menos 3 metros em direção ao alvo, você causa +2d6 de dano. Caso esteja lutando em formação, o bônus é de +6 de dano. O dano adicional não é duplicado em Extremos ou Críticos e não se acumula consigo mesmo.
+
+ ATACANTE FURIOSO
+Pré-requisito: Lutar 40
+Descrição: Uma vez por rodada, você pode escolher um entre dois benefícios. Após rolar o dano, pode rolar novamente uma única vez os dados normais da arma, devendo utilizar o novo resultado. Alternativamente, antes de realizar o ataque, pode sofrer −10 de CA até o início do seu próximo turno para causar +2d8 de dano caso acerte. As duas opções não podem ser utilizadas na mesma rodada, e o dano adicional de +2d8 não é duplicado em Extremos ou Críticos.
+
+ ATIRADOR AGUÇADO
+Pré-requisito: Lutar (Armas de Arremesso) 50 ou Arremessar 50
+Descrição: Você dominou armas à distância. Ao atacar alvos um passo além ou aquém da distância normal, você não recebe Desvantagem. Seus ataques à distância ignoram um terço da cobertura. Você pode receber uma penalidade de +20 para adicionar 2d10 de dano ao ataque. Esse dano não é duplicado em Extremos ou Críticos.
+
+ ATLETA
+Pré-requisito: Atletismo 40
+Descrição: Aumenta FOR e DES em +5, até o máximo de 99. Quando estiver Caído, você pode se levantar utilizando apenas 1,5 metro de deslocamento. Você também recebe +10 em testes de Atletismo.
+
+ CAVALEIRO DE JUSTAS
+Pré-requisito: Cavalgar 50
+Descrição: Ao combater montado, você recebe +10 nos ataques e +10 em Cavalgar. Se acertar uma Investida, causa +1d6 de dano e empurra o alvo por 3 metros.
+
+ CURANDEIRO
+Pré-requisito: Medicina 40
+Descrição: Ao usar uma ação em uma criatura adjacente, você recebe +10 em Medicina para estabilizá-la, tratar Sangramento ou utilizar um kit de primeiros socorros. Você pode estabilizar o alvo mesmo sem um kit. Caso utilize um kit e obtenha sucesso no teste de Medicina, o alvo também recupera 1d6+3 PV. Cada criatura só pode receber essa cura uma vez por descanso curto, e as limitações causadas por Lesões Graves continuam sendo aplicadas normalmente.
+
+ DUELISTA
+Pré-requisito: Lutar 40 com arma de uma mão
+Descrição: No início do seu turno, escolha um oponente com quem esteja em Combate Engajado. Enquanto empunhar uma arma de uma mão, mantiver a outra mão livre e não utilizar escudo, você recebe +5 em ataques, +5 de CA e +5 em Esquiva contra o oponente escolhido. Esses bônus terminam caso você empunhe outro item, ataque com a mão livre ou escolha outro oponente, e não se acumulam com Ambidestro.
+
+ ESPECIALISTA EM ARMADURA PESADA
+Pré-requisito: CON 50 e treino com armadura pesada
+Descrição: Enquanto estiver usando uma armadura pesada superior à cota de malha, reduza pela metade, arredondando para cima, todas as penalidades numéricas impostas por ela. Além disso, reduza em 1,5 metro qualquer penalidade de movimento causada pela armadura. Esse efeito não reduz Exaustão, penalidades ambientais nem os requisitos mínimos necessários para utilizar a armadura.
+
+ ESPECIALISTA EM BESTA
+Pré-requisito: Lutar (Armas de Arremesso) 40
+Descrição: Você pode recarregar uma besta usando uma ação bônus ou sua ação de movimento da rodada. Além disso, não sofre Desvantagem ao atacar alvos em distância curta. Após realizar um ataque com uma arma de uma mão, pode usar sua ação bônus para disparar uma besta de mão que já esteja carregada, limitado a um disparo adicional por rodada. A mesma ação bônus não pode ser utilizada para recarregar e disparar, e o ataque adicional não pode acionar outro ataque.
+
+ ESPECIALISTA EM CONCUSSÃO
+Pré-requisito: Lutar 50
+Descrição: Ao utilizar uma arma que causa dano contundente, caso seu dano seja superior ao Bloqueio do alvo, ele não poderá Bloquear no próximo turno.
+
+ ESPECIALISTA EM CORTES
+Pré-requisito: Lutar 50
+Descrição: Ao utilizar uma arma que causa dano cortante, caso seu dano seja superior ao Bloqueio do alvo, ele sofre +1d6 de Sangramento por 4 turnos. Esse dano não é duplicado em Extremos ou Críticos.
+
+ ESPECIALISTA EM PERFURAÇÃO
+Pré-requisito: Lutar 50
+Descrição: Ao utilizar uma arma que causa dano perfurante, caso o dano seja superior ao Bloqueio, o alvo recebe o dano completo.
+
+ INEXPUGNÁVEL
+Pré-requisito: CON 60
+Descrição: Você é uma muralha que não pode ser conquistada. Não pode ser afetado por manobras e recebe +10 de FOR ou CON para resistir a testes.
+
+ INVESTIDA APRIMORADA
+Pré-requisito: Atletismo 50
+Descrição: Uma vez por rodada, ao declarar uma Investida, seu deslocamento disponível aumenta em 3 metros exclusivamente durante essa ação, e o ataque realizado recebe +5. Caso acerte, escolha entre aplicar o dano adicional normal da Investida ou tentar Derrubar o alvo por meio de um embate de Atletismo contra FOR ou CON. Você não pode causar o dano adicional e tentar Derrubar ao mesmo tempo, e o aumento de deslocamento termina assim que a Investida é concluída.
+
+ LÍDER
+Pré-requisito: Tática 30 e Carisma 40
+Descrição: Você recebe +10 em Tática e +5 em Charme, Persuasão e Diplomacia. Uma vez por rodada, pode gastar uma ação e obter sucesso em um teste de Tática para gritar uma ordem a uma quantidade de aliados igual a CAR ÷ 10, desde que possam ouvi-lo. Cada aliado afetado recebe +5 no primeiro teste que realizar para cumprir essa ordem até o início do seu próximo turno. Esse efeito não concede ações extras, e um mesmo aliado não pode acumular ordens de diferentes Líderes.
+
+ LOBO SOLITÁRIO
+Pré-requisito: Nenhum
+Descrição: Você recebe +5 de CA e +5 em todos os ataques que fizer se não estiver com nenhum aliado dentro de 6 metros de diâmetro. Caso esteja acompanhado, recebe −5 de CA e −5 em testes de ataque.
+
+ MESTRE DE ESCUDO
+Pré-requisito: Lutar 40
+Descrição: Uma vez por rodada, ao Bloquear com um escudo, você reduz em mais 2 pontos o dano físico recebido. Além disso, pode Bloquear projéteis físicos mesmo que não esteja em Combate Engajado com o atirador. Esse efeito não permite Bloquear magias.
+
+ MESTRE EM ARMAS GRANDES
+Pré-requisito: Lutar (Armas de Haste) 50, Lutar (Culturais) 50 ou Lutar (Armas Longas) 50
+Descrição: Uma vez por rodada, antes de realizar um ataque com uma arma grande, você pode sofrer −15 no teste para causar +1d10 de dano caso acerte. Além disso, ao obter um resultado Extremo e reduzir um alvo a 0 PV, pode usar sua ação bônus para realizar um novo ataque corpo a corpo contra outra criatura ao seu alcance, causando o dano normal do ataque mais 1d10. Cada benefício pode ser utilizado apenas uma vez por rodada. O ataque adicional exige uma nova rolagem e não pode gerar outro ataque, e o dano adicional de +1d10 não é duplicado em Extremos ou Críticos.
+
+ MOBILIDADE
+Pré-requisito: Atletismo 40
+Descrição: Seu deslocamento aumenta em 3 metros. Quando você ataca uma criatura, não sofre Ataques de Oportunidade dela pelo restante do turno. Terreno difícil não reduz seu movimento.
+
+ PERITO
+Pré-requisito: Nenhum
+Descrição: Repetível nos limites descritos. Você recebe +10 em três perícias à sua escolha. Esse benefício não eleva uma perícia acima de 80 durante a criação.
+
+ PIQUEIRO
+Pré-requisito: Lutar (Armas de Haste) 50
+Descrição: Usando sua reação enquanto estiver empunhando uma arma de haste, quando um inimigo entrar voluntariamente em seu alcance corpo a corpo, você pode atacá-lo com +10 de acerto. Se o oponente tiver se aproximado realizando uma Investida, seu ataque causa +1d8 de dano do mesmo tipo, reduz o movimento do alvo para zero e cancela a Investida.
+
+ RESILIENTE
+Pré-requisito: CON 50 ou SAB 50
+Descrição: Você recebe Vantagem em testes de CON e SAB. Só fica Exausto ao obter uma Falha Crítica e toda condição de Exaustão é reduzida em um passo. Caso seja curado do estado Morrendo, não fica Inconsciente.
+
+ RETALHADOR
+Pré-requisito: Especialista em Cortes ou Lutar 60
+Descrição: Ao utilizar uma arma cortante, você reduz o movimento da criatura em 3 metros enquanto o Sangramento durar e aumenta em um passo todo Sangramento causado.
+
+ ROBUSTO
+Pré-requisito: CON 60
+Descrição: Sua vida soma o valor de CON ÷ 8 em toda evolução de nível. O talento não altera retroativamente os ganhos anteriores à sua obtenção.
+
+ SORRATEIRO
+Pré-requisito: Furtividade 30
+Descrição: Você recebe +10 em Furtividade e Enganação. Quando estiver Escondido e errar um ataque à distância, sua posição não será revelada.
+
+ TÉCNICAS AGRESSIVAS DE ESCUDO
+Pré-requisito: Mestre de Escudo
+Descrição: Você aprendeu a usar o escudo tanto como proteção quanto como arma. Usando sua ação bônus, você causa 1d6 mais o dano de Corpo contra um alvo corpo a corpo. O escudo também é considerado uma arma que pode ser imbuída.
+
+ TÉCNICAS DO SENTINELA
+Pré-requisito: Lutar 50
+Descrição: Quando uma criatura a até 1,5 metro de você realizar um ataque contra outro alvo, você pode usar sua reação para realizar um ataque contra essa criatura, impedindo o ataque dela.
+
+ TRESPASSAR
+Pré-requisito: Lutar 50
+Descrição: Quando você realizar um ataque corpo a corpo e reduzir os PV do alvo para 0 ou menos, pode gastar sua reação para realizar um ataque adicional contra outra criatura dentro do seu alcance. O ataque adicional utiliza os mesmos valores de ataque e dano.
+
+ GUARDIÃO DE LINHA
+Pré-requisito: Tática 30
+Descrição: Ao utilizar sua ação padrão, você pode conceder metade de sua CA para dois aliados adjacentes.
+
+ PUNHO DE CONTENÇÃO
+Pré-requisito: Brigar 40
+Descrição: Com uma ação bônus, você pode, desarmado, agarrar ou derrubar um alvo realizando um embate de FOR. O alvo precisa obter um grau de sucesso superior ao seu para se soltar. O alvo deve ser do seu Corpo ou menor. A manobra não causa dano adicional nem gera outro ataque.
+
+ QUEBRA-GUARDA
+Pré-requisito: Lutar 50
+Descrição: Uma vez por rodada, ao acertar um ataque corpo a corpo, você pode impor −10 no próximo Aparar do alvo contra você ou reduzir em 2 o próximo Bloqueio dele contra um ataque seu, até o início do próximo turno. Ao obter um resultado Extremo, você anula a reação do alvo até o próximo turno dele.
+
+ ESCUDO DE OMBRO
+Pré-requisito: Mestre de Escudo
+Descrição: Com o escudo empunhado, escolha um aliado adjacente no início do turno. Ele recebe +10 de CA contra ataques à distância que atravessem seu espaço ou sua direção de proteção. O aliado pode usar sua reação para Bloquear o dano do ataque à distância. Esse talento não protege contra ataques em área, ataques vindos do lado oposto ou enquanto você estiver Caído ou Agarrado.
+
+ APARADOR PRECISO
+Pré-requisito: Lutar 50 e Percepção 45
+Descrição: Você pode Aparar ataques à distância caso obtenha um resultado igual ou superior ao resultado do ataque.
+
+ QUEDA CONTROLADA
+Pré-requisito: Atletismo 40
+Descrição: Ao cair ou estar em queda, você pode usar sua reação para receber +5 em Atletismo para agarrar uma borda, rolar durante a aterrissagem ou reduzir uma queda. Com um sucesso, reduza o dano de queda pela metade e não fique Caído. Não funciona caso esteja Inconsciente, Imobilizado ou sem espaço para amortecer a queda.
+
+ MESTRE DE FORMAÇÃO
+Pré-requisito: Líder e Tática 60
+Descrição: Você pode gritar uma ordem para uma quantidade de aliados igual a CAR ÷ 5, desde que possam ouvi-lo. Cada aliado que tenha até 29 de Tática recebe +10 no primeiro teste realizado para cumprir a ordem. Aqueles que tenham 30 ou mais de Tática recebem +15. O benefício dura até o início do seu próximo turno.
+
+ PASSO DE FLANCO
+Pré-requisito: Atletismo 30
+Descrição: Uma vez durante o combate, você pode realizar seu movimento completo sem sofrer Ataques de Oportunidade. Após acertar um ataque corpo a corpo, uma vez por rodada, pode se mover 4 metros sem sofrer Ataques de Oportunidade do alvo atingido. Esse movimento conta no seu limite da rodada.
+
+ CORREDOR DE CERCO
+Pré-requisito: Atletismo 40 e Mobilidade
+Descrição: Ao gastar seu movimento base completo, você recebe mais 3 metros de movimento, +10 de CA e +10 em Atletismo.
+
+ CAVALEIRO ARQUEIRO
+Pré-requisito: Cavalgar 50 e Lutar (Armas de Arremesso) 40
+Descrição: Enquanto estiver montado, seu primeiro ataque da rodada não sofre a Desvantagem de ataques à distância montados, desde que a montaria esteja parada ou se mova até metade de seu deslocamento. Nessas condições, você recebe +10 no primeiro ataque à distância da rodada. O benefício é perdido caso a montaria Corra, realize uma Investida ou esteja fora de controle.
+
+ RÉDEA DE FERRO
+Pré-requisito: Cavalgar 50
+Descrição: Você recebe +10 em Cavalgar. Depois de acertar durante uma Passagem, a montaria pode continuar utilizando o restante de seu deslocamento sem provocar Ataques de Oportunidade de qualquer alvo.
+
+ BATEDOR INCANSÁVEL
+Pré-requisito: Sobrevivência 40 e Alerta
+Descrição: Durante viagens, você recebe Vantagem em testes de Escutar, Encontrar e Navegação. Além disso, reduz 1 ponto de Exaustão após um descanso longo.
+
+ SAQUE RÁPIDO
+Pré-requisito: Arremessar 30 ou Lutar (Armas de Arremesso) 30
+Descrição: Uma vez por rodada, você pode sacar uma arma arremessável, uma arma de arremesso ou uma munição sem gastar uma ação. Você recebe Vantagem em seu primeiro ataque utilizando essa arma.
+
+ ARQUEIRO DE COBERTURA
+Pré-requisito: Lutar (Armas de Arremesso) 70 e Atirador Aguçado
+Descrição: Usando sua ação padrão, você pode disparar uma saraivada de flechas para cima. Escolha uma área de 6 metros de diâmetro. As criaturas atingidas sofrem 4d6 de dano e perdem seu movimento. O efeito também pode atingir aliados.
+
+ OLHO DE DISTÂNCIA
+Pré-requisito: Encontrar 50 e Lutar (Armas de Arremesso) 50
+Descrição: Depois de usar Mirar, você pode se mover até metade de seu deslocamento sem perder o bônus, desde que termine o movimento vendo o mesmo alvo e não entre em Combate Engajado. Você pode trocar de alvo usando sua ação bônus sem perder a mira. Correr ou sofrer dano encerra Mirar normalmente.
+
+ RICOCHETE CALCULADO
+Pré-requisito: Arremessar 50
+Descrição: Uma vez por rodada, ao arremessar uma arma, você pode sofrer −10 no ataque para ignorar uma cobertura de dois terços, utilizando uma superfície rígida plausível. Em caso de erro sem Falha Crítica, a arma cai em um ponto visível a até 3 metros do alvo.
+
+ CARREGADOR METÓDICO
+Pré-requisito: Lutar (Armas de Arremesso) 30
+Descrição: Uma vez por rodada, você pode recarregar uma besta utilizando seu movimento em vez da ação padrão.
+
+ HERBALISTA DE CAMPO
+Pré-requisito: Natureza 40 ou Medicina 40
+Descrição: Com ervas adequadas, você pode preparar duas cataplasmas durante uma hora. Uma criatura tratada recupera 1d4 PV ou recebe +10 em seu próximo teste contra Envenenamento ou uma doença leve. Cada criatura pode utilizar apenas uma cataplasma por descanso curto.
+
+ CIRURGIÃO DE GUERRA
+Pré-requisito: Curandeiro e Medicina 50
+Descrição: Uma vez por alvo por descanso longo, utilizando um kit de primeiros socorros e obtendo sucesso em Medicina, você pode encerrar um Sangramento ou suspender a penalidade de −20 causada por uma Lesão Grave até o fim da cena. Isso não remove a Lesão Grave e consome um uso do kit.
+
+ RASTREADOR DE CAÇA
+Pré-requisito: Rastrear 40
+Descrição: Após examinar vestígios durante dez minutos, escolha a criatura associada a eles como sua presa. Você recebe +10 em Rastrear para segui-la, +5 em Lutar contra ela e +5 em Encontrar para perceber armadilhas ou emboscadas deixadas por ela. A marca termina quando você escolher outra presa ou passar um dia sem encontrar vestígios.
+
+ ARTESÃO DE CAMPANHA
+Pré-requisito: Arte/Ofício 40
+Descrição: Durante um descanso curto ou longo, você recebe +5 em Arte/Ofício. Durante o descanso, pode reparar um item mundano danificado ou improvisar uma ferramenta simples adequada à cena, utilizando os materiais disponíveis. O talento não cria armas superiores, itens mágicos ou matéria inexistente. O Mestre determina os materiais necessários.
+
+ COMANDANTE DE RETIRADA
+Pré-requisito: Líder e Tática 50
+Descrição: Usando sua ação padrão e obtendo sucesso em Tática, uma vez por cena você pode escolher até três aliados a até 9 metros que possam ouvi-lo. Cada um deles pode usar sua reação para se mover 3 metros sem provocar Ataques de Oportunidade. O movimento é descontado do próximo deslocamento do aliado e não pode atravessar inimigos ou terrenos impossíveis.
+
+ PORTA-ESTANDARTE
+Pré-requisito: Tática 30 e um estandarte visível
+Descrição: Aliados em formação a até 9 metros que possam ver seu estandarte recebem +15 no primeiro teste de SAB contra medo, desmoralização ou horror da cena. Você não recebe o próprio bônus. O efeito termina caso o estandarte caia, fique oculto ou você fique Inconsciente.
+
+ SOCORRISTA DE LINHA
+Pré-requisito: Medicina 30
+Descrição: Ao se mover diretamente até um aliado com metade dos PV ou menos, você não provoca Ataque de Oportunidade de uma criatura à sua escolha. Além disso, recebe +5 no teste realizado imediatamente para estabilizar ou estancar o Sangramento desse aliado.
+
+ ORADOR PREPARADO
+Pré-requisito: Diplomacia ou Persuasão 40
+Descrição: Ao se preparar durante dez minutos, uma vez por cena você pode receber +10 em um teste de Diplomacia ou Persuasão relacionado ao discurso preparado, a um tratado ou a uma audiência formal.
+
+ INVESTIGADOR METÓDICO
+Pré-requisito: Encontrar 40 ou Intuição 40
+Descrição: Ao examinar uma cena, local ou mistério durante dez minutos, escolha Encontrar, Intuição ou História e receba +15 no teste para reconstruir o ocorrido. Em caso de sucesso, o Mestre também indica uma pista que merece ser examinada posteriormente, sem revelar sua solução.
+
+ MÃOS DE MESTRE
+Pré-requisito: Perito e Arte/Ofício 60
+Descrição: Durante um projeto de ofício, escolha uma especialidade de Arte/Ofício. Você recebe +10 apenas nessa especialidade e reduz em 25% o tempo necessário para projetos bem-sucedidos. Um resultado Extremo implica uma melhoria na criação. O talento não reduz custos nem permite criar itens mágicos.
+ 
+TALENTOS MÁGICOS
+
+ AMADO PELA MAGIA
+Pré-requisito: POD 25
+Descrição: Seu valor máximo de PM aumenta em 5. Esse talento pode ser escolhido várias vezes.
+
+ RHO AIAS
+Pré-requisito: Magia Forte 5 e POD 50
+Descrição: Você consegue usar sua Magia Forte gastando mais 8 PM para formar um escudo em uma área de 3 metros de raio, protegendo todos que estiverem atrás dele contra magias ou ataques físicos. O escudo possui 80 PV e é destruído quando chegar a 0 PV. Essa habilidade pode ser guardada em objetos, como pingentes. O escudo pode ter duas aparências.
+
+ UNGIDO PELA MAGIA
+Pré-requisito: POD 50
+Descrição: Você recebe Vantagem nas jogadas de ataque e +20 de PM. Também pode utilizar a Dança Perfeita, causando +2d6 de dano, em resultados Extremos.
+
+ MANA RESIDUAL
+Pré-requisito: POD 40 e uma arma vinculada
+Descrição: Você pode imbuir mana adicional em sua arma. Ela pode armazenar uma quantidade de PM igual ao seu nível + POD ÷ 10. Cada ataque que utilize a arma e sua energia consome a mana armazenada. Você escolhe quanto deseja armazenar utilizando uma ação bônus, perdendo 1 PM para cada 1 PM armazenado. Nenhum modificador reduz ou aumenta esse gasto. Os PM não utilizados são perdidos no próximo descanso longo ou caso você perca contato com a arma.
+
+ FORJA DIVINA
+Pré-requisito: POD 50 e contato com uma arma significativa
+Descrição: Consumindo 8 PM, você pode criar uma arma feita de magia. Ela causa 1d10+6 de dano, assume a forma que você preferir e permanece por 10 minutos.
+
+ MUNDO EXTENSIVO
+Pré-requisito: Mundo 5
+Descrição: A área de seu Mundo aumenta em 9 metros de raio, e seu custo de utilização é reduzido em 1 PM.
+
+ VEIA DENSA
+Pré-requisito: Magia Densa 5 e POD 50
+Descrição: Suas Magias Densas custam 1 PM a menos. Ao conjurar uma Magia Densa, você pode gastar mais 2 PM para aumentar em 2d10 uma penalidade aplicada ou causar +2d8 de dano. Os dados adicionais não são duplicados, e a redução de custo não se aplica a outras magias.
+
+ RESÍDUO DE MANA
+Pré-requisito: POD 40
+Descrição: Caso tenha terminado seu turno gastando 3 PM ou mais, você pode criar um Resíduo até o fim do seu próximo turno. O Resíduo pode ser consumido para reduzir em 1d6 PM o custo da sua próxima magia ou Talento Mágico. O custo final mínimo é de 1 PM. O Resíduo não pode ser armazenado, transferido ou utilizado para gerar outro Resíduo.
+
+ SANGRIA ARCANA
+Pré-requisito: POD 50 e ter sofrido Sobrecarga Mágica
+Descrição: Uma vez por cena, você pode substituir 2 PV por 1 PM, até o máximo de 10 PM. O dano recebido ignora reduções e é aplicado antes do efeito. Você não pode reduzir seus PV a 0 dessa maneira. Os PV perdidos não podem ser recuperados até que todos os PM obtidos sejam gastos.
+
+ SOBRECARGA CONSCIENTE
+Pré-requisito: POD 50 e CON 60
+Descrição: Uma vez por cena, você pode aumentar em um passo os dados de sua magia gastando mais 5 PM. Depois da resolução, realize um teste de CON. Em um sucesso Normal, receba 1 ponto de Exaustão; em uma Falha, receba 2 pontos; em uma Falha Crítica, receba 3 pontos.
+
+ CICATRIZ DE LECITÜL
+Pré-requisito: Ter sobrevivido a um dano mágico que o colocou em Morrendo
+Descrição: Uma vez por descanso longo, você pode reduzir pela metade o dano de uma magia que o atingir. Além disso, seu PM máximo aumenta em 5.
+
+ PULSO RECURSIVO
+Pré-requisito: POD 50
+Descrição: Quando um efeito mágico seu estiver terminando, você pode usar sua reação e gastar 2 PM para prolongá-lo por 1d4 rodadas, mantendo o mesmo alvo e a mesma intensidade. Esse efeito só pode ser utilizado uma vez por cena e não funciona em Mundos.
+
+ ABSORÇÃO COMPLETA
+Pré-requisito: POD 70 e Veia Densa
+Descrição: Você consegue absorver a mana natural pela pele em vez de depender da respiração. Você recebe +10 de PM máximo e recupera +6 PM por hora.
+
+ ÉGIDE IMBUÍDA
+Pré-requisito: Mestre de Escudo e POD 40
+Descrição: Uma vez por rodada, você pode usar sua reação para Bloquear um ataque mágico realizado contra você. Ao gastar 2 PM, reduza o dano recebido pelo valor normal do escudo, somado ao benefício de Mestre de Escudo e a +1d6. O talento não anula condições sem dano e não pode ser combinado com Esquivar ou outro Bloqueio na mesma reação. O custo mínimo é de 1 PM.
+
+ CASCA DE MANA
+Pré-requisito: POD 40
+Descrição: Uma vez por rodada, ao sofrer dano, você pode usar sua reação e gastar 2 PM para reduzir o dano recebido em 2d6. A habilidade deve ser utilizada antes de conhecer o dano final e não pode ser combinada com Bloquear ou Égide Imbuída.
+
+ DEVORADOR DE FEITIÇOS
+Pré-requisito: POD 50 e Absorção Completa
+Descrição: Ao ser atacado por uma magia, você pode usar sua reação para absorvê-la completamente. Os PM utilizados para conjurar a magia são adicionados aos seus PM atuais. Caso seus PM ultrapassem o valor máximo, o excesso causa a mesma quantidade de dano a você. Esse talento pode ser utilizado uma vez por cena a cada descanso longo.
+
+ MANTO DO NÚCLEO
+Pré-requisito: POD 50
+Descrição: Uma vez por cena, após conhecer o resultado de uma Esquiva de Magia realizada por você ou por um aliado adjacente, você pode usar sua reação e gastar 3 PM para melhorar em um passo a proteção contra o dano. Caso o alvo fosse sofrer o dano total, passa a sofrer apenas metade. Caso já fosse sofrer metade do dano, não sofre dano algum.
+
+ CONVERGÊNCIA DOLOROSA
+Pré-requisito: POD 70
+Descrição: Usando sua reação, sua ação de movimento e 6 PM, uma vez por cena você pode fazer sua magia receber +4 dados contra um alvo. Depois da resolução, realize um teste de CON. Em caso de Falha, receba 2 pontos de Exaustão. Os dados adicionais não afetam a área e não podem ser multiplicados.
+
+ OLHAR DA FENDA
+Pré-requisito: POD 40 e Percepção 40
+Descrição: Usando sua ação padrão e gastando 5 PM, uma vez por cena você pode fixar sua atenção em uma criatura que consiga perceber. Ela deve resistir com POD. Em caso de Falha, durante três rodadas, você e seus aliados a até 6 metros recebem +15 em Esquiva de Magia e em resistências contra efeitos do alvo. Vocês também percebem sua presença apesar de ocultações mágicas. O efeito exige concentração visual. Você sofre −15 em Percepção contra outras fontes enquanto mantiver o Olhar. Cobertura total entre você e o alvo encerra o efeito.
+
+ TROVOADA INTERNA
+Pré-requisito: POD 40
+Descrição: Depois de sofrer dano corpo a corpo, você pode usar sua reação e gastar 3 PM para descarregar força mágica pelo solo. O agressor realiza uma Esquiva de Magia contra 2d8. Caso não evite completamente o dano, deve testar CON. Em caso de Falha, é empurrado por 3 metros e perde suas reações até o início do próximo turno. Esse talento pode ser utilizado uma vez por rodada.
+
+ PASSO DO CAVALEIRO
+Pré-requisito: POD 40
+Descrição: Usando sua ação bônus e gastando 3 PM, você fortalece seus pés com mana. Durante 1 minuto, seu movimento aumenta em 9 metros. O talento pode ser utilizado novamente após um descanso curto.
+
+ ÂNCORA DE VÓRTICE
+Pré-requisito: POD 50
+Descrição: Usando sua ação padrão e gastando 6 PM, você cria uma âncora que gera uma área de 3 metros de raio ao redor dela durante três rodadas. A manutenção custa 2 PM. Toda magia conjurada dentro da área, assim como qualquer criatura com magia imbuída no corpo ou em uma arma que entre, saia ou realize uma ação dentro da área, deve realizar um embate de POD contra você. Em caso de Falha, o movimento ou a magia é cancelado, mas seu custo ainda é gasto. A habilidade afeta aliados e inimigos. Você deve permanecer na área; caso saia ou não pague a manutenção, o efeito termina.
+
+ CAMINHO DE NÉVOA
+Pré-requisito: POD 50
+Descrição: Usando sua ação padrão, trace uma rota visível com um gesto ou objeto. Ao gastar 6 PM, uma vez por cena você cria, durante três rodadas, um caminho mágico de até 18 metros de comprimento e 1,5 metro de largura para até quatro criaturas nomeadas. Enquanto seguirem o percurso, elas ignoram terreno difícil e Ataques de Oportunidade, além de receberem +3 metros de movimento. O caminho não atravessa matéria ou barreiras e impede movimentação furtiva. Sair do percurso encerra os benefícios para aquela criatura.
+
+ LAÇO DE VIGÍLIA
+Pré-requisito: POD 40
+Descrição: Para criar o vínculo, você deve gastar uma ação unindo nós ou objetos pareados e pagar 2 PM. Enquanto o Laço estiver ativo, sempre que o aliado vinculado realizar uma Esquiva de Magia ou um teste de resistência de CON, SAB ou POD, você pode usar sua reação e gastar 1 PM para conceder +15 ao teste. Essa proteção pode ser utilizada apenas uma vez por rodada, e a decisão deve ser tomada antes que o resultado seja determinado. O bônus não altera Críticos nem Falhas Críticas. O Laço termina caso a distância entre os envolvidos ultrapasse 6 metros, um deles fique Inconsciente ou você crie outro Laço.
+
+ PARTILHA DE FÔLEGO
+Pré-requisito: POD 50
+Descrição: Uma vez por cena, você pode gastar uma ação para tocar uma criatura adjacente e sincronizar sua respiração com a dela. Transfira de 1 a 8 dos seus PM atuais para o alvo, sem qualquer custo adicional. Até o início do seu próximo turno, você sofre −15 em testes de CON e perde sua ação de movimento. Os PM recebidos não podem ultrapassar o valor máximo do alvo, ser transferidos novamente ou alimentar efeitos que produzam, recuperem ou multipliquem PM.
+
+ MEMÓRIA CURATIVA
+Pré-requisito: POD 50 e Medicina 40 ou Magia Etérea 3
+Descrição: Imediatamente após um aliado que você possa perceber receber uma cura, você pode usar sua reação e gastar 4 PM para guardar nele uma memória dessa recuperação. Esse efeito pode ser aplicado apenas uma vez por aliado a cada cena. Na primeira vez em que o aliado cairia a 0 PV durante a cena, ele permanece com 1 PV e recupera até 15 PV adicionais. Essa proteção não remove Lesões Graves e não pode ser combinada, no mesmo dano, com outro efeito que impeça o alvo de chegar a 0 PV.
+
+ JURAMENTO DE PRESENÇA
+Pré-requisito: POD 50 e Persuasão 40 ou Religião 40
+Descrição: Uma vez por cena, você pode gastar uma ação e 6 PM para convocar até quatro aliados para um juramento, que deve ser aceito verbalmente por cada um. Durante as três rodadas seguintes, os aliados que aceitarem recebem Vantagem em testes contra medo, horror e possessão. Além disso, uma única vez enquanto o efeito estiver ativo, cada aliado pode permanecer com 1 PV quando cairia a 0 PV. Você não recebe essas proteções e deve permanecer imóvel durante toda a duração do juramento. Esse efeito não pode ser combinado, no mesmo dano, com outra proteção que impeça o alvo de chegar a 0 PV.
+
+ OLHO DO PRESSÁGIO
+Pré-requisito: POD 40
+Descrição: Uma vez por cena, você pode gastar uma ação e 2 PM para interpretar um reflexo, objeto ou sinal relacionado a uma ação imediata. O Mestre fornece um presságio curto sobre essa ação. Depois de realizar a rolagem, você pode aplicar +10 a um teste d100 diretamente relacionado ao que foi anunciado. O valor efetivo do teste não pode ultrapassar 99, e o bônus não altera Críticos nem Falhas Críticas. Enquanto mantiver o presságio guardado, você sofre −10 em testes de Percepção relacionados a qualquer outro assunto.
+
+ RELICÁRIO VIVO
+Pré-requisito: POD 50 e um objeto de vínculo narrativo
+Descrição: Durante um descanso longo, você pode realizar um ritual no qual o proprietário toca o objeto e o nomeia, criando um vínculo com ele. Apenas um relicário pode permanecer vinculado por vez, e sua capacidade máxima é de 20 PM. O relicário só pode ser carregado com seus PM naturais, e os pontos armazenados podem ser gastos em suas magias, exceto para pagar o custo de Talentos Mágicos. PM transferidos, absorvidos, recuperados ou gerados por outros efeitos não podem ser armazenados nessa reserva. Caso o relicário seja destruído, todos os PM guardados são perdidos, e um novo vínculo só poderá ser criado após outro descanso longo.
+ 

@@ -1173,21 +1173,24 @@ function renderPT() {
         </table>
       </div>
     </section>
-    <section class="panel">
-      <div class="grid two">
-        <div>
+    <section class="panel pt-features-section">
+      <div class="pt-features-layout">
+        <section class="pt-abilities-panel">
           <div class="section-title"><h2>Habilidades Extra</h2><button class="button" type="button" data-action="open-ability-modal">Add Habilidade</button></div>
-          <div class="stack">${state.abilities.map((ability) => abilityCard(ability)).join("") || `<div class="empty">Nenhuma habilidade extra.</div>`}</div>
-        </div>
-        <div>
-          <div class="section-title"><h2>Talentos</h2></div>
-          <div class="grid two">
-            ${selectRaw("Talento", "ui.talentDraft", DB.talents.map((talent) => [talent.name, talent.name]), "Escolha")}
-            <div class="field"><label>Nível</label><input type="number" min="1" id="talentLevelDraft" value="1"></div>
+          <div class="stack pt-abilities-list">${state.abilities.map((ability) => abilityCard(ability)).join("") || `<div class="empty">Nenhuma habilidade extra.</div>`}</div>
+        </section>
+        <section class="talents-panel">
+          <div class="talents-panel-header">
+            <div><h2>Talentos</h2><p>Talentos adquiridos pelo personagem</p></div>
+            <span class="tag talents-count">${allKnownTalents().length} talentos</span>
           </div>
-          <button class="button" type="button" data-action="add-talent" style="margin: 10px 0;">Adicionar talento</button>
-          <div class="stack">${allKnownTalents().map((talent) => talentCard(talent)).join("") || `<div class="empty">Nenhum talento conhecido.</div>`}</div>
-        </div>
+          <div class="talents-toolbar">
+            <div class="talent-select-field">${selectRaw("Talento", "ui.talentDraft", DB.talents.map((talent) => [talent.name, talent.name]), "Escolha")}</div>
+            <div class="field talent-level-field"><label>Nível</label><input type="number" min="1" id="talentLevelDraft" value="1"></div>
+            <button class="button talent-add-button" type="button" data-action="add-talent">Adicionar talento</button>
+          </div>
+          <div class="talents-grid">${allKnownTalents().map((talent) => talentCard(talent)).join("") || `<div class="empty talents-empty">Nenhum talento conhecido.</div>`}</div>
+        </section>
       </div>
     </section>
   `;
@@ -1274,6 +1277,7 @@ function renderMundo() {
           ` : `
             <p>${esc(selectedDetails?.effect ?? "")}</p>
             <p class="muted">Alvo: ${esc(selectedLaw.Alvo ?? "-")} · Resistência: ${esc(selectedDetails?.resistance ?? "-")}</p>
+            ${selectedLaw.Descrição || selectedLaw["Próximos níveis"] ? `<details class="law-source-details"><summary>Descrição completa da Lei</summary><p>${esc(selectedLaw.Descrição ?? "")}</p><p><strong>Próximos níveis:</strong> ${esc(selectedLaw["Próximos níveis"] ?? "")}</p></details>` : ""}
           `}
         `}
       </div>
@@ -1787,18 +1791,23 @@ function abilityCard(ability) {
 
 function talentCard(talent) {
   const hasConditional = ["conditional", "mixed"].includes(talent.mode);
-  return `<div class="talent-card">
-    <header><div><strong>${esc(talent.name)}</strong><br><span class="tag ${hasConditional ? "pink" : "ok"}">${esc(talent.tag)}</span> <span class="chip">Nível ${esc(talent.level)}</span>${talent.stackable ? ` <span class="tag">acumulável</span>` : ""}</div><div class="inline">${hasConditional ? `<button class="switch small-switch ${talent.enabled ? "on" : ""}" type="button" role="switch" aria-checked="${Boolean(talent.enabled)}" data-action="toggle-talent" data-id="${esc(talent.id)}"><span class="switch-track"><span class="switch-knob"></span></span><span>${talent.enabled ? "Ligado" : "Desligado"}</span></button>` : ""}<button class="ghost" type="button" data-action="open-talent" data-id="${esc(talent.id)}">Ver</button><button class="danger" type="button" data-action="remove-talent" data-id="${esc(talent.id)}">Remover</button></div></header>
-    <p>${esc(talent.description)}</p>
+  return `<div class="talent-card character-talent-card ${hasConditional ? "is-conditional" : "is-passive"}">
+    <div class="talent-card-head"><strong class="talent-card-name">${esc(talent.name)}</strong><span class="chip talent-level-badge">Nível ${esc(talent.level)}</span></div>
+    <div class="talent-card-meta"><span class="tag ${hasConditional ? "pink" : "ok"}">${hasConditional ? "ATIVÁVEL / CONDICIONAL" : "PASSIVO"}</span>${talent.stackable ? `<span class="tag">acumulável</span>` : ""}</div>
+    <p class="talent-card-prerequisite"><strong>Pré-requisito:</strong> ${esc(talent.prerequisite || "Nenhum")}</p>
+    <p class="talent-card-description">${esc(talent.description)}</p>
+    <div class="talent-card-actions">${hasConditional ? `<button class="switch small-switch ${talent.enabled ? "on" : ""}" type="button" role="switch" aria-checked="${Boolean(talent.enabled)}" data-action="toggle-talent" data-id="${esc(talent.id)}"><span class="switch-track"><span class="switch-knob"></span></span><span>${talent.enabled ? "Ligado" : "Desligado"}</span></button>` : ""}<div class="talent-card-buttons"><button class="ghost" type="button" data-action="open-talent" data-id="${esc(talent.id)}">Ver</button><button class="danger" type="button" data-action="remove-talent" data-id="${esc(talent.id)}">Remover</button></div></div>
   </div>`;
 }
 
 function worldLawCard(law) {
   const resistanceMode = ["sem", "com"].includes(law.resistanceMode) ? law.resistanceMode : "";
   const resistanceTag = resistanceMode ? `<span class="tag law-resistance-${resistanceMode}">${resistanceMode.toUpperCase()} Resistência</span>` : "";
+  const source = DB.worldLaws.find((item) => item.ID === law.sourceId);
   return `<div class="law-card">
     <header><div><strong>${esc(law.name)}</strong><br><span class="tag">${esc(law.category)}</span> ${resistanceTag}</div><button class="danger" type="button" data-action="remove-world-law" data-id="${esc(law.id)}">Remover</button></header>
     ${["target", "resistance", "effect"].map((fieldName) => `<p><strong>${fieldLabel(fieldName)}:</strong> ${esc(law[fieldName])} <button class="icon-button" type="button" data-action="edit-law-field" data-id="${esc(law.id)}" data-field="${fieldName}" title="Editar">🖋</button></p>`).join("")}
+    ${source?.Descrição ? `<details class="law-source-details"><summary>Regra oficial completa</summary><p>${esc(source.Descrição)}</p><p><strong>Próximos níveis:</strong> ${esc(source["Próximos níveis"] ?? "")}</p></details>` : ""}
   </div>`;
 }
 
@@ -1835,9 +1844,14 @@ function normalizeLawResistanceMode(value) {
 }
 
 function lawResistanceModes(law) {
+  const explicitModes = law?.["Modos de Resistência"];
+  if (Array.isArray(explicitModes)) {
+    const modes = [...new Set(explicitModes.filter((mode) => mode === "sem" || mode === "com"))];
+    if (modes.length) return modes;
+  }
   const title = fold(law?.["Lei do Mundo"] ?? "");
   if (title.includes("SEM/COM RESISTENCIA") || title.includes("COM/SEM RESISTENCIA")) return ["sem", "com"];
-  if (law?.ID === "UTI-29" || title.includes("COM RESISTENCIA")) return ["com"];
+  if (title.includes("COM RESISTENCIA")) return ["com"];
   return ["sem"];
 }
 
@@ -1850,10 +1864,13 @@ function lawNameForResistance(law, resistanceMode) {
   const mode = normalizeLawResistanceMode(resistanceMode);
   if (isDualResistanceLaw(law)) {
     const label = mode === "com" ? "COM" : "SEM";
-    return name.replace(/\((?:sem\/com|com\/sem)\s+Resistência([^)]*)\)/i, `(${label} Resistência$1)`);
+    const replaced = name.replace(/\((?:sem\/com|com\/sem)\s+Resistência([^)]*)\)/i, `(${label} Resistência$1)`);
+    return replaced === name ? `${name} (${label} Resistência)` : replaced;
   }
-  if (law?.ID === "UTI-29") return `${name} (COM Resistência)`;
-  if (lawResistanceModes(law)[0] === "com") return name.replace(/\(com Resistência([^)]*)\)/i, "(COM Resistência$1)");
+  if (lawResistanceModes(law)[0] === "com") {
+    const replaced = name.replace(/\(com Resistência([^)]*)\)/i, "(COM Resistência$1)");
+    return replaced === name ? `${name} (COM Resistência)` : replaced;
+  }
   return name;
 }
 
@@ -1875,6 +1892,7 @@ function splitDualLawEffect(effect) {
 function lawDetailsForResistance(law, effectKey, resistanceMode) {
   const mode = normalizeLawResistanceMode(resistanceMode);
   const rawEffect = law?.[effectKey] ?? "";
+  const structuredEffect = law?.["Efeitos por modo"]?.[mode]?.[effectKey];
   if (!isDualResistanceLaw(law)) {
     return {
       effect: rawEffect,
@@ -1884,7 +1902,7 @@ function lawDetailsForResistance(law, effectKey, resistanceMode) {
     };
   }
   const split = splitDualLawEffect(rawEffect);
-  const selectedEffect = split ? [split.prefix, split[mode]].filter(Boolean).join(" ") : rawEffect;
+  const selectedEffect = structuredEffect || (split ? [split.prefix, split[mode]].filter(Boolean).join(" ") : rawEffect);
   if (mode === "sem") {
     return { effect: selectedEffect, resistance: "Não se aplica", fail: "Sem teste direto.", pass: "Sem teste direto." };
   }
@@ -2537,7 +2555,7 @@ function openTalentModal(id) {
   const note = talent.mode === "mixed"
     ? "Os bônus passivos permanecem aplicados. O switch controla apenas a parte condicional."
     : "Quando ligado, a ficha aplica somente os bônus condicionais automatizados cadastrados.";
-  openModal(talent.name, `<span class="tag ${hasConditional ? "pink" : "ok"}">${esc(talent.tag)}</span><p>${esc(talent.description)}</p>${hasConditional ? `<p class="muted">${esc(note)}</p>` : ""}`);
+  openModal(talent.name, `<span class="tag ${hasConditional ? "pink" : "ok"}">${esc(talent.tag)}</span><p><strong>Pré-requisito:</strong> ${esc(talent.prerequisite || "Nenhum")}</p><p>${esc(talent.description)}</p>${hasConditional ? `<p class="muted">${esc(note)}</p>` : ""}`);
 }
 
 function openWorldDetails() {
