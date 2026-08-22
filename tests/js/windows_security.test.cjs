@@ -17,10 +17,10 @@ test("keeps Phase 45 free of certificate material and signing automation", () =>
   assert.doesNotMatch(packageJson.scripts["build:windows"], /sign|certificate|signtool/i);
 });
 
-test("documents the expected private-alpha warning without disabling protection", () => {
+test("documents the expected unsigned-Alpha warning without disabling protection", () => {
   assert.match(documentation, /Editor desconhecido/);
   assert.match(documentation, /NotSigned/);
-  assert.match(documentation, /Alpha privado/);
+  assert.match(documentation, /Alpha sem assinatura/);
   assert.match(documentation, /Mais informações/);
   assert.match(documentation, /Executar assim mesmo/);
   assert.match(documentation, /Não desative o SmartScreen/);

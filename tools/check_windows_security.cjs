@@ -78,7 +78,7 @@ function verifyArtifact(artifact) {
 
   const signature = getAuthenticodeStatus(filePath);
   if (signature.status === "NotSigned") {
-    console.log(`${artifact.name}: hash válido; sem assinatura, como documentado para o Alpha privado.`);
+    console.log(`${artifact.name}: hash válido; sem assinatura, como documentado para o Alpha.`);
   } else if (signature.status === "Valid" && signature.signer) {
     console.log(`${artifact.name}: hash e assinatura Authenticode válidos (${signature.signer}).`);
   } else {
