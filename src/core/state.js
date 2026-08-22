@@ -5,6 +5,16 @@
 })(typeof window !== "undefined" ? window : globalThis, function createLatioStateApi() {
   "use strict";
 
+  const STATE_SCHEMA = Object.freeze({
+    appId: "marufia-latio",
+    currentVersion: 5,
+    minimumSupportedVersion: 1,
+    mediaType: "application/json",
+  });
+  const ONLINE_BACKUP_SCHEMA = Object.freeze({
+    format: "marufia-online-character-backup",
+    currentVersion: 1,
+  });
   const DANGEROUS_KEYS = new Set(["__proto__", "prototype", "constructor"]);
   const VALID_ID = /^[A-Za-z0-9._:-]{1,128}$/;
   const COLLECTION_FIELDS = {
@@ -145,6 +155,130 @@
     return state;
   }
 
+  function validateStateEnvelope(state, options) {
+    if (!isPlainObject(state) || state.meta?.appId !== options.appId) {
+      const error = new Error("O JSON não pertence à Ficha de Marufia (Latio).");
+      error.code = "LAT-JSON-002";
+      throw error;
+    }
+    const sourceVersion = Number(state.meta?.schemaVersion);
+    if (!Number.isInteger(sourceVersion) || sourceVersion < STATE_SCHEMA.minimumSupportedVersion) {
+      const error = new Error(`Versão de schema inválida: ${String(state.meta?.schemaVersion)}.`);
+      error.code = "LAT-JSON-002";
+      throw error;
+    }
+    if (sourceVersion > options.schemaVersion) {
+      const error = new Error(`Versão futura não suportada: ${sourceVersion}.`);
+      error.code = "LAT-JSON-003";
+      throw error;
+    }
+    return sourceVersion;
+  }
+
+  function migrateState(state, sourceVersion) {
+    if (sourceVersion === 1) {
+      state.world ||= Object.create(null);
+      state.world.status = state.world.active ? "active" : "closed";
+      delete state.world.active;
+    }
+    if (sourceVersion <= 2) {
+      state.world ||= Object.create(null);
+      state.world.maintenancePaidForTurn = false;
+      delete state.world.turns;
+      if (Array.isArray(state.combat?.activeSpells)) {
+        state.combat.activeSpells = state.combat.activeSpells.filter((spell) => spell?.type !== "Mundo");
+      }
+    }
+    if (sourceVersion <= 4) {
+      state.world ||= Object.create(null);
+      state.world.durationTurns = null;
+    }
+    migrateEscalarToAtletismo(state);
+    delete state.ui;
+    return state;
+  }
+
+  function importSource(raw) {
+    if (!isPlainObject(raw)) return { state: raw, sourceFormat: "local", onlineMetadata: null };
+    if (raw.meta?.appId === STATE_SCHEMA.appId) {
+      return { state: raw, sourceFormat: "local", onlineMetadata: null };
+    }
+    if (raw.format === ONLINE_BACKUP_SCHEMA.format) {
+      const version = Number(raw.formatVersion);
+      if (!Number.isInteger(version) || version < 1) {
+        const error = new Error(`Versão de backup online inválida: ${String(raw.formatVersion)}.`);
+        error.code = "LAT-JSON-002";
+        throw error;
+      }
+      if (version > ONLINE_BACKUP_SCHEMA.currentVersion) {
+        const error = new Error(`Versão futura de backup online não suportada: ${version}.`);
+        error.code = "LAT-JSON-003";
+        throw error;
+      }
+      if (!isPlainObject(raw.character) || !isPlainObject(raw.character.state)) {
+        const error = new Error("O backup online não contém um estado de personagem válido.");
+        error.code = "LAT-JSON-002";
+        throw error;
+      }
+      return {
+        state: raw.character.state,
+        sourceFormat: "online-backup",
+        onlineMetadata: isPlainObject(raw.online) ? raw.online : null,
+      };
+    }
+    if (isPlainObject(raw.state) && raw.state.meta?.appId === STATE_SCHEMA.appId) {
+      const declaredVersion = raw.schema_version == null ? Number(raw.state.meta?.schemaVersion) : Number(raw.schema_version);
+      if (declaredVersion !== Number(raw.state.meta?.schemaVersion)) {
+        const error = new Error("A versão declarada do personagem online não corresponde ao estado da ficha.");
+        error.code = "LAT-JSON-002";
+        throw error;
+      }
+      return {
+        state: raw.state,
+        sourceFormat: "online-row",
+        onlineMetadata: {
+          characterId: String(raw.id ?? ""),
+          campaignId: raw.campaign_id == null ? null : String(raw.campaign_id),
+          revision: Number.isSafeInteger(Number(raw.revision)) ? Number(raw.revision) : null,
+          lastChangeOrigin: String(raw.last_change_origin ?? ""),
+          updatedAt: String(raw.updated_at ?? ""),
+        },
+      };
+    }
+    return { state: raw, sourceFormat: "local", onlineMetadata: null };
+  }
+
+  function createOnlineBackup(state, metadata = {}, exportedAt = new Date().toISOString()) {
+    const safe = cloneSafe(state);
+    if (!isPlainObject(safe) || safe.meta?.appId !== STATE_SCHEMA.appId
+      || !Number.isInteger(Number(safe.meta?.schemaVersion))) {
+      const error = new Error("O estado atual não pode ser incluído em um backup online.");
+      error.code = "LAT-JSON-002";
+      throw error;
+    }
+    const revision = Number(metadata?.revision);
+    const origin = String(metadata?.lastChangeOrigin ?? metadata?.last_change_origin ?? "");
+    return {
+      format: ONLINE_BACKUP_SCHEMA.format,
+      formatVersion: ONLINE_BACKUP_SCHEMA.currentVersion,
+      exportedAt: String(exportedAt ?? ""),
+      character: {
+        name: String(safe.character?.name ?? ""),
+        schemaVersion: Number(safe.meta.schemaVersion),
+        state: safe,
+      },
+      online: {
+        characterId: String(metadata?.characterId ?? metadata?.id ?? "") || null,
+        campaignId: metadata?.campaignId == null && metadata?.campaign_id == null
+          ? null
+          : String(metadata?.campaignId ?? metadata?.campaign_id),
+        revision: Number.isSafeInteger(revision) && revision > 0 ? revision : null,
+        lastChangeOrigin: ["player", "gm", "system"].includes(origin) ? origin : null,
+        updatedAt: String(metadata?.updatedAt ?? metadata?.updated_at ?? "") || null,
+      },
+    };
+  }
+
   function normalizeDomain(state, appId, schemaVersion) {
     state.meta.appId = appId;
     state.meta.schemaVersion = schemaVersion;
@@ -208,44 +342,19 @@
   }
 
   function prepareImport(raw, defaults, options) {
-    const safe = cloneSafe(raw);
-    if (!isPlainObject(safe) || safe.meta?.appId !== options.appId) {
-      const error = new Error("O JSON não pertence à Ficha de Marufia (Latio).");
-      error.code = "LAT-JSON-002";
-      throw error;
-    }
-    const sourceVersion = Number(safe.meta?.schemaVersion);
-    if (!Number.isInteger(sourceVersion) || sourceVersion < 1) {
-      const error = new Error(`Versão de schema inválida: ${String(safe.meta?.schemaVersion)}.`);
-      error.code = "LAT-JSON-002";
-      throw error;
-    }
-    if (sourceVersion > options.schemaVersion) {
-      const error = new Error(`Versão futura não suportada: ${sourceVersion}.`);
-      error.code = "LAT-JSON-003";
-      throw error;
-    }
-    if (sourceVersion === 1) {
-      safe.world ||= Object.create(null);
-      safe.world.status = safe.world.active ? "active" : "closed";
-      delete safe.world.active;
-    }
-    if (sourceVersion <= 2) {
-      safe.world ||= Object.create(null);
-      safe.world.maintenancePaidForTurn = false;
-      delete safe.world.turns;
-      if (Array.isArray(safe.combat?.activeSpells)) {
-        safe.combat.activeSpells = safe.combat.activeSpells.filter((spell) => spell?.type !== "Mundo");
-      }
-    }
-    if (sourceVersion <= 4) {
-      safe.world ||= Object.create(null);
-      safe.world.durationTurns = null;
-    }
-    migrateEscalarToAtletismo(safe);
-    delete safe.ui;
+    const source = importSource(cloneSafe(raw));
+    const safe = source.state;
+    const sourceVersion = validateStateEnvelope(safe, options);
+    migrateState(safe, sourceVersion);
     const state = normalizeDomain(mergeKnown(defaults, safe), options.appId, options.schemaVersion);
-    return { state, incoming: safe, sourceVersion, migrated: sourceVersion !== options.schemaVersion };
+    return {
+      state,
+      incoming: safe,
+      sourceVersion,
+      migrated: sourceVersion !== options.schemaVersion,
+      sourceFormat: source.sourceFormat,
+      onlineMetadata: source.onlineMetadata,
+    };
   }
 
   function mergeImported(current, incoming, defaults, options) {
@@ -258,8 +367,14 @@
   }
 
   return {
+    STATE_SCHEMA,
+    ONLINE_BACKUP_SCHEMA,
     cloneSafe,
     mergeKnown,
+    validateStateEnvelope,
+    migrateState,
+    importSource,
+    createOnlineBackup,
     prepareImport,
     mergeImported,
     persistentPayload,

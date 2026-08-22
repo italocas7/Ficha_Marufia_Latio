@@ -4,9 +4,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#100b18">
+    <meta name="description" content="Ficha automática de RPG Mundo de Marufia para campanhas, personagens e rolagens online.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:title" content="Ficha de Marufia (Latio)">
+    <meta property="og:description" content="Campanhas, personagens e rolagens em um só lugar.">
+    <meta property="og:image" content="https://ficha-marufia-latio.italocas7.chatgpt.site/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Ficha de Marufia (Latio), com brasão dourado sobre fundo violeta escuro.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Ficha de Marufia (Latio)">
+    <meta name="twitter:description" content="Campanhas, personagens e rolagens em um só lugar.">
+    <meta name="twitter:image" content="https://ficha-marufia-latio.italocas7.chatgpt.site/og.png">
     <title>Ficha de Marufia (Latio)</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="marufia_latio_design.css">
+    <link rel="stylesheet" href="marufia_online_design.css">
   </head>
   <body>
     <header class="topbar">
@@ -17,7 +31,25 @@
           <p id="statusLine" aria-live="polite">Sistema Mundo de Marufia</p>
         </div>
       </div>
-      <button class="icon-button settings-button" type="button" data-action="open-settings" title="Configurações" aria-label="Configurações">⚙</button>
+      <div class="topbar-actions">
+        <div id="onlineSyncStatus" class="sync-status" data-sync-state="offline" role="status" aria-live="polite" aria-atomic="true" aria-label="Sincronização: Offline" title="Sem conexão; alterações continuam salvas neste computador.">
+          <span class="sync-status-dot" aria-hidden="true"></span>
+          <span class="sync-status-label" data-sync-status-label>Offline</span>
+        </div>
+        <button id="onlineHomeButton" class="ghost online-home-button" type="button" data-online-home-action="open" title="Início do Marufia Online" aria-label="Início do Marufia Online" hidden>
+          <span aria-hidden="true">◆</span>
+          <span class="online-home-button-label">Marufia</span>
+        </button>
+        <button id="onlineCampaignsButton" class="ghost campaigns-button" type="button" data-online-campaign-action="open" title="Campanhas" aria-label="Campanhas" hidden>
+          <span aria-hidden="true">♜</span>
+          <span class="campaigns-button-label">Campanhas</span>
+        </button>
+        <button id="onlineAccountButton" class="ghost account-button" type="button" data-online-auth-action="open" data-auth-state="loading" title="Entrar ou criar conta" aria-label="Entrar ou criar conta">
+          <span class="auth-status-dot" aria-hidden="true"></span>
+          <span id="onlineAccountLabel" class="account-label">Conta</span>
+        </button>
+        <button class="icon-button settings-button" type="button" data-action="open-settings" title="Configurações" aria-label="Configurações">⚙</button>
+      </div>
     </header>
 
     <nav id="tabs" class="tabs" role="tablist" aria-label="Abas da ficha"></nav>
@@ -31,8 +63,26 @@
     <script src="magic_cores.js"></script>
     <script src="vendor/pdf_file_loader.js"></script>
     <script src="pdf_import.js"></script>
+    <script src="vendor/supabase.js"></script>
+    <script src="src/online/project.js"></script>
+    <script src="src/online/config.js"></script>
+    <script src="src/online/supabase.js"></script>
+    <script src="src/core/storage.js"></script>
     <script src="src/core/state.js"></script>
     <script src="src/core/rules.js"></script>
+    <script src="src/core/character_summary.js"></script>
+    <script src="src/core/rolls.js"></script>
     <script src="app.js"></script>
+    <script src="src/online/auth.js"></script>
+    <script src="src/online/campaigns.js"></script>
+    <script src="src/online/characters.js"></script>
+    <script src="src/online/home.js"></script>
+    <script src="src/online/gm_panel.js"></script>
+    <script src="src/online/character_import.js"></script>
+    <script src="src/online/character_realtime.js"></script>
+    <script src="src/online/character_sync.js"></script>
+    <script src="src/online/rolls.js"></script>
+    <script src="src/online/live_rolls.js"></script>
+    <script src="src/online/character_conflicts.js"></script>
   </body>
 </html>

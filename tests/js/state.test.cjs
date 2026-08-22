@@ -22,6 +22,89 @@ function defaults() {
 
 const options = { appId: "marufia-latio", schemaVersion: 5 };
 
+test("declares the stable v5 state contract", () => {
+  assert.deepEqual(stateTools.STATE_SCHEMA, {
+    appId: "marufia-latio",
+    currentVersion: 5,
+    minimumSupportedVersion: 1,
+    mediaType: "application/json",
+  });
+});
+
+test("validates and migrates through explicit state boundaries", () => {
+  const raw = {
+    meta: { appId: "marufia-latio", schemaVersion: 1 },
+    world: { active: true },
+    ui: { activeTab: "combate" },
+  };
+  const safe = stateTools.cloneSafe(raw);
+  const sourceVersion = stateTools.validateStateEnvelope(safe, options);
+  const migrated = stateTools.migrateState(safe, sourceVersion);
+  assert.equal(sourceVersion, 1);
+  assert.equal(migrated.world.status, "active");
+  assert.equal(Object.hasOwn(migrated.world, "active"), false);
+  assert.equal(Object.hasOwn(migrated, "ui"), false);
+});
+
+test("round-trips the current serialized payload without changing its JSON shape", () => {
+  const current = defaults();
+  current.character.name = "Formato estável";
+  const serialized = JSON.stringify(stateTools.persistentPayload(current));
+  const prepared = stateTools.prepareImport(JSON.parse(serialized), defaults(), options);
+  assert.equal(prepared.migrated, false);
+  assert.equal(prepared.state.meta.schemaVersion, 5);
+  assert.equal(prepared.state.character.name, "Formato estável");
+  assert.equal(Object.hasOwn(JSON.parse(serialized), "ui"), false);
+});
+
+test("round-trips the versioned online backup without mixing authority into schema v5", () => {
+  const current = defaults();
+  current.character.name = "Backup online";
+  const backup = stateTools.createOnlineBackup(current, {
+    id: "11111111-1111-4111-8111-111111111111",
+    campaign_id: "22222222-2222-4222-8222-222222222222",
+    revision: 7,
+    last_change_origin: "gm",
+    updated_at: "2026-08-21T18:00:00.000Z",
+  }, "2026-08-21T18:01:00.000Z");
+  assert.equal(backup.format, stateTools.ONLINE_BACKUP_SCHEMA.format);
+  assert.equal(backup.character.state.character.name, "Backup online");
+  assert.equal(backup.online.revision, 7);
+  assert.equal(Object.hasOwn(backup.character.state, "owner_id"), false);
+  const prepared = stateTools.prepareImport(backup, defaults(), options);
+  assert.equal(prepared.sourceFormat, "online-backup");
+  assert.equal(prepared.onlineMetadata.revision, 7);
+  assert.equal(prepared.state.character.name, "Backup online");
+  assert.equal(Object.hasOwn(prepared.state, "online"), false);
+});
+
+test("imports a protected online character row as state only", () => {
+  const current = defaults();
+  current.character.name = "Linha online";
+  const prepared = stateTools.prepareImport({
+    id: "11111111-1111-4111-8111-111111111111",
+    owner_id: "33333333-3333-4333-8333-333333333333",
+    campaign_id: "22222222-2222-4222-8222-222222222222",
+    schema_version: 5,
+    revision: 4,
+    last_change_origin: "player",
+    updated_at: "2026-08-21T18:00:00.000Z",
+    state: current,
+  }, defaults(), options);
+  assert.equal(prepared.sourceFormat, "online-row");
+  assert.equal(prepared.onlineMetadata.characterId, "11111111-1111-4111-8111-111111111111");
+  assert.equal(prepared.state.character.name, "Linha online");
+  assert.equal(Object.hasOwn(prepared.state, "owner_id"), false);
+});
+
+test("rejects a future online backup before changing the sheet", () => {
+  assert.throws(() => stateTools.prepareImport({
+    format: stateTools.ONLINE_BACKUP_SCHEMA.format,
+    formatVersion: 2,
+    character: { state: defaults() },
+  }, defaults(), options), /futura de backup online/i);
+});
+
 test("migrates v1 and removes session UI", () => {
   const prepared = stateTools.prepareImport({
     meta: { appId: "marufia-latio", schemaVersion: 1 },

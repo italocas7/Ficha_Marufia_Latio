@@ -2,14 +2,37 @@
   "name": "ficha-marufia-latio",
   "version": "2.0.0",
   "private": true,
+  "packageManager": "pnpm@11.19.0",
   "description": "Ficha interativa offline para o sistema Mundo de Marufia.",
   "scripts": {
     "validate:data": "python tools/validate_data.py",
     "test": "python -m unittest discover -s tests -p test_*.py && node --test tests/js/*.test.cjs",
+    "test:phase39": "node tools/test_phase39.cjs",
+    "test:multiuser": "node --test tests/js/multiuser_simulation.test.cjs",
     "build": "python tools/build.py",
-    "test:e2e": "node tests/e2e/smoke.cjs"
+    "build:site": "python tools/build_site.py",
+    "test:e2e": "node tests/e2e/smoke.cjs",
+    "test:site": "node tools/test_site_package.cjs",
+    "test:supabase": "node tools/test_supabase_connection.cjs",
+    "test:database": "node --test tests/js/database_migration.test.cjs",
+    "test:profiles": "node --test tests/js/profile_migration.test.cjs",
+    "test:auth": "node --test tests/js/auth.test.cjs",
+    "test:campaigns": "node --test tests/js/campaigns.test.cjs tests/js/campaign_migration.test.cjs tests/js/campaign_membership_migration.test.cjs tests/js/campaign_role_migration.test.cjs tests/js/campaign_join_migration.test.cjs",
+    "test:characters": "node --test tests/js/character_schema_migration.test.cjs tests/js/character_lifecycle_migration.test.cjs tests/js/character_remote_save_migration.test.cjs tests/js/character_realtime_migration.test.cjs tests/js/character_conflict_migration.test.cjs tests/js/characters.test.cjs tests/js/character_import.test.cjs tests/js/character_realtime.test.cjs tests/js/character_conflicts.test.cjs tests/js/character_sync.test.cjs tests/js/state.test.cjs",
+    "test:gm-panel": "node --test tests/js/character_summary.test.cjs tests/js/gm_presence_migration.test.cjs tests/js/gm_presence_status_migration.test.cjs tests/js/gm_hp_migration.test.cjs tests/js/gm_hp_role_fix_migration.test.cjs tests/js/gm_actions_migration.test.cjs tests/js/campaign_history_migration.test.cjs tests/js/campaign_sessions_migration.test.cjs tests/js/gm_panel.test.cjs tests/js/gm_view.test.cjs",
+    "test:rls": "node --test tests/js/row_level_security_migration.test.cjs",
+    "test:security": "node --test tests/js/row_level_security_migration.test.cjs tests/js/gm_character_write_authorization_migration.test.cjs tests/js/security_audit.test.cjs",
+    "test:security:remote": "node tools/test_supabase_security.cjs",
+    "test:rolls": "node --test tests/js/rolls.test.cjs tests/js/online_rolls.test.cjs tests/js/roll_registration_migration.test.cjs tests/js/roll_realtime_migration.test.cjs tests/js/roll_visibility_migration.test.cjs tests/js/live_rolls.test.cjs",
+    "test:database:remote": "node tools/test_supabase_database.cjs",
+    "vendor:supabase": "node tools/vendor_supabase.cjs",
+    "supabase:version": "supabase --version"
   },
   "devDependencies": {
-    "playwright": "1.61.1"
+    "playwright": "1.61.1",
+    "supabase": "2.115.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.112.3"
   }
 }

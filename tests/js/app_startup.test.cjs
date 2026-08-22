@@ -58,6 +58,7 @@ function createSandbox(initialState = null) {
   const window = {
     document,
     location: { protocol: "file:", href: "file:///latio/index.html" },
+    addEventListener() {},
     print() {},
   };
   const sandbox = {
@@ -75,7 +76,7 @@ function createSandbox(initialState = null) {
   };
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
-  for (const file of ["data.js", "item_descriptions.js", "magic_cores.js", "src/core/state.js", "src/core/rules.js", "app.js"]) {
+  for (const file of ["data.js", "item_descriptions.js", "magic_cores.js", "src/core/storage.js", "src/core/state.js", "src/core/rules.js", "src/core/rolls.js", "app.js"]) {
     vm.runInContext(fs.readFileSync(path.join(root, file), "utf8"), sandbox, { filename: file });
   }
   return { sandbox, elements, localStorage };
@@ -89,6 +90,59 @@ test("migrates the representative v1 fixture without losing sheet data", () => {
   assert.equal(vm.runInContext("state.attributes.CON", sandbox), 60);
   assert.equal(vm.runInContext("state.resources.hpCurrent", sandbox), 10);
   assert.equal(vm.runInContext('Object.hasOwn(JSON.parse(exportPayload()), "ui")', sandbox), false);
+});
+
+test("backs up the untouched local payload before an online import", () => {
+  const fixture = JSON.parse(fs.readFileSync(path.join(root, "tests", "fixtures", "state-v1.json"), "utf8"));
+  const { sandbox, localStorage } = createSandbox(fixture);
+  assert.equal(vm.runInContext("state.meta.schemaVersion", sandbox), 5);
+  vm.runInContext("window.MARUFIA_APP_BRIDGE.createOnlineImportBackup()", sandbox);
+  const backups = JSON.parse(localStorage.getItem("marufia-latio-backups-v1"));
+  const original = JSON.parse(backups[0].payload);
+  assert.equal(original.meta.schemaVersion, 1);
+  assert.equal(original.character.name, "Fixture Latio");
+  assert.equal(JSON.parse(localStorage.getItem("marufia-latio-state-v1")).meta.schemaVersion, 1);
+});
+
+test("keeps the classic JSON export and adds an importable online backup", () => {
+  const { sandbox } = createSandbox();
+  vm.runInContext('state.character.name = "Compatível"', sandbox);
+  assert.equal(vm.runInContext("JSON.parse(exportPayload()).meta.appId", sandbox), "marufia-latio");
+  assert.equal(vm.runInContext("JSON.parse(exportPayload()).format", sandbox), undefined);
+  assert.equal(vm.runInContext("JSON.parse(exportOnlinePayload()).format", sandbox), "marufia-online-character-backup");
+  vm.runInContext("window.__onlinePrepared = prepareStateImport(JSON.parse(exportOnlinePayload()))", sandbox);
+  assert.equal(vm.runInContext("window.__onlinePrepared.sourceFormat", sandbox), "online-backup");
+  assert.equal(vm.runInContext("window.__onlinePrepared.state.character.name", sandbox), "Compatível");
+});
+
+test("applies an authorized remote snapshot locally without emitting another online save", () => {
+  const { sandbox, localStorage } = createSandbox();
+  vm.runInContext("state.meta.started = true; saveStateNow()", sandbox);
+  vm.runInContext(`
+    window.__remoteSaveNotifications = 0;
+    window.MARUFIA_APP_BRIDGE.onLocalSave(() => { window.__remoteSaveNotifications += 1; });
+    const remote = window.MARUFIA_APP_BRIDGE.snapshot();
+    remote.resources.hpCurrent = 29;
+    window.__remoteApplied = window.MARUFIA_APP_BRIDGE.applyRemoteSnapshot(remote);
+  `, sandbox);
+  assert.equal(vm.runInContext("window.__remoteApplied", sandbox), true);
+  assert.equal(vm.runInContext("state.resources.hpCurrent", sandbox), 29);
+  assert.equal(JSON.parse(localStorage.getItem("marufia-latio-state-v1")).resources.hpCurrent, 29);
+  assert.equal(vm.runInContext("window.__remoteSaveNotifications", sandbox), 0);
+});
+
+test("refuses a remote snapshot when local persistence is unavailable", () => {
+  const { sandbox, localStorage } = createSandbox();
+  const originalSetItem = localStorage.setItem;
+  localStorage.setItem = () => { throw new Error("storage unavailable"); };
+  vm.runInContext(`
+    const remote = window.MARUFIA_APP_BRIDGE.snapshot();
+    remote.resources.hpCurrent = 29;
+    window.__remoteApplied = window.MARUFIA_APP_BRIDGE.applyRemoteSnapshot(remote);
+  `, sandbox);
+  assert.equal(vm.runInContext("window.__remoteApplied", sandbox), false);
+  assert.equal(vm.runInContext("state.resources.hpCurrent", sandbox), null);
+  localStorage.setItem = originalSetItem;
 });
 
 test("starts and renders every tab without a runtime error", () => {
@@ -113,6 +167,52 @@ test("does not recurse when localStorage fails", () => {
   localStorage.setItem = () => { throw new Error("quota"); };
   assert.equal(vm.runInContext("saveStateNow()", sandbox), false);
   assert.equal(vm.runInContext('state.errors.filter((item) => item.code === "LAT-UI-003").length', sandbox), 1);
+});
+
+test("persists live text fields while they remain focused", () => {
+  const { sandbox, localStorage } = createSandbox();
+  vm.runInContext(`handleInput({ target: {
+    id: "",
+    type: "text",
+    value: "Teste de persistência",
+    dataset: { path: "character.name", live: "true" }
+  } })`, sandbox);
+  assert.equal(vm.runInContext("state.character.name", sandbox), "Teste de persistência");
+  assert.equal(JSON.parse(localStorage.getItem("marufia-latio-state-v1")).character.name, "Teste de persistência");
+});
+
+test("notifies optional online integrations only after the local save succeeds", () => {
+  const { sandbox } = createSandbox();
+  vm.runInContext(`
+    window.MARUFIA_APP_BRIDGE.onLocalSave((snapshot) => {
+      window.__localSaveObservation = {
+        snapshotName: snapshot.character.name,
+        storedName: JSON.parse(localStorage.getItem(STORAGE_KEY)).character.name
+      };
+    });
+    handleInput({ target: {
+      id: "",
+      type: "text",
+      value: "Local antes do online",
+      dataset: { path: "character.name", live: "true" }
+    } });
+  `, sandbox);
+  assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(window.__localSaveObservation)", sandbox)), {
+    snapshotName: "Local antes do online",
+    storedName: "Local antes do online",
+  });
+});
+
+test("flushes the active numeric field before the page closes", () => {
+  const { sandbox, localStorage } = createSandbox();
+  const active = createElement();
+  active.type = "number";
+  active.value = "3";
+  active.dataset = { path: "character.level" };
+  sandbox.document.activeElement = active;
+  assert.equal(vm.runInContext("flushPendingState()", sandbox), true);
+  assert.equal(vm.runInContext("state.character.level", sandbox), 3);
+  assert.equal(JSON.parse(localStorage.getItem("marufia-latio-state-v1")).character.level, 3);
 });
 
 test("shows friendly PDF conflict names without technical paths", () => {
@@ -317,6 +417,40 @@ test("treats natural 01 as critical for attributes and skills", () => {
   assert.equal(vm.runInContext("d100Outcome(1, -500)", sandbox), "Crítico natural");
   assert.equal(vm.runInContext("d100Outcome(2, -500)", sandbox), "Falha");
   assert.match(vm.runInContext("openAttributeModal('FOR'); document.querySelector('#modalRoot').innerHTML", sandbox), /roll-attribute/);
+});
+
+test("publishes every current dice result with its real sheet context", () => {
+  const { sandbox, elements } = createSandbox();
+  elements.combatRollSkill.value = "Atletismo";
+  elements.combatTargetCa.value = "0";
+  vm.runInContext(`
+    window.__rollRecords = [];
+    window.MARUFIA_APP_BRIDGE.onRoll((record) => window.__rollRecords.push(record));
+    Math.random = () => 0;
+    rollSkill("Atletismo", "normal");
+    rollAttribute("FOR", "normal");
+    rollCombatTest("normal");
+    rollWorldDurationValue(5);
+    state.magicCore.selectedId = "antebraco";
+    state.combat.activeSpells = [{ type: "Forte" }];
+    state.resources.pmMaxBonus = 100;
+    state.resources.pmCurrent = 100;
+    coreReduceDamage();
+  `, sandbox);
+  const records = JSON.parse(vm.runInContext("JSON.stringify(window.__rollRecords)", sandbox));
+  assert.deepEqual(records.map((record) => record.rollType), [
+    "skill",
+    "attribute",
+    "combat",
+    "world_duration",
+    "core_damage_reduction",
+  ]);
+  assert.deepEqual(records.map((record) => record.formula), ["1d100", "1d100", "1d100", "1d4+2", "1d6"]);
+  assert.deepEqual(records.map((record) => record.total), [1, 1, 1, 3, 1]);
+  assert.equal(records[0].skillName, "Atletismo");
+  assert.equal(records[1].skillName, "FOR");
+  assert.equal(records[3].modifier, 2);
+  assert.equal(records[4].target, null);
 });
 
 test("extracts and stacks Forte CA and effective Vigor", () => {

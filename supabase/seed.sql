@@ -1,0 +1,1 @@
+-- Reservado para dados locais de teste. Nenhum usuário ou dado de campanha é criado na Fase 4.

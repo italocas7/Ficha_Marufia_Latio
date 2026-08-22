@@ -1,12 +1,15 @@
 const DB = window.MARUFIA_DB;
 const ITEM_DESCRIPTIONS = window.MARUFIA_ITEM_DESCRIPTIONS ?? {};
 const MAGIC_CORES = window.MARUFIA_MAGIC_CORES ?? [];
+const STORAGE = window.LATIO_STORAGE;
 const STATE_TOOLS = window.LATIO_STATE;
 const RULES = window.LATIO_RULES;
+const ROLLS = window.LATIO_ROLLS;
+const ROLL_ENGINE = ROLLS?.createRollEngine(ROLLS.createLocalRollProvider());
 const STORAGE_KEY = "marufia-latio-state-v1";
 const BACKUP_STORAGE_KEY = "marufia-latio-backups-v1";
-const APP_ID = "marufia-latio";
-const STATE_SCHEMA_VERSION = 5;
+const APP_ID = STATE_TOOLS?.STATE_SCHEMA?.appId ?? "marufia-latio";
+const STATE_SCHEMA_VERSION = STATE_TOOLS?.STATE_SCHEMA?.currentVersion ?? 5;
 const APP_BASE_URL = new URL(".", document.currentScript?.src || window.location.href).href;
 const MAGIC_TYPES = ["Fina", "Impacto", "Densa", "Mundo", "Forte", "Etérea"];
 const TABS = [
@@ -18,6 +21,21 @@ const TABS = [
   ["mundo", "Mundo"],
   ["antecedentes", "Antecedentes"],
 ];
+const GM_VIEW_MODE = document.body?.dataset?.gmView === "true";
+const GM_VIEW_ACTIONS = new Set([
+  "tab",
+  "close-modal",
+  "open-attribute",
+  "open-skill",
+  "open-modifiers",
+  "open-spell",
+  "open-extra-spell",
+  "open-core-details",
+  "open-weapon-description",
+  "open-equipment-description",
+  "open-talent",
+  "open-world-details",
+]);
 
 const ERROR_CATALOG = Object.fromEntries([
   ["LAT-INI-001", ["Inicialização", "CRÍTICO", "Não foi possível carregar a ficha.", "Falha ao iniciar componentes principais da interface.", "Recarregar a página ou restaurar backup JSON."]],
@@ -76,7 +94,7 @@ const clamp = (value, min, max) => Math.min(max, Math.max(min, num(value, min)))
 const compact = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
 const fold = (value) => String(value ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
 
-const databaseStartupError = !RULES ? "O módulo de regras não foi carregado." : validateRuntimeDatabase(DB);
+const databaseStartupError = !STORAGE ? "O módulo de armazenamento não foi carregado." : !STATE_TOOLS ? "O módulo de estado não foi carregado." : !RULES ? "O módulo de regras não foi carregado." : !ROLLS ? "O módulo de rolagens não foi carregado." : validateRuntimeDatabase(DB);
 let sessionUi = createDefaultSessionUi();
 let state = databaseStartupError ? null : loadState();
 let previousWorldUnlocked = databaseStartupError ? false : worldUnlocked();
@@ -85,6 +103,8 @@ let pendingImport = null;
 let saveTimer = null;
 let saveInProgress = false;
 let storageFailureRecorded = false;
+const localSaveListeners = new Set();
+const rollResultListeners = new Set();
 let modalReturnFocus = null;
 let controlSerial = 0;
 
@@ -191,9 +211,8 @@ function createDefaultState() {
 
 function loadState() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return createDefaultState();
-    const parsed = JSON.parse(raw);
+    const parsed = STORAGE.loadLocal(STORAGE_KEY);
+    if (!parsed) return createDefaultState();
     if (parsed?.meta?.appId !== APP_ID) return createDefaultState();
     return prepareStateImport(parsed).state;
   } catch (error) {
@@ -235,12 +254,22 @@ function recordStorageFailure(error) {
 }
 
 function saveStateNow() {
-  if (!state || saveInProgress) return false;
+  if (GM_VIEW_MODE || !state || saveInProgress) return false;
+  clearTimeout(saveTimer);
+  saveTimer = null;
   saveInProgress = true;
   try {
     state.meta.updatedAt = new Date().toISOString();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(persistentPayload()));
+    const payload = persistentPayload();
+    STORAGE.saveLocal(STORAGE_KEY, payload);
     storageFailureRecorded = false;
+    for (const listener of localSaveListeners) {
+      try {
+        listener(payload);
+      } catch {
+        // A persistência local não depende de integrações opcionais.
+      }
+    }
     return true;
   } catch (error) {
     recordStorageFailure(error);
@@ -251,8 +280,44 @@ function saveStateNow() {
 }
 
 function scheduleSave() {
+  if (GM_VIEW_MODE) return;
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveStateNow, 250);
+}
+
+function publishRollResult(rollType, roll, options = {}) {
+  const record = Object.freeze({
+    rollType,
+    skillName: options.skillName ?? null,
+    mode: roll.mode,
+    formula: roll.formula,
+    rawRoll: Object.freeze([...roll.rolls]),
+    modifier: roll.modifier,
+    target: options.target ?? null,
+    total: roll.result,
+    outcome: options.outcome ?? null,
+  });
+  for (const listener of rollResultListeners) {
+    try {
+      listener(record);
+    } catch {
+      // A exibição da rolagem local não depende de integrações opcionais.
+    }
+  }
+  return record;
+}
+
+function flushPendingState() {
+  if (GM_VIEW_MODE) return false;
+  const active = document.activeElement;
+  if (active?.dataset?.path && !active.dataset.live) handleChange({ target: active });
+  clearTimeout(saveTimer);
+  saveTimer = null;
+  return saveStateNow();
+}
+
+function handleVisibilityChange() {
+  if (document.visibilityState === "hidden") flushPendingState();
 }
 
 function makeError(code, detail = "") {
@@ -819,17 +884,7 @@ function successText(value) {
 }
 
 function rollD100(mode = "normal") {
-  const one = () => Math.floor(Math.random() * 100) + 1;
-  if (mode === "adv") {
-    const a = one(), b = one();
-    return { rolls: [a, b], result: Math.min(a, b), label: "Vantagem" };
-  }
-  if (mode === "dis") {
-    const a = one(), b = one();
-    return { rolls: [a, b], result: Math.max(a, b), label: "Desvantagem" };
-  }
-  const result = one();
-  return { rolls: [result], result, label: "Normal" };
+  return ROLL_ENGINE.rollSync(ROLLS.createD100Request(mode));
 }
 
 function d100Outcome(result, target) {
@@ -858,10 +913,36 @@ function render() {
     app.innerHTML = renderTab(sessionUi.activeTab);
   }
   associateLabels(app);
+  applyGmViewLock(app);
   const unlocked = worldUnlocked();
   if (unlocked && !previousWorldUnlocked) addError("LAT-MAG-005", "", false);
   previousWorldUnlocked = unlocked;
   restoreRenderPosition(renderPosition);
+}
+
+function applyGmViewLock(app = $("#app")) {
+  if (!GM_VIEW_MODE || !app) return;
+  for (const control of $$("input, select, textarea", app)) {
+    control.disabled = true;
+    control.setAttribute("aria-disabled", "true");
+  }
+  for (const button of $$('[data-action]', app)) {
+    if (GM_VIEW_ACTIONS.has(button.dataset.action)) continue;
+    button.disabled = true;
+    button.setAttribute("aria-disabled", "true");
+  }
+}
+
+function loadGmViewSnapshot(raw) {
+  if (!GM_VIEW_MODE) return false;
+  const prepared = prepareStateImport(raw);
+  state = prepared.state;
+  sessionUi = createDefaultSessionUi();
+  previousWorldUnlocked = worldUnlocked();
+  closeModal(true);
+  document.body.classList.add("gm-view-ready");
+  render();
+  return true;
 }
 
 function captureRenderPosition() {
@@ -1339,7 +1420,8 @@ function renderAntecedentes() {
 
 function field(label, path, type = "text", extra = "") {
   const id = nextControlId("field");
-  return `<div class="field"><label for="${id}">${esc(label)}</label><input id="${id}" type="${type}" data-path="${esc(path)}" value="${esc(getPath(path))}" ${extra}></div>`;
+  const live = type === "text" ? 'data-live="true"' : "";
+  return `<div class="field"><label for="${id}">${esc(label)}</label><input id="${id}" type="${type}" data-path="${esc(path)}" value="${esc(getPath(path))}" ${live} ${extra}></div>`;
 }
 
 function textareaField(label, path, max = 1000) {
@@ -2370,8 +2452,9 @@ function coreReduceDamage() {
     return;
   }
   if (!spendPm(1, "Núcleo Antebraço (reduzir dano)")) return render();
-  const roll = Math.floor(Math.random() * 6) + 1;
-  state.combat.log.unshift(`Núcleo Antebraço: reduza ${roll} de dano desta ocorrência.`);
+  const roll = ROLL_ENGINE.rollSync(ROLLS.createDieRequest({ sides: 6 }));
+  state.combat.log.unshift(`Núcleo Antebraço: reduza ${roll.result} de dano desta ocorrência.`);
+  publishRollResult("core_damage_reduction", roll);
   render();
 }
 
@@ -2578,13 +2661,18 @@ function handleClick(event) {
   if (!button) return;
   if (event.target.closest("[data-stop-close]") && button.dataset.action === "close-modal" && event.target !== button) return;
   const action = button.dataset.action;
+  if (GM_VIEW_MODE && !GM_VIEW_ACTIONS.has(action)) {
+    event.preventDefault();
+    event.stopPropagation();
+    return;
+  }
   const beforeState = state ? persistentSignature() : "";
   if (action !== "close-modal") event.stopPropagation();
 
   const actions = {
     "close-modal": closeModal,
     "open-start": openStartModal,
-    "start-new": () => { localStorage.removeItem(STORAGE_KEY); state = createDefaultState(); state.meta.started = true; closeModal(); render(); },
+    "start-new": () => { STORAGE.removeLocal(STORAGE_KEY); state = createDefaultState(); state.meta.started = true; closeModal(); render(); },
     "open-settings": openSettings,
     "tab": () => {
       const next = button.dataset.tab;
@@ -2680,6 +2768,7 @@ function handleClick(event) {
     "save-law-field": () => saveLawField(button.dataset.id, button.dataset.field),
     "random-personality": () => randomPersonality(button.dataset.kind),
     "download-json": downloadJson,
+    "download-online-json": downloadOnlineJson,
     "copy-json": copyJson,
     "import-json-paste": importJsonPaste,
     "apply-json-import": () => applyJsonImport(button.dataset.mode),
@@ -2702,6 +2791,7 @@ function handleClick(event) {
 }
 
 function handleChange(event) {
+  if (GM_VIEW_MODE) return;
   const target = event.target;
   if (target.id === "combatRollSkill") updateCombatRollPreview();
   if (target.id === "customArmorIconPreset") {
@@ -2759,6 +2849,7 @@ function handleChange(event) {
 }
 
 function handleInput(event) {
+  if (GM_VIEW_MODE) return;
   const target = event.target;
   if (target.id === "combatTargetCa") updateCombatRollPreview();
   if (target.id === "customArmorIconColor") {
@@ -2780,6 +2871,7 @@ function rollSkill(name, mode) {
   const value = skillFinal(name);
   const roll = rollD100(mode);
   const outcome = d100Outcome(roll.result, value);
+  publishRollResult("skill", roll, { skillName: name, target: value, outcome });
   openModal(`Rolagem: ${name}`, `<div class="stat"><span class="muted">${esc(roll.label)}</span><strong>${roll.result}</strong><small>Dados: ${roll.rolls.join(", ")}</small></div><p>Resultado contra ${value}: <strong>${outcome}</strong></p><p>${esc(successText(value))}</p>`);
 }
 
@@ -2788,6 +2880,7 @@ function rollAttribute(name, mode) {
   const value = attr(name);
   const roll = rollD100(mode);
   const outcome = d100Outcome(roll.result, value);
+  publishRollResult("attribute", roll, { skillName: name, target: value, outcome });
   openModal(`Rolagem de atributo: ${name}`, `<div class="stat"><span class="muted">${esc(roll.label)}</span><strong>${roll.result}</strong><small>Dados: ${roll.rolls.join(", ")}</small></div><p>Resultado contra ${value}: <strong>${outcome}</strong></p><p>${esc(successText(value))}</p>`);
 }
 
@@ -2801,6 +2894,7 @@ function rollCombatTest(mode) {
   const roll = rollD100(mode);
   const outcome = d100Outcome(roll.result, target);
   const hit = outcome !== "Falha";
+  publishRollResult("combat", roll, { skillName: skill.name, target, outcome });
   state.combat.log.unshift(`${skill.label} contra CA ${ca}: ${roll.result} (${roll.label}), alvo ${target} — ${hit ? `Acerto · ${outcome}` : "Falha"}.`);
   openModal(`Teste: ${skill.label}`, `
     <div class="combat-roll-result stack">
@@ -2874,7 +2968,9 @@ function worldDurationFormula(level = worldLevel()) {
 }
 
 function rollWorldDurationValue(level = worldLevel()) {
-  return Math.floor(Math.random() * 4) + 1 + (num(level, 0) >= 5 ? 2 : 0);
+  const roll = ROLL_ENGINE.rollSync(ROLLS.createDieRequest({ sides: 4, modifier: num(level, 0) >= 5 ? 2 : 0 }));
+  publishRollResult("world_duration", roll);
+  return roll.result;
 }
 
 function validWorldDuration(value) {
@@ -3455,7 +3551,7 @@ function openSettings() {
     </div>
     <div class="grid two" style="margin-top: 12px;">
       <div class="card stack"><h3>Importar</h3><input type="file" accept="application/json" data-file="json"><textarea id="jsonPaste" placeholder="Cole um JSON exportado aqui"></textarea><button class="ghost" type="button" data-action="import-json-paste">Importar JSON colado</button></div>
-      <div class="card stack"><h3>Exportar</h3><button class="button" type="button" data-action="download-json">Baixar JSON</button><button class="ghost" type="button" data-action="copy-json">Copiar JSON</button><button class="ghost" type="button" data-action="print-sheet">Imprimir/PDF completo</button></div>
+      <div class="card stack"><h3>Exportar</h3><button class="button" type="button" data-action="download-json">Baixar JSON</button><button class="ghost" type="button" data-action="download-online-json">Baixar backup online</button><button class="ghost" type="button" data-action="copy-json">Copiar JSON</button><button class="ghost" type="button" data-action="print-sheet">Imprimir/PDF completo</button></div>
     </div>
     <div class="inline" style="margin-top: 12px;"><button class="ghost" type="button" data-action="open-backups">Backups recentes</button><button class="ghost" type="button" data-action="open-errors">Log de erros</button></div>
   `);
@@ -3490,6 +3586,12 @@ function exportPayload() {
   return JSON.stringify(payload, null, 2);
 }
 
+function exportOnlinePayload() {
+  if (!STATE_TOOLS?.createOnlineBackup) throw new Error("Formato de backup online indisponível.");
+  const payload = STATE_TOOLS.createOnlineBackup(persistentPayload(), {}, new Date().toISOString());
+  return JSON.stringify(payload, null, 2);
+}
+
 function downloadText(payload, fileName) {
   const blob = new Blob([payload], { type: "application/json" });
   const link = document.createElement("a");
@@ -3501,7 +3603,7 @@ function downloadText(payload, fileName) {
 
 function readBackups() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(BACKUP_STORAGE_KEY) || "[]");
+    const parsed = STORAGE.loadLocal(BACKUP_STORAGE_KEY, []);
     return Array.isArray(parsed) ? parsed : [];
   } catch (error) {
     recordStorageFailure(error);
@@ -3509,10 +3611,10 @@ function readBackups() {
   }
 }
 
-function createBackup(label) {
-  const backup = { id: uid(), at: new Date().toISOString(), label, payload: exportPayload() };
+function createBackup(label, payload = exportPayload()) {
+  const backup = { id: uid(), at: new Date().toISOString(), label, payload };
   try {
-    localStorage.setItem(BACKUP_STORAGE_KEY, JSON.stringify([backup, ...readBackups()].slice(0, 5)));
+    STORAGE.saveLocal(BACKUP_STORAGE_KEY, [backup, ...readBackups()].slice(0, 5));
     return backup;
   } catch (error) {
     recordStorageFailure(error);
@@ -3561,6 +3663,14 @@ function downloadJson() {
   }
 }
 
+function downloadOnlineJson() {
+  try {
+    downloadText(exportOnlinePayload(), `${state.character.name || "ficha-marufia-latio"}-backup-online.json`);
+  } catch (error) {
+    addError("LAT-JSON-004", error.message);
+  }
+}
+
 async function copyJson() {
   try {
     await navigator.clipboard.writeText(exportPayload());
@@ -3576,10 +3686,11 @@ function importJsonText(text, fileName = "JSON colado") {
     const prepared = prepareStateImport(parsed);
     pendingImport = { kind: "json", prepared, fileName };
     const migration = prepared.migrated ? `<span class="tag warn">Migrará v${esc(prepared.sourceVersion)} para v${STATE_SCHEMA_VERSION}</span>` : `<span class="tag ok">Schema v${STATE_SCHEMA_VERSION}</span>`;
+    const sourceFormat = prepared.sourceFormat === "local" ? "" : `<span class="tag">Backup online</span>`;
     openModal("Revisar importação JSON", `
       <p><strong>${esc(fileName)}</strong></p>
       <p>Confira como a ficha deve receber o arquivo. Nenhum dado foi alterado ainda.</p>
-      <div class="inline">${migration}<span class="chip">${esc(prepared.state.character.name || "Personagem sem nome")}</span></div>
+      <div class="inline">${migration}${sourceFormat}<span class="chip">${esc(prepared.state.character.name || "Personagem sem nome")}</span></div>
       <div class="grid two" style="margin-top:12px;">
         <div class="card"><strong>Mesclar</strong><p>Preenche dados do arquivo e preserva valores atuais quando o importado estiver vazio.</p></div>
         <div class="card"><strong>Substituir</strong><p>Troca a ficha atual pela versão validada do arquivo.</p></div>
@@ -3902,11 +4013,54 @@ function renderFatalDatabaseError(detail) {
 if (databaseStartupError) {
   renderFatalDatabaseError(databaseStartupError);
 } else {
+  window.MARUFIA_APP_BRIDGE = Object.freeze({
+    hasExistingSheet: () => Boolean(state?.meta?.started),
+    snapshot: () => persistentPayload(),
+    loadGmViewSnapshot,
+    applyRemoteSnapshot: (raw) => {
+      if (GM_VIEW_MODE) return false;
+      const prepared = prepareStateImport(raw);
+      const nextState = prepared.state;
+      try {
+        STORAGE.saveLocal(STORAGE_KEY, STATE_TOOLS.persistentPayload(nextState));
+      } catch {
+        return false;
+      }
+      state = nextState;
+      clearTimeout(saveTimer);
+      saveTimer = null;
+      previousWorldUnlocked = worldUnlocked();
+      render();
+      return true;
+    },
+    onLocalSave: (listener) => {
+      if (typeof listener !== "function") return () => {};
+      localSaveListeners.add(listener);
+      return () => localSaveListeners.delete(listener);
+    },
+    onRoll: (listener) => {
+      if (typeof listener !== "function") return () => {};
+      rollResultListeners.add(listener);
+      return () => rollResultListeners.delete(listener);
+    },
+    createOnlineImportBackup: () => {
+      let original = null;
+      try {
+        original = STORAGE.loadLocal(STORAGE_KEY);
+      } catch {
+        original = null;
+      }
+      const payload = JSON.stringify(original ?? persistentPayload(), null, 2);
+      return createBackup("Antes de importar a ficha local para a conta", payload);
+    },
+  });
   document.body.addEventListener("click", handleClick);
   document.body.addEventListener("change", handleChange);
   document.body.addEventListener("input", handleInput);
   document.addEventListener("keydown", handleKeydown);
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+  window.addEventListener("pagehide", flushPendingState);
   applyTheme();
   render();
-  if (!state.meta.started) openStartModal();
+  if (!GM_VIEW_MODE && !state.meta.started) openStartModal();
 }

@@ -16,17 +16,52 @@ SCRIPT_ORDER = [
     "magic_cores.js",
     "vendor/pdf_file_loader.js",
     "pdf_import.js",
+    "vendor/supabase.js",
+    "src/online/project.js",
+    "src/online/config.js",
+    "src/online/supabase.js",
+    "src/core/storage.js",
     "src/core/state.js",
     "src/core/rules.js",
+    "src/core/character_summary.js",
+    "src/core/rolls.js",
     "app.js",
+    "src/online/auth.js",
+    "src/online/campaigns.js",
+    "src/online/characters.js",
+    "src/online/home.js",
+    "src/online/gm_panel.js",
+    "src/online/character_import.js",
+    "src/online/character_realtime.js",
+    "src/online/character_sync.js",
+    "src/online/rolls.js",
+    "src/online/live_rolls.js",
+    "src/online/character_conflicts.js",
+]
+VIEWER_SCRIPT_ORDER = [
+    "data.js",
+    "item_descriptions.js",
+    "magic_cores.js",
+    "vendor/pdf_file_loader.js",
+    "pdf_import.js",
+    "src/core/storage.js",
+    "src/core/state.js",
+    "src/core/rules.js",
+    "src/core/rolls.js",
+    "app.js",
+    "src/online/gm_view.js",
 ]
 REQUIRED_FILES = [
     "index.html",
+    "gm_view.html",
     "styles.css",
     "marufia_latio_design.css",
+    "marufia_online_design.css",
+    "og.png",
     "vendor/pdf.min.mjs",
     "vendor/pdf.worker.min.mjs",
     *SCRIPT_ORDER,
+    "src/online/gm_view.js",
 ]
 
 
@@ -68,7 +103,12 @@ def validate_root() -> None:
     if any(position < 0 for position in positions) or positions != sorted(positions):
         raise RuntimeError("index.html não carrega os scripts obrigatórios na ordem esperada.")
 
-    for relative in [item for item in SCRIPT_ORDER if not item.endswith(".mjs")]:
+    viewer = (ROOT / "gm_view.html").read_text(encoding="utf-8")
+    viewer_positions = [viewer.find(f'src="{relative}"') for relative in VIEWER_SCRIPT_ORDER]
+    if any(position < 0 for position in viewer_positions) or viewer_positions != sorted(viewer_positions):
+        raise RuntimeError("gm_view.html não reutiliza os scripts da ficha na ordem esperada.")
+
+    for relative in dict.fromkeys([*SCRIPT_ORDER, "src/online/gm_view.js"]):
         run(node_executable(), "--check", str(ROOT / relative))
 
 
