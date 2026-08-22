@@ -22,3 +22,5 @@ O portão do MVP complementa, sem substituir, `pnpm test:alpha`, a suíte comple
 ## Resultado esperado
 
 Com os dois portões e a suíte completa aprovados, o Marufia Online atende ao MVP planejado. Recursos fora deste fluxo permanecem fora do escopo até uma fase posterior.
+
+A lista explícita de recursos não prioritários e seu portão de proteção estão em `docs/deferred-scope.md`.
