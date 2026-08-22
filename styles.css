@@ -559,6 +559,59 @@ button[hidden] {
   font-weight: 700;
 }
 
+.campaign-characters {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.campaign-characters p,
+.campaign-character-empty {
+  margin: 3px 0 0;
+}
+
+.campaign-character-row,
+.campaign-character-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.campaign-character-row {
+  justify-content: space-between;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+}
+
+.campaign-character-row span {
+  display: grid;
+  gap: 2px;
+}
+
+.campaign-character-row small {
+  color: var(--ok);
+  font-weight: 800;
+}
+
+.campaign-character-form {
+  display: grid;
+  gap: 6px;
+}
+
+.campaign-character-form label {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.campaign-character-controls select {
+  min-width: 0;
+  flex: 1 1 180px;
+}
+
 .campaign-code-block {
   display: grid;
   justify-items: end;
@@ -2120,6 +2173,12 @@ tr:last-child td {
 
   .campaign-code-block {
     justify-items: start;
+  }
+
+  .campaign-character-row,
+  .campaign-character-controls {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .live-roll-toolbar,

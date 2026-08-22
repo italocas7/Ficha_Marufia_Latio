@@ -261,6 +261,7 @@ test("renders campaign content safely and accessibly", () => {
   });
   assert.match(playerHtml, /data-online-live-rolls-action="open"/);
   assert.match(playerHtml, /Rolagens da campanha/);
+  assert.match(playerHtml, /Nenhuma ficha livre encontrada/);
   assert.doesNotMatch(playerHtml, /data-online-gm-panel-action="open"/);
   assert.doesNotMatch(playerHtml, /Editar campanha|Excluir campanha/);
 
@@ -286,6 +287,25 @@ test("renders campaign content safely and accessibly", () => {
   assert.match(deleteForm, /data-online-campaign-delete-form/);
   assert.match(deleteForm, /fichas dos personagens serão preservadas/i);
   assert.match(deleteForm, /Excluir permanentemente/);
+});
+
+test("shows owned characters that can be linked to or detached from a campaign", () => {
+  const campaign = { id: "campaign-1", name: "A Coroa Partida" };
+  const html = campaignTools.characterAssociationHtml(campaign, [
+    { id: "character-1", name: "Kael", campaign_id: null },
+    { id: "character-2", name: "Lira <script>", campaign_id: "campaign-1" },
+    { id: "character-3", name: "Outro", campaign_id: "campaign-2" },
+  ]);
+
+  assert.match(html, /Seus personagens/);
+  assert.match(html, /Somente fichas vinculadas enviam rolagens/);
+  assert.match(html, /Kael/);
+  assert.match(html, /Vincular ficha/);
+  assert.match(html, /Lira &lt;script&gt;/);
+  assert.match(html, /Ficha vinculada/);
+  assert.match(html, /Desvincular ficha/);
+  assert.doesNotMatch(html, /Outro/);
+  assert.doesNotMatch(html, /<script>/);
 });
 
 test("keeps membership roles scoped to each campaign", () => {

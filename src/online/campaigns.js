@@ -2,7 +2,7 @@
   const api = factory();
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.MARUFIA_CAMPAIGNS = api;
-  if (root?.document) Promise.resolve().then(() => api.init(root.document, root.MARUFIA_SUPABASE));
+  if (root?.document) Promise.resolve().then(() => api.init(root.document, root.MARUFIA_SUPABASE, root.MARUFIA_CHARACTERS));
 })(typeof window !== "undefined" ? window : globalThis, function createMarufiaCampaignsApi() {
   "use strict";
 
@@ -233,6 +233,34 @@
     });
   }
 
+  function characterAssociationHtml(campaign, characters = [], busy = false) {
+    const linked = characters.filter((character) => character?.campaign_id === campaign?.id);
+    const available = characters.filter((character) => !character?.campaign_id);
+    const linkedRows = linked.map((character) => `<div class="campaign-character-row">
+      <span><strong>${escapeHtml(character.name || "Personagem sem nome")}</strong><small>Ficha vinculada</small></span>
+      <button class="ghost" type="button" data-online-campaign-action="detach-character" data-character-id="${escapeHtml(character.id)}" ${busy ? "disabled" : ""}>Desvincular ficha</button>
+    </div>`).join("");
+    const associationForm = available.length
+      ? `<form class="campaign-character-form" data-online-campaign-character-form>
+          <input type="hidden" name="campaignId" value="${escapeHtml(campaign.id)}">
+          <label for="campaignCharacter-${escapeHtml(campaign.id)}">Vincular uma ficha a esta campanha</label>
+          <div class="campaign-character-controls">
+            <select id="campaignCharacter-${escapeHtml(campaign.id)}" name="characterId" required ${busy ? "disabled" : ""}>
+              ${available.map((character) => `<option value="${escapeHtml(character.id)}">${escapeHtml(character.name || "Personagem sem nome")}</option>`).join("")}
+            </select>
+            <button class="button" type="submit" ${busy ? "disabled" : ""}>${busy ? "Vinculando…" : "Vincular ficha"}</button>
+          </div>
+        </form>`
+      : linked.length
+        ? ""
+        : `<p class="muted small campaign-character-empty">Nenhuma ficha livre encontrada. Entre com a ficha que deseja usar e importe-a para sua conta.</p>`;
+    return `<section class="campaign-characters" aria-label="Suas fichas nesta campanha">
+      <div><strong>Seus personagens</strong><p class="muted small">Somente fichas vinculadas enviam rolagens para esta campanha.</p></div>
+      ${linkedRows || ""}
+      ${associationForm}
+    </section>`;
+  }
+
   function campaignDialogHtml(state = {}) {
     const message = state.message
       ? `<p class="campaign-message ${state.messageKind === "error" ? "campaign-message-error" : ""}" role="${state.messageKind === "error" ? "alert" : "status"}">${escapeHtml(state.message)}</p>`
@@ -310,7 +338,7 @@
             : "";
           const ownsCampaign = campaign.owner_id === state.currentUserId;
           return `<article class="campaign-card ${campaign.id === state.createdId ? "campaign-card-new" : ""}">
-            <div><h3>${escapeHtml(campaign.name)}</h3>${campaign.description ? `<p>${escapeHtml(campaign.description)}</p>` : `<p class="muted">Sem descrição.</p>`}<div class="campaign-members-summary">${participantCount}<span>Você: ${escapeHtml(membership.roleLabel)}</span></div></div>
+            <div><h3>${escapeHtml(campaign.name)}</h3>${campaign.description ? `<p>${escapeHtml(campaign.description)}</p>` : `<p class="muted">Sem descrição.</p>`}<div class="campaign-members-summary">${participantCount}<span>Você: ${escapeHtml(membership.roleLabel)}</span></div>${characterAssociationHtml(campaign, state.characters, state.busy)}</div>
             <div class="campaign-code-block">
               <span class="muted small">Código de convite</span>
               <code>${escapeHtml(campaign.join_code)}</code>
@@ -330,7 +358,7 @@
     </div>`;
   }
 
-  function init(document, supabaseTools) {
+  function init(document, supabaseTools, characterTools) {
     const campaignsButton = document.querySelector("#onlineCampaignsButton");
     const accountButton = document.querySelector("#onlineAccountButton");
     const modalRoot = document.querySelector("#modalRoot");
@@ -338,9 +366,11 @@
     campaignsButton.dataset.campaignsInitialized = "true";
 
     const view = document.defaultView ?? globalThis;
+    let client = null;
     let service = null;
+    let characterService = null;
     let dialogOpen = false;
-    let state = { mode: "list", loading: false, busy: false, campaigns: [], memberships: [], currentUserId: "", createdId: "", selectedCampaignId: "", message: "", messageKind: "" };
+    let state = { mode: "list", loading: false, busy: false, campaigns: [], memberships: [], characters: [], currentUserId: "", createdId: "", selectedCampaignId: "", message: "", messageKind: "" };
 
     function signedIn() {
       return accountButton.dataset.authState === "online";
@@ -375,16 +405,25 @@
     async function loadCampaigns(message = "", createdId = "") {
       applyState({ mode: "list", loading: true, busy: false, message, messageKind: "success", createdId, selectedCampaignId: "" });
       try {
+        if (!characterService) {
+          characterTools = characterTools ?? view.MARUFIA_CHARACTERS;
+          characterService = client && typeof characterTools?.createCharacterService === "function"
+            ? characterTools.createCharacterService(client, view.LATIO_STATE)
+            : null;
+        }
         const currentUserId = await service.currentUserId();
         const ownMemberships = await service.listOwnMemberships(currentUserId);
         const campaigns = await service.listVisible(ownMemberships.map((membership) => membership.campaign_id));
-        const memberships = await service.listVisibleMembers(campaigns.map((campaign) => campaign.id));
-        applyState({ campaigns, memberships, currentUserId, loading: false });
+        const [memberships, characters] = await Promise.all([
+          service.listVisibleMembers(campaigns.map((campaign) => campaign.id)),
+          characterService?.listOwn?.() ?? [],
+        ]);
+        applyState({ campaigns, memberships, characters, currentUserId, loading: false });
         if (typeof view.dispatchEvent === "function" && typeof view.CustomEvent === "function") {
           view.dispatchEvent(new view.CustomEvent("marufia:campaign-memberships-changed"));
         }
       } catch (error) {
-        applyState({ campaigns: [], memberships: [], currentUserId: "", loading: false, message: friendlyCampaignMessage(error), messageKind: "error" });
+        applyState({ campaigns: [], memberships: [], characters: [], currentUserId: "", loading: false, message: friendlyCampaignMessage(error), messageKind: "error" });
       }
     }
 
@@ -448,6 +487,36 @@
       }
     }
 
+    async function associateCharacter(form) {
+      if (!characterService) return;
+      const values = Object.fromEntries(new view.FormData(form).entries());
+      const character = state.characters.find((item) => item.id === values.characterId && !item.campaign_id);
+      const campaign = state.campaigns.find((item) => item.id === values.campaignId);
+      if (!character || !campaign) return;
+      applyState({ busy: true, message: "", messageKind: "" });
+      try {
+        await characterService.associate(character.id, campaign.id);
+        await loadCampaigns(`Ficha ${character.name || "Personagem sem nome"} vinculada a ${campaign.name}. As próximas rolagens aparecerão na campanha.`, campaign.id);
+      } catch (error) {
+        const message = characterTools?.friendlyCharacterMessage?.(error) ?? friendlyCampaignMessage(error);
+        applyState({ busy: false, message, messageKind: "error" });
+      }
+    }
+
+    async function detachCharacter(characterId) {
+      if (!characterService) return;
+      const character = state.characters.find((item) => item.id === characterId && item.campaign_id);
+      if (!character) return;
+      applyState({ busy: true, message: "", messageKind: "" });
+      try {
+        await characterService.associate(character.id, null);
+        await loadCampaigns(`Ficha ${character.name || "Personagem sem nome"} desvinculada. Novas rolagens não serão enviadas à campanha.`);
+      } catch (error) {
+        const message = characterTools?.friendlyCharacterMessage?.(error) ?? friendlyCampaignMessage(error);
+        applyState({ busy: false, message, messageKind: "error" });
+      }
+    }
+
     async function copyCode(code) {
       if (!JOIN_CODE_PATTERN.test(code)) return;
       try {
@@ -481,6 +550,8 @@
         void loadCampaigns();
       } else if (action === "copy") {
         void copyCode(control.dataset.code ?? "");
+      } else if (action === "detach-character") {
+        void detachCharacter(String(control.dataset.characterId ?? ""));
       } else if (action === "close") {
         dialogOpen = false;
         modalRoot.innerHTML = "";
@@ -493,13 +564,15 @@
       const joinForm = event.target.matches?.("[data-online-campaign-join-form]");
       const editForm = event.target.matches?.("[data-online-campaign-edit-form]");
       const deleteForm = event.target.matches?.("[data-online-campaign-delete-form]");
-      if (!createForm && !joinForm && !editForm && !deleteForm) return;
+      const characterForm = event.target.matches?.("[data-online-campaign-character-form]");
+      if (!createForm && !joinForm && !editForm && !deleteForm && !characterForm) return;
       event.preventDefault();
       if (state.busy || !service) return;
       if (createForm) void createCampaign(event.target);
       else if (joinForm) void joinCampaign(event.target);
       else if (editForm) void updateCampaign(event.target);
-      else void deleteCampaign(event.target);
+      else if (deleteForm) void deleteCampaign(event.target);
+      else void associateCharacter(event.target);
     });
 
     document.addEventListener("keydown", (event) => {
@@ -513,8 +586,11 @@
     view.addEventListener?.("marufia:open-campaigns", handleOpenRequest);
 
     try {
-      const client = supabaseTools?.getSupabaseClient?.();
+      client = supabaseTools?.getSupabaseClient?.();
       service = client ? createCampaignService(client) : null;
+      characterService = client && typeof characterTools?.createCharacterService === "function"
+        ? characterTools.createCharacterService(client, view.LATIO_STATE)
+        : null;
     } catch {
       service = null;
     }
@@ -547,6 +623,7 @@
     normalizedDeleteResult,
     createCampaignService,
     membershipSummary,
+    characterAssociationHtml,
     campaignDialogHtml,
     init,
   };

@@ -402,19 +402,18 @@ async function exercise(page, url, viewport) {
       && document.querySelector("#onlineSyncStatus")?.dataset.syncState === "online";
   });
 
-  const linkedRollTarget = await page.evaluate(async () => {
+  await ownedCampaign.getByRole("button", { name: "Vincular ficha" }).click();
+  await ownedCampaign.getByText("Ficha vinculada").waitFor({ state: "visible" });
+  assert.match(await page.locator("[data-online-campaign-modal]").getByRole("status").innerText(), /próximas rolagens aparecerão na campanha/i);
+  const linkedRollTarget = await page.evaluate(() => {
     const character = JSON.parse(localStorage.getItem("marufia-e2e-characters") || "[]")[0];
     const campaign = JSON.parse(localStorage.getItem("marufia-e2e-campaigns") || "[]")
       .find((item) => item.name === "A Coroa Partida");
-    const service = window.MARUFIA_CHARACTERS.createCharacterService(
-      window.MARUFIA_SUPABASE.getSupabaseClient(),
-      window.LATIO_STATE,
-    );
-    const associated = await service.associate(character.id, campaign.id);
-    return { characterId: associated.id, campaignId: associated.campaign_id };
+    return { characterId: character.id, campaignId: character.campaign_id, expectedCampaignId: campaign.id };
   });
   assert.match(linkedRollTarget.characterId, /^[0-9a-f-]{36}$/i);
   assert.match(linkedRollTarget.campaignId, /^[0-9a-f-]{36}$/i);
+  assert.equal(linkedRollTarget.campaignId, linkedRollTarget.expectedCampaignId, "O botão deve associar a ficha escolhida à campanha.");
   await page.waitForTimeout(250);
   const associationStatus = await page.evaluate(() => ({
     sync: document.querySelector("#onlineSyncStatus")?.dataset.syncState,
@@ -675,15 +674,21 @@ async function exercise(page, url, viewport) {
   await page.waitForFunction(() => JSON.parse(localStorage.getItem("marufia-e2e-rolls") || "[]").length === 3);
   await page.locator("#modalRoot").getByRole("button", { name: "Fechar" }).last().click();
 
+  await campaignsButton.click();
+  await ownedCampaign.waitFor({ state: "visible" });
+  await invitedCampaign.waitFor({ state: "visible" });
+  await ownedCampaign.getByRole("button", { name: "Desvincular ficha" }).click();
+  await ownedCampaign.getByRole("button", { name: "Vincular ficha" }).waitFor({ state: "visible" });
+  await invitedCampaign.getByRole("button", { name: "Vincular ficha" }).click();
+  await invitedCampaign.getByText("Ficha vinculada").waitFor({ state: "visible" });
+  assert.match(await invitedCampaign.innerText(), /Você: Jogador/);
+  await page.locator("#modalRoot").getByRole("button", { name: "Fechar" }).last().click();
+
   const playerVisibility = await page.evaluate(async () => {
     const character = JSON.parse(localStorage.getItem("marufia-e2e-characters") || "[]")[0];
     const campaign = JSON.parse(localStorage.getItem("marufia-e2e-campaigns") || "[]")
       .find((item) => item.name === "Campanha Convidada");
-    const characterService = window.MARUFIA_CHARACTERS.createCharacterService(
-      window.MARUFIA_SUPABASE.getSupabaseClient(),
-      window.LATIO_STATE,
-    );
-    await characterService.associate(character.id, campaign.id);
+    if (character.campaign_id !== campaign.id) throw new Error("A ficha do jogador não foi vinculada pela interface.");
     const rollService = window.MARUFIA_ONLINE_ROLLS.createRollService(
       window.MARUFIA_SUPABASE.getSupabaseClient(),
       window.crypto,
