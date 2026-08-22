@@ -31,3 +31,5 @@ Um item adiado só pode entrar no produto por uma fase futura explicitamente aut
 `pnpm test:scope` confirma que a lista continua completa e procura no código de produção dependências e estruturas inequívocas desses sistemas, como motores de mapa, mídia em tempo real, SDKs de IA, Steam ou Discord e projetos móveis.
 
 A checagem é intencionalmente específica. Palavras legítimas já usadas pelo produto — como token de sessão e CSS Grid — não são bloqueadas. O portão complementa a revisão de código e não substitui a autorização explícita de uma nova fase.
+
+As reservas específicas de Android, combate, compêndio e registro de sessão estão em `docs/future-roadmap.md`.
