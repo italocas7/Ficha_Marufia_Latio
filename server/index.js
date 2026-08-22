@@ -1,4 +1,21 @@
 const INDEX_PATH = "/index.html";
+const UPDATE_MANIFEST_PATH = "/app-update.json";
+
+function updateManifestResponse(response) {
+  const headers = new Headers(response.headers);
+  headers.set("Access-Control-Allow-Origin", "*");
+  headers.set("Cache-Control", "no-store, max-age=0");
+  headers.set("CDN-Cache-Control", "no-store");
+  headers.set("Cloudflare-CDN-Cache-Control", "no-store");
+  headers.set("Content-Type", "application/json; charset=utf-8");
+  headers.set("Cross-Origin-Resource-Policy", "cross-origin");
+  headers.set("X-Content-Type-Options", "nosniff");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
 
 function withPath(request, pathname) {
   const url = new URL(request.url);
@@ -9,7 +26,9 @@ function withPath(request, pathname) {
 
 export default {
   async fetch(request, env) {
+    const pathname = new URL(request.url).pathname;
     const response = await env.ASSETS.fetch(request);
+    if (pathname === UPDATE_MANIFEST_PATH) return updateManifestResponse(response);
     if (response.status !== 404) return response;
     return env.ASSETS.fetch(withPath(request, INDEX_PATH));
   },

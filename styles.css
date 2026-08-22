@@ -1966,6 +1966,50 @@ tr:last-child td {
   padding: 16px;
 }
 
+.app-update-modal-shell {
+  width: min(560px, 100%);
+}
+
+.app-update-dialog {
+  display: grid;
+  gap: 14px;
+}
+
+.app-update-dialog p {
+  margin: 0;
+}
+
+.app-update-version-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-2);
+}
+
+.app-update-version-row strong {
+  color: var(--accent);
+}
+
+.app-update-notes {
+  color: var(--muted);
+}
+
+.app-update-error {
+  padding: 10px 12px;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  color: var(--danger);
+}
+
+.app-update-error[hidden] {
+  display: none;
+}
+
 .toast-root {
   position: fixed;
   right: 18px;
@@ -2062,6 +2106,15 @@ tr:last-child td {
 }
 
 @media (max-width: 520px) {
+  .app-update-modal-shell footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .app-update-modal-shell footer button {
+    width: 100%;
+  }
+
   .sync-status {
     width: 34px;
     min-height: 34px;

@@ -41,13 +41,18 @@ function runTauriBuild() {
   if (result.status !== 0) throw new Error(`Build Windows reprovado com código ${result.status}.`);
 }
 
-function findGeneratedInstaller() {
+function currentReleaseVersion() {
+  return JSON.parse(fs.readFileSync(path.join(tauriRoot, "tauri.conf.json"), "utf8")).version;
+}
+
+function findGeneratedInstaller(version = currentReleaseVersion()) {
   if (!fs.existsSync(nsisRoot)) throw new Error("O Tauri não gerou a pasta do instalador NSIS.");
+  const expectedSuffix = `_${version}_${process.arch}-setup.exe`.toLowerCase();
   const installers = fs.readdirSync(nsisRoot)
-    .filter((name) => name.toLowerCase().endsWith("-setup.exe"))
+    .filter((name) => name.toLowerCase().endsWith(expectedSuffix))
     .map((name) => path.join(nsisRoot, name));
   if (installers.length !== 1) {
-    throw new Error(`Era esperado um instalador NSIS; foram encontrados ${installers.length}.`);
+    throw new Error(`Era esperado um instalador NSIS ${version} ${process.arch}; foram encontrados ${installers.length}.`);
   }
   return installers[0];
 }
@@ -122,6 +127,7 @@ module.exports = {
   assertInside,
   assertPortableExecutable,
   copyDeliverables,
+  currentReleaseVersion,
   findGeneratedInstaller,
   main,
   sha256,

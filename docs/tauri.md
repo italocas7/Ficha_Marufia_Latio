@@ -6,17 +6,21 @@ O Marufia Online usa Tauri 2 para empacotar exatamente a mesma ficha web validad
 
 - produto: Marufia Online;
 - identificador: `com.marufia.online`;
-- versão desktop inicial: `0.1.0`, apresentada como **Marufia Online Alpha**;
+- versão desktop atual: `0.2.0`, apresentada como **Marufia Online Alpha**;
 - janela única, centralizada, redimensionável e com mínimo de 900 × 600;
 - ícones derivados do brasão oficial da ficha.
 
 ## Segurança
 
-A janela não recebe nenhum comando IPC nativo. Não há plugins de arquivos, shell, diálogo, abertura externa ou logs. A política de conteúdo permite apenas arquivos locais e as conexões HTTPS/WebSocket do projeto público Supabase. O build desktop reutiliza o backup local, o schema v5 e toda a lógica web existente.
+A janela recebe uma única capacidade nativa pelo plugin oficial Opener: abrir no navegador padrão URLs sob `https://github.com/italocas7/Ficha_Marufia_Latio/releases/*`. Arquivos, shell, diálogos, caminhos locais e outras URLs permanecem bloqueados. A política de conteúdo permite somente arquivos locais, o projeto público Supabase e a leitura do manifesto em `https://ficha-marufia-latio.italocas7.chatgpt.site/app-update.json`. O build desktop reutiliza o backup local, o schema v5 e toda a lógica web existente.
+
+## Aviso de atualização
+
+Somente o aplicativo Tauri consulta o manifesto público. Quando a versão Alpha publicada é mais nova, ele espera qualquer outro modal terminar e mostra **Atualização disponível**. **Atualizar aplicativo** abre a GitHub Release oficial; **Agora não** dispensa o aviso até o aplicativo ser fechado. Não há download automático, chave privada, execução de instalador ou alteração dos dados da ficha.
 
 ## Comandos do projeto
 
-- `pnpm test:tauri-config`: valida identidade, janela, ícones, política de conteúdo e ausência de permissões nativas;
+- `pnpm test:tauri-config`: valida identidade, janela, ícones, política de conteúdo e a permissão limitada do Opener;
 - `pnpm dev:desktop`: abre a ficha em uma janela Tauri para desenvolvimento;
 - `pnpm build:desktop`: gera o executável Windows sem criar instalador;
 - `pnpm build:windows`: gera a distribuição release e o instalador NSIS validados na Fase 44.

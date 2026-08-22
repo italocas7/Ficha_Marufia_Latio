@@ -38,15 +38,21 @@ test("restricts web connections to the public Marufia services", () => {
   assert.match(csp, /default-src 'self'/);
   assert.match(csp, /https:\/\/nuczqjyahusjyvepqthx\.supabase\.co/);
   assert.match(csp, /wss:\/\/nuczqjyahusjyvepqthx\.supabase\.co/);
+  assert.match(csp, /https:\/\/ficha-marufia-latio\.italocas7\.chatgpt\.site/);
   assert.match(csp, /object-src 'none'/);
   assert.doesNotMatch(csp, /unsafe-eval|connect-src[^;]*\*/);
 });
 
-test("grants no native IPC command to the sheet", () => {
+test("grants only the scoped official-release opener to the Windows app", () => {
   assert.deepEqual(capability.windows, ["main"]);
   assert.deepEqual(capability.platforms, ["windows"]);
-  assert.deepEqual(capability.permissions, []);
-  assert.doesNotMatch(cargo, /tauri-plugin|shell|filesystem|dialog|opener/);
+  assert.equal(config.app.withGlobalTauri, true);
+  assert.deepEqual(capability.permissions, [{
+    identifier: "opener:allow-open-url",
+    allow: [{ url: "https://github.com/italocas7/Ficha_Marufia_Latio/releases/*" }],
+  }]);
+  assert.match(cargo, /^tauri-plugin-opener\s*=\s*"2"$/m);
+  assert.doesNotMatch(JSON.stringify(capability.permissions), /shell|filesystem|dialog|open-path|http:\/\/|github\.com\/[^i]/i);
 });
 
 test("ships the generated Marufia icon set and stable desktop commands", () => {

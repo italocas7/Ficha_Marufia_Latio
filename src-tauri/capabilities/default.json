@@ -1,12 +1,21 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "A ficha web não usa comandos nativos nesta fase.",
+  "description": "O aplicativo pode abrir somente páginas oficiais de release do Marufia no navegador padrão.",
   "windows": [
     "main"
   ],
   "platforms": [
     "windows"
   ],
-  "permissions": []
+  "permissions": [
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        {
+          "url": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/*"
+        }
+      ]
+    }
+  ]
 }

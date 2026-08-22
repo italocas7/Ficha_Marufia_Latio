@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Marufia Online",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "identifier": "com.marufia.online",
   "build": {
     "frontendDist": "../dist/client",
@@ -9,6 +9,7 @@
     "beforeBuildCommand": "pnpm build:site"
   },
   "app": {
+    "withGlobalTauri": true,
     "windows": [
       {
         "label": "main",
@@ -23,7 +24,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; connect-src 'self' https://nuczqjyahusjyvepqthx.supabase.co wss://nuczqjyahusjyvepqthx.supabase.co; img-src 'self' data: blob: https://ficha-marufia-latio.italocas7.chatgpt.site; style-src 'self' 'unsafe-inline'; script-src 'self'; worker-src 'self' blob:; font-src 'self' data:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'"
+      "csp": "default-src 'self'; connect-src 'self' https://nuczqjyahusjyvepqthx.supabase.co wss://nuczqjyahusjyvepqthx.supabase.co https://ficha-marufia-latio.italocas7.chatgpt.site; img-src 'self' data: blob: https://ficha-marufia-latio.italocas7.chatgpt.site; style-src 'self' 'unsafe-inline'; script-src 'self'; worker-src 'self' blob:; font-src 'self' data:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'"
     }
   },
   "bundle": {

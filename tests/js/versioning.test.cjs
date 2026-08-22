@@ -13,7 +13,7 @@ const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
 
 test("adopts one consistent Semantic Version for the Alpha product", () => {
   const contract = versionTools.assertVersionContract();
-  assert.equal(contract.packageVersion, "0.1.0");
+  assert.equal(contract.packageVersion, "0.2.0");
   assert.equal(contract.runtime.displayName, "Marufia Online Alpha");
   assert.match(contract.packageVersion, versionTools.SEMVER_PATTERN);
 });
@@ -25,15 +25,16 @@ test("loads the version contract before online consumers", () => {
 });
 
 test("keeps product, sheet schema, backup, and database versions independent", () => {
-  assert.match(versioningDocument, /Produto.*0\.1\.0/is);
+  assert.match(versioningDocument, /Produto.*0\.2\.0/is);
   assert.match(versioningDocument, /schema da ficha.*v5/is);
   assert.match(versioningDocument, /backup online.*v1/is);
   assert.match(versioningDocument, /migrations.*timestamp/is);
   assert.match(versioningDocument, /não altera automaticamente/i);
 });
 
-test("defines the initial development progression without creating a release tag", () => {
+test("defines the Alpha progression without creating a release tag", () => {
   assert.match(versioningDocument, /0\.1\.0.*0\.2\.0.*0\.3\.0.*1\.0\.0/s);
-  assert.match(versioningDocument, /Fase 48/);
+  assert.match(versioningDocument, /autorização explícita/i);
+  assert.match(versioningDocument, /release.*somente depois.*manifesto/is);
   assert.equal(require("../../package.json").scripts["test:version"], "node tools/check_version.cjs");
 });

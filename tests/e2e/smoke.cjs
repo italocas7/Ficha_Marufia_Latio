@@ -35,11 +35,18 @@ function server() {
 
 async function exercise(page, url, viewport) {
   const errors = [];
+  let updateManifestRequests = 0;
   page.on("pageerror", (error) => errors.push(error.message));
+  page.on("request", (request) => {
+    if (request.url().includes("/app-update.json")) updateManifestRequests += 1;
+  });
   page.on("console", (message) => {
     if (message.type() === "error") errors.push(message.text());
   });
   await page.goto(url);
+  await page.waitForTimeout(50);
+  assert.equal(updateManifestRequests, 0, "O navegador comum não pode consultar atualizações do aplicativo Windows.");
+  assert.equal(await page.locator("[data-online-app-update-modal]").count(), 0, "O navegador comum não pode receber o aviso do aplicativo Windows.");
   await page.getByRole("button", { name: "Criar ficha nova" }).click();
   const tabNames = await page.getByRole("tab").allTextContents();
   assert.equal(tabNames.length, 7, "A ficha deve manter as sete abas.");
@@ -194,7 +201,7 @@ async function exercise(page, url, viewport) {
   assert.match(await onlineSettings.innerText(), /Sincronização/i);
   assert.match(await onlineSettings.innerText(), /ficha (?:está )?vinculada/i);
   assert.match(await onlineSettings.innerText(), /Dados locais/i);
-  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.1\.0/i);
+  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.2\.0/i);
   await settingsModal.getByRole("button", { name: "Modo Escuro" }).click();
   assert.equal(await page.locator("body").evaluate((body) => body.classList.contains("dark")), true);
   assert.equal(await settingsModal.getByRole("button", { name: "Modo Escuro" }).getAttribute("aria-pressed"), "true");
@@ -763,17 +770,134 @@ async function exercise(page, url, viewport) {
   if (errors.length) throw new Error(`Erros novos no navegador: ${errors.join(" | ")}`);
 }
 
+async function exerciseWindowsUpdate(browser, url, viewport) {
+  const context = await browser.newContext({ viewport });
+  const updateRequests = [];
+  await context.addInitScript(() => {
+    window.__TAURI_INTERNALS__ = {};
+    window.__TAURI__ = {
+      opener: {
+        openUrl(releaseUrl) {
+          window.__marufiaOpenedUpdateUrl = releaseUrl;
+          return Promise.resolve();
+        },
+      },
+    };
+  });
+  await context.route("**/app-update.json*", (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    headers: { "Access-Control-Allow-Origin": "*", "Cache-Control": "no-store" },
+    body: JSON.stringify({
+      schemaVersion: 1,
+      appId: "com.marufia.online",
+      channel: "alpha",
+      version: "0.3.0",
+      notes: "Versão futura usada somente pelo teste local.",
+      publishedAt: "2026-08-22T00:00:00.000Z",
+      releaseUrl: "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.3.0",
+    }),
+  }));
+  const page = await context.newPage();
+  page.on("request", (request) => {
+    if (request.url().includes("app-update.json")) updateRequests.push(request.url());
+  });
+  try {
+    await page.goto(url);
+    await page.waitForTimeout(250);
+    const initialized = await page.evaluate(() => ({
+      hasApi: Boolean(window.MARUFIA_APP_UPDATE),
+      isTauri: window.MARUFIA_APP_UPDATE?.isTauri(window) ?? false,
+      initialized: document.documentElement.dataset.appUpdateInitialized ?? "",
+    }));
+    assert.deepEqual(initialized, { hasApi: true, isTauri: true, initialized: "true" });
+    assert.equal(updateRequests.length, 1, "O aplicativo Windows deve consultar o manifesto uma vez ao iniciar.");
+    const updateModal = page.locator("#modalRoot .modal").filter({ hasText: "Atualização disponível" });
+    if (await updateModal.count() === 0) {
+      const firstRun = page.getByRole("button", { name: "Criar ficha nova" });
+      assert.equal(await firstRun.isVisible(), true, "O aviso deve aguardar a decisão inicial da ficha.");
+      await firstRun.click();
+    }
+    await updateModal.waitFor({ state: "visible" });
+    assert.equal(await updateModal.getByRole("button", { name: "Atualizar aplicativo" }).count(), 1);
+    assert.equal(await updateModal.getByRole("button", { name: "Agora não" }).count(), 1);
+    const dimensions = await updateModal.evaluate((modal) => ({
+      clientWidth: modal.clientWidth,
+      scrollWidth: modal.scrollWidth,
+      viewportWidth: document.documentElement.clientWidth,
+    }));
+    assert.ok(dimensions.scrollWidth <= dimensions.clientWidth + 1, "O aviso de atualização não pode ter estouro horizontal.");
+    assert.ok(dimensions.clientWidth <= dimensions.viewportWidth, "O aviso de atualização deve caber na janela.");
+    await updateModal.getByRole("button", { name: "Agora não" }).click();
+    await updateModal.waitFor({ state: "detached" });
+    await page.reload();
+    await page.waitForTimeout(150);
+    assert.equal(await page.locator("[data-online-app-update-modal]").count(), 0, "Agora não deve valer durante a sessão atual.");
+  } finally {
+    await context.close();
+  }
+
+  const freshContext = await browser.newContext({ viewport });
+  await freshContext.addInitScript(() => {
+    window.__TAURI_INTERNALS__ = {};
+    window.__TAURI__ = {
+      opener: {
+        openUrl(releaseUrl) {
+          window.__marufiaOpenedUpdateUrl = releaseUrl;
+          return Promise.resolve();
+        },
+      },
+    };
+  });
+  await freshContext.route("**/app-update.json*", (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    headers: { "Access-Control-Allow-Origin": "*", "Cache-Control": "no-store" },
+    body: JSON.stringify({
+      schemaVersion: 1,
+      appId: "com.marufia.online",
+      channel: "alpha",
+      version: "0.3.0",
+      notes: "Versão futura usada somente pelo teste local.",
+      publishedAt: "2026-08-22T00:00:00.000Z",
+      releaseUrl: "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.3.0",
+    }),
+  }));
+  const freshPage = await freshContext.newPage();
+  try {
+    await freshPage.goto(url);
+    const updateModal = freshPage.locator("#modalRoot .modal").filter({ hasText: "Atualização disponível" });
+    if (await updateModal.count() === 0) await freshPage.getByRole("button", { name: "Criar ficha nova" }).click();
+    await updateModal.waitFor({ state: "visible" });
+    await updateModal.getByRole("button", { name: "Atualizar aplicativo" }).click();
+    await freshPage.waitForFunction(() => Boolean(window.__marufiaOpenedUpdateUrl));
+    assert.equal(
+      await freshPage.evaluate(() => window.__marufiaOpenedUpdateUrl),
+      "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.3.0",
+    );
+  } finally {
+    await freshContext.close();
+  }
+}
+
 (async () => {
   const web = server();
   await new Promise((resolve) => web.listen(0, "127.0.0.1", resolve));
   const port = web.address().port;
   const browser = await chromium.launch({ headless: true });
   try {
+    if (process.env.MARUFIA_E2E_UPDATE_ONLY === "1") {
+      await exerciseWindowsUpdate(browser, `http://127.0.0.1:${port}/`, { width: 1440, height: 900 });
+      console.log("Teste isolado do aviso Windows concluído.");
+      return;
+    }
     for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
       const context = await browser.newContext({ viewport });
       await exercise(await context.newPage(), `http://127.0.0.1:${port}/`, viewport);
       await context.close();
     }
+    await exerciseWindowsUpdate(browser, `http://127.0.0.1:${port}/`, { width: 1440, height: 900 });
+    await exerciseWindowsUpdate(browser, `http://127.0.0.1:${port}/`, { width: 390, height: 844 });
     console.log("Smoke test desktop/mobile concluído.");
   } finally {
     await browser.close();

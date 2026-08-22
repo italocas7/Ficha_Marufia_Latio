@@ -22,9 +22,10 @@ const REQUIRED_ALPHA_CAPABILITIES = Object.freeze([
   "Painel do Mæstre",
   "Permissões",
   "Executável Windows",
+  "Atualização do aplicativo",
 ]);
 
-test("keeps all twelve first-Alpha capabilities explicit and executable", () => {
+test("keeps all current Alpha capabilities explicit and executable", () => {
   assert.deepEqual(alpha.ALPHA_CAPABILITIES.map((capability) => capability.name), REQUIRED_ALPHA_CAPABILITIES);
   assert.equal(alpha.assertAlphaMatrix(), true);
   for (const capability of alpha.ALPHA_CAPABILITIES) {
@@ -36,7 +37,7 @@ test("keeps all twelve first-Alpha capabilities explicit and executable", () => 
 test("runs the Alpha gate through one stable command without adding a new system", () => {
   assert.equal(packageJson.scripts["test:alpha"], "node tools/test_alpha.cjs");
   assert.ok(alpha.uniqueAlphaTests().length >= 20);
-  assert.equal(packageJson.version, "0.1.0");
+  assert.equal(packageJson.version, "0.2.0");
   assert.equal(require("../../src/online/version.js").channel, "alpha");
 });
 

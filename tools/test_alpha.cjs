@@ -19,6 +19,7 @@ const ALPHA_CAPABILITIES = Object.freeze([
   Object.freeze({ name: "Painel do Mæstre", files: Object.freeze(["tests/js/gm_panel.test.cjs", "tests/js/multiuser_simulation.test.cjs"]) }),
   Object.freeze({ name: "Permissões", files: Object.freeze(["tests/js/row_level_security_migration.test.cjs", "tests/js/gm_character_write_authorization_migration.test.cjs", "tests/js/security_audit.test.cjs"]) }),
   Object.freeze({ name: "Executável Windows", files: Object.freeze(["tests/js/tauri_config.test.cjs", "tests/js/windows_build.test.cjs", "tests/js/windows_security.test.cjs"]) }),
+  Object.freeze({ name: "Atualização do aplicativo", files: Object.freeze(["tests/js/app_update.test.cjs", "tests/js/tauri_config.test.cjs", "tests/js/site_distribution.test.cjs"]) }),
 ]);
 
 function uniqueAlphaTests() {
@@ -58,7 +59,7 @@ function main() {
     run(["tools/test_supabase_security.cjs"], "Permissões remotas");
     run(["tools/test_realtime_connection.cjs"], "Realtime remoto");
   }
-  process.stdout.write("\nMarufia Online Alpha aprovado nos 12 recursos obrigatórios.\n");
+  process.stdout.write(`\nMarufia Online Alpha aprovado nos ${ALPHA_CAPABILITIES.length} recursos obrigatórios.\n`);
 }
 
 if (require.main === module) {

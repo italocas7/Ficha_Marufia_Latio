@@ -9,7 +9,7 @@ const root = path.resolve(__dirname, "..", "..");
 const config = JSON.parse(fs.readFileSync(path.join(root, "src-tauri", "tauri.conf.json"), "utf8"));
 const packageJson = require("../../package.json");
 const buildScript = fs.readFileSync(path.join(root, "tools", "build_windows.cjs"), "utf8");
-const { assertInside, sha256 } = require("../../tools/build_windows.cjs");
+const { assertInside, currentReleaseVersion, sha256 } = require("../../tools/build_windows.cjs");
 
 test("configures a Portuguese current-user NSIS installer", () => {
   assert.deepEqual(config.bundle.targets, ["nsis"]);
@@ -35,6 +35,8 @@ test("exposes one stable Windows build command and delivery names", () => {
   assert.match(buildScript, /Marufia-Setup\.exe/);
   assert.match(buildScript, /windows-artifacts\.json/);
   assert.match(buildScript, /sha256/);
+  assert.equal(currentReleaseVersion(), packageJson.version);
+  assert.match(buildScript, /expectedSuffix/);
 });
 
 test("rejects destinations outside the release folder", () => {
