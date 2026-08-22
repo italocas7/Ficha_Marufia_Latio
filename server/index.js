@@ -1,5 +1,6 @@
 const INDEX_PATH = "/index.html";
 const UPDATE_MANIFEST_PATH = "/app-update.json";
+const UPDATE_MANIFEST_ASSET_PATH = "/.marufia/app-update.json";
 
 function updateManifestResponse(response) {
   const headers = new Headers(response.headers);
@@ -27,8 +28,11 @@ function withPath(request, pathname) {
 export default {
   async fetch(request, env) {
     const pathname = new URL(request.url).pathname;
+    if (pathname === UPDATE_MANIFEST_PATH) {
+      const response = await env.ASSETS.fetch(withPath(request, UPDATE_MANIFEST_ASSET_PATH));
+      return updateManifestResponse(response);
+    }
     const response = await env.ASSETS.fetch(request);
-    if (pathname === UPDATE_MANIFEST_PATH) return updateManifestResponse(response);
     if (response.status !== 404) return response;
     return env.ASSETS.fetch(withPath(request, INDEX_PATH));
   },
