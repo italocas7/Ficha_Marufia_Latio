@@ -62,6 +62,7 @@ REQUIRED_FILES = [
     "marufia_latio_design.css",
     "marufia_online_design.css",
     "og.png",
+    "_headers",
     "app-update.json",
     "vendor/pdf.min.mjs",
     "vendor/pdf.worker.min.mjs",

@@ -8,7 +8,7 @@ const root = path.resolve(__dirname, "..");
 const dist = path.join(root, "dist");
 const client = path.join(dist, "client");
 
-for (const relative of ["index.html", "gm_view.html", "src/online/project.js", "src/online/app_update.js", "app-update.json", "og.png"]) {
+for (const relative of ["index.html", "gm_view.html", "src/online/project.js", "src/online/app_update.js", "app-update.json", "_headers", "og.png"]) {
   if (!fs.existsSync(path.join(client, relative))) {
     throw new Error(`Pacote web ausente ou incompleto: client/${relative}. Execute pnpm build:site.`);
   }

@@ -60,6 +60,18 @@ test("serves the update manifest cross-origin without browser or edge caching", 
   assert.equal(response.headers.get("x-content-type-options"), "nosniff");
 });
 
+test("applies the update manifest headers when the static asset is served before the Worker", () => {
+  const headers = fs.readFileSync(path.join(root, "_headers"), "utf8");
+  assert.match(headers, /^\/app-update\.json$/m);
+  assert.match(headers, /^\s+Access-Control-Allow-Origin: \*$/m);
+  assert.match(headers, /^\s+Cache-Control: no-store, max-age=0$/m);
+  assert.match(headers, /^\s+CDN-Cache-Control: no-store$/m);
+  assert.match(headers, /^\s+Cloudflare-CDN-Cache-Control: no-store$/m);
+  assert.match(headers, /^\s+Cross-Origin-Resource-Policy: cross-origin$/m);
+  assert.match(headers, /^\s+X-Content-Type-Options: nosniff$/m);
+  assert.match(fs.readFileSync(path.join(root, "tools", "build.py"), "utf8"), /"_headers"/);
+});
+
 test("packages the strict desktop update manifest without changing sheet data", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, "app-update.json"), "utf8"));
   assert.deepEqual(Object.keys(manifest).sort(), [
