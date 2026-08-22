@@ -1,6 +1,6 @@
 # Marufia Online Alpha — Fase 50
 
-O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. O ciclo atual é **0.2.0** e acrescenta somente o aviso seguro de atualização do aplicativo Windows, sem alterar o sistema de RPG.
+O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. O ciclo atual é **0.2.1** e corrige a visualização completa das fichas dos jogadores dentro do aplicativo Windows, sem alterar o sistema de RPG.
 
 ## Escopo obrigatório
 

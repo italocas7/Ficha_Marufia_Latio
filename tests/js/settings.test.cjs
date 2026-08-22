@@ -76,7 +76,7 @@ test("renders safe actionable settings without cache deletion", () => {
   assert.match(html, /Sincronização/);
   assert.match(html, /Dados locais/);
   assert.match(html, /Sobre/);
-  assert.match(html, /Marufia Online Alpha · v0\.2\.0/);
+  assert.match(html, /Marufia Online Alpha · v0\.2\.1/);
   assert.match(html, /somente páginas oficiais de atualização/i);
   assert.match(html, /&lt;Artemis&gt;/);
   assert.doesNotMatch(html, /<Artemis>|limpar cache|apagar cache|clear-cache/i);

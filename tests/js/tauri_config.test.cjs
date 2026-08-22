@@ -40,6 +40,8 @@ test("restricts web connections to the public Marufia services", () => {
   assert.match(csp, /wss:\/\/nuczqjyahusjyvepqthx\.supabase\.co/);
   assert.match(csp, /https:\/\/ficha-marufia-latio\.italocas7\.chatgpt\.site/);
   assert.match(csp, /object-src 'none'/);
+  assert.match(csp, /frame-src 'self'/);
+  assert.doesNotMatch(csp, /frame-src[^;]*(?:https?:|\*)/);
   assert.doesNotMatch(csp, /unsafe-eval|connect-src[^;]*\*/);
 });
 

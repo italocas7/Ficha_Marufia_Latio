@@ -6,13 +6,13 @@ O Marufia Online usa Tauri 2 para empacotar exatamente a mesma ficha web validad
 
 - produto: Marufia Online;
 - identificador: `com.marufia.online`;
-- versão desktop atual: `0.2.0`, apresentada como **Marufia Online Alpha**;
+- versão desktop atual: `0.2.1`, apresentada como **Marufia Online Alpha**;
 - janela única, centralizada, redimensionável e com mínimo de 900 × 600;
 - ícones derivados do brasão oficial da ficha.
 
 ## Segurança
 
-A janela recebe uma única capacidade nativa pelo plugin oficial Opener: abrir no navegador padrão URLs sob `https://github.com/italocas7/Ficha_Marufia_Latio/releases/*`. Arquivos, shell, diálogos, caminhos locais e outras URLs permanecem bloqueados. A política de conteúdo permite somente arquivos locais, o projeto público Supabase e a leitura do manifesto em `https://ficha-marufia-latio.italocas7.chatgpt.site/app-update.json`. O build desktop reutiliza o backup local, o schema v5 e toda a lógica web existente.
+A janela recebe uma única capacidade nativa pelo plugin oficial Opener: abrir no navegador padrão URLs sob `https://github.com/italocas7/Ficha_Marufia_Latio/releases/*`. Arquivos, shell, diálogos, caminhos locais e outras URLs permanecem bloqueados. A política de conteúdo permite somente arquivos locais, incluindo a ficha de leitura do Mæstre no mesmo aplicativo, o projeto público Supabase e a leitura do manifesto em `https://ficha-marufia-latio.italocas7.chatgpt.site/app-update.json`. Frames remotos continuam bloqueados. O build desktop reutiliza o backup local, o schema v5 e toda a lógica web existente.
 
 ## Aviso de atualização
 
