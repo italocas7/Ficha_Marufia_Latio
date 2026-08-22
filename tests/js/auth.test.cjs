@@ -4,7 +4,7 @@ const test = require("node:test");
 const authTools = require("../../src/online/auth.js");
 
 function fakeClient(options = {}) {
-  const calls = { signUp: [], signIn: [], signOut: 0, profiles: 0, listener: null };
+  const calls = { signUp: [], signIn: [], resend: [], signOut: 0, profiles: 0, listener: null };
   const session = options.session ?? null;
   const profile = options.profile ?? null;
   const subscription = { unsubscribe() {} };
@@ -24,6 +24,10 @@ function fakeClient(options = {}) {
       async signInWithPassword(payload) {
         calls.signIn.push(payload);
         return { data: { session: options.signInSession ?? session }, error: options.signInError ?? null };
+      },
+      async resend(payload) {
+        calls.resend.push(payload);
+        return { data: {}, error: options.resendError ?? null };
       },
       async signOut() {
         calls.signOut += 1;
@@ -77,7 +81,9 @@ test("validates and normalizes account input locally", () => {
 
 test("signs up with display metadata and reports required email confirmation", async () => {
   const { client, calls } = fakeClient();
-  const service = authTools.createAuthService(client);
+  const service = authTools.createAuthService(client, {
+    emailRedirectTo: "https://ficha-marufia-latio.italocas7.chatgpt.site",
+  });
   const result = await service.signUp({
     email: "jogador@example.com",
     password: "senha-segura",
@@ -88,8 +94,35 @@ test("signs up with display metadata and reports required email confirmation", a
   assert.deepEqual(calls.signUp[0], {
     email: "jogador@example.com",
     password: "senha-segura",
-    options: { data: { display_name: "Arthur" } },
+    options: {
+      data: { display_name: "Arthur" },
+      emailRedirectTo: "https://ficha-marufia-latio.italocas7.chatgpt.site",
+    },
   });
+});
+
+test("rejects an insecure confirmation redirect before creating an account", () => {
+  const { client } = fakeClient();
+  assert.throws(
+    () => authTools.createAuthService(client, { emailRedirectTo: "http://127.0.0.1:4173" }),
+    /confirmação.*inválido/i,
+  );
+});
+
+test("resends account confirmation to the public site", async () => {
+  const { client, calls } = fakeClient();
+  const service = authTools.createAuthService(client, {
+    emailRedirectTo: "https://ficha-marufia-latio.italocas7.chatgpt.site",
+  });
+  assert.deepEqual(await service.resendConfirmation({ email: "  Jogador@Example.com " }), {
+    email: "jogador@example.com",
+  });
+  assert.deepEqual(calls.resend, [{
+    type: "signup",
+    email: "jogador@example.com",
+    options: { emailRedirectTo: "https://ficha-marufia-latio.italocas7.chatgpt.site" },
+  }]);
+  await assert.rejects(() => service.resendConfirmation({ email: "inválido" }), /email válido/i);
 });
 
 test("signs in and restores the own database profile", async () => {
@@ -139,6 +172,9 @@ test("renders accessible login and account states with escaped user content", ()
   assert.match(loggedOut, /data-online-auth-form/);
   assert.match(loggedOut, /autocomplete="new-password"/);
   assert.doesNotMatch(loggedOut, /<img src=x>/);
+
+  const login = authTools.authDialogHtml({ mode: "login", email: "jogador@example.com", busy: false });
+  assert.match(login, /Reenviar email de confirmação/);
 
   const loggedIn = authTools.authDialogHtml({
     session: activeSession,

@@ -20,6 +20,18 @@ function fakeClient(options = {}) {
       },
       async rpc(name, args) {
         calls.rpc.push({ name, args });
+        if (name === "update_campaign") {
+          return {
+            data: options.updated ?? { id: args.p_campaign_id, name: args.p_name, description: args.p_description, owner_id: "user-1", join_code: "MRF-K7P4-N2" },
+            error: options.updateError ?? null,
+          };
+        }
+        if (name === "delete_campaign") {
+          return {
+            data: options.deleted ?? [{ campaign_id: args.p_campaign_id, campaign_name: args.p_confirmation_name }],
+            error: options.deleteError ?? null,
+          };
+        }
         return { data: options.joinData ?? null, error: options.joinError ?? null };
       },
       from(table) {
@@ -189,6 +201,39 @@ test("preserves existing membership results and explains server rejections", asy
   assert.equal(invalid.calls.rpc.length, 0);
 });
 
+test("edits campaigns through the owner-only operation", async () => {
+  const { client, calls } = fakeClient();
+  const campaign = await campaignTools.createCampaignService(client).update("campaign-1", {
+    name: "  A Coroa Restaurada  ",
+    description: "  Segundo arco  ",
+  });
+  assert.equal(campaign.name, "A Coroa Restaurada");
+  assert.deepEqual(calls.rpc, [{
+    name: "update_campaign",
+    args: {
+      p_campaign_id: "campaign-1",
+      p_name: "A Coroa Restaurada",
+      p_description: "Segundo arco",
+    },
+  }]);
+});
+
+test("deletes campaigns only with a typed confirmation name", async () => {
+  const { client, calls } = fakeClient();
+  const result = await campaignTools.createCampaignService(client).remove("campaign-1", "A Coroa Partida");
+  assert.deepEqual(result, { campaign_id: "campaign-1", campaign_name: "A Coroa Partida" });
+  assert.deepEqual(calls.rpc, [{
+    name: "delete_campaign",
+    args: { p_campaign_id: "campaign-1", p_confirmation_name: "A Coroa Partida" },
+  }]);
+
+  const mismatch = fakeClient({ deleteError: { code: "22023", message: "campaign name confirmation mismatch" } });
+  await assert.rejects(
+    () => campaignTools.createCampaignService(mismatch.client).remove("campaign-1", "Nome errado"),
+    /não corresponde/i,
+  );
+});
+
 test("renders campaign content safely and accessibly", () => {
   const html = campaignTools.campaignDialogHtml({
     mode: "list",
@@ -204,6 +249,8 @@ test("renders campaign content safely and accessibly", () => {
   assert.match(html, /Rolagens da campanha/);
   assert.match(html, /data-online-gm-panel-action="open"/);
   assert.match(html, /Painel do Mæstre/);
+  assert.match(html, /Editar campanha/);
+  assert.match(html, /Excluir campanha/);
   assert.doesNotMatch(html, /<script>/);
 
   const playerHtml = campaignTools.campaignDialogHtml({
@@ -215,6 +262,7 @@ test("renders campaign content safely and accessibly", () => {
   assert.match(playerHtml, /data-online-live-rolls-action="open"/);
   assert.match(playerHtml, /Rolagens da campanha/);
   assert.doesNotMatch(playerHtml, /data-online-gm-panel-action="open"/);
+  assert.doesNotMatch(playerHtml, /Editar campanha|Excluir campanha/);
 
   const form = campaignTools.campaignDialogHtml({ mode: "create", busy: false });
   assert.match(form, /data-online-campaign-form/);
@@ -227,6 +275,17 @@ test("renders campaign content safely and accessibly", () => {
   assert.match(joinForm, /maxlength="11"/);
   assert.match(joinForm, /Entrar na campanha/);
   assert.match(joinForm, /nunca concede poderes de Mæstre/);
+
+  const editableCampaign = { id: "1", owner_id: "user-1", name: "A & B", description: "<descrição>", join_code: "MRF-K7P4-N2" };
+  const editForm = campaignTools.campaignDialogHtml({ mode: "edit", selectedCampaignId: "1", campaigns: [editableCampaign] });
+  assert.match(editForm, /data-online-campaign-edit-form/);
+  assert.match(editForm, /A &amp; B/);
+  assert.doesNotMatch(editForm, /<descrição>/);
+
+  const deleteForm = campaignTools.campaignDialogHtml({ mode: "delete", selectedCampaignId: "1", campaigns: [editableCampaign] });
+  assert.match(deleteForm, /data-online-campaign-delete-form/);
+  assert.match(deleteForm, /fichas dos personagens serão preservadas/i);
+  assert.match(deleteForm, /Excluir permanentemente/);
 });
 
 test("keeps membership roles scoped to each campaign", () => {

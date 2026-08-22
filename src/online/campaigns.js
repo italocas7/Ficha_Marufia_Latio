@@ -50,8 +50,14 @@
     if (detail.includes("p0002") || detail.includes("campaign not found")) {
       return "Código de campanha não encontrado.";
     }
+    if (detail.includes("confirmation mismatch")) {
+      return "O nome digitado não corresponde ao nome atual da campanha.";
+    }
     if (detail.includes("22023") || detail.includes("invalid campaign join code")) {
       return "Informe um código no formato MRF-XXXX-XX.";
+    }
+    if (detail.includes("campaign owner required")) {
+      return "Somente quem criou a campanha pode alterá-la ou excluí-la.";
     }
     if (detail.includes("23505") || detail.includes("duplicate") || detail.includes("unique")) {
       return "O código de convite coincidiu com outro existente. Tente criar novamente.";
@@ -84,6 +90,17 @@
       campaign_name: String(result.campaign_name),
       member_role: role,
       already_member: result.already_member === true,
+    });
+  }
+
+  function normalizedDeleteResult(value) {
+    const result = Array.isArray(value) ? value[0] : value;
+    if (!result?.campaign_id || !String(result.campaign_name ?? "").trim()) {
+      throw campaignError("LAT-CAMPAIGN-DELETE-DATA-001", "O servidor não confirmou a exclusão da campanha.");
+    }
+    return Object.freeze({
+      campaign_id: String(result.campaign_id),
+      campaign_name: String(result.campaign_name),
     });
   }
 
@@ -161,7 +178,39 @@
       return normalizedJoinResult(result.data);
     }
 
-    return Object.freeze({ currentUserId, listVisible, listOwnMemberships, listVisibleMembers, create, join });
+    async function update(campaignId, input = {}) {
+      if (typeof client.rpc !== "function") {
+        throw campaignError("LAT-CAMPAIGN-UPDATE-CLIENT-001", "A edição de campanha não está disponível.");
+      }
+      const id = String(campaignId ?? "").trim();
+      if (!id) throw campaignError("LAT-CAMPAIGN-UPDATE-INPUT-001", "A campanha para edição é inválida.");
+      const payload = validateCampaignInput(input);
+      const result = await client.rpc("update_campaign", {
+        p_campaign_id: id,
+        p_name: payload.name,
+        p_description: payload.description,
+      });
+      if (result.error) throw campaignError("LAT-CAMPAIGN-UPDATE-001", friendlyCampaignMessage(result.error));
+      return normalizedCampaign(result.data);
+    }
+
+    async function remove(campaignId, confirmationName) {
+      if (typeof client.rpc !== "function") {
+        throw campaignError("LAT-CAMPAIGN-DELETE-CLIENT-001", "A exclusão de campanha não está disponível.");
+      }
+      const id = String(campaignId ?? "").trim();
+      const confirmation = String(confirmationName ?? "").trim();
+      if (!id) throw campaignError("LAT-CAMPAIGN-DELETE-INPUT-001", "A campanha para exclusão é inválida.");
+      if (!confirmation) throw campaignError("LAT-CAMPAIGN-DELETE-INPUT-002", "Digite o nome da campanha para confirmar a exclusão.");
+      const result = await client.rpc("delete_campaign", {
+        p_campaign_id: id,
+        p_confirmation_name: confirmation,
+      });
+      if (result.error) throw campaignError("LAT-CAMPAIGN-DELETE-001", friendlyCampaignMessage(result.error));
+      return normalizedDeleteResult(result.data);
+    }
+
+    return Object.freeze({ currentUserId, listVisible, listOwnMemberships, listVisibleMembers, create, join, update, remove });
   }
 
   function escapeHtml(value) {
@@ -218,6 +267,38 @@
       </div>`;
     }
 
+    const selectedCampaign = (Array.isArray(state.campaigns) ? state.campaigns : [])
+      .find((campaign) => campaign.id === state.selectedCampaignId);
+
+    if (state.mode === "edit" && selectedCampaign) {
+      return `<div class="campaign-dialog stack" data-online-campaign-modal>
+        <p class="muted">Altere somente o nome e a descrição. O código de convite, participantes e fichas vinculadas permanecem iguais.</p>
+        ${message}
+        <form id="onlineCampaignEditForm" class="stack" data-online-campaign-edit-form>
+          <div class="field"><label for="campaignEditName">Nome da campanha</label><input id="campaignEditName" name="name" type="text" maxlength="100" value="${escapeHtml(selectedCampaign.name)}" required></div>
+          <div class="field"><label for="campaignEditDescription">Descrição</label><textarea id="campaignEditDescription" name="description" maxlength="5000" rows="5">${escapeHtml(selectedCampaign.description)}</textarea></div>
+          <div class="inline campaign-form-actions">
+            <button class="button" type="submit" ${state.busy ? "disabled" : ""}>${state.busy ? "Salvando…" : "Salvar alterações"}</button>
+            <button class="ghost" type="button" data-online-campaign-action="list" ${state.busy ? "disabled" : ""}>Cancelar</button>
+          </div>
+        </form>
+      </div>`;
+    }
+
+    if (state.mode === "delete" && selectedCampaign) {
+      return `<div class="campaign-dialog stack" data-online-campaign-modal>
+        <div class="campaign-delete-warning" role="alert"><strong>Excluir “${escapeHtml(selectedCampaign.name)}”?</strong><p>As fichas dos personagens serão preservadas e ficarão sem campanha. Participantes, rolagens, histórico e sessões desta campanha serão excluídos permanentemente.</p></div>
+        ${message}
+        <form id="onlineCampaignDeleteForm" class="stack" data-online-campaign-delete-form>
+          <div class="field"><label for="campaignDeleteConfirmation">Digite <strong>${escapeHtml(selectedCampaign.name)}</strong> para confirmar</label><input id="campaignDeleteConfirmation" name="confirmationName" type="text" maxlength="100" autocomplete="off" required></div>
+          <div class="inline campaign-form-actions">
+            <button class="danger" type="submit" ${state.busy ? "disabled" : ""}>${state.busy ? "Excluindo…" : "Excluir permanentemente"}</button>
+            <button class="ghost" type="button" data-online-campaign-action="list" ${state.busy ? "disabled" : ""}>Cancelar</button>
+          </div>
+        </form>
+      </div>`;
+    }
+
     const campaigns = Array.isArray(state.campaigns) ? state.campaigns : [];
     const content = state.loading
       ? `<div class="empty" role="status">Carregando campanhas…</div>`
@@ -227,6 +308,7 @@
           const participantCount = membership.role === "gm"
             ? `<span>${membership.count} ${membership.count === 1 ? "participante" : "participantes"}</span>`
             : "";
+          const ownsCampaign = campaign.owner_id === state.currentUserId;
           return `<article class="campaign-card ${campaign.id === state.createdId ? "campaign-card-new" : ""}">
             <div><h3>${escapeHtml(campaign.name)}</h3>${campaign.description ? `<p>${escapeHtml(campaign.description)}</p>` : `<p class="muted">Sem descrição.</p>`}<div class="campaign-members-summary">${participantCount}<span>Você: ${escapeHtml(membership.roleLabel)}</span></div></div>
             <div class="campaign-code-block">
@@ -235,6 +317,7 @@
               <button class="ghost" type="button" data-online-campaign-action="copy" data-code="${escapeHtml(campaign.join_code)}">Copiar código</button>
               <button class="button" type="button" data-online-live-rolls-action="open" data-campaign-id="${escapeHtml(campaign.id)}" data-campaign-name="${escapeHtml(campaign.name)}">Rolagens da campanha</button>
               ${membership.role === "gm" ? `<button class="button" type="button" data-online-gm-panel-action="open" data-campaign-id="${escapeHtml(campaign.id)}" data-campaign-name="${escapeHtml(campaign.name)}">Painel do Mæstre</button>` : ""}
+              ${ownsCampaign ? `<div class="campaign-management-actions"><button class="ghost" type="button" data-online-campaign-action="edit" data-campaign-id="${escapeHtml(campaign.id)}">Editar campanha</button><button class="danger" type="button" data-online-campaign-action="delete" data-campaign-id="${escapeHtml(campaign.id)}">Excluir campanha</button></div>` : ""}
             </div>
           </article>`;
         }).join("")
@@ -257,7 +340,7 @@
     const view = document.defaultView ?? globalThis;
     let service = null;
     let dialogOpen = false;
-    let state = { mode: "list", loading: false, busy: false, campaigns: [], memberships: [], currentUserId: "", createdId: "", message: "", messageKind: "" };
+    let state = { mode: "list", loading: false, busy: false, campaigns: [], memberships: [], currentUserId: "", createdId: "", selectedCampaignId: "", message: "", messageKind: "" };
 
     function signedIn() {
       return accountButton.dataset.authState === "online";
@@ -290,7 +373,7 @@
     }
 
     async function loadCampaigns(message = "", createdId = "") {
-      applyState({ mode: "list", loading: true, busy: false, message, messageKind: "success", createdId });
+      applyState({ mode: "list", loading: true, busy: false, message, messageKind: "success", createdId, selectedCampaignId: "" });
       try {
         const currentUserId = await service.currentUserId();
         const ownMemberships = await service.listOwnMemberships(currentUserId);
@@ -341,6 +424,30 @@
       }
     }
 
+    async function updateCampaign(form) {
+      const campaignId = state.selectedCampaignId;
+      const values = Object.fromEntries(new view.FormData(form).entries());
+      applyState({ busy: true, message: "", messageKind: "" });
+      try {
+        const campaign = await service.update(campaignId, values);
+        await loadCampaigns(`Campanha ${campaign.name} atualizada.`);
+      } catch (error) {
+        applyState({ busy: false, message: friendlyCampaignMessage(error), messageKind: "error" });
+      }
+    }
+
+    async function deleteCampaign(form) {
+      const campaignId = state.selectedCampaignId;
+      const values = Object.fromEntries(new view.FormData(form).entries());
+      applyState({ busy: true, message: "", messageKind: "" });
+      try {
+        const campaign = await service.remove(campaignId, values.confirmationName);
+        await loadCampaigns(`Campanha ${campaign.campaign_name} excluída. As fichas dos personagens foram preservadas.`);
+      } catch (error) {
+        applyState({ busy: false, message: friendlyCampaignMessage(error), messageKind: "error" });
+      }
+    }
+
     async function copyCode(code) {
       if (!JOIN_CODE_PATTERN.test(code)) return;
       try {
@@ -366,6 +473,10 @@
         applyState({ mode: "create", busy: false, message: "", messageKind: "" });
       } else if (action === "join") {
         applyState({ mode: "join", busy: false, message: "", messageKind: "" });
+      } else if (action === "edit" || action === "delete") {
+        const campaignId = String(control.dataset.campaignId ?? "");
+        const campaign = state.campaigns.find((item) => item.id === campaignId && item.owner_id === state.currentUserId);
+        if (campaign) applyState({ mode: action, selectedCampaignId: campaignId, busy: false, message: "", messageKind: "" });
       } else if (action === "list") {
         void loadCampaigns();
       } else if (action === "copy") {
@@ -380,11 +491,15 @@
     document.addEventListener("submit", (event) => {
       const createForm = event.target.matches?.("[data-online-campaign-form]");
       const joinForm = event.target.matches?.("[data-online-campaign-join-form]");
-      if (!createForm && !joinForm) return;
+      const editForm = event.target.matches?.("[data-online-campaign-edit-form]");
+      const deleteForm = event.target.matches?.("[data-online-campaign-delete-form]");
+      if (!createForm && !joinForm && !editForm && !deleteForm) return;
       event.preventDefault();
       if (state.busy || !service) return;
       if (createForm) void createCampaign(event.target);
-      else void joinCampaign(event.target);
+      else if (joinForm) void joinCampaign(event.target);
+      else if (editForm) void updateCampaign(event.target);
+      else void deleteCampaign(event.target);
     });
 
     document.addEventListener("keydown", (event) => {
@@ -429,6 +544,7 @@
     friendlyCampaignMessage,
     normalizedCampaign,
     normalizedJoinResult,
+    normalizedDeleteResult,
     createCampaignService,
     membershipSummary,
     campaignDialogHtml,

@@ -7,13 +7,15 @@ Nesta fase, uma pessoa autenticada pode criar e consultar somente as campanhas q
 - O navegador envia apenas nome e descrição.
 - O banco define `owner_id` a partir da sessão autenticada.
 - O banco gera um código no formato `MRF-XXXX-XX` com 30 bits de aleatoriedade.
-- A chave pública não pode escolher `owner_id`, escolher `join_code`, editar ou excluir campanhas.
+- A chave pública não pode escolher `owner_id`, escolher `join_code` nem escrever diretamente na tabela.
+- Somente o proprietário autenticado pode editar nome/descrição ou excluir a campanha pelas operações protegidas do banco.
+- Excluir exige a confirmação exata do nome. As fichas vinculadas são preservadas sem campanha; participantes, rolagens, histórico e sessões da campanha são removidos.
 - O código de convite identifica uma campanha, mas não concede privilégios administrativos.
 - A entrada por código é uma operação autenticada do banco; o navegador não recebe acesso direto para inserir participantes.
 
 ## Interface
 
-Após o login, o botão **Campanhas** aparece no cabeçalho. A janela permite listar campanhas próprias, criar uma campanha e copiar o código recebido.
+Após o login, o botão **Campanhas** aparece no cabeçalho. A janela permite listar campanhas, criar, editar ou excluir as campanhas próprias e copiar o código recebido.
 
 A ficha de personagem continua salva localmente e nenhuma regra de Marufia foi alterada.
 
@@ -29,7 +31,7 @@ A ficha de personagem continua salva localmente e nenhuma regra de Marufia foi a
 
 - O papel atual é consultado exclusivamente pelo par `(campaign_id, user_id)` em `campaign_members`.
 - Uma mesma conta pode ser `gm` em uma campanha e `player` em outra.
-- Ser proprietário não é mais a policy de leitura: a campanha é visível quando existe um vínculo do usuário.
+- A campanha é visível quando existe um vínculo do usuário; durante a criação, o proprietário também lê a própria linha antes de o vínculo automático terminar.
 - `gm` pode consultar todos os participantes da campanha; os demais papéis veem o próprio vínculo.
 - Nenhum campo de papel foi adicionado a `profiles`, metadata ou ao estado da ficha.
 

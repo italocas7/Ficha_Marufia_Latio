@@ -2,7 +2,7 @@
   const api = factory();
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.MARUFIA_AUTH = api;
-  if (root?.document) Promise.resolve().then(() => api.init(root.document, root.MARUFIA_SUPABASE));
+  if (root?.document) Promise.resolve().then(() => api.init(root.document, root.MARUFIA_SUPABASE, root.MARUFIA_ONLINE_CONFIG));
 })(typeof window !== "undefined" ? window : globalThis, function createMarufiaAuthApi() {
   "use strict";
 
@@ -35,6 +35,14 @@
     return Object.freeze({ email, password, displayName });
   }
 
+  function validateConfirmationEmail(value) {
+    const email = cleanText(value, 320).toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw authError("LAT-AUTH-INPUT-004", "Informe um email válido para reenviar a confirmação.");
+    }
+    return email;
+  }
+
   function friendlyAuthMessage(error) {
     if (error?.userMessage) return error.userMessage;
     const detail = `${error?.code ?? ""} ${error?.message ?? ""}`.toLowerCase();
@@ -64,8 +72,12 @@
     };
   }
 
-  function createAuthService(client) {
+  function createAuthService(client, options = {}) {
     if (!client?.auth) throw authError("LAT-AUTH-CLIENT-001", "O serviço de conta não está disponível.");
+    const emailRedirectTo = String(options.emailRedirectTo ?? options.siteUrl ?? "").trim();
+    if (emailRedirectTo && !/^https:\/\//i.test(emailRedirectTo)) {
+      throw authError("LAT-AUTH-CLIENT-002", "O endereço de confirmação da conta é inválido.");
+    }
 
     async function snapshot(session) {
       if (!session?.user) return { session: null, user: null, profile: null, profileWarning: "" };
@@ -98,10 +110,12 @@
 
     async function signUp(input) {
       const credentials = validateAuthInput(input, "signup");
+      const signUpOptions = { data: { display_name: credentials.displayName } };
+      if (emailRedirectTo) signUpOptions.emailRedirectTo = emailRedirectTo;
       const result = await client.auth.signUp({
         email: credentials.email,
         password: credentials.password,
-        options: { data: { display_name: credentials.displayName } },
+        options: signUpOptions,
       });
       if (result.error) throw authError("LAT-AUTH-SIGNUP-001", friendlyAuthMessage(result.error));
       if (!result.data?.session) {
@@ -127,6 +141,22 @@
       return snapshot(result.data?.session ?? null);
     }
 
+    async function resendConfirmation(input = {}) {
+      if (typeof client.auth.resend !== "function") {
+        throw authError("LAT-AUTH-RESEND-CLIENT-001", "O reenvio da confirmação não está disponível.");
+      }
+      const email = validateConfirmationEmail(input.email);
+      const resendOptions = {};
+      if (emailRedirectTo) resendOptions.emailRedirectTo = emailRedirectTo;
+      const result = await client.auth.resend({
+        type: "signup",
+        email,
+        options: resendOptions,
+      });
+      if (result.error) throw authError("LAT-AUTH-RESEND-001", friendlyAuthMessage(result.error));
+      return Object.freeze({ email });
+    }
+
     async function signOut() {
       const result = await client.auth.signOut();
       if (result.error) throw authError("LAT-AUTH-SIGNOUT-001", friendlyAuthMessage(result.error));
@@ -143,7 +173,7 @@
       return result.data?.subscription ?? null;
     }
 
-    return Object.freeze({ restore, signUp, signIn, signOut, onChange });
+    return Object.freeze({ restore, signUp, signIn, resendConfirmation, signOut, onChange });
   }
 
   function escapeHtml(value) {
@@ -193,11 +223,12 @@
         <div class="field"><label for="authPassword">Senha</label><input id="authPassword" name="password" type="password" autocomplete="${signup ? "new-password" : "current-password"}" minlength="8" required></div>
         <p class="muted small">Use pelo menos 8 caracteres. A senha é enviada diretamente ao Supabase e não entra na ficha exportada.</p>
         <button class="button auth-submit" type="submit" ${state.busy ? "disabled" : ""}>${state.busy ? "Aguarde…" : signup ? "Criar conta" : "Entrar"}</button>
+        ${signup ? "" : `<button class="ghost" type="button" data-online-auth-action="resend-confirmation" ${state.busy ? "disabled" : ""}>Reenviar email de confirmação</button>`}
       </form>
     </div>`;
   }
 
-  function init(document, supabaseTools) {
+  function init(document, supabaseTools, projectConfig = {}) {
     const accountButton = document.querySelector("#onlineAccountButton");
     const accountLabel = document.querySelector("#onlineAccountLabel");
     const modalRoot = document.querySelector("#modalRoot");
@@ -270,7 +301,7 @@
           : await service.signIn(values);
         if (result.pendingConfirmation) {
           state.mode = "login";
-          applySnapshot(result, `Enviamos uma confirmação para ${result.email}. Confirme o email e depois entre.`, "success", "PENDING_CONFIRMATION");
+          applySnapshot(result, `Enviamos uma confirmação para ${result.email}. Abra o link; ele confirma a conta no site público. Depois, volte e entre.`, "success", "PENDING_CONFIRMATION");
         } else {
           applySnapshot(result, state.mode === "signup" ? "Conta criada e conectada." : "Conta conectada.", "success", "SIGNED_IN");
         }
@@ -285,6 +316,18 @@
       try {
         state.mode = "login";
         applySnapshot(await service.signOut(), "Sessão encerrada neste dispositivo.", "success", "SIGNED_OUT");
+      } catch (error) {
+        applySnapshot({}, friendlyAuthMessage(error), "error");
+      }
+    }
+
+    async function resendConfirmation() {
+      const email = cleanText(document.querySelector("#authEmail")?.value, 320);
+      state = { ...state, busy: true, message: "", messageKind: "", email };
+      renderDialog();
+      try {
+        const result = await service.resendConfirmation({ email });
+        applySnapshot({ email: result.email }, `Enviamos um novo email para ${result.email}. Use o link mais recente para confirmar a conta.`, "success", "CONFIRMATION_RESENT");
       } catch (error) {
         applySnapshot({}, friendlyAuthMessage(error), "error");
       }
@@ -311,6 +354,8 @@
         renderDialog();
       } else if (action === "logout") {
         void logout();
+      } else if (action === "resend-confirmation") {
+        if (!state.busy && service) void resendConfirmation();
       } else if (action === "close") {
         dialogOpen = false;
         modalRoot.innerHTML = "";
@@ -330,7 +375,7 @@
 
     try {
       const client = supabaseTools?.getSupabaseClient?.();
-      service = client ? createAuthService(client) : null;
+      service = client ? createAuthService(client, { emailRedirectTo: projectConfig.siteUrl }) : null;
     } catch (error) {
       state.message = friendlyAuthMessage(error);
       state.messageKind = "error";
@@ -353,6 +398,7 @@
   return {
     PROFILE_COLUMNS,
     validateAuthInput,
+    validateConfirmationEmail,
     friendlyAuthMessage,
     fallbackProfile,
     createAuthService,

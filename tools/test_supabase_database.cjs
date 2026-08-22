@@ -272,6 +272,46 @@ async function requireAnonymousSessionLifecycleBlocked(config) {
   }));
 }
 
+async function requireAnonymousCampaignManagementBlocked(config) {
+  const requests = [
+    {
+      operation: "update_campaign",
+      body: {
+        p_campaign_id: "00000000-0000-4000-8000-000000000000",
+        p_name: "Alteração anônima bloqueada",
+        p_description: "",
+      },
+    },
+    {
+      operation: "delete_campaign",
+      body: {
+        p_campaign_id: "00000000-0000-4000-8000-000000000000",
+        p_confirmation_name: "Exclusão anônima bloqueada",
+      },
+    },
+  ];
+  await Promise.all(requests.map(async ({ operation, body: requestBody }) => {
+    const response = await fetch(
+      `${config.supabaseUrl}/rest/v1/rpc/${operation}`,
+      {
+        method: "POST",
+        headers: { apikey: config.publishableKey, "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+      },
+    );
+    const body = await response.text();
+    let errorCode = "";
+    try {
+      errorCode = String(JSON.parse(body).code || "");
+    } catch {
+      // O erro sanitizado abaixo não inclui credenciais nem conteúdo do banco.
+    }
+    if (![401, 403].includes(response.status) || errorCode !== "42501") {
+      throw new Error(`${operation}: proteção inesperada (HTTP ${response.status}, código ${errorCode || "ausente"}).`);
+    }
+  }));
+}
+
 (async () => {
   const config = configTools.readPublicConfig(projectConfig);
   await Promise.all([
@@ -284,6 +324,7 @@ async function requireAnonymousSessionLifecycleBlocked(config) {
     requireAnonymousGmHpBlocked(config),
     requireAnonymousGmActionsBlocked(config),
     requireAnonymousSessionLifecycleBlocked(config),
+    requireAnonymousCampaignManagementBlocked(config),
   ]);
   console.log(`Banco Supabase aprovado: ${tables.length} tabelas bloqueadas, entrada autenticada e gravações anônimas negadas.`);
 })().catch((error) => {

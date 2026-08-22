@@ -285,6 +285,9 @@
         emit("SIGNED_IN", session);
         return { data: { user, session }, error: null };
       },
+      async resend() {
+        return { data: {}, error: null };
+      },
       async signOut() {
         write(SESSION_KEY, null);
         emit("SIGNED_OUT", null);
@@ -540,6 +543,45 @@
           write(PRESENCE_KEY, rows);
           emitPresenceChange(presence, eventType);
           return { data: presence.seen_at, error: null };
+        }
+        if (name === "update_campaign") {
+          const campaigns = read(CAMPAIGNS_KEY) ?? [];
+          const campaign = campaigns.find((item) => (
+            item.id === args?.p_campaign_id && item.owner_id === session.user.id
+          ));
+          if (!campaign) return { data: null, error: { code: "42501", message: "campaign owner required" } };
+          const nameValue = String(args?.p_name ?? "").trim();
+          const description = String(args?.p_description ?? "").trim();
+          if (!nameValue || nameValue.length > 100 || description.length > 5000) {
+            return { data: null, error: { code: "22023", message: "invalid campaign fields" } };
+          }
+          campaign.name = nameValue;
+          campaign.description = description;
+          campaign.updated_at = new Date().toISOString();
+          write(CAMPAIGNS_KEY, campaigns);
+          return { data: JSON.parse(JSON.stringify(campaign)), error: null };
+        }
+        if (name === "delete_campaign") {
+          const campaigns = read(CAMPAIGNS_KEY) ?? [];
+          const campaign = campaigns.find((item) => (
+            item.id === args?.p_campaign_id && item.owner_id === session.user.id
+          ));
+          if (!campaign) return { data: null, error: { code: "42501", message: "campaign owner required" } };
+          if (String(args?.p_confirmation_name ?? "").trim() !== campaign.name) {
+            return { data: null, error: { code: "22023", message: "campaign name confirmation mismatch" } };
+          }
+          write(CAMPAIGNS_KEY, campaigns.filter((item) => item.id !== campaign.id));
+          write(MEMBERSHIPS_KEY, (read(MEMBERSHIPS_KEY) ?? []).filter((item) => item.campaign_id !== campaign.id));
+          write(ROLLS_KEY, (read(ROLLS_KEY) ?? []).filter((item) => item.campaign_id !== campaign.id));
+          write(PRESENCE_KEY, (read(PRESENCE_KEY) ?? []).filter((item) => item.campaign_id !== campaign.id));
+          write(EVENTS_KEY, (read(EVENTS_KEY) ?? []).filter((item) => item.campaign_id !== campaign.id));
+          write(SESSIONS_KEY, (read(SESSIONS_KEY) ?? []).filter((item) => item.campaign_id !== campaign.id));
+          const characters = read(CHARACTERS_KEY) ?? [];
+          for (const character of characters) {
+            if (character.campaign_id === campaign.id) character.campaign_id = null;
+          }
+          write(CHARACTERS_KEY, characters);
+          return { data: [{ campaign_id: campaign.id, campaign_name: campaign.name }], error: null };
         }
         if (name !== "join_campaign") return { data: null, error: { code: "PGRST202", message: "function not found" } };
         const code = String(args?.p_join_code ?? "").trim().toUpperCase();

@@ -32,7 +32,7 @@
     "test:database": "node --test tests/js/database_migration.test.cjs",
     "test:profiles": "node --test tests/js/profile_migration.test.cjs",
     "test:auth": "node --test tests/js/auth.test.cjs",
-    "test:campaigns": "node --test tests/js/campaigns.test.cjs tests/js/campaign_migration.test.cjs tests/js/campaign_membership_migration.test.cjs tests/js/campaign_role_migration.test.cjs tests/js/campaign_join_migration.test.cjs",
+    "test:campaigns": "node --test tests/js/campaigns.test.cjs tests/js/campaign_migration.test.cjs tests/js/campaign_membership_migration.test.cjs tests/js/campaign_role_migration.test.cjs tests/js/campaign_join_migration.test.cjs tests/js/campaign_management_migration.test.cjs",
     "test:characters": "node --test tests/js/character_schema_migration.test.cjs tests/js/character_lifecycle_migration.test.cjs tests/js/character_remote_save_migration.test.cjs tests/js/character_realtime_migration.test.cjs tests/js/character_conflict_migration.test.cjs tests/js/characters.test.cjs tests/js/character_import.test.cjs tests/js/character_realtime.test.cjs tests/js/character_conflicts.test.cjs tests/js/character_sync.test.cjs tests/js/state.test.cjs",
     "test:gm-panel": "node --test tests/js/character_summary.test.cjs tests/js/gm_presence_migration.test.cjs tests/js/gm_presence_status_migration.test.cjs tests/js/gm_hp_migration.test.cjs tests/js/gm_hp_role_fix_migration.test.cjs tests/js/gm_actions_migration.test.cjs tests/js/campaign_history_migration.test.cjs tests/js/campaign_sessions_migration.test.cjs tests/js/gm_panel.test.cjs tests/js/gm_view.test.cjs",
     "test:rls": "node --test tests/js/row_level_security_migration.test.cjs",

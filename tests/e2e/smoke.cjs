@@ -367,6 +367,34 @@ async function exercise(page, url, viewport) {
   assert.match(await ownedCampaign.innerText(), /1 participante/);
   assert.match(await ownedCampaign.innerText(), /Você: Mæstre/);
 
+  await ownedCampaign.getByRole("button", { name: "Editar campanha" }).click();
+  await page.getByLabel("Nome da campanha").fill("A Coroa Restaurada");
+  await page.getByLabel("Descrição").fill("Segundo arco da campanha.");
+  await page.getByRole("button", { name: "Salvar alterações" }).click();
+  const editedCampaign = page.locator(".campaign-card").filter({ hasText: "A Coroa Restaurada" });
+  await editedCampaign.waitFor({ state: "visible" });
+  assert.match(await editedCampaign.innerText(), /Segundo arco da campanha/);
+
+  await editedCampaign.getByRole("button", { name: "Editar campanha" }).click();
+  await page.getByLabel("Nome da campanha").fill("A Coroa Partida");
+  await page.getByLabel("Descrição").fill("Campanha de teste do Mæstre.");
+  await page.getByRole("button", { name: "Salvar alterações" }).click();
+  await ownedCampaign.waitFor({ state: "visible" });
+
+  await page.getByRole("button", { name: "Nova campanha" }).click();
+  await page.getByLabel("Nome da campanha").fill("Campanha descartável");
+  await page.getByRole("button", { name: "Criar campanha" }).click();
+  const disposableCampaign = page.locator(".campaign-card").filter({ hasText: "Campanha descartável" });
+  await disposableCampaign.waitFor({ state: "visible" });
+  await disposableCampaign.getByRole("button", { name: "Excluir campanha" }).click();
+  assert.match(await page.locator("[data-online-campaign-delete-form]").locator("..").innerText(), /fichas dos personagens serão preservadas/i);
+  await page.getByLabel(/Digite Campanha descartável/).fill("nome incorreto");
+  await page.getByRole("button", { name: "Excluir permanentemente" }).click();
+  assert.match(await page.locator("[data-online-campaign-modal]").getByRole("alert").last().innerText(), /não corresponde/i);
+  await page.getByLabel(/Digite Campanha descartável/).fill("Campanha descartável");
+  await page.getByRole("button", { name: "Excluir permanentemente" }).click();
+  await disposableCampaign.waitFor({ state: "detached" });
+
   await page.waitForFunction(() => {
     const local = window.MARUFIA_APP_BRIDGE.snapshot();
     const remote = JSON.parse(localStorage.getItem("marufia-e2e-characters") || "[]")[0]?.state;

@@ -27,6 +27,7 @@ test("ships only the configured public project identity", () => {
   assert.match(config.supabaseUrl, /^https:\/\/[a-z]+\.supabase\.co$/);
   assert.match(config.publishableKey, /^sb_publishable_/);
   assert.doesNotMatch(config.publishableKey, /^sb_secret_/);
+  assert.equal(projectConfig.siteUrl, "https://ficha-marufia-latio.italocas7.chatgpt.site");
 });
 
 test("keeps online mode disabled when no public config exists", () => {

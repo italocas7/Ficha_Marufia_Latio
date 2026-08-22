@@ -1211,6 +1211,24 @@ body[data-gm-view="true"] textarea:disabled {
   justify-content: flex-end;
 }
 
+.campaign-management-actions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 4px;
+}
+
+.campaign-delete-warning {
+  background: color-mix(in srgb, var(--danger) 12%, var(--panel));
+  border: 1px solid color-mix(in srgb, var(--danger) 48%, var(--line));
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.campaign-delete-warning p {
+  margin: 8px 0 0;
+}
+
 .campaign-join-code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-weight: 800;

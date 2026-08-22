@@ -8,5 +8,6 @@
   return Object.freeze({
     supabaseUrl: "https://nuczqjyahusjyvepqthx.supabase.co",
     publishableKey: "sb_publishable_TVAaL-DVqiamHTHtfaD9mQ_KLrkQRBD",
+    siteUrl: "https://ficha-marufia-latio.italocas7.chatgpt.site",
   });
 });

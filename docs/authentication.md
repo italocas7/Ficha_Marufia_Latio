@@ -10,6 +10,8 @@ A autenticação usa o cliente oficial do Supabase já configurado e não bloque
 - leitura do próprio registro em `profiles`;
 - logout somente deste dispositivo;
 - mensagem específica quando o email ainda precisa ser confirmado;
+- confirmação enviada para o endereço público do Marufia, sem depender do `127.0.0.1` do computador do Mæstre;
+- reenvio do email de confirmação para contas que receberam um link antigo ou expirado;
 - continuidade da ficha local quando o serviço online estiver indisponível.
 
 ## Integração posterior
