@@ -13,7 +13,8 @@ import build as offline_build
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 STAGE = ROOT / "dist.next"
-SITE_FILES = [*dict.fromkeys(offline_build.REQUIRED_FILES), "server/index.js"]
+CLIENT_FILES = [*dict.fromkeys(offline_build.REQUIRED_FILES)]
+SERVER_ENTRY = "server/index.js"
 
 
 def checked_remove_tree(path: Path) -> None:
@@ -27,11 +28,15 @@ def checked_remove_tree(path: Path) -> None:
 def copy_site() -> None:
     checked_remove_tree(STAGE)
     STAGE.mkdir()
-    for relative in SITE_FILES:
+    for relative in CLIENT_FILES:
         source = ROOT / relative
-        target = STAGE / relative
+        target = STAGE / "client" / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
+    server_source = ROOT / SERVER_ENTRY
+    server_target = STAGE / SERVER_ENTRY
+    server_target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(server_source, server_target)
     checked_remove_tree(DIST)
     try:
         STAGE.rename(DIST)
@@ -41,7 +46,13 @@ def copy_site() -> None:
 
 
 def validate_site() -> None:
-    missing = [relative for relative in SITE_FILES if not (DIST / relative).is_file()]
+    missing = [
+        f"client/{relative}"
+        for relative in CLIENT_FILES
+        if not (DIST / "client" / relative).is_file()
+    ]
+    if not (DIST / SERVER_ENTRY).is_file():
+        missing.append(SERVER_ENTRY)
     if missing:
         raise RuntimeError(f"Arquivos ausentes no pacote web: {', '.join(missing)}")
     subprocess.run(
@@ -50,7 +61,7 @@ def validate_site() -> None:
         check=True,
     )
     for page in ["index.html", "gm_view.html"]:
-        html = (DIST / page).read_text(encoding="utf-8")
+        html = (DIST / "client" / page).read_text(encoding="utf-8")
         if "Ficha de Marufia" not in html:
             raise RuntimeError(f"Página inválida no pacote web: {page}")
 

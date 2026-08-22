@@ -20,6 +20,14 @@ test("builds the hosted package only from the validated runtime files", () => {
   assert.match(source, /subprocess\.run\(\[sys\.executable, "tools\/build\.py"\]/);
   assert.match(source, /resolved\.parent != ROOT\.resolve\(\)/);
   assert.match(source, /"server\/index\.js"/);
+  assert.match(source, /STAGE \/ "client" \/ relative/);
+});
+
+test("keeps browser files in dist/client and the Worker in dist/server", () => {
+  const source = fs.readFileSync(path.join(root, "tools", "test_site_package.cjs"), "utf8");
+  assert.match(source, /path\.join\(dist, "client"\)/);
+  assert.match(source, /MARUFIA_E2E_ROOT: "dist\/client"/);
+  assert.match(source, /path\.join\(dist, "server", "index\.js"\)/);
 });
 
 test("serves static assets first and falls back to the sheet entry page", () => {

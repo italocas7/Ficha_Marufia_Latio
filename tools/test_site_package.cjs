@@ -6,16 +6,20 @@ const { spawnSync } = require("node:child_process");
 
 const root = path.resolve(__dirname, "..");
 const dist = path.join(root, "dist");
+const client = path.join(dist, "client");
 
-for (const relative of ["index.html", "gm_view.html", "server/index.js"]) {
-  if (!fs.existsSync(path.join(dist, relative))) {
-    throw new Error(`Pacote web ausente ou incompleto: ${relative}. Execute pnpm build:site.`);
+for (const relative of ["index.html", "gm_view.html", "src/online/project.js", "og.png"]) {
+  if (!fs.existsSync(path.join(client, relative))) {
+    throw new Error(`Pacote web ausente ou incompleto: client/${relative}. Execute pnpm build:site.`);
   }
+}
+if (!fs.existsSync(path.join(dist, "server", "index.js"))) {
+  throw new Error("Pacote web ausente ou incompleto: server/index.js. Execute pnpm build:site.");
 }
 
 const result = spawnSync(process.execPath, [path.join(root, "tests", "e2e", "smoke.cjs")], {
   cwd: root,
-  env: { ...process.env, MARUFIA_E2E_ROOT: "dist" },
+  env: { ...process.env, MARUFIA_E2E_ROOT: "dist/client" },
   stdio: "inherit",
 });
 
