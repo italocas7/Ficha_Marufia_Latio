@@ -437,6 +437,17 @@ body:not(.dark) {
   background: color-mix(in srgb, var(--warn) 11%, var(--panel));
 }
 
+.online-error-toast {
+  display: grid;
+  gap: 4px;
+  max-width: min(420px, calc(100vw - 32px));
+}
+
+.online-error-toast strong,
+.online-error-toast span {
+  overflow-wrap: anywhere;
+}
+
 .character-import-summary {
   grid-template-columns: minmax(0, 1fr) auto;
   border-left: 4px solid var(--online-gold);

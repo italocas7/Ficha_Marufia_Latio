@@ -248,6 +248,13 @@ async function exercise(page, url, viewport) {
   await page.waitForFunction(() => document.querySelector("#onlineSyncStatus")?.dataset.syncState === "syncing");
   await page.waitForFunction(() => document.querySelector("#onlineSyncStatus")?.dataset.syncState === "error");
   assert.equal((await syncStatus.innerText()).trim(), "Erro de sincronização");
+  await page.waitForFunction(() => document.querySelector('[data-online-error-key="sync:save"]'));
+  const safeSyncError = await page.locator('[data-online-error-key="sync:save"]').innerText();
+  assert.match(safeSyncError, /Não foi possível sincronizar sua ficha\./);
+  assert.match(safeSyncError, /Os dados continuam salvos neste computador\./);
+  const safeOnlineLog = await page.evaluate(() => window.MARUFIA_ERRORS?.entries?.() ?? []);
+  assert.ok(safeOnlineLog.some((entry) => entry.scope === "sync" && entry.operation === "save" && entry.kind === "network"));
+  assert.doesNotMatch(JSON.stringify(safeOnlineLog), /senha-segura|password|bearer|service.?role|refresh.?token/i);
   const failedSave = await page.evaluate(() => ({
     local: JSON.parse(localStorage.getItem("marufia-latio-state-v1") || "null"),
     remote: JSON.parse(localStorage.getItem("marufia-e2e-characters") || "[]")[0],
@@ -342,7 +349,7 @@ async function exercise(page, url, viewport) {
   await page.getByRole("button", { name: "Entrar com código" }).click();
   await page.getByLabel("Código da campanha").fill("invalido");
   await page.locator("#onlineCampaignJoinForm").getByRole("button", { name: "Entrar na campanha" }).click();
-  assert.match(await page.getByRole("alert").innerText(), /MRF-XXXX-XX/);
+  assert.match(await page.locator("[data-online-campaign-modal]").getByRole("alert").innerText(), /MRF-XXXX-XX/);
   await page.getByLabel("Código da campanha").fill("mrf-play-er");
   await page.locator("#onlineCampaignJoinForm").getByRole("button", { name: "Entrar na campanha" }).click();
   const invitedCampaign = page.locator(".campaign-card").filter({ hasText: "Campanha Convidada" });

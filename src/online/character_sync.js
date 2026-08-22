@@ -10,6 +10,7 @@
     root.MARUFIA_CHARACTER_REALTIME,
     root.MARUFIA_APP_BRIDGE,
     root.LATIO_STORAGE,
+    root.MARUFIA_ERRORS,
   ));
 })(typeof window !== "undefined" ? window : globalThis, function createMarufiaCharacterSyncApi(root) {
   "use strict";
@@ -538,6 +539,7 @@
     realtimeService,
     queue,
     statusController,
+    errorTools,
     view,
   }) {
     let subscription = null;
@@ -619,13 +621,21 @@
           (status) => {
             setChannelState(status);
             if (status === "SUBSCRIBED") statusController.realtimeSuccess?.();
-            else if (["CHANNEL_ERROR", "TIMED_OUT", "INVALID_PAYLOAD"].includes(status)) statusController.realtimeError?.();
+            else if (["CHANNEL_ERROR", "TIMED_OUT", "INVALID_PAYLOAD"].includes(status)) {
+              statusController.realtimeError?.();
+              errorTools?.report?.(
+                Object.assign(new Error("Falha do canal em tempo real."), { code: "LAT-REALTIME-CHANNEL-001" }),
+                { scope: "realtime", operation: "subscribe", show: false },
+                view,
+              );
+            }
           },
         );
-      } catch {
+      } catch (error) {
         if (!destroyed && accountButton?.dataset?.authState === "online") {
           setChannelState("channel_error");
           statusController.realtimeError?.();
+          errorTools?.report?.(error, { scope: "realtime", operation: "subscribe", show: false }, view);
         }
       }
     }
@@ -658,7 +668,7 @@
     });
   }
 
-  function init(document, supabaseTools, characterTools, importTools, realtimeTools, appBridge, storage) {
+  function init(document, supabaseTools, characterTools, importTools, realtimeTools, appBridge, storage, errorTools) {
     const accountButton = document.querySelector("#onlineAccountButton");
     const syncStatus = document.querySelector("#onlineSyncStatus");
     if (!accountButton || accountButton.dataset.characterSyncInitialized === "true"
@@ -675,6 +685,7 @@
     if (!client) return null;
 
     const view = document.defaultView ?? root ?? globalThis;
+    const onlineErrors = errorTools ?? view.MARUFIA_ERRORS;
     const statusController = createSyncStatusController(syncStatus, accountButton, view);
     const service = characterTools.createCharacterService(client, view.LATIO_STATE);
     const realtimeService = typeof realtimeTools?.createCharacterRealtimeService === "function"
@@ -696,7 +707,10 @@
         rememberSyncedCharacter(storage, target.userId, character);
         statusController.success();
       },
-      onError: () => statusController.error(),
+      onError: (error) => {
+        statusController.error();
+        onlineErrors?.report?.(error, { scope: "sync", operation: "save" }, view);
+      },
       onConflict: (conflict) => {
         statusController.error();
         dispatchCharacterConflict(view, conflict);
@@ -728,6 +742,7 @@
         realtimeService,
         queue,
         statusController,
+        errorTools: onlineErrors,
         view,
       })
       : null;
@@ -749,8 +764,9 @@
         await queue.enqueue(snapshot);
         await queue.flush();
         return !pendingOfflineSave(storage, userId, characterId);
-      } catch {
+      } catch (error) {
         statusController.error();
+        onlineErrors?.report?.(error, { scope: "sync", operation: "resume" }, view);
         return false;
       } finally {
         resumingOffline = false;

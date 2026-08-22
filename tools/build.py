@@ -26,6 +26,7 @@ SCRIPT_ORDER = [
     "src/core/rules.js",
     "src/core/character_summary.js",
     "src/core/rolls.js",
+    "src/online/errors.js",
     "app.js",
     "src/online/auth.js",
     "src/online/campaigns.js",
