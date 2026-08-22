@@ -61,5 +61,6 @@ test("ships the generated Marufia icon set and stable desktop commands", () => {
   }
   assert.equal(packageJson.scripts["dev:desktop"], "tauri dev");
   assert.equal(packageJson.scripts["build:desktop"], "tauri build --no-bundle");
+  assert.equal(packageJson.scripts["build:windows"], "node tools/build_windows.cjs");
   assert.equal(packageJson.scripts["test:tauri-config"], "node --test tests/js/tauri_config.test.cjs");
 });

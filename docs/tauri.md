@@ -18,6 +18,7 @@ A janela não recebe nenhum comando IPC nativo. Não há plugins de arquivos, sh
 
 - `pnpm test:tauri-config`: valida identidade, janela, ícones, política de conteúdo e ausência de permissões nativas;
 - `pnpm dev:desktop`: abre a ficha em uma janela Tauri para desenvolvimento;
-- `pnpm build:desktop`: gera o executável Windows sem criar instalador.
+- `pnpm build:desktop`: gera o executável Windows sem criar instalador;
+- `pnpm build:windows`: gera a distribuição release e o instalador NSIS validados na Fase 44.
 
-O instalador NSIS será produzido e validado somente na Fase 44.
+Os detalhes da distribuição e da verificação ficam em `docs/windows-build.md`.

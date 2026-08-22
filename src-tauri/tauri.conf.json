@@ -31,11 +31,31 @@
     "targets": [
       "nsis"
     ],
+    "publisher": "Marufia Online",
+    "category": "RolePlayingGame",
+    "shortDescription": "Ficha multiplayer para o sistema Mundo de Marufia.",
+    "longDescription": "Aplicativo Windows da ficha Marufia Online, com campanhas, personagens e rolagens multiplayer.",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.ico"
-    ]
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper",
+        "silent": true
+      },
+      "nsis": {
+        "installerIcon": "icons/icon.ico",
+        "uninstallerIcon": "icons/icon.ico",
+        "installMode": "currentUser",
+        "languages": [
+          "PortugueseBR"
+        ],
+        "displayLanguageSelector": false,
+        "startMenuFolder": "Marufia Online"
+      }
+    }
   }
 }
