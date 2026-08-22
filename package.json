@@ -17,6 +17,10 @@
     "test:supabase": "node tools/test_supabase_connection.cjs",
     "test:realtime:remote": "node tools/test_realtime_connection.cjs",
     "test:tauri-readiness": "node tools/test_tauri_readiness.cjs",
+    "test:tauri-config": "node --test tests/js/tauri_config.test.cjs",
+    "dev:desktop": "tauri dev",
+    "build:desktop": "tauri build --no-bundle",
+    "tauri": "tauri",
     "test:database": "node --test tests/js/database_migration.test.cjs",
     "test:profiles": "node --test tests/js/profile_migration.test.cjs",
     "test:auth": "node --test tests/js/auth.test.cjs",
@@ -32,6 +36,7 @@
     "supabase:version": "supabase --version"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "2.11.4",
     "playwright": "1.61.1",
     "supabase": "2.115.0"
   },

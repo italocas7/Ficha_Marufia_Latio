@@ -11,11 +11,11 @@ const readiness = require("../../tools/test_tauri_readiness.cjs");
 const liveSite = require("../../tools/test_live_site.cjs");
 const realtime = require("../../tools/test_realtime_connection.cjs");
 
-test("keeps Tauri absent until the web readiness gate passes", () => {
-  assert.equal(fs.existsSync(path.join(root, "src-tauri")), false);
-  assert.doesNotThrow(() => readiness.assertTauriNotStarted());
-  const dependencies = { ...packageJson.dependencies, ...packageJson.devDependencies };
-  assert.equal(Object.keys(dependencies).some((name) => name.startsWith("@tauri-apps/")), false);
+test("keeps the web readiness gate active after the minimal Tauri foundation starts", () => {
+  assert.equal(fs.existsSync(path.join(root, "src-tauri")), true);
+  assert.doesNotThrow(() => readiness.assertTauriScope());
+  assert.equal(packageJson.devDependencies["@tauri-apps/cli"], "2.11.4");
+  assert.equal(Object.keys(packageJson.dependencies).some((name) => name.startsWith("@tauri-apps/")), false);
 });
 
 test("orders the Phase 42 gate from sheet through backend and Realtime", () => {

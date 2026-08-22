@@ -17,15 +17,18 @@ const STEPS = Object.freeze([
   ["Realtime", node, ["tools/test_realtime_connection.cjs"]],
 ]);
 
-function assertTauriNotStarted() {
-  if (fs.existsSync(path.join(root, "src-tauri"))) {
-    throw new Error("A Fase 42 não permite criar src-tauri antes do portão web.");
-  }
+function assertTauriScope() {
+  const tauriRoot = path.join(root, "src-tauri");
+  if (!fs.existsSync(tauriRoot)) throw new Error("A estrutura Tauri autorizada pela Fase 43 está ausente.");
   const dependencies = { ...packageJson.dependencies, ...packageJson.devDependencies };
-  const tauriDependency = Object.keys(dependencies).find((name) => name.startsWith("@tauri-apps/"));
-  if (tauriDependency) throw new Error(`Dependência Tauri antecipada: ${tauriDependency}.`);
+  const tauriDependency = Object.keys(dependencies).find(
+    (name) => name.startsWith("@tauri-apps/") && name !== "@tauri-apps/cli",
+  );
+  if (tauriDependency) throw new Error(`Integração nativa não autorizada: ${tauriDependency}.`);
   const lockfile = fs.readFileSync(path.join(root, "pnpm-lock.yaml"), "utf8");
-  if (/@tauri-apps\//i.test(lockfile)) throw new Error("O lockfile contém Tauri antes da Fase 43.");
+  const nativePackages = [...lockfile.matchAll(/@tauri-apps\/([a-z0-9-]+)/gi)].map((match) => match[1]);
+  const unexpected = nativePackages.find((name) => !name.startsWith("cli"));
+  if (unexpected) throw new Error(`Pacote nativo não autorizado no lockfile: @tauri-apps/${unexpected}.`);
 }
 
 function checkedCleanBuild(name) {
@@ -44,12 +47,12 @@ function runStep([label, command, args]) {
 }
 
 function main() {
-  assertTauriNotStarted();
+  assertTauriScope();
   checkedCleanBuild("dist");
   checkedCleanBuild("dist.next");
   try {
     for (const step of STEPS) runStep(step);
-    assertTauriNotStarted();
+    assertTauriScope();
     console.log("\nFase 42 aprovada: ficha, backend e Realtime estão prontos para iniciar Tauri.");
   } finally {
     checkedCleanBuild("dist");
@@ -66,4 +69,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { STEPS, assertTauriNotStarted, checkedCleanBuild, main };
+module.exports = { STEPS, assertTauriScope, checkedCleanBuild, main };

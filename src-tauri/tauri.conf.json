@@ -1,0 +1,41 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Marufia Online",
+  "version": "0.1.0",
+  "identifier": "com.marufia.online",
+  "build": {
+    "frontendDist": "../dist/client",
+    "beforeDevCommand": "pnpm build:site",
+    "beforeBuildCommand": "pnpm build:site"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Marufia Online",
+        "width": 1280,
+        "height": 760,
+        "minWidth": 900,
+        "minHeight": 600,
+        "center": true,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; connect-src 'self' https://nuczqjyahusjyvepqthx.supabase.co wss://nuczqjyahusjyvepqthx.supabase.co; img-src 'self' data: blob: https://ficha-marufia-latio.italocas7.chatgpt.site; style-src 'self' 'unsafe-inline'; script-src 'self'; worker-src 'self' blob:; font-src 'self' data:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ]
+  }
+}
