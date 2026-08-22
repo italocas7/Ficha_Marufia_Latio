@@ -21,4 +21,4 @@ O arquivo `src-tauri/target/release/bundle/windows-artifacts.json` registra vers
 4. Abra **Marufia Online** pelo menu Iniciar e repita o teste da ficha.
 5. Remova o aplicativo em **Configurações > Aplicativos instalados** quando desejar.
 
-A assinatura digital e o tratamento do aviso SmartScreen pertencem à Fase 45.
+O estado da assinatura digital e a orientação segura para o SmartScreen ficam em `docs/windows-security.md`.

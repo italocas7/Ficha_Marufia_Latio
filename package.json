@@ -21,6 +21,7 @@
     "dev:desktop": "tauri dev",
     "build:desktop": "tauri build --no-bundle",
     "build:windows": "node tools/build_windows.cjs",
+    "test:windows-security": "node tools/check_windows_security.cjs",
     "tauri": "tauri",
     "test:database": "node --test tests/js/database_migration.test.cjs",
     "test:profiles": "node --test tests/js/profile_migration.test.cjs",
