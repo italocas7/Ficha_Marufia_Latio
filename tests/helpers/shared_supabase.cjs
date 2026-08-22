@@ -99,15 +99,22 @@ class SharedChannel {
 }
 
 class SharedSupabaseServer {
-  constructor() {
-    this.campaigns = [];
-    this.memberships = [];
-    this.characters = [];
-    this.rolls = [];
+  constructor(seed = {}) {
+    const saved = seed && typeof seed === "object" ? seed : {};
+    this.campaigns = clone(Array.isArray(saved.campaigns) ? saved.campaigns : []);
+    this.memberships = clone(Array.isArray(saved.memberships) ? saved.memberships : []);
+    this.characters = clone(Array.isArray(saved.characters) ? saved.characters : []);
+    this.rolls = clone(Array.isArray(saved.rolls) ? saved.rolls : []);
     this.channels = new Set();
-    this.campaignSerial = 0;
-    this.characterSerial = 0;
-    this.clock = Date.parse("2026-08-21T12:00:00.000Z");
+    this.campaignSerial = this.campaigns.length;
+    this.characterSerial = this.characters.length;
+    const savedTimes = [...this.campaigns, ...this.memberships, ...this.characters, ...this.rolls]
+      .flatMap((row) => [row.created_at, row.updated_at, row.joined_at])
+      .map((value) => Date.parse(String(value ?? "")))
+      .filter(Number.isFinite);
+    this.clock = savedTimes.length
+      ? Math.max(...savedTimes) + 1_000
+      : Date.parse("2026-08-21T12:00:00.000Z");
   }
 
   clientFor(userId) {
@@ -390,8 +397,8 @@ class SharedSupabaseServer {
   }
 }
 
-function createSharedSupabase() {
-  return new SharedSupabaseServer();
+function createSharedSupabase(seed) {
+  return new SharedSupabaseServer(seed);
 }
 
 module.exports = {

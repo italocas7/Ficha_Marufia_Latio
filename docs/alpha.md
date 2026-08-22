@@ -27,6 +27,6 @@ O build oficial e a navegação real continuam sendo validados separadamente por
 
 ## Limite desta fase
 
-Até o fluxo do MVP da Fase 51 ser aprovado de ponta a ponta, não entram sistemas amplos de chat, mercado, mapa, áudio, vídeo, automação narrativa ou módulos adicionais de regras. A prioridade continua sendo estabilidade, segurança e preservação integral da ficha existente.
+O fluxo do MVP da Fase 51 é validado separadamente por `pnpm test:mvp`. A aprovação desse fluxo não inclui sistemas amplos de chat, mercado, mapa, áudio, vídeo, automação narrativa ou módulos adicionais de regras; qualquer expansão aguarda uma fase própria. A prioridade continua sendo estabilidade, segurança e preservação integral da ficha existente.
 
 O aplicativo Windows permanece sem assinatura digital nesta etapa. O aviso do SmartScreen e a conferência do SHA-256 continuam obrigatórios conforme a documentação de segurança.

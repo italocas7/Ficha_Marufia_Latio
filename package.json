@@ -9,6 +9,7 @@
     "test": "python -m unittest discover -s tests -p test_*.py && node --test tests/js/*.test.cjs",
     "test:phase39": "node tools/test_phase39.cjs",
     "test:alpha": "node tools/test_alpha.cjs",
+    "test:mvp": "node tools/test_mvp.cjs",
     "test:multiuser": "node --test tests/js/multiuser_simulation.test.cjs",
     "build": "python tools/build.py",
     "build:site": "python tools/build_site.py",
