@@ -17,6 +17,7 @@ test("loads the online identity after the official Marufia theme", () => {
 test("covers every existing online surface with shared visual language", () => {
   for (const surface of [
     "data-online-home-modal",
+    "data-online-settings",
     "data-online-auth-modal",
     "data-online-campaign-modal",
     "data-online-character-import-modal",

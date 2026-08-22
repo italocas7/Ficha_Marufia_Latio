@@ -3545,8 +3545,9 @@ function addTempEffect() {
 
 function openSettings() {
   openModal("Configurações", `
+    <div data-online-settings-slot hidden></div>
     <div class="grid two">
-      <div class="card stack"><h3>Tema</h3><div class="inline"><button class="button" type="button" data-action="set-theme" data-theme="dark">Modo Escuro</button><button class="ghost" type="button" data-action="set-theme" data-theme="light">Modo Claro</button></div></div>
+      <div class="card stack"><h3>Tema</h3><div class="inline"><button class="${state.settings.theme === "dark" ? "button" : "ghost"}" type="button" data-action="set-theme" data-theme="dark" aria-pressed="${state.settings.theme === "dark"}">Modo Escuro</button><button class="${state.settings.theme === "light" ? "button" : "ghost"}" type="button" data-action="set-theme" data-theme="light" aria-pressed="${state.settings.theme === "light"}">Modo Claro</button></div></div>
       <div class="card stack">${field("Limite inicial de Perícia", "settings.skillLimit", "number")}<button class="${state.settings.gmOverride ? "danger" : "ghost"}" type="button" data-action="${state.settings.gmOverride ? "disable-gm-override" : "request-gm-override"}" role="switch" aria-checked="${Boolean(state.settings.gmOverride)}">Modo Mestre: ${state.settings.gmOverride ? "ligado" : "desligado"}</button><p class="muted small">Permite ultrapassar limite e orçamento de Perícias.</p></div>
     </div>
     <div class="grid two" style="margin-top: 12px;">
@@ -3555,7 +3556,20 @@ function openSettings() {
     </div>
     <div class="inline" style="margin-top: 12px;"><button class="ghost" type="button" data-action="open-backups">Backups recentes</button><button class="ghost" type="button" data-action="open-errors">Log de erros</button></div>
   `);
-  $$("[data-action='set-theme']").forEach((btn) => btn.addEventListener("click", () => { state.settings.theme = btn.dataset.theme; applyTheme(); scheduleSave(); }));
+  const themeButtons = $$("[data-action='set-theme']");
+  themeButtons.forEach((btn) => btn.addEventListener("click", () => {
+    state.settings.theme = btn.dataset.theme;
+    applyTheme();
+    scheduleSave();
+    themeButtons.forEach((control) => {
+      const selected = control.dataset.theme === state.settings.theme;
+      control.className = selected ? "button" : "ghost";
+      control.setAttribute("aria-pressed", String(selected));
+    });
+  }));
+  if (typeof window.CustomEvent === "function") {
+    window.dispatchEvent(new window.CustomEvent("marufia:settings-opened"));
+  }
 }
 
 function requestGmOverride() {

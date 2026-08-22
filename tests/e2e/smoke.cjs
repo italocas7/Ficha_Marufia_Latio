@@ -186,7 +186,32 @@ async function exercise(page, url, viewport) {
   await page.locator("#modalRoot .modal").getByRole("button", { name: "Fechar" }).last().click();
   await homeButton.click();
   await page.locator('[data-online-home-modal][data-online-home-view="home"]').getByRole("button", { name: /Configurações/i }).click();
-  assert.match(await page.locator("#modalRoot .modal").innerText(), /Limite inicial de Perícia/i);
+  const settingsModal = page.locator("#modalRoot .modal");
+  const onlineSettings = settingsModal.locator("[data-online-settings]");
+  await onlineSettings.waitFor({ state: "visible" });
+  assert.match(await settingsModal.innerText(), /Limite inicial de Perícia/i);
+  assert.match(await onlineSettings.innerText(), /Jogador Teste/i);
+  assert.match(await onlineSettings.innerText(), /Sincronização/i);
+  assert.match(await onlineSettings.innerText(), /ficha (?:está )?vinculada/i);
+  assert.match(await onlineSettings.innerText(), /Dados locais/i);
+  assert.match(await onlineSettings.innerText(), /Alpha 0\.1\.0/i);
+  await settingsModal.getByRole("button", { name: "Modo Escuro" }).click();
+  assert.equal(await page.locator("body").evaluate((body) => body.classList.contains("dark")), true);
+  assert.equal(await settingsModal.getByRole("button", { name: "Modo Escuro" }).getAttribute("aria-pressed"), "true");
+  await settingsModal.getByRole("button", { name: "Modo Claro" }).click();
+  assert.equal(await page.locator("body").evaluate((body) => body.classList.contains("dark")), false);
+  assert.equal(await settingsModal.getByRole("button", { name: "Modo Claro" }).getAttribute("aria-pressed"), "true");
+  const settingsLayout = await settingsModal.evaluate((modal) => ({
+    scrollWidth: modal.scrollWidth,
+    clientWidth: modal.clientWidth,
+    columns: getComputedStyle(modal.querySelector(".online-settings-grid")).gridTemplateColumns.split(" ").length,
+  }));
+  assert.ok(settingsLayout.scrollWidth <= settingsLayout.clientWidth + 1, "Configurações não podem criar estouro horizontal.");
+  assert.equal(settingsLayout.columns, viewport.width <= 620 ? 1 : 2, "Configurações devem adaptar a grade à tela.");
+  await onlineSettings.getByRole("button", { name: "Gerenciar conta" }).click();
+  const settingsAccount = page.locator("[data-online-auth-modal]");
+  await settingsAccount.waitFor({ state: "visible" });
+  assert.match(await settingsAccount.innerText(), /Jogador Teste/i);
   await page.locator("#modalRoot .modal").getByRole("button", { name: "Fechar" }).last().click();
 
   name = page.locator('[data-path="character.name"]');

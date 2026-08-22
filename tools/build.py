@@ -34,6 +34,7 @@ SCRIPT_ORDER = [
     "src/online/character_import.js",
     "src/online/character_realtime.js",
     "src/online/character_sync.js",
+    "src/online/settings.js",
     "src/online/rolls.js",
     "src/online/live_rolls.js",
     "src/online/character_conflicts.js",

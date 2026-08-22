@@ -13,3 +13,9 @@ O painel oferece:
 O início não muda o personagem carregado, não altera o JSON schema v5 e não cria um papel administrativo global. Recarregar uma sessão já restaurada mantém a pessoa na ficha; o painel abre automaticamente apenas depois de login ou cadastro concluído, e continua disponível pelo cabeçalho.
 
 Em telas estreitas, os acessos passam para uma coluna e os rótulos dos controles do cabeçalho permanecem disponíveis a leitores de tela.
+
+## Configurações essenciais — Fase 46
+
+O mesmo modal de configurações agora reúne o estado real da conta, da sincronização, do salvamento local e da versão Alpha. A conta oferece acesso direto ao gerenciamento existente; tema, importação, exportação e backups continuam usando os controles já validados da ficha.
+
+Não foram criadas páginas vazias, botão para apagar cache, preferências sem efeito ou novos campos persistidos. O resumo é somente leitura e deriva dos estados que a aplicação já mantém. O schema v5, os cálculos e o formato dos arquivos exportados permanecem inalterados.
