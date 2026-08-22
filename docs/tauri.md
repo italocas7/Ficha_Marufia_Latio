@@ -6,7 +6,7 @@ O Marufia Online usa Tauri 2 para empacotar exatamente a mesma ficha web validad
 
 - produto: Marufia Online;
 - identificador: `com.marufia.online`;
-- versão desktop inicial: `0.1.0`;
+- versão desktop inicial: `0.1.0`, apresentada como **Marufia Online Alpha**;
 - janela única, centralizada, redimensionável e com mínimo de 900 × 600;
 - ícones derivados do brasão oficial da ficha.
 

@@ -17,6 +17,7 @@ SCRIPT_ORDER = [
     "vendor/pdf_file_loader.js",
     "pdf_import.js",
     "vendor/supabase.js",
+    "src/online/version.js",
     "src/online/project.js",
     "src/online/config.js",
     "src/online/supabase.js",

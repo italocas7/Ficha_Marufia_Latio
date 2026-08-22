@@ -1,14 +1,21 @@
 (function initMarufiaSettings(root, factory) {
-  const api = factory();
+  const versionInfo = root?.MARUFIA_VERSION
+    ?? (typeof module === "object" && module.exports ? require("./version.js") : null);
+  const api = factory(versionInfo);
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.MARUFIA_SETTINGS = api;
   if (root?.document) Promise.resolve().then(() => api.init(root.document, root.MARUFIA_APP_BRIDGE));
-})(typeof window !== "undefined" ? window : globalThis, function createMarufiaSettingsApi() {
+})(typeof window !== "undefined" ? window : globalThis, function createMarufiaSettingsApi(versionInfo) {
   "use strict";
 
+  versionInfo = versionInfo || {};
+
   const SETTINGS_OPEN_EVENT = "marufia:settings-opened";
-  const PRODUCT_NAME = "Marufia Online";
-  const PRODUCT_VERSION = "0.1.0";
+  const PRODUCT_NAME = String(versionInfo.productName || "Marufia Online");
+  const PRODUCT_VERSION = String(versionInfo.version || "0.0.0");
+  const PRODUCT_CHANNEL = String(versionInfo.channel || "alpha");
+  const PRODUCT_CHANNEL_LABEL = String(versionInfo.channelLabel || "Alpha");
+  const PRODUCT_DISPLAY_NAME = String(versionInfo.displayName || `${PRODUCT_NAME} ${PRODUCT_CHANNEL_LABEL}`);
 
   const ACCOUNT_DETAILS = Object.freeze({
     loading: "Verificando a sessão neste dispositivo.",
@@ -85,6 +92,8 @@
       about: Object.freeze({
         productName: PRODUCT_NAME,
         productVersion: PRODUCT_VERSION,
+        productChannel: PRODUCT_CHANNEL,
+        productDisplayName: PRODUCT_DISPLAY_NAME,
         schemaVersion: Number.isInteger(schemaVersion) ? schemaVersion : 5,
       }),
     });
@@ -97,7 +106,7 @@
         <article class="online-settings-card" data-settings-state="${escapeHtml(snapshot.account.state)}"><div><span class="online-settings-dot" aria-hidden="true"></span><h4>Conta</h4></div><strong>${escapeHtml(snapshot.account.label)}</strong><p>${escapeHtml(snapshot.account.detail)}</p><button class="ghost" type="button" data-online-settings-action="account">${escapeHtml(snapshot.account.action)}</button></article>
         <article class="online-settings-card" data-settings-state="${escapeHtml(snapshot.sync.state)}"><div><span class="online-settings-dot" aria-hidden="true"></span><h4>Sincronização</h4></div><strong>${escapeHtml(snapshot.sync.label)}</strong><p>${escapeHtml(snapshot.sync.detail)}</p></article>
         <article class="online-settings-card" data-settings-state="${escapeHtml(snapshot.local.state)}"><div><span class="online-settings-dot" aria-hidden="true"></span><h4>Dados locais</h4></div><strong>${escapeHtml(snapshot.local.label)}</strong><p>${escapeHtml(snapshot.local.detail)}</p></article>
-        <article class="online-settings-card" data-settings-state="about"><div><span class="online-settings-dot" aria-hidden="true"></span><h4>Sobre</h4></div><strong>${escapeHtml(snapshot.about.productName)} · Alpha ${escapeHtml(snapshot.about.productVersion)}</strong><p>Ficha schema v${escapeHtml(snapshot.about.schemaVersion)}. Aplicativo sem permissões nativas adicionais.</p></article>
+        <article class="online-settings-card" data-settings-state="about"><div><span class="online-settings-dot" aria-hidden="true"></span><h4>Sobre</h4></div><strong>${escapeHtml(snapshot.about.productDisplayName)} · v${escapeHtml(snapshot.about.productVersion)}</strong><p>Ficha schema v${escapeHtml(snapshot.about.schemaVersion)}. Aplicativo sem permissões nativas adicionais.</p></article>
       </div>
     </section>`;
   }
@@ -162,6 +171,9 @@
     SETTINGS_OPEN_EVENT,
     PRODUCT_NAME,
     PRODUCT_VERSION,
+    PRODUCT_CHANNEL,
+    PRODUCT_CHANNEL_LABEL,
+    PRODUCT_DISPLAY_NAME,
     escapeHtml,
     settingsSnapshot,
     settingsPanelHtml,

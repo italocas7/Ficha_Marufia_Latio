@@ -45,6 +45,8 @@ test("summarizes only real account, sync, local-data, and about states", () => {
   assert.equal(snapshot.local.state, "saved");
   assert.match(snapshot.local.detail, /schema v5/);
   assert.equal(snapshot.about.productName, "Marufia Online");
+  assert.equal(snapshot.about.productChannel, "alpha");
+  assert.equal(snapshot.about.productDisplayName, "Marufia Online Alpha");
   assert.equal(snapshot.about.schemaVersion, 5);
 });
 
@@ -74,7 +76,7 @@ test("renders safe actionable settings without cache deletion", () => {
   assert.match(html, /Sincronização/);
   assert.match(html, /Dados locais/);
   assert.match(html, /Sobre/);
-  assert.match(html, /Alpha 0\.1\.0/);
+  assert.match(html, /Marufia Online Alpha · v0\.1\.0/);
   assert.match(html, /&lt;Artemis&gt;/);
   assert.doesNotMatch(html, /<Artemis>|limpar cache|apagar cache|clear-cache/i);
 });

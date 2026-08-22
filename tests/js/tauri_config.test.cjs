@@ -25,7 +25,7 @@ test("uses one bounded, resizable main window", () => {
   assert.equal(config.app.windows.length, 1);
   const window = config.app.windows[0];
   assert.equal(window.label, "main");
-  assert.equal(window.title, "Marufia Online");
+  assert.equal(window.title, "Marufia Online Alpha");
   assert.equal(window.center, true);
   assert.equal(window.resizable, true);
   assert.equal(window.fullscreen, false);

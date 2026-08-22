@@ -1,9 +1,9 @@
 {
-  "name": "ficha-marufia-latio",
-  "version": "2.0.0",
+  "name": "marufia-online",
+  "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@11.19.0",
-  "description": "Ficha interativa offline para o sistema Mundo de Marufia.",
+  "description": "Marufia Online Alpha — ficha multiplayer para o sistema Mundo de Marufia.",
   "scripts": {
     "validate:data": "python tools/validate_data.py",
     "test": "python -m unittest discover -s tests -p test_*.py && node --test tests/js/*.test.cjs",
@@ -22,6 +22,7 @@
     "build:desktop": "tauri build --no-bundle",
     "build:windows": "node tools/build_windows.cjs",
     "test:windows-security": "node tools/check_windows_security.cjs",
+    "test:version": "node tools/check_version.cjs",
     "tauri": "tauri",
     "test:database": "node --test tests/js/database_migration.test.cjs",
     "test:profiles": "node --test tests/js/profile_migration.test.cjs",
