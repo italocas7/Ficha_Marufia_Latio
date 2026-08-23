@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "O aplicativo pode abrir somente páginas oficiais de release do Marufia no navegador padrão.",
+  "description": "O aplicativo pode abrir somente releases oficiais e ajustar o zoom da própria janela.",
   "windows": [
     "main"
   ],
@@ -16,6 +16,7 @@
           "url": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/*"
         }
       ]
-    }
+    },
+    "core:webview:allow-set-webview-zoom"
   ]
 }

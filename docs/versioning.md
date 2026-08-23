@@ -6,7 +6,7 @@ Durante o desenvolvimento inicial:
 
 - `0.1.0`: primeiro Alpha integrado;
 - `0.2.0`: aviso seguro de novas versões no aplicativo Windows;
-- `0.2.1`: correção da visualização completa de personagens no aplicativo Windows;
+- `0.2.1`: correções da visualização completa de personagens, do zoom e dos cartões no aplicativo Windows;
 - `0.3.0` e demais versões `0.x`: novos ciclos compatíveis do Alpha;
 - correções que não acrescentam capacidade usam o incremento de patch;
 - `1.0.0`: primeira versão declarada estável, somente após os critérios de lançamento próprios.

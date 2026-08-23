@@ -28,6 +28,7 @@ test("uses one bounded, resizable main window", () => {
   assert.equal(window.title, "Marufia Online Alpha");
   assert.equal(window.center, true);
   assert.equal(window.resizable, true);
+  assert.equal(window.zoomHotkeysEnabled, true);
   assert.equal(window.fullscreen, false);
   assert.ok(window.width >= window.minWidth);
   assert.ok(window.height >= window.minHeight);
@@ -45,14 +46,17 @@ test("restricts web connections to the public Marufia services", () => {
   assert.doesNotMatch(csp, /unsafe-eval|connect-src[^;]*\*/);
 });
 
-test("grants only the scoped official-release opener to the Windows app", () => {
+test("grants only the scoped release opener and native zoom to the Windows app", () => {
   assert.deepEqual(capability.windows, ["main"]);
   assert.deepEqual(capability.platforms, ["windows"]);
   assert.equal(config.app.withGlobalTauri, true);
-  assert.deepEqual(capability.permissions, [{
-    identifier: "opener:allow-open-url",
-    allow: [{ url: "https://github.com/italocas7/Ficha_Marufia_Latio/releases/*" }],
-  }]);
+  assert.deepEqual(capability.permissions, [
+    {
+      identifier: "opener:allow-open-url",
+      allow: [{ url: "https://github.com/italocas7/Ficha_Marufia_Latio/releases/*" }],
+    },
+    "core:webview:allow-set-webview-zoom",
+  ]);
   assert.match(cargo, /^tauri-plugin-opener\s*=\s*"2"$/m);
   assert.doesNotMatch(JSON.stringify(capability.permissions), /shell|filesystem|dialog|open-path|http:\/\/|github\.com\/[^i]/i);
 });

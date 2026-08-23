@@ -57,6 +57,16 @@ async function exercise(page, url, viewport) {
     await page.locator("#app").waitFor({ state: "visible" });
     assert.ok((await page.locator("#app").innerText()).trim(), `A aba ${tab} não pode ficar vazia.`);
   }
+  await page.getByRole("tab", { name: /^Combate/ }).click();
+  const combatCardsFit = await page.locator(".resource-card").evaluateAll((cards) => cards.every((card) => {
+    const label = card.querySelector(".resource-head > strong")?.getBoundingClientRect();
+    const value = card.querySelector(".resource-head > .big-val")?.getBoundingClientRect();
+    if (!label || !value) return false;
+    const overlaps = label.left < value.right && label.right > value.left
+      && label.top < value.bottom && label.bottom > value.top;
+    return !overlaps && card.scrollWidth <= card.clientWidth + 1;
+  }));
+  assert.equal(combatCardsFit, true, `Os recursos de combate devem manter os textos dentro dos cartões em ${viewport.width}px.`);
   await page.getByRole("tab", { name: /^Resumo/ }).click();
   let name = page.locator('[data-path="character.name"]');
   await name.fill("Teste de regressão");
@@ -891,7 +901,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
       console.log("Teste isolado do aviso Windows concluído.");
       return;
     }
-    for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 720 }, { width: 390, height: 844 }]) {
       const context = await browser.newContext({ viewport });
       await exercise(await context.newPage(), `http://127.0.0.1:${port}/`, viewport);
       await context.close();
