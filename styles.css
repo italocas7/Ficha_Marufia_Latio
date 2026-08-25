@@ -642,6 +642,34 @@ button[hidden] {
   margin: 3px 0 0;
 }
 
+.live-roll-toolbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.live-roll-clear-button {
+  min-height: 32px;
+  padding-block: 5px;
+}
+
+.live-roll-clear-confirmation {
+  display: grid;
+  gap: 8px;
+  padding: 13px 14px;
+  border: 1px solid color-mix(in srgb, var(--danger) 52%, var(--line));
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--danger) 12%, var(--panel));
+}
+
+.live-roll-clear-confirmation p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .live-roll-connection {
   display: inline-flex;
   align-items: center;
@@ -2238,6 +2266,11 @@ tr:last-child td {
   .live-roll-heading {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .live-roll-toolbar-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .live-roll-meta {

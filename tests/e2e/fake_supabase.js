@@ -38,6 +38,7 @@
       description: "Campanha preparada para validar a entrada por código.",
       owner_id: "e2e-external-owner",
       join_code: "MRF-PLAY-ER",
+      roll_history_revision: 0,
       created_at: createdAt,
       updated_at: createdAt,
     });
@@ -131,6 +132,30 @@
               commit_timestamp: new Date().toISOString(),
               new: JSON.parse(JSON.stringify(snapshot)),
               old: {},
+            });
+          }
+        }
+      });
+    }
+
+    function emitCampaignChange(campaign, previous) {
+      const snapshot = JSON.parse(JSON.stringify(campaign));
+      const oldSnapshot = JSON.parse(JSON.stringify(previous));
+      queueMicrotask(() => {
+        for (const channel of channels) {
+          for (const binding of channel.bindings) {
+            if (binding.type !== "postgres_changes"
+              || !["UPDATE", "*"].includes(binding.config?.event)
+              || binding.config?.schema !== "public"
+              || binding.config?.table !== "campaigns"
+              || !matchesRealtimeFilter(binding.config, snapshot)) continue;
+            binding.listener({
+              eventType: "UPDATE",
+              schema: "public",
+              table: "campaigns",
+              commit_timestamp: new Date().toISOString(),
+              new: JSON.parse(JSON.stringify(snapshot)),
+              old: JSON.parse(JSON.stringify(oldSnapshot)),
             });
           }
         }
@@ -525,6 +550,28 @@
           emitRollChange(roll);
           return { data: { id: args.p_roll_id, visibility }, error: null };
         }
+        if (name === "clear_campaign_roll_history") {
+          const campaignId = String(args?.p_campaign_id ?? "");
+          const membership = (read(MEMBERSHIPS_KEY) ?? []).find((item) => (
+            item.campaign_id === campaignId && item.user_id === session.user.id && item.role === "gm"
+          ));
+          if (!membership) return { data: null, error: { code: "42501", message: "campaign gm required" } };
+          const campaigns = read(CAMPAIGNS_KEY) ?? [];
+          const campaign = campaigns.find((item) => item.id === campaignId);
+          if (!campaign) return { data: null, error: { code: "P0002", message: "campaign not found" } };
+          const previous = JSON.parse(JSON.stringify(campaign));
+          const rolls = read(ROLLS_KEY) ?? [];
+          const deletedRolls = rolls.filter((roll) => roll.campaign_id === campaignId).length;
+          write(ROLLS_KEY, rolls.filter((roll) => roll.campaign_id !== campaignId));
+          write(EVENTS_KEY, (read(EVENTS_KEY) ?? []).filter((event) => (
+            event.campaign_id !== campaignId || event.event_type !== "roll"
+          )));
+          campaign.roll_history_revision = Number(campaign.roll_history_revision ?? 0) + 1;
+          campaign.updated_at = new Date().toISOString();
+          write(CAMPAIGNS_KEY, campaigns);
+          emitCampaignChange(campaign, previous);
+          return { data: [{ deleted_rolls: deletedRolls, history_revision: campaign.roll_history_revision }], error: null };
+        }
         if (name === "touch_campaign_presence") {
           const campaignId = String(args?.p_campaign_id ?? "");
           const membership = (read(MEMBERSHIPS_KEY) ?? []).find((item) => (
@@ -550,6 +597,7 @@
             item.id === args?.p_campaign_id && item.owner_id === session.user.id
           ));
           if (!campaign) return { data: null, error: { code: "42501", message: "campaign owner required" } };
+          const previous = JSON.parse(JSON.stringify(campaign));
           const nameValue = String(args?.p_name ?? "").trim();
           const description = String(args?.p_description ?? "").trim();
           if (!nameValue || nameValue.length > 100 || description.length > 5000) {
@@ -559,6 +607,7 @@
           campaign.description = description;
           campaign.updated_at = new Date().toISOString();
           write(CAMPAIGNS_KEY, campaigns);
+          emitCampaignChange(campaign, previous);
           return { data: JSON.parse(JSON.stringify(campaign)), error: null };
         }
         if (name === "delete_campaign") {
@@ -655,6 +704,7 @@
                 description: inserted?.description ?? "",
                 owner_id: session.user.id,
                 join_code: `MRF-K7P4-N${(campaigns.length % 8) + 2}`,
+                roll_history_revision: 0,
                 created_at: now,
                 updated_at: now,
               };

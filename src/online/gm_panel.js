@@ -401,11 +401,20 @@
         }
         onChange?.(payload);
       };
+      const acceptCampaign = (payload) => {
+        const row = payload?.new && Object.keys(payload.new).length ? payload.new : payload?.old;
+        if (String(row?.id ?? "").toLowerCase() !== id) {
+          onStatus("INVALID_PAYLOAD");
+          return;
+        }
+        onChange?.(payload);
+      };
       const channel = client.channel(`marufia-gm-panel:${id}`)
         .on("postgres_changes", { event: "*", schema: "public", table: "characters", filter: `campaign_id=eq.${id}` }, accept)
         .on("postgres_changes", { event: "*", schema: "public", table: "campaign_presence", filter: `campaign_id=eq.${id}` }, accept)
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "campaign_events", filter: `campaign_id=eq.${id}` }, accept)
         .on("postgres_changes", { event: "*", schema: "public", table: "campaign_sessions", filter: `campaign_id=eq.${id}` }, accept)
+        .on("postgres_changes", { event: "UPDATE", schema: "public", table: "campaigns", filter: `id=eq.${id}` }, acceptCampaign)
         .subscribe(onStatus);
       return Object.freeze({ channel, unsubscribe: () => client.removeChannel(channel) });
     }
@@ -846,6 +855,9 @@
 
     const pulse = () => { void heartbeat.pulse(); };
     const markActivity = () => { lastActivityAt = Date.now(); };
+    const historyCleared = (event) => {
+      if (state && String(event?.detail?.campaignId ?? "").toLowerCase() === state.campaignId) scheduleReload();
+    };
     const click = (event) => {
       const control = event.target.closest?.("[data-online-gm-panel-action]");
       if (control?.dataset?.onlineGmPanelAction === "open") {
@@ -883,6 +895,7 @@
     document.addEventListener("pointerdown", markActivity, { passive: true });
     view.addEventListener?.("online", pulse);
     view.addEventListener?.("marufia:campaign-memberships-changed", pulse);
+    view.addEventListener?.("marufia:roll-history-cleared", historyCleared);
     document.addEventListener("visibilitychange", pulse);
     const authObserver = typeof view.MutationObserver === "function" ? new view.MutationObserver(pulse) : null;
     authObserver?.observe(accountButton, { attributes: true, attributeFilter: ["data-auth-state"] });
@@ -906,6 +919,7 @@
         document.removeEventListener?.("visibilitychange", pulse);
         view.removeEventListener?.("online", pulse);
         view.removeEventListener?.("marufia:campaign-memberships-changed", pulse);
+        view.removeEventListener?.("marufia:roll-history-cleared", historyCleared);
         if (document.documentElement?.dataset) delete document.documentElement.dataset.gmPanelInitialized;
       },
     });

@@ -27,6 +27,7 @@ As migrations SQL são adicionadas em ordem cronológica e aplicadas com a ferra
 - `20260820230000_harden_row_level_security.sql`: audita a matriz de RLS existente e remove somente privilégios diretos perigosos, preservando os acessos legítimos por coluna.
 - `20260820231000_allow_authorized_gm_character_writes.sql`: corrige o gatilho do proprietário para aceitar somente RPCs do `gm` já autenticado na campanha exata, sem abrir grants diretos.
 - `20260822120000_fix_campaign_creation_and_management.sql`: corrige a leitura da campanha durante a criação e permite ao proprietário editar ou excluir sua campanha por operações autenticadas, preservando as fichas dos personagens.
+- `20260822130000_clear_campaign_roll_history.sql`: permite somente ao Mæstre limpar permanentemente as rolagens e seus resumos da campanha, avisando os participantes pelo Realtime sem liberar exclusão direta.
 
 Alterações remotas devem passar por `supabase db push`; não editar o schema diretamente pelo painel.
 

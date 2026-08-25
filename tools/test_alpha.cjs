@@ -15,9 +15,9 @@ const ALPHA_CAPABILITIES = Object.freeze([
   Object.freeze({ name: "Ficha", files: Object.freeze(["tests/js/state.test.cjs", "tests/js/app_startup.test.cjs"]) }),
   Object.freeze({ name: "Salvamento remoto", files: Object.freeze(["tests/js/character_remote_save_migration.test.cjs", "tests/js/characters.test.cjs"]) }),
   Object.freeze({ name: "Sincronização", files: Object.freeze(["tests/js/character_sync.test.cjs", "tests/js/character_realtime.test.cjs", "tests/js/online_errors.test.cjs"]) }),
-  Object.freeze({ name: "Rolagens online", files: Object.freeze(["tests/js/online_rolls.test.cjs", "tests/js/live_rolls.test.cjs", "tests/js/roll_visibility_migration.test.cjs"]) }),
+  Object.freeze({ name: "Rolagens online", files: Object.freeze(["tests/js/online_rolls.test.cjs", "tests/js/live_rolls.test.cjs", "tests/js/roll_visibility_migration.test.cjs", "tests/js/roll_history_clear_migration.test.cjs"]) }),
   Object.freeze({ name: "Painel do Mæstre", files: Object.freeze(["tests/js/gm_panel.test.cjs", "tests/js/multiuser_simulation.test.cjs"]) }),
-  Object.freeze({ name: "Permissões", files: Object.freeze(["tests/js/row_level_security_migration.test.cjs", "tests/js/gm_character_write_authorization_migration.test.cjs", "tests/js/security_audit.test.cjs"]) }),
+  Object.freeze({ name: "Permissões", files: Object.freeze(["tests/js/row_level_security_migration.test.cjs", "tests/js/gm_character_write_authorization_migration.test.cjs", "tests/js/roll_history_clear_migration.test.cjs", "tests/js/security_audit.test.cjs"]) }),
   Object.freeze({ name: "Executável Windows", files: Object.freeze(["tests/js/tauri_config.test.cjs", "tests/js/windows_build.test.cjs", "tests/js/windows_security.test.cjs"]) }),
   Object.freeze({ name: "Atualização do aplicativo", files: Object.freeze(["tests/js/app_update.test.cjs", "tests/js/tauri_config.test.cjs", "tests/js/site_distribution.test.cjs"]) }),
 ]);

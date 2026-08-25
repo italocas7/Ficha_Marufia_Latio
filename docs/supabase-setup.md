@@ -78,6 +78,8 @@ A Fase 35 consolida a segurança por linha já construída. A nova migração co
 
 A Fase 36 executa 35 ataques transacionais no banco vinculado com três identidades descartáveis. O teste cobre campanhas, personagens, papéis, UUIDs conhecidos, RPCs, sessões, presença, histórico e rolagens; todos os fixtures são revertidos. A suíte também exige caminhos legítimos do proprietário e do `gm`, o que revelou e corrigiu o bloqueio indevido do gatilho de personagem sem ampliar grants ou policies.
 
+A versão 0.2.1 acrescenta `clear_campaign_roll_history`, exclusiva do papel exato `gm`. Ela remove apenas rolagens e eventos do tipo `roll` da campanha e incrementa uma revisão pública aos participantes para atualizar os painéis conectados. A migration não concede exclusão direta ao navegador e deve ser aplicada antes de publicar a interface que mostra o botão.
+
 Referências oficiais:
 
 - https://supabase.com/docs/reference/javascript/initializing

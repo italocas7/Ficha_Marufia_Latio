@@ -182,6 +182,12 @@ O Realtime de `characters` já existente transmite a nova revisão ao proprietá
 
 O `gm` pode selecionar eventos da própria campanha. Eventos de rolagem com visibilidade `gm` exigem também que `actor_id = auth.uid()`, preservando a privacidade entre Mæstres. A tabela participa do Realtime somente para novos eventos, sem grants diretos de escrita.
 
+## Limpeza de rolagens — 0.2.1
+
+`public.clear_campaign_roll_history(campaign_id)` exige autenticação e papel exato `gm` na campanha informada. Dentro de uma única transação, apaga somente as rolagens dessa campanha e os resumos correspondentes com `event_type = 'roll'`. Eventos de PV, PM, condições e itens, além de personagens, presença e sessões, permanecem intactos.
+
+O navegador não recebe `DELETE` em `rolls` nem `campaign_events`. Depois da limpeza, a função incrementa `campaigns.roll_history_revision`; `campaigns` participa do Realtime com imagem anterior para que os clientes reconheçam somente esse incremento. Assim, nenhuma linha apagada — inclusive resultados secretos ou privados do Mæstre — precisa ser transmitida como evento de exclusão.
+
 ## Sessões de campanha — Fase 33
 
 `campaign_sessions` registra `id`, campanha, nome, início, fim e estado. Um índice parcial único impede mais de uma sessão `active` na mesma campanha. Somente o papel exato `gm` pode ler a tabela ou chamar `start_campaign_session` e `end_campaign_session`; os horários e estados são definidos no servidor.
@@ -233,5 +239,7 @@ O primeiro ciclo encontrou uma regressão legítima: `private.prepare_character_
 - `20260820220000_expand_gm_character_actions.sql`: ativa as cinco ações adicionais aprovadas de PM, condições e itens sem abrir atualização direta da ficha.
 - `20260820230000_harden_row_level_security.sql`: verifica as policies definitivas e remove acessos perigosos sem reescrever policies ou grants legítimos.
 - `20260820231000_allow_authorized_gm_character_writes.sql`: permite que somente as RPCs granulares aprovadas atravessem o gatilho de proprietário após confirmar origem, papel e campanha.
+- `20260822120000_fix_campaign_creation_and_management.sql`: corrige criação, edição e exclusão protegida de campanhas sem apagar fichas vinculadas.
+- `20260822130000_clear_campaign_roll_history.sql`: adiciona a limpeza permanente exclusiva do Mæstre e seu aviso seguro pelo Realtime.
 
-A migration foi aplicada ao projeto `nuczqjyahusjyvepqthx` pela ferramenta oficial e consta no histórico remoto. `pnpm test:database:remote` confirma, usando somente a chave pública, que as tabelas públicas existem e permanecem bloqueadas.
+As migrations até `20260822120000` foram aplicadas ao projeto `nuczqjyahusjyvepqthx` pela ferramenta oficial. A migration de limpeza permanece local até nova autorização explícita de publicação. `pnpm test:database:remote` confirma, usando somente a chave pública, que as tabelas públicas existem e permanecem bloqueadas.

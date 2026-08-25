@@ -476,6 +476,19 @@ body:not(.dark) {
   gap: 8px;
 }
 
+.live-roll-toolbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.live-roll-clear-confirmation {
+  border-color: color-mix(in srgb, var(--danger) 48%, var(--online-line));
+  background: color-mix(in srgb, var(--danger) 10%, var(--online-panel));
+}
+
 .campaign-list,
 .live-roll-list,
 .gm-character-list,
@@ -778,6 +791,7 @@ body:not(.dark) {
   .character-import-actions { display: grid; grid-template-columns: 1fr; }
 
   .campaign-heading-actions { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+  .live-roll-toolbar-actions { width: 100%; justify-content: space-between; }
   .campaign-code-block { min-width: 0; }
   .auth-identity { grid-template-columns: auto minmax(0, 1fr); }
   .auth-session-chip { grid-column: 1 / -1; }

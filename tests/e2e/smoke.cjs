@@ -689,6 +689,36 @@ async function exercise(page, url, viewport) {
   assert.match(await realtimeRoll.innerText(), /50/);
   assert.match(await realtimeRoll.innerText(), /Normal/);
   await page.waitForFunction(() => JSON.parse(localStorage.getItem("marufia-e2e-rolls") || "[]").length === 3);
+  assert.equal(
+    await liveRollsPanel.getByRole("button", { name: "Limpar histórico" }).count(),
+    1,
+    "Somente o Mæstre deve receber a opção de limpeza permanente.",
+  );
+  const historyBeforeClear = await page.evaluate(() => {
+    const campaign = JSON.parse(localStorage.getItem("marufia-e2e-campaigns") || "[]")
+      .find((item) => item.owner_id === "11111111-1111-4111-8111-111111111111");
+    const events = JSON.parse(localStorage.getItem("marufia-e2e-campaign-events") || "[]")
+      .filter((event) => event.campaign_id === campaign.id);
+    return {
+      campaignId: campaign.id,
+      nonRollEvents: events.filter((event) => event.event_type !== "roll").length,
+    };
+  });
+  await liveRollsPanel.getByRole("button", { name: "Limpar histórico" }).click();
+  assert.match(await liveRollsPanel.innerText(), /Esta ação não pode ser desfeita/);
+  await liveRollsPanel.getByRole("button", { name: "Apagar rolagens" }).click();
+  await page.waitForFunction((campaignId) => {
+    const rolls = JSON.parse(localStorage.getItem("marufia-e2e-rolls") || "[]");
+    const events = JSON.parse(localStorage.getItem("marufia-e2e-campaign-events") || "[]");
+    return !rolls.some((roll) => roll.campaign_id === campaignId)
+      && !events.some((event) => event.campaign_id === campaignId && event.event_type === "roll");
+  }, historyBeforeClear.campaignId);
+  assert.match(await liveRollsPanel.innerText(), /3 rolagens foram apagadas permanentemente/);
+  assert.match(await liveRollsPanel.innerText(), /Nenhuma rolagem visível/);
+  assert.equal(await page.evaluate((expected) => {
+    const events = JSON.parse(localStorage.getItem("marufia-e2e-campaign-events") || "[]");
+    return events.filter((event) => event.campaign_id === expected.campaignId && event.event_type !== "roll").length;
+  }, historyBeforeClear), historyBeforeClear.nonRollEvents, "A limpeza de rolagens não pode apagar PV, PM, condições ou itens.");
   await page.locator("#modalRoot").getByRole("button", { name: "Fechar" }).last().click();
 
   await campaignsButton.click();
@@ -726,7 +756,7 @@ async function exercise(page, url, viewport) {
   });
   assert.match(playerVisibility.campaignId, /^[0-9a-f-]{36}$/i);
   assert.deepEqual(playerVisibility, { campaignId: playerVisibility.campaignId, secret: "secret", public: "public" });
-  await page.waitForFunction(() => JSON.parse(localStorage.getItem("marufia-e2e-rolls") || "[]").length === 5);
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem("marufia-e2e-rolls") || "[]").length === 2);
   const associationConflict = page.locator("[data-online-character-conflict-modal]");
   if (await associationConflict.isVisible()) {
     await page.getByRole("button", { name: "Decidir depois" }).click();
@@ -742,6 +772,7 @@ async function exercise(page, url, viewport) {
   await publicRoll.waitFor({ state: "visible" });
   assert.match(await secretRoll.innerText(), /Secreta/);
   assert.match(await publicRoll.innerText(), /Pública/);
+  assert.equal(await playerPanel.getByRole("button", { name: "Limpar histórico" }).count(), 0, "Jogadores não podem limpar as rolagens da campanha.");
   assert.doesNotMatch(await playerPanel.innerText(), /Privada do Mæstre/, "Jogadores não podem ver rolagens privadas de outra campanha.");
   await page.locator("#modalRoot").getByRole("button", { name: "Fechar" }).last().click();
   await accountButton.click();
@@ -766,13 +797,14 @@ async function exercise(page, url, viewport) {
       documentWidth: document.documentElement.clientWidth,
       tabsClientWidth: tabsElement.clientWidth,
       tabsScrollWidth: tabsElement.scrollWidth,
-      tabsTop: tabsElement.getBoundingClientRect().top,
-      appTop: app.getBoundingClientRect().top,
+      tabsBeforeApp: Boolean(tabsElement.compareDocumentPosition(app) & Node.DOCUMENT_POSITION_FOLLOWING),
+      tabsPosition: getComputedStyle(tabsElement).position,
     };
   });
   assert.ok(layout.bodyScrollWidth <= layout.documentWidth + 1, `A página excedeu a largura em ${viewport.width}px.`);
   if (viewport.width >= 1000) {
-    assert.ok(layout.tabsTop < layout.appTop, "As abas devem permanecer acima da ficha no desktop.");
+    assert.equal(layout.tabsBeforeApp, true, "As abas devem permanecer antes da ficha no desktop.");
+    assert.equal(layout.tabsPosition, "sticky", "As abas devem permanecer visíveis no topo durante a rolagem no desktop.");
     assert.ok(layout.tabsScrollWidth <= layout.tabsClientWidth + 1, "As abas não devem transbordar no desktop.");
   } else {
     assert.ok(layout.tabsScrollWidth > layout.tabsClientWidth, "As abas devem ser roláveis no celular.");

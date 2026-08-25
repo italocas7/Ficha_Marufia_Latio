@@ -74,6 +74,9 @@
   function friendlyLiveRollMessage(error) {
     if (error?.userMessage) return error.userMessage;
     const detail = `${error?.code ?? ""} ${error?.message ?? ""}`.toLowerCase();
+    if (detail.includes("campaign gm required")) {
+      return "Somente o Mæstre desta campanha pode limpar o histórico de rolagens.";
+    }
     if (detail.includes("membership required") || detail.includes("42501")) {
       return "Somente participantes desta campanha podem acompanhar suas rolagens.";
     }
@@ -83,9 +86,21 @@
     return "Não foi possível abrir as rolagens ao vivo desta campanha.";
   }
 
+  function normalizedClearResult(value) {
+    const row = Array.isArray(value) ? value[0] : value;
+    const deletedRolls = Number(row?.deleted_rolls);
+    const historyRevision = Number(row?.history_revision);
+    if (!Number.isSafeInteger(deletedRolls) || deletedRolls < 0
+      || !Number.isSafeInteger(historyRevision) || historyRevision < 1) {
+      throw liveRollError("LAT-LIVE-ROLL-CLEAR-DATA-001", "O servidor não confirmou a limpeza das rolagens.");
+    }
+    return Object.freeze({ deletedRolls, historyRevision });
+  }
+
   function createLiveRollService(client, campaignTools, rollTools = root?.MARUFIA_ONLINE_ROLLS) {
     if (typeof client?.from !== "function" || typeof client?.channel !== "function"
-      || typeof client?.removeChannel !== "function" || typeof campaignTools?.createCampaignService !== "function") {
+      || typeof client?.removeChannel !== "function" || typeof client?.rpc !== "function"
+      || typeof campaignTools?.createCampaignService !== "function") {
       throw liveRollError("LAT-LIVE-ROLL-CLIENT-001", "O serviço de rolagens ao vivo não está disponível.");
     }
     const campaignService = campaignTools.createCampaignService(client);
@@ -113,7 +128,14 @@
       return (Array.isArray(result.data) ? result.data : []).map((roll) => normalizedLiveRoll(roll, rollTools));
     }
 
-    function subscribe(campaignId, onInsert, onStatus = () => {}) {
+    async function clearHistory(campaignId) {
+      const id = normalizeUuid(campaignId, "Campanha");
+      const result = await client.rpc("clear_campaign_roll_history", { p_campaign_id: id });
+      if (result.error) throw liveRollError("LAT-LIVE-ROLL-CLEAR-001", friendlyLiveRollMessage(result.error));
+      return normalizedClearResult(result.data);
+    }
+
+    function subscribe(campaignId, onInsert, onStatus = () => {}, onClear = () => {}) {
       const id = normalizeUuid(campaignId, "Campanha");
       const channel = client
         .channel(`marufia-live-rolls:${id}`)
@@ -131,6 +153,26 @@
             onStatus("INVALID_PAYLOAD");
           }
         })
+        .on("postgres_changes", {
+          event: "UPDATE",
+          schema: "public",
+          table: "campaigns",
+          filter: `id=eq.${id}`,
+        }, (payload) => {
+          try {
+            const next = payload?.new;
+            const previous = payload?.old;
+            if (normalizeUuid(next?.id, "Campanha") !== id
+              || normalizeUuid(previous?.id, "Campanha") !== id) throw new Error("campaign mismatch");
+            const nextRevision = Number(next?.roll_history_revision);
+            const previousRevision = Number(previous?.roll_history_revision);
+            if (!Number.isSafeInteger(nextRevision) || nextRevision < 0
+              || !Number.isSafeInteger(previousRevision) || previousRevision < 0) throw new Error("invalid history revision");
+            if (nextRevision > previousRevision) onClear?.(nextRevision);
+          } catch {
+            onStatus("INVALID_PAYLOAD");
+          }
+        })
         .subscribe(onStatus);
       return Object.freeze({
         channel,
@@ -138,7 +180,7 @@
       });
     }
 
-    return Object.freeze({ requireCampaignMember, listRecent, subscribe });
+    return Object.freeze({ requireCampaignMember, listRecent, clearHistory, subscribe });
   }
 
   function escapeHtml(value) {
@@ -193,15 +235,26 @@
     const connection = Object.hasOwn(CONNECTION_LABELS, state.connection) ? state.connection : "connecting";
     const rolls = Array.isArray(state.rolls) ? state.rolls : [];
     const message = state.message
-      ? `<p class="campaign-message campaign-message-error" role="alert">${escapeHtml(state.message)}</p>`
+      ? `<p class="campaign-message ${state.messageKind === "success" ? "" : "campaign-message-error"}" role="${state.messageKind === "success" ? "status" : "alert"}">${escapeHtml(state.message)}</p>`
+      : "";
+    const clearButton = state.role === "gm"
+      ? `<button class="danger live-roll-clear-button" type="button" data-online-live-rolls-action="clear" ${state.loading || state.clearing ? "disabled" : ""}>${state.clearing ? "Limpando…" : "Limpar histórico"}</button>`
+      : "";
+    const clearConfirmation = state.confirmingClear
+      ? `<section class="live-roll-clear-confirmation" role="alert" aria-labelledby="liveRollClearTitle">
+          <strong id="liveRollClearTitle">Apagar permanentemente todas as rolagens desta campanha?</strong>
+          <p>Os dados rolados e seus registros no histórico serão removidos para todos. PV, PM, condições, itens e sessões não serão alterados. Esta ação não pode ser desfeita.</p>
+          <div class="inline"><button class="danger" type="button" data-online-live-rolls-action="confirm-clear" ${state.clearing ? "disabled" : ""}>${state.clearing ? "Apagando…" : "Apagar rolagens"}</button><button class="ghost" type="button" data-online-live-rolls-action="cancel-clear" ${state.clearing ? "disabled" : ""}>Cancelar</button></div>
+        </section>`
       : "";
     const content = rolls.length
       ? rolls.map((roll) => liveRollItemHtml(roll)).join("")
       : `<div class="empty">${state.loading ? "Carregando rolagens…" : "Nenhuma rolagem visível registrada nesta campanha."}</div>`;
     return `<div class="live-rolls-panel stack" data-online-live-rolls-panel data-connection="${connection}">
-      <div class="live-roll-toolbar"><div><strong>Rolagens da campanha</strong><p class="muted small">Cada participante recebe somente as rolagens permitidas para seu vínculo.</p></div><span class="live-roll-connection" role="status" aria-live="polite"><span aria-hidden="true"></span>${escapeHtml(CONNECTION_LABELS[connection])}</span></div>
+      <div class="live-roll-toolbar"><div><strong>Rolagens da campanha</strong><p class="muted small">Cada participante recebe somente as rolagens permitidas para seu vínculo.</p></div><div class="live-roll-toolbar-actions"><span class="live-roll-connection" role="status" aria-live="polite"><span aria-hidden="true"></span>${escapeHtml(CONNECTION_LABELS[connection])}</span>${clearButton}</div></div>
       ${message}
-      <div class="live-roll-list stack" aria-live="polite" aria-relevant="additions">${content}</div>
+      ${clearConfirmation}
+      <div class="live-roll-list stack" aria-live="polite" aria-relevant="additions removals">${content}</div>
     </div>`;
   }
 
@@ -255,6 +308,20 @@
       updatePanel();
     }
 
+    function applyHistoryClear(historyRevision, remote = true) {
+      if (!state) return;
+      state = {
+        ...state,
+        rolls: [],
+        historyRevision,
+        confirmingClear: false,
+        clearing: false,
+        message: remote ? "O Mæstre limpou o histórico de rolagens desta campanha." : state.message,
+        messageKind: "success",
+      };
+      updatePanel();
+    }
+
     function updateConnection(status) {
       if (!state) return;
       const connection = status === "SUBSCRIBED"
@@ -282,6 +349,11 @@
         connection: "loading",
         rolls: [],
         message: "",
+        messageKind: "",
+        role: "",
+        historyRevision: 0,
+        confirmingClear: false,
+        clearing: false,
       };
       const title = `Rolagens ao vivo · ${state.campaignName}`;
       if (typeof view.openModal === "function") {
@@ -290,7 +362,7 @@
         modalRoot.innerHTML = `<div class="modal-backdrop"><div class="modal" role="dialog" aria-modal="true" aria-label="${escapeHtml(title)}"><div class="modal-body">${liveRollsPanelHtml(state)}</div><footer><button class="ghost" type="button" data-online-live-rolls-action="close">Fechar</button></footer></div></div>`;
       }
       try {
-        await service.requireCampaignMember(id);
+        const membership = await service.requireCampaignMember(id);
         const rolls = await service.listRecent(id);
         if (!state || token !== generation) return;
         state = {
@@ -298,13 +370,54 @@
           loading: false,
           connection: "connecting",
           rolls,
+          role: membership.role,
         };
         updatePanel();
-        subscription = service.subscribe(id, addRoll, updateConnection);
+        subscription = service.subscribe(id, addRoll, updateConnection, (revision) => applyHistoryClear(revision));
       } catch (error) {
         if (!state || token !== generation) return;
         state = { ...state, loading: false, connection: "error", message: friendlyLiveRollMessage(error) };
         updatePanel();
+      }
+    }
+
+    async function clearHistory(control) {
+      if (!state || state.role !== "gm" || !state.confirmingClear || state.clearing) return false;
+      state = { ...state, clearing: true, message: "", messageKind: "" };
+      updatePanel();
+      if (control) control.disabled = true;
+      try {
+        const result = await service.clearHistory(state.campaignId);
+        if (!state) return false;
+        state = {
+          ...state,
+          rolls: [],
+          historyRevision: result.historyRevision,
+          confirmingClear: false,
+          clearing: false,
+          message: result.deletedRolls === 1
+            ? "1 rolagem foi apagada permanentemente."
+            : `${result.deletedRolls} rolagens foram apagadas permanentemente.`,
+          messageKind: "success",
+        };
+        updatePanel();
+        if (typeof view.CustomEvent === "function") {
+          view.dispatchEvent?.(new view.CustomEvent("marufia:roll-history-cleared", {
+            detail: { campaignId: state.campaignId, historyRevision: result.historyRevision },
+          }));
+        }
+        return true;
+      } catch (error) {
+        if (!state) return false;
+        state = {
+          ...state,
+          confirmingClear: false,
+          clearing: false,
+          message: friendlyLiveRollMessage(error),
+          messageKind: "error",
+        };
+        updatePanel();
+        return false;
       }
     }
 
@@ -317,6 +430,20 @@
       if (control?.dataset?.onlineLiveRollsAction === "close") {
         void stop();
         if (!control.dataset.action) modalRoot.innerHTML = "";
+        return;
+      }
+      if (control?.dataset?.onlineLiveRollsAction === "clear" && state?.role === "gm") {
+        state = { ...state, confirmingClear: true, message: "", messageKind: "" };
+        updatePanel();
+        return;
+      }
+      if (control?.dataset?.onlineLiveRollsAction === "cancel-clear" && state?.role === "gm" && !state.clearing) {
+        state = { ...state, confirmingClear: false };
+        updatePanel();
+        return;
+      }
+      if (control?.dataset?.onlineLiveRollsAction === "confirm-clear") {
+        void clearHistory(control);
         return;
       }
       if (state && event.target.closest?.('[data-action="close-modal"]')) void stop();
@@ -337,6 +464,7 @@
     return Object.freeze({
       service,
       open,
+      clearHistory,
       stop,
       destroy() {
         void stop();
@@ -354,6 +482,7 @@
     MAX_LIVE_ROLLS,
     CONNECTION_LABELS,
     normalizedLiveRoll,
+    normalizedClearResult,
     friendlyLiveRollMessage,
     createLiveRollService,
     escapeHtml,

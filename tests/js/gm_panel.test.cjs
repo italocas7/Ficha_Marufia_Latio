@@ -314,10 +314,12 @@ test("subscribes only to panel data from one campaign", async () => {
     { event: "*", schema: "public", table: "campaign_presence", filter: `campaign_id=eq.${CAMPAIGN_ID}` },
     { event: "INSERT", schema: "public", table: "campaign_events", filter: `campaign_id=eq.${CAMPAIGN_ID}` },
     { event: "*", schema: "public", table: "campaign_sessions", filter: `campaign_id=eq.${CAMPAIGN_ID}` },
+    { event: "UPDATE", schema: "public", table: "campaigns", filter: `id=eq.${CAMPAIGN_ID}` },
   ]);
   environment.channel.bindings[0].listener({ new: characterRow() });
   environment.channel.bindings[1].listener({ new: { campaign_id: "77777777-7777-4777-8777-777777777777" } });
-  assert.equal(changes.length, 1);
+  environment.channel.bindings[4].listener({ new: { id: CAMPAIGN_ID, roll_history_revision: 2 } });
+  assert.equal(changes.length, 2);
   assert.equal(statuses.at(-1), "INVALID_PAYLOAD");
   await subscription.unsubscribe();
   assert.equal(environment.calls.removed.length, 1);

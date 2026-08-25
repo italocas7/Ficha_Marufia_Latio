@@ -1,4 +1,4 @@
-# Rolagens — Fases 22 a 26
+# Rolagens online
 
 As rolagens executadas pela ficha usam a camada reutilizável `src/core/rolls.js`. Ela cria um resultado com os dados individuais, o valor escolhido ou somado e o rótulo que a interface já apresentava. Modo, fórmula e modificador também acompanham o resultado para que a próxima fase possa registrá-lo sem reconstruir as regras.
 
@@ -43,6 +43,14 @@ Jogadores continuam publicando como `public` por padrão e a integração aceita
 O painel **Rolagens da campanha** fica disponível a todos os participantes, mas o Row Level Security filtra o histórico e os eventos Realtime individualmente. O nome do personagem é registrado como um pequeno retrato textual junto da rolagem, permitindo identificar resultados públicos sem abrir o documento integral da ficha para outros jogadores.
 
 Rolagens públicas anteriores feitas por um Mæstre são convertidas para `gm` quando a migration é aplicada. A resposta protegida de `record_roll` informa a visibilidade efetivamente decidida pelo banco, e a fila offline preserva o pedido `public` ou `secret` até a confirmação remota.
+
+## Limpeza permanente pelo Mæstre — 0.2.1
+
+Somente o vínculo exato `gm` recebe o botão **Limpar histórico**. A interface exige uma segunda confirmação e informa que a ação é irreversível. Jogadores, Mæstres assistentes e espectadores não recebem o controle.
+
+`public.clear_campaign_roll_history` confirma novamente autenticação, campanha e papel no servidor. A operação remove somente as linhas de `rolls` da campanha e os eventos `campaign_events` cujo tipo seja `roll`. PV, PM, condições, itens, presença, personagens e sessões não são alterados. O navegador continua sem `DELETE` direto em qualquer uma dessas tabelas.
+
+Uma revisão monotônica na campanha avisa os participantes conectados depois da confirmação da transação. O painel então descarta as entradas antigas sem assinar eventos `DELETE`, preservando a proteção das rolagens `secret` e `gm`.
 
 ## Fronteira de geração — Fase 26
 
