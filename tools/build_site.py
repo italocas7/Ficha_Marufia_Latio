@@ -17,6 +17,7 @@ CLIENT_FILES = [*dict.fromkeys(offline_build.REQUIRED_FILES)]
 SERVER_ENTRY = "server/index.js"
 UPDATE_MANIFEST = "app-update.json"
 UPDATE_MANIFEST_ASSET = ".marufia/app-update.json"
+PROJECT_CONFIG = "src/online/project.js"
 
 
 def checked_remove_tree(path: Path) -> None:
@@ -37,6 +38,16 @@ def copy_site() -> None:
             target = STAGE / "client" / UPDATE_MANIFEST_ASSET
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
+    subprocess.run(
+        [
+            offline_build.node_executable(),
+            "tools/public_config.cjs",
+            "render",
+            str(STAGE / "client" / PROJECT_CONFIG),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
     server_source = ROOT / SERVER_ENTRY
     server_target = STAGE / SERVER_ENTRY
     server_target.parent.mkdir(parents=True, exist_ok=True)
@@ -72,6 +83,14 @@ def validate_site() -> None:
         html = (DIST / "client" / page).read_text(encoding="utf-8")
         if "Ficha de Marufia" not in html:
             raise RuntimeError(f"Página inválida no pacote web: {page}")
+    project_config = (DIST / "client" / PROJECT_CONFIG).read_text(encoding="utf-8")
+    if "__MARUFIA_PUBLIC_CONFIG__" in project_config:
+        raise RuntimeError("A configuração pública não foi gerada no pacote web.")
+    subprocess.run(
+        [offline_build.node_executable(), "--check", str(DIST / "client" / PROJECT_CONFIG)],
+        cwd=ROOT,
+        check=True,
+    )
 
 
 def main() -> None:

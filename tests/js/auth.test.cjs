@@ -101,10 +101,13 @@ test("signs up with display metadata and reports required email confirmation", a
   });
 });
 
-test("rejects an insecure confirmation redirect before creating an account", () => {
+test("allows loopback development redirects and rejects insecure external redirects", () => {
   const { client } = fakeClient();
-  assert.throws(
+  assert.doesNotThrow(
     () => authTools.createAuthService(client, { emailRedirectTo: "http://127.0.0.1:4173" }),
+  );
+  assert.throws(
+    () => authTools.createAuthService(client, { emailRedirectTo: "http://marufia.example.com" }),
     /confirmação.*inválido/i,
   );
 });

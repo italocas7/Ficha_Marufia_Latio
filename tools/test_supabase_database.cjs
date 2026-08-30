@@ -1,5 +1,5 @@
-const projectConfig = require("../src/online/project.js");
 const configTools = require("../src/online/config.js");
+const { loadPublicConfig } = require("./public_config.cjs");
 
 const tables = [
   "profiles",
@@ -313,7 +313,7 @@ async function requireAnonymousCampaignManagementBlocked(config) {
 }
 
 (async () => {
-  const config = configTools.readPublicConfig(projectConfig);
+  const config = configTools.readPublicConfig(loadPublicConfig());
   await Promise.all([
     ...tables.map((table) => requireLockedTable(config, table)),
     requireAuthenticatedJoin(config),

@@ -1,7 +1,7 @@
-const projectConfig = require("../src/online/project.js");
 const configTools = require("../src/online/config.js");
 const supabaseTools = require("../src/online/supabase.js");
 const supabaseSdk = require("@supabase/supabase-js");
+const { loadPublicConfig } = require("./public_config.cjs");
 
 async function requireOk(label, url, headers) {
   const response = await fetch(url, { headers });
@@ -34,7 +34,7 @@ async function requireReachableDataApi(config, headers) {
 }
 
 (async () => {
-  const config = configTools.readPublicConfig(projectConfig);
+  const config = configTools.readPublicConfig(loadPublicConfig());
   const client = supabaseTools.createSupabaseClient(config, supabaseSdk);
   if (!client) throw new Error("O cliente Supabase não foi criado.");
   const headers = {

@@ -1,11 +1,12 @@
 "use strict";
 
 const { createClient } = require("@supabase/supabase-js");
-const project = require("../src/online/project.js");
+const { loadPublicConfig } = require("./public_config.cjs");
 
 const FAILURE_STATES = new Set(["CHANNEL_ERROR", "TIMED_OUT"]);
 
 async function main(timeoutMs = 15_000) {
+  const project = loadPublicConfig();
   const client = createClient(project.supabaseUrl, project.publishableKey, {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
   });

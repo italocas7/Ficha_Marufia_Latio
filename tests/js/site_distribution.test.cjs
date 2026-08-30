@@ -22,6 +22,9 @@ test("builds the hosted package only from the validated runtime files", () => {
   assert.match(source, /"server\/index\.js"/);
   assert.match(source, /STAGE \/ "client" \/ relative/);
   assert.match(source, /offline_build\.REQUIRED_FILES/);
+  assert.match(source, /"tools\/public_config\.cjs"/);
+  assert.match(source, /"render"/);
+  assert.match(source, /__MARUFIA_PUBLIC_CONFIG__/);
 });
 
 test("keeps browser files in dist/client and the Worker in dist/server", () => {

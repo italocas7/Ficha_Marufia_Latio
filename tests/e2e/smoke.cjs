@@ -3,6 +3,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
+const publicConfig = require("../../tools/public_config.cjs");
 
 const projectRoot = path.resolve(__dirname, "..", "..");
 const root = process.env.MARUFIA_E2E_ROOT
@@ -29,6 +30,13 @@ function server() {
       return;
     }
     response.writeHead(200, { "Content-Type": mime[path.extname(target)] || "application/octet-stream" });
+    if (relative === "src/online/project.js") {
+      const source = fs.readFileSync(target, "utf8");
+      response.end(source.includes(publicConfig.CONFIG_TOKEN)
+        ? publicConfig.renderProjectSource(publicConfig.loadPublicConfig(), source)
+        : source);
+      return;
+    }
     fs.createReadStream(target).pipe(response);
   });
 }

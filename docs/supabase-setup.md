@@ -1,28 +1,72 @@
-# Supabase — Fases 4 a 34
+# Supabase — configuração pública por ambiente
 
-Esta fase prepara o projeto sem criar ou conectar um projeto remoto. A ficha continua totalmente local quando não existe configuração pública.
+O Marufia pode gerar o site e o aplicativo Windows para três destinos sem alterar o código da ficha:
+
+- `cloud`: Supabase Cloud atual e fallback seguro durante a migração;
+- `local`: Supabase em `localhost`, destinado a desenvolvimento;
+- `selfhosted`: gateway HTTPS do futuro Marufia Server.
+
+O arquivo-fonte `src/online/project.js` permanece sem endereço ou chave. `pnpm build:site` valida o ambiente escolhido e grava somente URL, chave pública, modo e endereço de retorno dentro de `dist/client/src/online/project.js`. O build falha antes de criar um pacote se a configuração estiver incompleta ou insegura.
+
+## Selecionar um ambiente
+
+O perfil versionado `config/public-backends/cloud.env` mantém o Cloud atual como padrão. Para selecionar outro ambiente, copie `.env.example` para `.env.local` e altere apenas os valores públicos:
+
+```dotenv
+MARUFIA_BUILD_ENV=local
+MARUFIA_BACKEND_MODE=local
+SUPABASE_URL=http://127.0.0.1:54321
+SUPABASE_PUBLISHABLE_KEY=<chave pública local>
+MARUFIA_SITE_URL=http://127.0.0.1:4173
+```
+
+Para o futuro servidor publicado:
+
+```dotenv
+MARUFIA_BUILD_ENV=production
+MARUFIA_BACKEND_MODE=selfhosted
+SUPABASE_URL=https://api.marufia.example
+SUPABASE_PUBLISHABLE_KEY=<chave pública do servidor>
+MARUFIA_SITE_URL=https://marufia.example
+```
+
+A ordem de precedência, do menor para o maior, é:
+
+1. perfil em `config/public-backends/<modo>.env`;
+2. `.env`;
+3. `.env.<ambiente>`;
+4. `.env.local`;
+5. variáveis do processo que executa o build.
+
+Os ambientes aceitos são `development`, `production` e `local`. Endereços externos precisam usar HTTPS; HTTP é aceito somente para `localhost`/loopback. O modo `local` não aceita servidores externos, e o modo `selfhosted` não aceita por engano um projeto `supabase.co`.
 
 ## Componentes
 
 - `@supabase/supabase-js` fornece o cliente oficial do navegador;
 - `vendor/supabase.js` mantém uma cópia local para preservar o funcionamento sem CDN;
-- `src/online/config.js` valida somente configuração pública;
+- `src/online/config.js` valida a configuração já entregue ao navegador;
 - `src/online/supabase.js` cria um único cliente quando a configuração existir;
+- `tools/public_config.cjs` seleciona, valida e gera o ambiente público;
 - `supabase/config.toml` registra o ambiente local da ferramenta oficial;
 - `supabase/migrations/` receberá o schema versionado a partir da Fase 6.
 
 ## Valores permitidos no aplicativo
 
-O arquivo `.env.example` registra apenas:
+Os arquivos públicos registram apenas:
 
+- `MARUFIA_BACKEND_MODE`;
+- `MARUFIA_BUILD_ENV`;
 - `SUPABASE_URL`;
-- `SUPABASE_PUBLISHABLE_KEY`.
+- `SUPABASE_PUBLISHABLE_KEY` (ou o nome legado `SUPABASE_ANON_KEY`);
+- `MARUFIA_SITE_URL`.
 
-A chave `publishable` foi criada para uso em aplicações públicas e depende das políticas de Row Level Security. Chaves `secret`, `service_role`, senhas e tokens administrativos nunca podem ser incluídos no aplicativo, no repositório ou em arquivos exportados.
+A chave `publishable` foi criada para uso em aplicações públicas e depende das políticas de Row Level Security. Chaves `secret`, JWT com papel `service_role`, senhas e tokens administrativos são rejeitados e nunca podem ser incluídos no aplicativo, no repositório ou em arquivos exportados.
+
+`MARUFIA_SITE_URL` controla o retorno da confirmação de conta e a consulta do manifesto do aplicativo Windows. HTTPS é obrigatório fora da própria máquina; endereços HTTP de loopback são aceitos somente para desenvolvimento.
 
 ## Fluxo futuro
 
-O projeto gratuito `Marufia Online` foi criado na Fase 5 na região de São Paulo. `src/online/project.js` fornece ao aplicativo somente a URL e a chave `publishable`. A chave secreta e a senha do banco não fazem parte do código.
+O projeto gratuito `Marufia Online` foi criado na Fase 5 na região de São Paulo. O perfil Cloud fornece ao pacote somente a URL e a chave `publishable`. A chave secreta e a senha do banco não fazem parte do código.
 
 O teste de conexão verifica os serviços Auth e Data API sem criar usuários ou dados. A Fase 6 adiciona a primeira migration versionada com as seis tabelas da fundação online, índices, constraints e RLS bloqueado por padrão.
 

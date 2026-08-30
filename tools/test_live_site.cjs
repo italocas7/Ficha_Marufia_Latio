@@ -1,6 +1,11 @@
 "use strict";
 
-const LIVE_URL = "https://ficha-marufia-latio.italocas7.chatgpt.site";
+const vm = require("node:vm");
+const configTools = require("../src/online/config.js");
+const { loadPublicConfig } = require("./public_config.cjs");
+
+const expectedProject = loadPublicConfig();
+const LIVE_URL = String(process.env.MARUFIA_LIVE_URL || expectedProject.siteUrl).replace(/\/+$/, "");
 
 async function fetchChecked(pathname, expectedType) {
   const response = await fetch(`${LIVE_URL}${pathname}`, {
@@ -24,7 +29,13 @@ async function main() {
 
   const project = await fetchChecked("/src/online/project.js", "javascript");
   const source = await project.text();
-  if (!source.includes("nuczqjyahusjyvepqthx.supabase.co") || source.includes("sb_secret_")) {
+  const sandbox = {};
+  vm.runInNewContext(source, sandbox, { timeout: 1000 });
+  const actualProject = sandbox.MARUFIA_ONLINE_CONFIG;
+  const actual = configTools.readPublicConfig(actualProject);
+  if (actual.supabaseUrl !== expectedProject.supabaseUrl
+    || actual.publishableKey !== expectedProject.publishableKey
+    || source.includes("sb_secret_")) {
     throw new Error("A identidade pública do backend no site é inválida.");
   }
 

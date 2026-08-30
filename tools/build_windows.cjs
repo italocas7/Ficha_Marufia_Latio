@@ -4,6 +4,7 @@ const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const { loadPublicConfig, tauriConfigOverlay } = require("./public_config.cjs");
 
 const root = path.resolve(__dirname, "..");
 const tauriRoot = path.join(root, "src-tauri");
@@ -32,7 +33,8 @@ function runTauriBuild() {
   if (!fs.existsSync(tauriCli)) {
     throw new Error("Tauri CLI ausente. Execute pnpm install antes do build.");
   }
-  const result = spawnSync(process.execPath, [tauriCli, "build", "--bundles", "nsis"], {
+  const overlay = JSON.stringify(tauriConfigOverlay(loadPublicConfig()));
+  const result = spawnSync(process.execPath, [tauriCli, "build", "--bundles", "nsis", "--config", overlay], {
     cwd: root,
     env: process.env,
     stdio: "inherit",

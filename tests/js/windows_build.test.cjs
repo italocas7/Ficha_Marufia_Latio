@@ -35,6 +35,8 @@ test("exposes one stable Windows build command and delivery names", () => {
   assert.match(buildScript, /Marufia-Setup\.exe/);
   assert.match(buildScript, /windows-artifacts\.json/);
   assert.match(buildScript, /sha256/);
+  assert.match(buildScript, /tauriConfigOverlay\(loadPublicConfig\(\)\)/);
+  assert.match(buildScript, /"--config", overlay/);
   assert.equal(currentReleaseVersion(), packageJson.version);
   assert.match(buildScript, /expectedSuffix/);
 });

@@ -43,6 +43,16 @@
     return email;
   }
 
+  function isAllowedRedirectUrl(value) {
+    try {
+      const url = new URL(String(value));
+      const loopback = ["127.0.0.1", "localhost", "[::1]", "::1"].includes(url.hostname.toLowerCase());
+      return url.protocol === "https:" || (url.protocol === "http:" && loopback);
+    } catch {
+      return false;
+    }
+  }
+
   function friendlyAuthMessage(error) {
     if (error?.userMessage) return error.userMessage;
     const detail = `${error?.code ?? ""} ${error?.message ?? ""}`.toLowerCase();
@@ -75,7 +85,7 @@
   function createAuthService(client, options = {}) {
     if (!client?.auth) throw authError("LAT-AUTH-CLIENT-001", "O serviço de conta não está disponível.");
     const emailRedirectTo = String(options.emailRedirectTo ?? options.siteUrl ?? "").trim();
-    if (emailRedirectTo && !/^https:\/\//i.test(emailRedirectTo)) {
+    if (emailRedirectTo && !isAllowedRedirectUrl(emailRedirectTo)) {
       throw authError("LAT-AUTH-CLIENT-002", "O endereço de confirmação da conta é inválido.");
     }
 
@@ -399,6 +409,7 @@
     PROFILE_COLUMNS,
     validateAuthInput,
     validateConfirmationEmail,
+    isAllowedRedirectUrl,
     friendlyAuthMessage,
     fallbackProfile,
     createAuthService,

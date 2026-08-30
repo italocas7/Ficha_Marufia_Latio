@@ -3,6 +3,7 @@ const assert = require("node:assert/strict");
 const configTools = require("../../src/online/config.js");
 const supabaseTools = require("../../src/online/supabase.js");
 const projectConfig = require("../../src/online/project.js");
+const { loadPublicConfig } = require("../../tools/public_config.cjs");
 
 function fakeSdk() {
   const calls = [];
@@ -21,13 +22,15 @@ function serviceRoleJwt() {
   return `${encode({ alg: "HS256" })}.${encode({ role: "service_role" })}.signature`;
 }
 
-test("ships only the configured public project identity", () => {
-  const config = configTools.readPublicConfig(projectConfig);
+test("keeps source unconfigured and resolves only the selected public project identity", () => {
+  assert.equal(configTools.readPublicConfig(projectConfig).configured, false);
+  const resolved = loadPublicConfig();
+  const config = configTools.readPublicConfig(resolved);
   assert.equal(config.configured, true);
   assert.match(config.supabaseUrl, /^https:\/\/[a-z]+\.supabase\.co$/);
   assert.match(config.publishableKey, /^sb_publishable_/);
   assert.doesNotMatch(config.publishableKey, /^sb_secret_/);
-  assert.equal(projectConfig.siteUrl, "https://ficha-marufia-latio.italocas7.chatgpt.site");
+  assert.equal(resolved.siteUrl, "https://ficha-marufia-latio.italocas7.chatgpt.site");
 });
 
 test("keeps online mode disabled when no public config exists", () => {
