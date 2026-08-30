@@ -4,6 +4,7 @@ __pycache__/
 *.pyc
 test-results/
 playwright-report/
+/debug.log
 .env
 .env.*
 !.env.example

@@ -1,0 +1,24 @@
+# Configuração privada
+.env
+.env.*
+!.env.example
+
+# Dados persistentes e artefatos operacionais
+backups/**
+!backups/.gitkeep
+logs/**
+!logs/.gitkeep
+storage/**
+!storage/.gitkeep
+data/**
+volumes/**
+
+# Credenciais do Cloudflare Tunnel
+cloudflare/*-credentials.json
+cloudflare/cert.pem
+cloudflare/*.key
+cloudflare/*.token
+
+# Estado temporário de ferramentas
+supabase/.temp/
+supabase/.branches/
