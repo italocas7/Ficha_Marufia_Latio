@@ -77,6 +77,31 @@ def validate_database(database: dict) -> list[str]:
             if entry.get("action") != entry.get("activationAction"):
                 errors.append(f"{name} N{entry.get('level')}: alias action diverge de activationAction.")
 
+    expected_fina_ids = {
+        "fina", "a-fio-de-awen", "d-corte-do-vento-errante", "e-linha-do-gl-dio",
+        "f-duelo-da-fronteira", "m-faceta-fluida", "n-tra-o-de-jade",
+        "p-cargas-de-t-mpera", "q-presa-sob-a-neve",
+    }
+    spells_by_id = {spell.get("id"): spell for spell in spells}
+    for spell_id in expected_fina_ids:
+        spell = spells_by_id.get(spell_id)
+        if not spell:
+            errors.append(f"Sistema Beta: Magia Fina ausente {spell_id}.")
+            continue
+        n4, n6 = spell["levels"][3], spell["levels"][5]
+        if "cone de até 6 metros" not in n4.get("text", "") or n4.get("activationCost") != 4:
+            errors.append(f"{spell.get('name')} N4: cone universal ou custo de 4 PM ausente.")
+        if "Imbuimento de Fina pode ser realizado como Ação Livre" not in n6.get("text", ""):
+            errors.append(f"{spell.get('name')} N6: Imbuimento universal ausente.")
+        if n6.get("activationCost") != 5 or n6.get("activationAction") != "free":
+            errors.append(f"{spell.get('name')} N6: esperado 5 PM e Ação Livre.")
+
+    expected_shields = ["broquel", "escudo-redondo", "escudo-de-gota", "escudo-grande", "escudo-torre"]
+    if [shield.get("id") for shield in database.get("shields", [])] != expected_shields:
+        errors.append("Escudos do Sistema Beta estão ausentes ou fora da ordem oficial.")
+    if any(armor.get("category") == "Escudo" for armor in database.get("armors", [])):
+        errors.append("O Escudo genérico antigo não deve permanecer na tabela de armaduras.")
+
     perception = next((skill for skill in database.get("skills", []) if skill.get("name") == "Percepção"), None)
     if not perception or perception.get("base") != 15:
         errors.append("Percepção deve existir na base com valor 15.")
@@ -173,6 +198,7 @@ def load_canonical() -> dict:
         database,
         talent_rules=load_json(ROOT / "data-src" / "talent_rules.json"),
         spell_overrides=load_json(ROOT / "data-src" / "spell_mechanics_overrides.json"),
+        system_beta_rules=load_json(ROOT / "data-src" / "system_beta_rules.json"),
     )
 
 

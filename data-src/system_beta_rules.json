@@ -1,0 +1,93 @@
+{
+  "schema": "latio-system-beta-rules-1",
+  "finaSpellIds": [
+    "fina",
+    "a-fio-de-awen",
+    "d-corte-do-vento-errante",
+    "e-linha-do-gl-dio",
+    "f-duelo-da-fronteira",
+    "m-faceta-fluida",
+    "n-tra-o-de-jade",
+    "p-cargas-de-t-mpera",
+    "q-presa-sob-a-neve"
+  ],
+  "universalFinaLevels": {
+    "4": {
+      "marker": "cone de até 6 metros",
+      "text": "Além disso, a Magia Fina pode ser lançada em um cone de até 6 metros. Todos os alvos dentro da área podem ser afetados pelo dano e pelos efeitos correspondentes ao nível de Fina utilizado, sem aumento ou redução do dano. Consome 4 PM."
+    },
+    "6": {
+      "marker": "Imbuimento de Fina pode ser realizado como Ação Livre",
+      "text": "Além disso, o Imbuimento de Fina pode ser realizado como Ação Livre. Consome 5 PM."
+    }
+  },
+  "facetaFluida": {
+    "id": "m-faceta-fluida",
+    "name": "Faceta Fluida",
+    "regionCode": "M",
+    "region": "Al-Ardura",
+    "baseType": "Fina",
+    "regional": true,
+    "description": "A Faceta Fluida usa Cargas de Faceta, que representam a Energia Fina mantida circulando pela lâmina, ponta ou fio da arma. As Cargas funcionam com armas compatíveis com Magia Fina e permitem Corte de Correção, Corte de Retorno ou Corte de Junta.",
+    "levels": [
+      { "level": 1, "text": "Com uma ação bônus, você imbui uma arma compatível com Magia Fina, causando 1d6 de dano cortante mágico. Você recebe 1 Carga de Faceta. Pode gastar essa Carga para usar Corte de Correção ou Corte de Retorno, com -15 no teste de ataque. Se acertar, causa o dano da arma e mágico. Consome 1 PM e 1 PM para ativar a Carga." },
+      { "level": 2, "text": "Você pode lançar a Magia Fina até 9m. As Cargas de Faceta só podem ser usadas em ataques feitos com a arma imbuída. Consome 1 PM." },
+      { "level": 3, "text": "A magia causa 2d6 de dano. O Corte de Correção e o Corte de Retorno passam a sofrer apenas -10 no teste de ataque. O Corte de Junta ignora 5 de CA contra armaduras médias, pesadas ou escudos. Consome 2 PM." },
+      { "level": 4, "text": "Se estiver em espaço aberto o bastante para girar ou reposicionar a arma, o Corte de Retorno pode atingir outro alvo adjacente. Em local apertado, corredor estreito ou multidão travada, só pode atingir o mesmo alvo." },
+      { "level": 5, "text": "A magia causa 2d8 de dano e a arma pode permanecer imbuída por 4 turnos. Você recebe 4 Cargas de Faceta. Enquanto a arma estiver imbuída, pode gastar 1 Carga por rodada. O Corte de Correção ou Retorno contra o mesmo alvo não sofre penalidade; contra outro alvo adjacente sofre -10. Consome 4 PM, 1 PM por turno mantido e 2 PM para ativar cada Carga." },
+      { "level": 6, "text": "Quando usar Corte de Junta contra armadura média, pesada ou escudo, o ataque ignora 10 de CA se for contra o mesmo alvo que você atacou no início do turno. Esse efeito só pode ocorrer uma vez por rodada." },
+      { "level": 7, "text": "A magia causa 3d8 de dano. Quando o Corte de Retorno acertar o mesmo alvo do ataque principal, causa também +1d4 de dano cortante mágico. Consome 5 PM e 2 PM para ativar cada Carga." },
+      { "level": 8, "text": "Você aprende a Hélice de Fina. Em vez de criar uma arma natural de Magia Fina, você pode girar ou conduzir a arma imbuída em um arco rápido de Energia Fina. Escolha até 2 alvos adjacentes ao seu alcance. Faça um ataque contra cada um. O primeiro alvo sofre o dano normal da arma + 3d6 de dano cortante mágico; o segundo sofre o dano da arma e metade do dano mágico. Esse ataque custa 2 Cargas. Consome 4 PM e dura apenas o giro." },
+      { "level": 9, "text": "A magia causa 4d8 de dano. Você recebe 5 Cargas de Faceta. Uma vez por rodada, ao usar Corte de Junta, pode ignorar 10 de CA contra armadura média, pesada ou escudo, mesmo se for o primeiro ataque contra aquele alvo. Consome 8 PM, 3 PM por turno mantido e 3 PM para ativar cada Carga." },
+      { "level": 10, "text": "A arma natural da Magia Fina pode ser usada normalmente, se o jogador preferir. Você também pode aperfeiçoar a Hélice de Fina: ela pode atingir até 3 alvos adjacentes, mas apenas um recebe o dano mágico completo. Você recebe 6 Cargas de Faceta e pode gastar até 2 Cargas por rodada. Consome 8 PM e 3 PM para ativar cada Carga." }
+    ]
+  },
+  "shields": [
+    {
+      "id": "broquel",
+      "name": "Broquel",
+      "price": { "D": 2, "C": 5 },
+      "weight": "1 kg",
+      "ca": 3,
+      "block": { "cortante": 1, "perfurante": 1, "contundente": 1 },
+      "property": "+10 em Aparar contra ataques corpo a corpo. O bônus não se aplica contra ataques à distância. Aumenta o Bloqueio em 1."
+    },
+    {
+      "id": "escudo-redondo",
+      "name": "Escudo Redondo",
+      "price": { "D": 5, "C": 15 },
+      "weight": "3 kg",
+      "ca": 5,
+      "block": { "cortante": 2, "perfurante": 2, "contundente": 2 },
+      "property": "+10 em Receber Investida. Em sucesso superior ao atacante, neutraliza a Investida e pode empurrá-lo 1,5m. Aumenta o Bloqueio em 2."
+    },
+    {
+      "id": "escudo-de-gota",
+      "name": "Escudo de Gota",
+      "price": { "D": 8, "C": 24 },
+      "weight": "5 kg",
+      "ca": 6,
+      "block": { "cortante": 3, "perfurante": 3, "contundente": 3 },
+      "property": "Pode ser utilizado para imbuir magias. Aumenta o Bloqueio em 3."
+    },
+    {
+      "id": "escudo-grande",
+      "name": "Escudo Grande",
+      "price": { "D": 10, "C": 30 },
+      "weight": "6 kg",
+      "ca": 7,
+      "block": { "cortante": 0, "perfurante": 0, "contundente": 0 },
+      "property": "Quando adjacente a um aliado com Escudo Grande, recebe +2 de Bloqueio e +10 de CA contra ataques da direção protegida. O bônus termina quando a formação se rompe."
+    },
+    {
+      "id": "escudo-torre",
+      "name": "Escudo-Torre",
+      "price": { "D": 12, "C": 26 },
+      "weight": "8 kg",
+      "ca": 8,
+      "block": { "cortante": 0, "perfurante": 0, "contundente": 0 },
+      "skillMods": [{ "skill": "Esquivar", "value": -10 }],
+      "property": "Impõe -10 em Esquivar. Pode gastar Ação de Movimento para firmá-lo e receber Cobertura de 2/3 até se deslocar ou abandonar a posição."
+    }
+  ]
+}

@@ -6,10 +6,11 @@
     "Book.xlsx",
     "Leis do Mundo definitivas fornecidas pelo usuário em 2026-08-08",
     "Talentos definitivos fornecidos pelo usuário em 2026-08-09",
+    "Regras do Sistema Beta para Magia Fina, Escudos, Fissura Celeste e Aparar fornecidas pelo usuário em 2026-08-29",
     "Ficha Marufia Automática.pdf usada como referência visual e de campos."
   ],
   "bootstrap": {
     "file": "data.js",
-    "sha256": "d8b607f32811308a6dfd01718a27d0350549517fec5ccd482d874282ff06fb4b"
+    "sha256": "c277fb214250e871374b17aa72ff31cbba8d1dafdbb2e81c045f08ba51f65e8f"
   }
 }

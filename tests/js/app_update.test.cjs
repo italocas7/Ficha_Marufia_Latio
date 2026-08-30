@@ -247,11 +247,11 @@ test("opens only the validated release and reports a friendly Windows failure", 
   assert.equal(failure.modal.open, true);
 });
 
-test("escapes notes and ships the prepared 0.2.1 public contract", () => {
+test("escapes notes and ships the prepared 0.2.2 public contract", () => {
   const html = updates.updateBodyHtml({ ...validManifest, notes: "<img src=x onerror=alert(1)>" }, "0.2.0");
   assert.doesNotMatch(html, /<img/);
   assert.match(html, /&lt;img/);
   const manifest = JSON.parse(fs.readFileSync(path.join(root, "app-update.json"), "utf8"));
-  assert.equal(manifest.version, "0.2.1");
+  assert.equal(manifest.version, "0.2.2");
   assert.deepEqual(updates.validateManifest(manifest), manifest);
 });

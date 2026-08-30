@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 import re
 
 
@@ -168,6 +169,54 @@ def apply_spell_overrides(spells: list[dict], payload: dict | None) -> None:
         entry["mechanicsSource"]["secondaryActions"] = "override"
 
 
+def apply_system_beta_rules(database: dict, payload: dict | None) -> None:
+    """Apply user-approved System Beta rules before mechanical normalization."""
+    if not payload:
+        return
+
+    faceta = payload.get("facetaFluida")
+    if faceta:
+        region_m = next((region for region in database.get("regions", []) if region.get("code") == "M"), None)
+        if not region_m:
+            raise ValueError("Sistema Beta: Região M não encontrada para Faceta Fluida.")
+        region_m["magics"] = [magic for magic in region_m.get("magics", []) if magic.get("id") != faceta.get("id")]
+        region_m["magics"].append(deepcopy(faceta))
+        masafir = next((culture for culture in region_m.get("cultures", []) if culture.get("id") == "masafir"), None)
+        if masafir and "REGIÃO M: FACETA FLUIDA" in str(masafir.get("weakness", "")):
+            masafir["weakness"] = str(masafir["weakness"]).split("REGIÃO M: FACETA FLUIDA", 1)[0].strip()
+
+    fina_ids = set(payload.get("finaSpellIds", []))
+    additions = {int(level): rule for level, rule in payload.get("universalFinaLevels", {}).items()}
+    spells = [*database.get("baseSpells", [])]
+    spells.extend(spell for region in database.get("regions", []) for spell in region.get("magics", []))
+    found_fina_ids = set()
+    for spell in spells:
+        if spell.get("id") not in fina_ids:
+            continue
+        found_fina_ids.add(spell.get("id"))
+        if spell.get("baseType") != "Fina":
+            raise ValueError(f"Sistema Beta: {spell.get('name')} deveria usar Base Fina.")
+        entries = {int(entry.get("level", 0) or 0): entry for entry in spell.get("levels", [])}
+        for level, rule in additions.items():
+            entry = entries.get(level)
+            if not entry:
+                raise ValueError(f"Sistema Beta: {spell.get('name')} não possui N{level}.")
+            marker = compact(rule.get("marker"))
+            previous = compact(entry.get("text"))
+            if re.fullmatch(r"[-—–]+", previous):
+                previous = ""
+            if marker and marker.casefold() not in previous.casefold():
+                entry["text"] = compact(f"{previous} {rule.get('text', '')}")
+    missing_fina = sorted(fina_ids - found_fina_ids)
+    if missing_fina:
+        raise ValueError(f"Sistema Beta: magias Fina ausentes: {missing_fina}.")
+
+    shields = payload.get("shields", [])
+    if shields:
+        database["armors"] = [armor for armor in database.get("armors", []) if armor.get("category") != "Escudo"]
+        database["shields"] = deepcopy(shields)
+
+
 def normalize_talents(database: dict, payload: dict | None) -> None:
     rules = payload.get("rules", {}) if payload else {}
     talents = database.get("talents", [])
@@ -208,7 +257,13 @@ def normalize_talents(database: dict, payload: dict | None) -> None:
         )
 
 
-def normalize_database(database: dict, talent_rules: dict | None = None, spell_overrides: dict | None = None) -> dict:
+def normalize_database(
+    database: dict,
+    talent_rules: dict | None = None,
+    spell_overrides: dict | None = None,
+    system_beta_rules: dict | None = None,
+) -> dict:
+    apply_system_beta_rules(database, system_beta_rules)
     spells = [*database.get("baseSpells", [])]
     spells.extend(spell for region in database.get("regions", []) for spell in region.get("magics", []))
     for spell in spells:

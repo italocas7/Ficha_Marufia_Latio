@@ -1,17 +1,18 @@
 # Versionamento — Fase 47
 
-O produto adota [Semantic Versioning](https://semver.org/lang/pt-BR/) e está na versão **0.2.1**, com a identidade visível **Marufia Online Alpha**. O número canônico fica em `package.json` e precisa coincidir com Tauri, Cargo, o manifesto de atualização e a informação exibida no aplicativo.
+O produto adota [Semantic Versioning](https://semver.org/lang/pt-BR/) e está na versão **0.2.2**, com a identidade visível **Marufia Online Alpha**. O número canônico fica em `package.json` e precisa coincidir com Tauri, Cargo, o manifesto de atualização e a informação exibida no aplicativo.
 
 Durante o desenvolvimento inicial:
 
 - `0.1.0`: primeiro Alpha integrado;
 - `0.2.0`: aviso seguro de novas versões no aplicativo Windows;
 - `0.2.1`: correções da visualização completa de personagens, do zoom e dos cartões no aplicativo Windows;
+- `0.2.2`: atualização da ficha automática com as regras do Sistema Beta fornecidas pelo usuário;
 - `0.3.0` e demais versões `0.x`: novos ciclos compatíveis do Alpha;
 - correções que não acrescentam capacidade usam o incremento de patch;
 - `1.0.0`: primeira versão declarada estável, somente após os critérios de lançamento próprios.
 
-O rótulo **Alpha** descreve o canal atual e não é acrescentado ao número `0.2.1`. Assim, o instalador conserva um número aceito pelo empacotamento Windows enquanto a interface comunica claramente que o produto ainda está em desenvolvimento.
+O rótulo **Alpha** descreve o canal atual e não é acrescentado ao número `0.2.2`. Assim, o instalador conserva um número aceito pelo empacotamento Windows enquanto a interface comunica claramente que o produto ainda está em desenvolvimento.
 
 ## Contratos independentes
 

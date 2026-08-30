@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#100b18">
+    <title>Visualização do Mæstre · Ficha de Marufia</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="marufia_latio_design.css">
+  </head>
+  <body data-gm-view="true">
+    <header class="topbar gm-view-topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">L</div>
+        <div>
+          <span class="gm-view-badge">VISUALIZAÇÃO DO MÆSTRE</span>
+          <h1>Ficha de Marufia (Latio)</h1>
+          <p id="statusLine" aria-live="polite">Carregando ficha vinculada…</p>
+        </div>
+      </div>
+    </header>
+
+    <nav id="tabs" class="tabs" role="tablist" aria-label="Abas da ficha visualizada"></nav>
+    <main id="app" class="app" role="tabpanel" aria-busy="true"></main>
+
+    <div id="modalRoot"></div>
+    <div id="toastRoot" class="toast-root" aria-live="assertive" aria-atomic="true"></div>
+
+    <script src="data.js"></script>
+    <script src="item_descriptions.js"></script>
+    <script src="magic_cores.js"></script>
+    <script src="vendor/pdf_file_loader.js"></script>
+    <script src="pdf_import.js"></script>
+    <script src="src/core/storage.js"></script>
+    <script src="src/core/state.js"></script>
+    <script src="src/core/rules.js"></script>
+    <script src="src/core/rolls.js"></script>
+    <script src="app.js"></script>
+    <script src="src/online/gm_view.js"></script>
+  </body>
+</html>

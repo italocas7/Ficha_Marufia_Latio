@@ -491,6 +491,7 @@ def load_canonical_database():
         database,
         talent_rules=load_json(DATA_SOURCE / "talent_rules.json"),
         spell_overrides=load_json(DATA_SOURCE / "spell_mechanics_overrides.json"),
+        system_beta_rules=load_json(DATA_SOURCE / "system_beta_rules.json"),
     )
 
 
@@ -518,6 +519,7 @@ def main():
             build_database_from_extracts(),
             talent_rules=load_json(DATA_SOURCE / "talent_rules.json"),
             spell_overrides=load_json(DATA_SOURCE / "spell_mechanics_overrides.json"),
+            system_beta_rules=load_json(DATA_SOURCE / "system_beta_rules.json"),
         )
         laws = load_json(DATA_SOURCE / "world_laws.json") if (DATA_SOURCE / "world_laws.json").exists() else db.pop("worldLaws", [])
         db.pop("worldLaws", None)

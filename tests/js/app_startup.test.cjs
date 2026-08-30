@@ -31,6 +31,7 @@ function createSandbox(initialState = null) {
   const elements = Object.fromEntries([
     "tabs", "statusLine", "app", "modalRoot", "toastRoot", "worldDurationTurns", "worldDurationFeedback",
     "combatRollSkill", "combatTargetCa", "combatSkillValue", "combatCaValue", "combatTargetValue",
+    "parrySkill", "fissureSpend", "fissureChosenNumber", "fissureAttemptPreview",
   ].map((id) => [id, createElement()]));
   const body = createElement();
   const document = {
@@ -520,4 +521,86 @@ test("applies Lobo Solitário attack and CA only while enabled", () => {
   vm.runInContext('toggleTalent("lobo")', sandbox);
   assert.equal(vm.runInContext('skillFinal("Lutar (Brigar)")', sandbox), baseAttack + 5);
   assert.equal(vm.runInContext("caBreakdown().total", sandbox), baseCa + 5);
+});
+
+test("migrates the legacy shield and applies specialized shield rules", () => {
+  const { sandbox } = createSandbox();
+  const baseCa = vm.runInContext("caBreakdown().total", sandbox);
+  const baseBlock = vm.runInContext("caBreakdown().block.cortante", sandbox);
+  vm.runInContext('state.inventory.shield = true; state.inventory.shieldId = ""; normalizeState(state)', sandbox);
+  assert.equal(vm.runInContext("selectedShield().id", sandbox), "escudo-redondo");
+  assert.equal(vm.runInContext("caBreakdown().total", sandbox), baseCa + 5);
+  assert.equal(vm.runInContext("caBreakdown().block.cortante", sandbox), baseBlock + 2);
+
+  vm.runInContext('state.inventory.shieldId = "escudo-grande"; state.inventory.shieldMode = "formation"', sandbox);
+  assert.equal(vm.runInContext("caBreakdown().total", sandbox), baseCa + 17);
+  assert.equal(vm.runInContext("caBreakdown().block.cortante", sandbox), baseBlock + 2);
+
+  vm.runInContext('state.inventory.shieldId = "escudo-torre"; state.inventory.shieldMode = ""', sandbox);
+  assert.equal(vm.runInContext('skillModifiers("Esquivar").reduce((sum, mod) => sum + mod.value, 0)', sandbox), -10);
+});
+
+test("combines automatic and personalized effective Vigor", () => {
+  const { sandbox } = createSandbox();
+  vm.runInContext(`state.combat.activeSpells = [
+    { id: "forte", spellId: "forte", type: "Forte", name: "Forte", level: 5, turns: 10, maintenanceCost: 0, caBonus: 0, effectiveVigor: 10 }
+  ]; state.combat.defenseAdjustments.vigor = 5`, sandbox);
+  assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(effectiveVigorInfo())", sandbox)), { automatic: 10, manual: 5, total: 15 });
+  assert.equal(vm.runInContext("bodyInfo().total", sandbox), 115);
+  vm.runInContext('resetDefenseAdjustment("vigor")', sandbox);
+  assert.equal(vm.runInContext("bodyInfo().total", sandbox), 110);
+});
+
+test("uses the N6 Fina imbuement as a free action for five PM", () => {
+  const { sandbox } = createSandbox();
+  vm.runInContext(`
+    state.magic.baseLevels.Fina = 6;
+    state.resources.pmMaxBonus = 100;
+    state.resources.pmCurrent = 20;
+    state.combat.actions = { standard: false, bonus: false, movement: false, reaction: false };
+    activateFina("base-Fina", "free");
+  `, sandbox);
+  assert.equal(vm.runInContext("state.resources.pmCurrent", sandbox), 15);
+  assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(state.combat.actions)", sandbox)), { standard: false, bonus: false, movement: false, reaction: false });
+  assert.equal(vm.runInContext("state.combat.fissure.magicUsedThisRound", sandbox), true);
+});
+
+test("automates Fissura Celeste recovery, damage and scene attunement", () => {
+  const { sandbox, elements } = createSandbox();
+  elements.combatRollSkill.value = "Atletismo";
+  elements.combatTargetCa.value = "0";
+  vm.runInContext(`
+    state.inventory.weapons = [{ id: "weapon", name: "Espada", damage: "2d6 cortante" }];
+    state.inventory.selectedWeaponId = "weapon";
+    state.resources.pmMaxBonus = 100;
+    state.resources.pmCurrent = 0;
+    state.combat.fissure.magicUsedThisRound = true;
+    Math.random = () => 0;
+    rollCombatTest("normal");
+  `, sandbox);
+  assert.equal(vm.runInContext("state.resources.pmCurrent", sandbox), 10);
+  assert.equal(vm.runInContext("state.combat.fissure.attuned", sandbox), true);
+  assert.match(vm.runInContext("state.combat.log.join(' ')", sandbox), /6d6 cortante/);
+
+  vm.runInContext("Math.random = () => 0.01; rollCombatTest('normal')", sandbox);
+  assert.equal(vm.runInContext("state.resources.pmCurrent", sandbox), 20);
+  assert.equal(vm.runInContext("state.combat.fissure.points", sandbox), 1);
+});
+
+test("spends Fissure Points and applies cumulative parry penalties", () => {
+  const { sandbox, elements } = createSandbox();
+  elements.fissureSpend.value = "8";
+  elements.fissureChosenNumber.value = "1";
+  elements.parrySkill.value = "Lutar (Brigar)";
+  vm.runInContext("state.combat.fissure.points = 8; rollFissureAttempt()", sandbox);
+  assert.equal(vm.runInContext("state.combat.fissure.points", sandbox), 0);
+  assert.equal(vm.runInContext("state.combat.fissure.prepared", sandbox), true);
+
+  vm.runInContext("prepareParry(); Math.random = () => 0.3; rollParry('normal'); rollParry('normal')", sandbox);
+  assert.equal(vm.runInContext("state.combat.actions.bonus", sandbox), false);
+  assert.equal(vm.runInContext("state.combat.parry.count", sandbox), 2);
+  assert.match(vm.runInContext("state.combat.log.join(' ')", sandbox), /penalidade -5/);
+  vm.runInContext("completePassTurn()", sandbox);
+  assert.equal(vm.runInContext("state.combat.parry.count", sandbox), 0);
+  assert.equal(vm.runInContext("state.combat.fissure.magicUsedThisRound", sandbox), false);
 });

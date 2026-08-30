@@ -1,6 +1,15 @@
 {
   "schema": "latio-spell-mechanics-overrides-1",
   "levels": [
+    { "spellId": "fina", "level": 6, "activationAction": "free", "secondaryActions": [] },
+    { "spellId": "a-fio-de-awen", "level": 6, "activationAction": "free", "secondaryActions": [] },
+    { "spellId": "d-corte-do-vento-errante", "level": 6, "activationAction": "free", "secondaryActions": [] },
+    { "spellId": "e-linha-do-gl-dio", "level": 6, "activationAction": "free", "secondaryActions": [] },
+    { "spellId": "f-duelo-da-fronteira", "level": 6, "activationAction": "free", "secondaryActions": [] },
+    { "spellId": "m-faceta-fluida", "level": 6, "activationAction": "free", "secondaryActions": [] },
+    { "spellId": "n-tra-o-de-jade", "level": 6, "activationAction": "free", "secondaryActions": [] },
+    { "spellId": "p-cargas-de-t-mpera", "level": 6, "activationAction": "free", "secondaryActions": [] },
+    { "spellId": "q-presa-sob-a-neve", "level": 6, "activationAction": "free", "secondaryActions": [] },
     { "spellId": "n-tra-o-de-jade", "level": 1, "activationAction": "bonus", "secondaryActions": ["reaction"] },
     { "spellId": "p-cargas-de-t-mpera", "level": 1, "activationAction": "bonus", "secondaryActions": ["reaction"] },
     { "spellId": "p-cargas-de-t-mpera", "level": 7, "activationAction": "bonus", "secondaryActions": ["reaction"] },

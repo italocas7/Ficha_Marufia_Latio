@@ -6,7 +6,7 @@ import argparse
 import hashlib
 from pathlib import Path
 
-from data_io import load_data_js, write_json
+from data_io import load_data_js, load_json, write_json
 from data_rules import normalize_database
 
 
@@ -28,7 +28,10 @@ def main() -> None:
 
     database = load_data_js(ROOT / "data.js")
     laws = database.pop("worldLaws", [])
-    normalize_database(database)
+    normalize_database(
+        database,
+        system_beta_rules=load_json(DATA_SOURCE / "system_beta_rules.json"),
+    )
 
     write_json(database_path, database)
     write_json(DATA_SOURCE / "world_laws.json", laws)

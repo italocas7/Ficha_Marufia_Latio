@@ -85,6 +85,31 @@ class DatabaseIntegrityTests(unittest.TestCase):
         self.assertTrue(talents["Amado Pela Magia"]["stackable"])
         self.assertEqual(talents["Lobo Solitário"]["conditionalMods"]["attackMod"], 5)
 
+    def test_system_beta_fina_and_shields_are_canonical(self):
+        spells = {spell["id"]: spell for spell in all_spells(self.database)}
+        expected_fina = {
+            "fina", "a-fio-de-awen", "d-corte-do-vento-errante", "e-linha-do-gl-dio",
+            "f-duelo-da-fronteira", "m-faceta-fluida", "n-tra-o-de-jade",
+            "p-cargas-de-t-mpera", "q-presa-sob-a-neve",
+        }
+        self.assertTrue(expected_fina.issubset(spells))
+        for spell_id in expected_fina:
+            with self.subTest(spell=spell_id):
+                n4 = spells[spell_id]["levels"][3]
+                n6 = spells[spell_id]["levels"][5]
+                self.assertIn("cone de até 6 metros", n4["text"])
+                self.assertEqual(n4["activationCost"], 4)
+                self.assertIn("Imbuimento de Fina pode ser realizado como Ação Livre", n6["text"])
+                self.assertEqual(n6["activationCost"], 5)
+                self.assertEqual(n6["activationAction"], "free")
+
+        masafir = next(culture for region in self.database["regions"] for culture in region["cultures"] if culture["id"] == "masafir")
+        self.assertNotIn("FACETA FLUIDA", masafir["weakness"])
+        self.assertFalse(any(armor.get("category") == "Escudo" for armor in self.database["armors"]))
+        self.assertEqual([shield["name"] for shield in self.database["shields"]], [
+            "Broquel", "Escudo Redondo", "Escudo de Gota", "Escudo Grande", "Escudo-Torre",
+        ])
+
     def test_definitive_talent_catalog_and_automatic_values(self):
         definitive = parse_talents(ROOT / "data-src" / "talents_definitive.txt")
         canonical = [
