@@ -4,15 +4,19 @@ Esta pasta hospeda o ambiente experimental que permitirá ao computador do Mestr
 executar o backend do Marufia. Ela é independente de `server/`, que continua
 sendo o Worker do site publicado.
 
-## Estado da Fase 3
+## Estado da Fase 4
 
 O runtime oficial do Supabase Self-Hosted está validado na release fixada
 `self-hosted/v0.8.0`. PostgreSQL, Auth, REST, Realtime, Storage, Studio, gateway e
 pooler iniciaram com imagens imutáveis e passaram pelos health checks locais.
 Edge Functions permanecem desativadas porque o cliente não as utiliza.
 
-O Supabase Cloud continua sendo o backend padrão do aplicativo. Esta fase não
-migra schema, dados nem contas e não muda qualquer funcionalidade da ficha.
+As 26 migrations versionadas do Marufia foram aplicadas ao banco experimental.
+O schema local passou por validação de tabelas, RLS, policies, RPCs, gatilhos e
+Realtime, além de 35 testes transacionais de segurança com rollback integral.
+
+O Supabase Cloud continua sendo o backend padrão do aplicativo. Nenhum dado ou
+conta foi migrado, e nenhuma funcionalidade da ficha foi alterada.
 
 ## Pré-requisitos no Windows
 
@@ -59,9 +63,25 @@ Use endereços externos somente depois da configuração do Tunnel nas Fases 8-9
 Parar ou reiniciar nunca usa `down -v`: banco, Storage e chaves permanecem
 preservados. O primeiro início baixa imagens e pode demorar.
 
+Para aplicar migrations pendentes ou confirmar o schema atual:
+
+```powershell
+.\marufia-server\scripts\migrate-schema.ps1
+.\marufia-server\scripts\verify-schema.ps1 -RequireEmptyData
+.\marufia-server\scripts\test-schema-security.ps1
+```
+
+O migrador valida o conjunto por SHA-256 e cria um dump de rollback antes da
+primeira alteração. Ele nunca executa `seed.sql` nem copia dados do Cloud.
+
 Quando o servidor não for necessário, execute `stop-server.ps1`. Isso encerra os
 containers e reduz o uso de memória e processador; WSL e Plataforma de Máquina
 Virtual permanecerem habilitados não equivale a manter o servidor em execução.
+
+Se o Docker Desktop mostrar erro Windows `1920` envolvendo `sailor-ingest.sock`
+ou `engine.sock`, não use **Reset to factory defaults**. Esse é um problema de
+socket temporário do Docker no Windows; consulte a nota operacional e o
+procedimento preservando dados em `docs/MARUFIA_SERVER_PHASE_4.md`.
 
 ## Segurança desta configuração
 
@@ -76,9 +96,10 @@ Virtual permanecerem habilitados não equivale a manter o servidor em execução
 
 ## Limite desta fase
 
-O runtime está operacional apenas em `127.0.0.1` e ainda contém o banco inicial
-do Supabase, sem o schema, dados ou contas do Marufia. O schema será restaurado em
-ambiente experimental somente na Fase 4. Cloudflare Tunnel, domínio público,
-backups e migração de contas continuam reservados às fases próprias.
+O runtime está operacional apenas em `127.0.0.1` e contém o schema vazio do
+Marufia. Compatibilidade de contas e sessões será tratada na Fase 5. Cloudflare
+Tunnel, domínio público, backups automáticos e migração de dados continuam
+reservados às fases próprias.
 
-Consulte `docs/MARUFIA_SERVER_PHASE_3.md` para decisões, testes e rollback.
+Consulte `docs/MARUFIA_SERVER_PHASE_4.md` e
+`docs/SERVER_SCHEMA_MIGRATION_AND_ROLLBACK.md` para decisões, testes e rollback.

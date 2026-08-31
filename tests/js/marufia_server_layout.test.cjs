@@ -92,3 +92,36 @@ test("finds Docker Desktop both on PATH and in standard Windows installations", 
   assert.match(common, /Docker\\Docker\\resources\\bin\\docker\.exe/);
   assert.doesNotMatch(common, /C:\\Users\\italo/i);
 });
+
+test("keeps schema migration separate, checksummed, backed up, and transactional", () => {
+  for (const relative of [
+    "schema/MIGRATIONS.sha256",
+    "schema/README.md",
+    "scripts/migrate-schema.ps1",
+    "scripts/verify-schema.ps1",
+    "scripts/test-schema-security.ps1",
+  ]) {
+    assert.equal(fs.existsSync(path.join(workspace, relative)), true, `${relative} está ausente na Fase 4`);
+  }
+
+  const manifest = read("schema/MIGRATIONS.sha256").trim().split(/\r?\n/);
+  const migrations = fs.readdirSync(path.join(root, "supabase", "migrations"))
+    .filter((name) => name.endsWith(".sql"))
+    .sort();
+  assert.equal(manifest.length, 26);
+  assert.deepEqual(manifest.map((line) => line.split(/ {2}/)[1]), migrations);
+  for (const line of manifest) assert.match(line, /^[0-9a-f]{64}  [0-9]{14}_[A-Za-z0-9_]+\.sql$/);
+
+  const migrate = read("scripts/migrate-schema.ps1");
+  assert.match(migrate, /Get-FileHash[\s\S]+SHA256/);
+  assert.match(migrate, /pg_dump --format=custom/);
+  assert.match(migrate, /pg_restore --list/);
+  assert.match(migrate, /supabase_migrations\.schema_migrations/);
+  assert.doesNotMatch(migrate, /seed\.sql/);
+  assert.doesNotMatch(migrate, /down\s+-v|volume\s+rm/i);
+
+  const security = read("scripts/test-schema-security.ps1");
+  assert.match(security, /rls_security\.test\.sql/);
+  assert.match(security, /1\\\.\\\.35/);
+  assert.match(security, /RequireEmptyData/);
+});

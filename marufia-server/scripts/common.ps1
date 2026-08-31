@@ -157,3 +157,32 @@ function Invoke-MarufiaCompose {
         throw "O Docker Compose terminou com código $LASTEXITCODE."
     }
 }
+
+function Invoke-MarufiaDatabaseSql {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Sql,
+
+        [switch]$TuplesOnly
+    )
+
+    $dockerCommand = Resolve-DockerCommand
+    $arguments = @(
+        "exec", "--interactive", "supabase-db",
+        "psql", "--no-psqlrc", "--set", "ON_ERROR_STOP=1",
+        "--username", "postgres", "--dbname", "postgres"
+    )
+    if ($TuplesOnly) {
+        $arguments += @("--tuples-only", "--no-align", "--quiet")
+    }
+
+    $output = $Sql | & $dockerCommand @arguments 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        $details = ($output | Out-String).Trim()
+        if ([string]::IsNullOrWhiteSpace($details)) {
+            $details = "psql terminou com código $LASTEXITCODE."
+        }
+        throw "Falha ao executar SQL no banco local: $details"
+    }
+    return ($output | Out-String).Trim()
+}
