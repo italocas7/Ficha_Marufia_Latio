@@ -80,34 +80,62 @@ PostgreSQL usa `supabase/docker/volumes/db/data/`, Storage usa
 volume nomeado. Esses dados são ignorados pelo Git. Os scripts de parada e
 reinício não removem volumes.
 
-Como nenhum container iniciou nesta máquina, o rollback do código é a reversão do
-commit da Fase 3. Em uma máquina que já tenha iniciado o ambiente, reverter o Git
-não apaga os dados; remoção desses dados exigirá uma ação futura, explícita e
-precedida de backup.
+O rollback do código é a reversão do commit da Fase 3 e do commit complementar de
+validação. Reverter o Git não apaga dados já criados pelo runtime. A parada normal
+usa `docker compose down` sem `-v`; remoção dos diretórios persistentes ou do
+volume nomeado exigirá uma ação futura, explícita e precedida de backup.
 
-## Validação e bloqueio local
+## Validação local concluída
 
 Foram validados estaticamente o Compose, hashes, imagens fixadas, bindings de
 loopback, placeholders, scripts e geração de chaves. Um `.env` local foi gerado e
 suas assinaturas HS256/ES256 foram verificadas sem expor valores. O segundo preparo
 foi recusado, confirmando a proteção contra sobrescrita.
 
-Também passaram 12 testes Python, 372 testes JavaScript e o smoke test
-desktop/mobile. Uma consulta somente leitura ao Supabase Cloud confirmou o
-Realtime conectado; a Data API continua retornando `503/PGRST002`, o mesmo estado
-pré-existente observado na Fase 0. Nenhuma configuração do Cloud foi alterada.
+O ambiente Windows foi preparado e reiniciado. A validação usou:
 
-Esta máquina tem espaço em disco suficiente, porém não possui Docker Desktop nem
-WSL. Por isso não foi possível:
+| Componente local | Versão |
+|---|---|
+| WSL | `2.7.12` |
+| Kernel WSL | `6.18.33.2-2` |
+| Docker Desktop | `4.88.1` |
+| Docker Engine | `29.7.2` |
+| Docker Compose | `5.4.0` |
 
-- baixar e inspecionar as imagens;
-- executar `docker compose config`;
-- iniciar PostgreSQL/Auth/REST/Realtime/Storage/Studio;
-- executar health checks reais.
+`docker compose config --quiet` aprovou a combinação do Compose oficial com o
+override do Marufia. As dez imagens foram baixadas e todos os containers ficaram
+`healthy`. Os testes funcionais locais produziram:
 
-A instalação do Docker Desktop é uma alteração administrativa do Windows e pode
-exigir reinicialização. A Fase 3 permanece parcial até esses testes reais passarem.
-Não se deve iniciar a migração de schema da Fase 4 antes disso.
+| Verificação | Resultado |
+|---|---|
+| PostgreSQL `pg_isready` | aceitando conexões |
+| Auth health e settings pelo gateway | HTTP 200 |
+| REST OpenAPI com credencial administrativa local | HTTP 200 |
+| REST com chave pública e tabela inexistente | HTTP 404 esperado do PostgREST |
+| Storage health | HTTP 200 |
+| Realtime WebSocket com chave pública | conexão aberta |
+| Studio com autenticação básica e redirecionamento | HTTP 200 final |
+
+O gateway foi publicado somente em `127.0.0.1:8000`. Supavisor ficou somente em
+`127.0.0.1:5432` e `127.0.0.1:6543`; o container PostgreSQL não publicou porta no
+host. O ciclo `stop-server.ps1` seguido de `start-server.ps1` foi aprovado e o
+volume persistente permaneceu presente. O script também foi adaptado para achar
+instalações oficiais por usuário mesmo quando `docker.exe` não está no `PATH`.
+
+Uma amostra após a estabilização registrou aproximadamente 1,0 GB de RAM e 5,5%
+de CPU somados entre os containers. É uma medição momentânea, não um limite de
+pico. Os 7,7 GB exibidos pelo Docker são o máximo disponível à máquina virtual,
+não memória permanentemente consumida. Para liberar os recursos quando o servidor
+não for necessário, use o script de parada.
+
+Passaram 12 testes Python, 373 testes JavaScript e o smoke test em desktop e
+celular. A verificação remota somente leitura confirmou o Realtime Cloud
+conectado. A Data API Cloud continua retornando `503/PGRST002`, o mesmo estado
+pré-existente registrado desde a Fase 0; nenhum teste desta fase o provocou.
+
+O Supabase Cloud, o site e o Worker não foram alterados. O banco self-hosted
+ainda não contém schema, dados ou contas do Marufia; essa separação é intencional
+e a Fase 4 só poderá iniciar após este fechamento documental.
 
 ## Referências oficiais
 

@@ -6,10 +6,10 @@ sendo o Worker do site publicado.
 
 ## Estado da Fase 3
 
-O runtime oficial do Supabase Self-Hosted está preparado na release fixada
+O runtime oficial do Supabase Self-Hosted está validado na release fixada
 `self-hosted/v0.8.0`. PostgreSQL, Auth, REST, Realtime, Storage, Studio, gateway e
-pooler estão declarados com imagens imutáveis. Edge Functions permanecem
-desativadas porque o cliente não as utiliza.
+pooler iniciaram com imagens imutáveis e passaram pelos health checks locais.
+Edge Functions permanecem desativadas porque o cliente não as utiliza.
 
 O Supabase Cloud continua sendo o backend padrão do aplicativo. Esta fase não
 migra schema, dados nem contas e não muda qualquer funcionalidade da ficha.
@@ -22,8 +22,8 @@ migra schema, dados nem contas e não muda qualquer funcionalidade da ficha.
 - ao menos 4 GB de RAM, 2 núcleos e 40 GB SSD disponíveis para o ambiente;
 - recomendado: 8 GB de RAM, 4 núcleos e 80 GB SSD.
 
-O Docker Desktop e o WSL ainda não estão instalados nesta máquina. Instalações de
-sistema e reinicializações devem ser feitas antes do primeiro teste real.
+Nesta máquina foram validados WSL `2.7.12`, Docker Desktop `4.88.1`, Docker Engine
+`29.7.2` e Docker Compose `5.4.0`.
 
 ## Primeiro preparo
 
@@ -59,6 +59,10 @@ Use endereços externos somente depois da configuração do Tunnel nas Fases 8-9
 Parar ou reiniciar nunca usa `down -v`: banco, Storage e chaves permanecem
 preservados. O primeiro início baixa imagens e pode demorar.
 
+Quando o servidor não for necessário, execute `stop-server.ps1`. Isso encerra os
+containers e reduz o uso de memória e processador; WSL e Plataforma de Máquina
+Virtual permanecerem habilitados não equivale a manter o servidor em execução.
+
 ## Segurança desta configuração
 
 - gateway HTTP, pooler e PostgreSQL são publicados somente em `127.0.0.1`;
@@ -72,9 +76,9 @@ preservados. O primeiro início baixa imagens e pode demorar.
 
 ## Limite desta fase
 
-Sem Docker Desktop não foi possível baixar imagens, resolver o Compose nem subir
-containers nesta máquina. O script falha com uma mensagem clara nessa condição.
-O schema Marufia será restaurado somente na Fase 4, depois que este runtime puder
-ser iniciado e validado.
+O runtime está operacional apenas em `127.0.0.1` e ainda contém o banco inicial
+do Supabase, sem o schema, dados ou contas do Marufia. O schema será restaurado em
+ambiente experimental somente na Fase 4. Cloudflare Tunnel, domínio público,
+backups e migração de contas continuam reservados às fases próprias.
 
 Consulte `docs/MARUFIA_SERVER_PHASE_3.md` para decisões, testes e rollback.

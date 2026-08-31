@@ -82,3 +82,13 @@ test("contains the Phase 3 runtime without changing the existing site Worker", (
   }
   assert.match(read("supabase/README.md"), /self-hosted\/v0\.8\.0/);
 });
+
+test("finds Docker Desktop both on PATH and in standard Windows installations", () => {
+  const common = read("scripts/common.ps1");
+  assert.match(common, /Get-Command docker\.exe -CommandType Application/);
+  assert.match(common, /\$env:LOCALAPPDATA/);
+  assert.match(common, /Programs\\DockerDesktop\\resources\\bin\\docker\.exe/);
+  assert.match(common, /\$env:ProgramFiles/);
+  assert.match(common, /Docker\\Docker\\resources\\bin\\docker\.exe/);
+  assert.doesNotMatch(common, /C:\\Users\\italo/i);
+});

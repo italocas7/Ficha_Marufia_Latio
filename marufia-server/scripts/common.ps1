@@ -88,12 +88,29 @@ function Assert-MarufiaEnvironment {
     }
 }
 
-function Get-DockerComposeVersion {
-    if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
-        throw "Docker Desktop não foi encontrado no PATH. Instale e inicie o Docker Desktop para Windows."
+function Resolve-DockerCommand {
+    $pathCommand = Get-Command docker.exe -CommandType Application -ErrorAction SilentlyContinue
+    if ($pathCommand) {
+        return $pathCommand.Source
     }
 
-    $rawVersion = (& docker compose version --short 2>&1 | Out-String).Trim()
+    $candidates = @(
+        (Join-Path $env:LOCALAPPDATA "Programs\DockerDesktop\resources\bin\docker.exe"),
+        (Join-Path $env:ProgramFiles "Docker\Docker\resources\bin\docker.exe")
+    )
+
+    foreach ($candidate in $candidates) {
+        if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+            return $candidate
+        }
+    }
+
+    throw "Docker Desktop não foi encontrado. Instale e inicie o Docker Desktop para Windows."
+}
+
+function Get-DockerComposeVersion {
+    $dockerCommand = Resolve-DockerCommand
+    $rawVersion = (& $dockerCommand compose version --short 2>&1 | Out-String).Trim()
     if ($LASTEXITCODE -ne 0) {
         throw "Docker Compose v2 não está disponível: $rawVersion"
     }
@@ -112,7 +129,8 @@ function Get-DockerComposeVersion {
 
 function Assert-DockerReady {
     $version = Get-DockerComposeVersion
-    $dockerInfo = (& docker info --format "{{.ServerVersion}}" 2>&1 | Out-String).Trim()
+    $dockerCommand = Resolve-DockerCommand
+    $dockerInfo = (& $dockerCommand info --format "{{.ServerVersion}}" 2>&1 | Out-String).Trim()
     if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($dockerInfo)) {
         throw "Docker Desktop está instalado, mas o mecanismo de containers não está em execução."
     }
@@ -133,7 +151,8 @@ function Invoke-MarufiaCompose {
         "--file", $script:MarufiaOverrideComposePath
     )
 
-    & docker @baseArguments @ComposeArguments
+    $dockerCommand = Resolve-DockerCommand
+    & $dockerCommand @baseArguments @ComposeArguments
     if ($LASTEXITCODE -ne 0) {
         throw "O Docker Compose terminou com código $LASTEXITCODE."
     }
