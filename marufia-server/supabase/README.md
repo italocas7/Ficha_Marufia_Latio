@@ -1,5 +1,13 @@
 # Supabase Self-Hosted
 
-A Fase 3 colocará aqui a configuração baseada na distribuição Docker oficial do Supabase, com versões fixadas e sem usar a pilha local do Supabase CLI como produção.
+`docker/` contém os arquivos necessários do snapshot oficial
+`self-hosted/v0.8.0`. Eles não devem ser modificados diretamente.
 
-Migrations e configuração revisada poderão ser versionadas. Banco, volumes e segredos permanecerão fora do Git.
+- `UPSTREAM.md` registra release, commit e imagens;
+- `SHA256SUMS` permite detectar alteração nos arquivos incorporados;
+- `../docker-compose.marufia.yml` contém apenas o endurecimento próprio;
+- migrations atuais do Marufia permanecem em `../../supabase/migrations/` e ainda
+  não foram aplicadas a este runtime.
+
+Essa separação permite comparar/atualizar a distribuição oficial sem misturar
+configuração local nem migrar dados acidentalmente.

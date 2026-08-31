@@ -33,18 +33,21 @@ test("keeps the published site Worker separate from the future local server", ()
   const build = fs.readFileSync(path.join(root, "tools", "build_site.py"), "utf8");
   assert.match(worker, /env\.ASSETS\.fetch/);
   assert.match(build, /SERVER_ENTRY = "server\/index\.js"/);
-  assert.match(read("README.md"), /Não use a pasta `server\/`/);
+  assert.match(read("README.md"), /independente de `server\/`/);
   assert.doesNotMatch(build, /marufia-server/);
 });
 
-test("tracks only public Phase 2 environment defaults", () => {
+test("tracks public defaults and safe secret placeholders", () => {
   const environment = read(".env.example");
   assert.match(environment, /^MARUFIA_SERVER_ENV=development$/m);
   assert.match(environment, /^MARUFIA_PUBLIC_URL=http:\/\/127\.0\.0\.1:8000$/m);
-  assert.match(environment, /^MARUFIA_STUDIO_URL=http:\/\/127\.0\.0\.1:3000$/m);
+  assert.match(environment, /^MARUFIA_STUDIO_URL=http:\/\/127\.0\.0\.1:8000$/m);
   assert.match(environment, /^MARUFIA_BACKUP_RETENTION_DAYS=7$/m);
   assert.match(environment, /^MARUFIA_BACKUP_RETENTION_WEEKS=4$/m);
-  assert.doesNotMatch(environment, /^\s*(?:POSTGRES_PASSWORD|JWT_SECRET|SERVICE_ROLE_KEY|TUNNEL_TOKEN)\s*=\s*\S+/mi);
+  for (const secret of ["POSTGRES_PASSWORD", "JWT_SECRET", "SERVICE_ROLE_KEY"]) {
+    assert.match(environment, new RegExp(`^${secret}=__GENERATE_ON_SETUP__$`, "m"));
+  }
+  assert.doesNotMatch(environment, /^TUNNEL_TOKEN\s*=\s*\S+/mi);
 });
 
 test("ignores secrets, credentials, backups, logs, storage, and volumes", () => {
@@ -55,7 +58,8 @@ test("ignores secrets, credentials, backups, logs, storage, and volumes", () => 
     "logs/**",
     "storage/**",
     "data/**",
-    "volumes/**",
+    "supabase/docker/volumes/db/data/**",
+    "supabase/docker/volumes/storage/**",
     "cloudflare/*-credentials.json",
     "cloudflare/*.key",
     "cloudflare/*.token",
@@ -64,14 +68,17 @@ test("ignores secrets, credentials, backups, logs, storage, and volumes", () => 
   }
 });
 
-test("does not pretend the self-hosted runtime exists before Phase 3", () => {
+test("contains the Phase 3 runtime without changing the existing site Worker", () => {
   for (const relative of [
-    "docker-compose.yml",
+    "docker-compose.marufia.yml",
+    "supabase/docker/docker-compose.yml",
     "scripts/start-server.ps1",
     "scripts/stop-server.ps1",
     "scripts/restart-server.ps1",
+    "scripts/status-server.ps1",
+    "scripts/setup-environment.ps1",
   ]) {
-    assert.equal(fs.existsSync(path.join(workspace, relative)), false, `${relative} foi criado antes da Fase 3`);
+    assert.equal(fs.existsSync(path.join(workspace, relative)), true, `${relative} está ausente na Fase 3`);
   }
-  assert.match(read("supabase/README.md"), /distribuição Docker oficial do Supabase/);
+  assert.match(read("supabase/README.md"), /self-hosted\/v0\.8\.0/);
 });

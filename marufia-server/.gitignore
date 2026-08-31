@@ -11,7 +11,10 @@ logs/**
 storage/**
 !storage/.gitkeep
 data/**
-volumes/**
+supabase/docker/volumes/db/data/**
+supabase/docker/volumes/storage/**
+supabase/docker/volumes/snippets/**
+!supabase/docker/volumes/snippets/.gitkeep
 
 # Credenciais do Cloudflare Tunnel
 cloudflare/*-credentials.json

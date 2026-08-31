@@ -1,0 +1,28 @@
+# Camada Marufia sobre a distribuicao oficial. Requer Docker Compose >= 2.24.4.
+services:
+  api-gw:
+    ports: !override
+      - "127.0.0.1:${API_GW_HTTP_PORT:-8000}:8000/tcp"
+
+  auth:
+    environment:
+      GOTRUE_JWT_KEYS: "${JWT_KEYS}"
+
+  realtime:
+    environment:
+      API_JWT_JWKS: "${JWT_JWKS}"
+
+  storage:
+    environment:
+      JWT_JWKS: "${JWT_JWKS}"
+
+  functions:
+    profiles:
+      - edge-functions
+    environment:
+      SUPABASE_JWKS: "${JWT_JWKS}"
+
+  supavisor:
+    ports: !override
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432/tcp"
+      - "127.0.0.1:${POOLER_PROXY_PORT_TRANSACTION:-6543}:6543/tcp"
