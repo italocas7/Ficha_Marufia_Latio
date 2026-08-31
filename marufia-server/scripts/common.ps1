@@ -38,6 +38,89 @@ function Get-MarufiaEnvironmentMap {
     return $values
 }
 
+function Test-MarufiaLoopbackUrl {
+    param(
+        [Parameter(Mandatory = $true)][string]$Value,
+        [Parameter(Mandatory = $true)][string]$Label
+    )
+
+    try {
+        $uri = [System.Uri]::new($Value)
+    } catch {
+        throw "$Label contém um endereço inválido."
+    }
+    if (-not $uri.IsAbsoluteUri -or $uri.Scheme -notin @("http", "https")) {
+        throw "$Label deve usar HTTP ou HTTPS."
+    }
+    $loopback = $uri.Host -in @("localhost", "127.0.0.1", "::1", "[::1]")
+    if (-not $loopback -and $uri.Scheme -ne "https") {
+        throw "$Label externo deve usar HTTPS."
+    }
+    return $loopback
+}
+
+function Assert-MarufiaAuthSafety {
+    param([Parameter(Mandatory = $true)][hashtable]$Environment)
+
+    foreach ($key in @("SUPABASE_PUBLIC_URL", "API_EXTERNAL_URL", "SITE_URL", "ADDITIONAL_REDIRECT_URLS", "ENABLE_EMAIL_AUTOCONFIRM")) {
+        if (-not $Environment.ContainsKey($key) -or [string]::IsNullOrWhiteSpace($Environment[$key])) {
+            throw "A variável $key é obrigatória para a segurança do Auth."
+        }
+    }
+
+    $apiIsLoopback = Test-MarufiaLoopbackUrl -Value $Environment["SUPABASE_PUBLIC_URL"] -Label "SUPABASE_PUBLIC_URL"
+    $authIsLoopback = Test-MarufiaLoopbackUrl -Value $Environment["API_EXTERNAL_URL"] -Label "API_EXTERNAL_URL"
+    $null = Test-MarufiaLoopbackUrl -Value $Environment["SITE_URL"] -Label "SITE_URL"
+    foreach ($redirect in $Environment["ADDITIONAL_REDIRECT_URLS"].Split(",", [System.StringSplitOptions]::RemoveEmptyEntries)) {
+        $null = Test-MarufiaLoopbackUrl -Value $redirect.Trim() -Label "ADDITIONAL_REDIRECT_URLS"
+    }
+
+    $publicUri = [System.Uri]::new($Environment["SUPABASE_PUBLIC_URL"])
+    $authUri = [System.Uri]::new($Environment["API_EXTERNAL_URL"])
+    $publicPath = $publicUri.AbsolutePath.TrimEnd("/")
+    $expectedAuthPath = "$publicPath/auth/v1"
+    if ($publicUri.Scheme -ne $authUri.Scheme -or $publicUri.Host -ne $authUri.Host -or
+        $publicUri.Port -ne $authUri.Port -or $authUri.AbsolutePath.TrimEnd("/") -ne $expectedAuthPath -or
+        $apiIsLoopback -ne $authIsLoopback) {
+        throw "API_EXTERNAL_URL deve corresponder a SUPABASE_PUBLIC_URL seguida de /auth/v1."
+    }
+
+    $autoconfirmText = $Environment["ENABLE_EMAIL_AUTOCONFIRM"].Trim().ToLowerInvariant()
+    if ($autoconfirmText -notin @("true", "false")) {
+        throw "ENABLE_EMAIL_AUTOCONFIRM deve ser true ou false."
+    }
+    if (-not $apiIsLoopback -and $autoconfirmText -eq "true") {
+        throw "Confirmação automática de email é permitida somente no servidor experimental local."
+    }
+
+    if (-not $apiIsLoopback) {
+        foreach ($key in @("SMTP_ADMIN_EMAIL", "SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS")) {
+            if (-not $Environment.ContainsKey($key) -or [string]::IsNullOrWhiteSpace($Environment[$key])) {
+                throw "O servidor externo exige configuração SMTP completa; $key está ausente."
+            }
+        }
+        try {
+            $senderAddress = [System.Net.Mail.MailAddress]::new($Environment["SMTP_ADMIN_EMAIL"])
+        } catch {
+            throw "SMTP_ADMIN_EMAIL deve conter um remetente válido."
+        }
+        $reservedSuffixes = @(".invalid", ".test", ".example", ".localhost")
+        $smtpHostIsReserved = $Environment["SMTP_HOST"] -in @("localhost", "127.0.0.1", "::1")
+        $senderIsReserved = $false
+        foreach ($suffix in $reservedSuffixes) {
+            $smtpHostIsReserved = $smtpHostIsReserved -or $Environment["SMTP_HOST"].EndsWith($suffix, [System.StringComparison]::OrdinalIgnoreCase)
+            $senderIsReserved = $senderIsReserved -or $senderAddress.Host.EndsWith($suffix, [System.StringComparison]::OrdinalIgnoreCase)
+        }
+        if ($smtpHostIsReserved -or $senderIsReserved) {
+            throw "O servidor externo exige um SMTP real e um remetente válido."
+        }
+        $smtpPort = 0
+        if (-not [int]::TryParse($Environment["SMTP_PORT"], [ref]$smtpPort) -or $smtpPort -lt 1 -or $smtpPort -gt 65535) {
+            throw "SMTP_PORT deve ser uma porta válida entre 1 e 65535."
+        }
+    }
+}
+
 function Assert-MarufiaEnvironment {
     $environment = Get-MarufiaEnvironmentMap
     $required = @(
@@ -86,6 +169,8 @@ function Assert-MarufiaEnvironment {
     } catch {
         throw "As chaves JWT assimétricas do .env são inválidas. Gere a configuração novamente."
     }
+
+    Assert-MarufiaAuthSafety -Environment $environment
 }
 
 function Resolve-DockerCommand {

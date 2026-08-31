@@ -4,7 +4,7 @@ Esta pasta hospeda o ambiente experimental que permitirá ao computador do Mestr
 executar o backend do Marufia. Ela é independente de `server/`, que continua
 sendo o Worker do site publicado.
 
-## Estado da Fase 4
+## Estado da Fase 5
 
 O runtime oficial do Supabase Self-Hosted está validado na release fixada
 `self-hosted/v0.8.0`. PostgreSQL, Auth, REST, Realtime, Storage, Studio, gateway e
@@ -14,6 +14,11 @@ Edge Functions permanecem desativadas porque o cliente não as utiliza.
 As 26 migrations versionadas do Marufia foram aplicadas ao banco experimental.
 O schema local passou por validação de tabelas, RLS, policies, RPCs, gatilhos e
 Realtime, além de 35 testes transacionais de segurança com rollback integral.
+
+O Auth local passou por cadastro, perfil automático, login, logout, refresh de
+sessão e validação dos papéis Mestre/Jogador. O teste usa somente contas
+descartáveis no loopback e remove os dados ao terminar. Nenhuma conta real foi
+migrada.
 
 O Supabase Cloud continua sendo o backend padrão do aplicativo. Nenhum dado ou
 conta foi migrado, e nenhuma funcionalidade da ficha foi alterada.
@@ -69,6 +74,7 @@ Para aplicar migrations pendentes ou confirmar o schema atual:
 .\marufia-server\scripts\migrate-schema.ps1
 .\marufia-server\scripts\verify-schema.ps1 -RequireEmptyData
 .\marufia-server\scripts\test-schema-security.ps1
+.\marufia-server\scripts\test-auth.ps1
 ```
 
 O migrador valida o conjunto por SHA-256 e cria um dump de rollback antes da
@@ -90,16 +96,18 @@ procedimento preservando dados em `docs/MARUFIA_SERVER_PHASE_4.md`.
 - o futuro Tunnel deverá apontar apenas para `http://127.0.0.1:8000`;
 - Studio é protegido pelo usuário e senha aleatórios do `.env`;
 - `service_role`, JWT, banco e chaves administrativas não são enviados ao cliente;
-- confirmação automática de email é provisória no ambiente experimental; SMTP e
-  compatibilidade das contas serão tratados na Fase 5;
+- confirmação automática de email é permitida somente no loopback experimental;
+- uma URL externa exige HTTPS, confirmação automática desativada e SMTP real;
+- sessões usam chaves ES256 próprias; tokens antigos do Cloud não serão aceitos;
 - as Edge Functions não iniciam por padrão.
 
 ## Limite desta fase
 
 O runtime está operacional apenas em `127.0.0.1` e contém o schema vazio do
-Marufia. Compatibilidade de contas e sessões será tratada na Fase 5. Cloudflare
-Tunnel, domínio público, backups automáticos e migração de dados continuam
-reservados às fases próprias.
+Marufia. O Auth está validado com contas descartáveis, mas SMTP real e o ensaio
+de migração de contas dependem das fases de publicação e do backup controlado.
+Cloudflare Tunnel, domínio público, backups automáticos e migração de dados
+continuam reservados às fases próprias.
 
-Consulte `docs/MARUFIA_SERVER_PHASE_4.md` e
-`docs/SERVER_SCHEMA_MIGRATION_AND_ROLLBACK.md` para decisões, testes e rollback.
+Consulte `docs/MARUFIA_SERVER_PHASE_5.md` e
+`docs/SERVER_AUTH_MIGRATION.md` para decisões, testes e rollback de Auth.

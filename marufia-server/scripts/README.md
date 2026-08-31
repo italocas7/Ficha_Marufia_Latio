@@ -10,6 +10,7 @@
 | `migrate-schema.ps1` | valida hashes, cria rollback e aplica somente migrations pendentes |
 | `verify-schema.ps1` | confere tabelas, RLS, RPCs, gatilhos, Realtime e histórico |
 | `test-schema-security.ps1` | executa 35 ataques RLS transacionais e confirma rollback |
+| `test-auth.ps1` | cria duas contas locais descartáveis, valida sessões e papéis e remove tudo |
 | `common.ps1` | validações compartilhadas; não deve ser executado diretamente |
 
 Os scripts usam sempre o Compose oficial e a camada de segurança Marufia. Eles
@@ -18,3 +19,7 @@ quando uma validação ou comando falha.
 
 O dump criado antes da migração de schema é um ponto de rollback desta fase; ele
 não substitui o sistema de backup, restore e retenção das Fases 11 e 12.
+
+`test-auth.ps1` recusa endereços externos e só funciona com a confirmação
+automática do ambiente experimental local. A configuração compartilhada impede
+que essa confirmação automática seja usada quando a API estiver na internet.

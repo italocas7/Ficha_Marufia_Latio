@@ -125,3 +125,33 @@ test("keeps schema migration separate, checksummed, backed up, and transactional
   assert.match(security, /1\\\.\\\.35/);
   assert.match(security, /RequireEmptyData/);
 });
+
+test("validates local Auth without exposing credentials or retaining test accounts", () => {
+  const authTest = read("scripts/test-auth.ps1");
+  assert.match(authTest, /\/auth\/v1\/signup/);
+  assert.match(authTest, /grant_type=refresh_token/);
+  assert.match(authTest, /grant_type=password/);
+  assert.match(authTest, /\/auth\/v1\/logout/);
+  assert.match(authTest, /header\.alg -ne "ES256"/);
+  assert.match(authTest, /rest\/v1\/rpc\/join_campaign/);
+  assert.match(authTest, /delete from auth\.users where email in/);
+  assert.match(authTest, /só pode ser executado no servidor local/);
+  assert.doesNotMatch(authTest, /SERVICE_ROLE_KEY/);
+  assert.doesNotMatch(authTest, /Write-(Host|Output).*access_token/i);
+});
+
+test("rejects unsafe internet-facing Auth configuration", () => {
+  const common = read("scripts/common.ps1");
+  const environment = read(".env.example");
+  assert.match(common, /Assert-MarufiaAuthSafety/);
+  assert.match(common, /Confirmação automática de email é permitida somente no servidor experimental local/);
+  assert.match(common, /O servidor externo exige configuração SMTP completa/);
+  assert.match(common, /O servidor externo exige um SMTP real e um remetente válido/);
+  assert.match(common, /SMTP_ADMIN_EMAIL deve conter um remetente válido/);
+  assert.match(common, /\.invalid", "\.test", "\.example", "\.localhost/);
+  assert.match(common, /API_EXTERNAL_URL deve corresponder a SUPABASE_PUBLIC_URL seguida de \/auth\/v1/);
+  assert.match(common, /SMTP_PORT deve ser uma porta válida entre 1 e 65535/);
+  assert.match(common, /externo deve usar HTTPS/);
+  assert.match(environment, /ENABLE_EMAIL_AUTOCONFIRM=true nunca pode ser usado/);
+  assert.match(environment, /Para acesso pela internet, use false e configure um SMTP real/);
+});
