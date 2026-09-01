@@ -4,7 +4,7 @@ Esta pasta hospeda o ambiente experimental que permitirá ao computador do Mestr
 executar o backend do Marufia. Ela é independente de `server/`, que continua
 sendo o Worker do site publicado.
 
-## Estado da Fase 6
+## Estado da Fase 7
 
 O runtime oficial do Supabase Self-Hosted está validado na release fixada
 `self-hosted/v0.8.0`. PostgreSQL, Auth, REST, Realtime, Storage, Studio, gateway e
@@ -24,6 +24,11 @@ As 13 policies RLS também foram validadas pela API com Mestre, Jogador A e um
 usuário de outra campanha. As oito tabelas recusaram acesso anônimo; usuários e
 Mestres não atravessaram campanhas; as operações legítimas continuaram
 funcionando. Nenhuma policy ou migration precisou ser modificada.
+
+O Realtime local foi validado com três clientes autenticados e as seis tabelas
+publicadas. Ficha, rolagem, histórico, presença, sessão e campanha chegaram sem
+duplicação aos clientes autorizados, enquanto o usuário externo recebeu zero
+evento. Todos os canais e dados descartáveis foram removidos ao final.
 
 O Supabase Cloud continua sendo o backend padrão do aplicativo. Nenhum dado ou
 conta foi migrado, e nenhuma funcionalidade da ficha foi alterada.
@@ -81,6 +86,7 @@ Para aplicar migrations pendentes ou confirmar o schema atual:
 .\marufia-server\scripts\test-schema-security.ps1
 .\marufia-server\scripts\test-auth.ps1
 .\marufia-server\scripts\test-rls.ps1
+.\marufia-server\scripts\test-realtime.ps1
 ```
 
 O migrador valida o conjunto por SHA-256 e cria um dump de rollback antes da
@@ -115,6 +121,5 @@ de migração de contas dependem das fases de publicação e do backup controlad
 Cloudflare Tunnel, domínio público, backups automáticos e migração de dados
 continuam reservados às fases próprias.
 
-Consulte `docs/MARUFIA_SERVER_PHASE_6.md` e
-`docs/SERVER_RLS_SECURITY.md` para a matriz de acesso, testes e procedimento de
-segurança.
+Consulte `docs/MARUFIA_SERVER_PHASE_7.md`, `docs/SERVER_REALTIME.md` e
+`docs/SERVER_RLS_SECURITY.md` para resultados, operação e segurança.

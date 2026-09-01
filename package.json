@@ -42,6 +42,7 @@
     "test:database:remote": "node tools/test_supabase_database.cjs",
     "test:server-layout": "node --test tests/js/marufia_server_layout.test.cjs",
     "test:server-rls": "node --test tests/js/marufia_server_rls.test.cjs",
+    "test:server-realtime": "node --test tests/js/marufia_server_realtime.test.cjs",
     "vendor:supabase": "node tools/vendor_supabase.cjs",
     "supabase:version": "supabase --version"
   },
