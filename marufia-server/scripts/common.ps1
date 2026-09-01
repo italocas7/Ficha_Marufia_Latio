@@ -5,6 +5,8 @@ $script:MarufiaServerRoot = Split-Path -Parent $PSScriptRoot
 $script:MarufiaEnvPath = Join-Path $script:MarufiaServerRoot ".env"
 $script:MarufiaBaseComposePath = Join-Path $script:MarufiaServerRoot "supabase\docker\docker-compose.yml"
 $script:MarufiaOverrideComposePath = Join-Path $script:MarufiaServerRoot "docker-compose.marufia.yml"
+$script:MarufiaTunnelComposePath = Join-Path $script:MarufiaServerRoot "cloudflare\docker-compose.tunnel.yml"
+$script:MarufiaTunnelTokenPath = Join-Path $script:MarufiaServerRoot "cloudflare\tunnel-token.token"
 $script:MarufiaComposeProject = "marufia-server"
 $script:MinimumComposeVersion = [version]"2.24.4"
 
@@ -222,24 +224,78 @@ function Assert-DockerReady {
     Write-MarufiaMessage -Level INFO -Message "Docker Compose $version e Docker Engine $dockerInfo disponíveis."
 }
 
-function Invoke-MarufiaCompose {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string[]]$ComposeArguments
-    )
+function Get-MarufiaComposeArguments {
+    param([switch]$IncludeTunnel)
 
-    $baseArguments = @(
+    $arguments = @(
         "compose",
         "--env-file", $script:MarufiaEnvPath,
         "--project-name", $script:MarufiaComposeProject,
         "--file", $script:MarufiaBaseComposePath,
         "--file", $script:MarufiaOverrideComposePath
     )
+    if ($IncludeTunnel) {
+        if (-not (Test-Path -LiteralPath $script:MarufiaTunnelComposePath -PathType Leaf)) {
+            throw "Configuração do Cloudflare Tunnel não encontrada."
+        }
+        $arguments += @("--file", $script:MarufiaTunnelComposePath)
+    }
+    return $arguments
+}
 
+function Invoke-MarufiaCompose {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string[]]$ComposeArguments
+    )
+
+    $baseArguments = @(Get-MarufiaComposeArguments)
     $dockerCommand = Resolve-DockerCommand
     & $dockerCommand @baseArguments @ComposeArguments
     if ($LASTEXITCODE -ne 0) {
         throw "O Docker Compose terminou com código $LASTEXITCODE."
+    }
+}
+
+function Invoke-MarufiaTunnelCompose {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string[]]$ComposeArguments
+    )
+
+    $baseArguments = @(Get-MarufiaComposeArguments -IncludeTunnel)
+    $dockerCommand = Resolve-DockerCommand
+    & $dockerCommand @baseArguments @ComposeArguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "O Docker Compose do Tunnel terminou com código $LASTEXITCODE."
+    }
+}
+
+function Assert-MarufiaTunnelTokenFile {
+    if (-not (Test-Path -LiteralPath $script:MarufiaTunnelTokenPath -PathType Leaf)) {
+        throw "Token do Tunnel ausente. Execute .\marufia-server\scripts\set-tunnel-token.ps1."
+    }
+    $token = [System.IO.File]::ReadAllText($script:MarufiaTunnelTokenPath).Trim()
+    if ($token.Length -lt 80 -or $token.Length -gt 4096 -or $token -match "\s") {
+        throw "O arquivo privado do Tunnel não contém um token válido."
+    }
+}
+
+function Remove-MarufiaTunnelContainers {
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("marufia-cloudflared", "marufia-cloudflared-quick", "marufia-public-gateway", "marufia-tunnel-smoke-gateway")]
+        [string[]]$Names
+    )
+
+    $dockerCommand = Resolve-DockerCommand
+    foreach ($name in $Names) {
+        $existing = (& $dockerCommand ps --all --filter "name=^/${name}$" --format "{{.Names}}" 2>&1 | Out-String).Trim()
+        if ($LASTEXITCODE -ne 0) { throw "Não foi possível consultar o container $name." }
+        if ($existing -eq $name) {
+            $null = & $dockerCommand rm --force $name 2>&1
+            if ($LASTEXITCODE -ne 0) { throw "Não foi possível remover o container temporário $name." }
+        }
     }
 }
 

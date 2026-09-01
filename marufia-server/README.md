@@ -4,7 +4,7 @@ Esta pasta hospeda o ambiente experimental que permitirá ao computador do Mestr
 executar o backend do Marufia. Ela é independente de `server/`, que continua
 sendo o Worker do site publicado.
 
-## Estado da Fase 7
+## Estado da Fase 8
 
 O runtime oficial do Supabase Self-Hosted está validado na release fixada
 `self-hosted/v0.8.0`. PostgreSQL, Auth, REST, Realtime, Storage, Studio, gateway e
@@ -29,6 +29,14 @@ O Realtime local foi validado com três clientes autenticados e as seis tabelas
 publicadas. Ficha, rolagem, histórico, presença, sessão e campanha chegaram sem
 duplicação aos clientes autorizados, enquanto o usuário externo recebeu zero
 evento. Todos os canais e dados descartáveis foram removidos ao final.
+
+O Cloudflare Tunnel foi preparado com uma rede Docker exclusiva e um gateway
+público que permite somente Auth, REST/RPC e Realtime. Um Quick Tunnel restrito
+validou HTTPS e WebSocket pela internet; cadastro, REST, Studio e PostgreSQL
+ficaram bloqueados durante o ensaio. O endereço temporário foi removido ao fim.
+
+O Tunnel permanente aguarda domínio, SMTP e URLs externas da Fase 9. Não foi
+criado recurso permanente numa conta Cloudflare e o servidor continua local.
 
 O Supabase Cloud continua sendo o backend padrão do aplicativo. Nenhum dado ou
 conta foi migrado, e nenhuma funcionalidade da ficha foi alterada.
@@ -87,6 +95,16 @@ Para aplicar migrations pendentes ou confirmar o schema atual:
 .\marufia-server\scripts\test-auth.ps1
 .\marufia-server\scripts\test-rls.ps1
 .\marufia-server\scripts\test-realtime.ps1
+.\marufia-server\scripts\test-tunnel.ps1 -Mode Quick
+```
+
+Após a configuração segura de domínio da Fase 9, a operação permanente será:
+
+```powershell
+.\marufia-server\scripts\set-tunnel-token.ps1
+.\marufia-server\scripts\start-tunnel.ps1
+.\marufia-server\scripts\status-tunnel.ps1
+.\marufia-server\scripts\stop-tunnel.ps1
 ```
 
 O migrador valida o conjunto por SHA-256 e cria um dump de rollback antes da
@@ -105,7 +123,9 @@ procedimento preservando dados em `docs/MARUFIA_SERVER_PHASE_4.md`.
 
 - gateway HTTP, pooler e PostgreSQL são publicados somente em `127.0.0.1`;
 - PostgreSQL não fica acessível pela rede local nem pela internet;
-- o futuro Tunnel deverá apontar apenas para `http://127.0.0.1:8000`;
+- o hostname do Tunnel deverá apontar somente para
+  `http://marufia-public-gateway:8080` dentro da rede Docker;
+- o gateway público libera somente `/auth/v1/`, `/rest/v1/` e `/realtime/v1/`;
 - Studio é protegido pelo usuário e senha aleatórios do `.env`;
 - `service_role`, JWT, banco e chaves administrativas não são enviados ao cliente;
 - confirmação automática de email é permitida somente no loopback experimental;
@@ -115,11 +135,11 @@ procedimento preservando dados em `docs/MARUFIA_SERVER_PHASE_4.md`.
 
 ## Limite desta fase
 
-O runtime está operacional apenas em `127.0.0.1` e contém o schema vazio do
-Marufia. O Auth está validado com contas descartáveis, mas SMTP real e o ensaio
-de migração de contas dependem das fases de publicação e do backup controlado.
-Cloudflare Tunnel, domínio público, backups automáticos e migração de dados
-continuam reservados às fases próprias.
+O runtime continua operacional em `127.0.0.1` e contém o schema vazio do
+Marufia. O transporte externo foi validado apenas por endereço temporário e
+restrito. Domínio público permanente, SMTP, CORS/redirects definitivos e token
+de produção pertencem à Fase 9. Backups automáticos e migração de dados continuam
+reservados às fases próprias.
 
-Consulte `docs/MARUFIA_SERVER_PHASE_7.md`, `docs/SERVER_REALTIME.md` e
-`docs/SERVER_RLS_SECURITY.md` para resultados, operação e segurança.
+Consulte `docs/MARUFIA_SERVER_PHASE_8.md` e
+`docs/SERVER_CLOUDFLARE_TUNNEL.md` para resultados, operação e segurança.

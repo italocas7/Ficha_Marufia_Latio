@@ -6,18 +6,14 @@ $ErrorActionPreference = "Stop"
 . (Join-Path $PSScriptRoot "common.ps1")
 
 try {
-    Assert-MarufiaEnvironment
     Assert-DockerReady
-    Write-MarufiaMessage -Level INFO -Message "Encerrando qualquer Tunnel do Marufia..."
     Remove-MarufiaTunnelContainers -Names @(
         "marufia-cloudflared",
         "marufia-cloudflared-quick",
         "marufia-public-gateway",
         "marufia-tunnel-smoke-gateway"
     )
-    Write-MarufiaMessage -Level INFO -Message "Parando os containers sem remover banco ou Storage..."
-    Invoke-MarufiaCompose -ComposeArguments @("down")
-    Write-MarufiaMessage -Level INFO -Message "Marufia Server parado; os dados persistentes foram preservados."
+    Write-MarufiaMessage -Level INFO -Message "Tunnel parado. Banco, Storage e volumes do Marufia Server foram preservados."
 } catch {
     Write-MarufiaMessage -Level ERROR -Message $_.Exception.Message
     exit 1
