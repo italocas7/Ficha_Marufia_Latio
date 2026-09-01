@@ -21,7 +21,7 @@ services:
       api-gw:
         condition: service_healthy
     volumes:
-      - ../../cloudflare/public-gateway-envoy.yaml:/etc/envoy/envoy.yaml:ro
+      - ../../cloudflare/public-gateway-envoy.generated.yaml:/etc/envoy/envoy.yaml:ro
     networks:
       default: {}
       marufia-tunnel:

@@ -21,6 +21,7 @@ cloudflare/*-credentials.json
 cloudflare/cert.pem
 cloudflare/*.key
 cloudflare/*.token
+cloudflare/*.generated.yaml
 
 # Estado temporário de ferramentas
 supabase/.temp/

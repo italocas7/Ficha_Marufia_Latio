@@ -18,6 +18,12 @@
 | `status-tunnel.ps1` | mostra estado/saúde sem exibir credenciais |
 | `stop-tunnel.ps1` | remove somente containers sem estado do Tunnel |
 | `test-tunnel.ps1` | ensaia HTTPS e Realtime num Quick Tunnel restrito e temporário |
+| `set-smtp.ps1` | grava SMTP real no `.env` sem exibir a senha |
+| `configure-public-domain.ps1` | alinha domínio, Auth, redirects e CORS com rollback automático |
+| `render-public-gateway.ps1` | gera localmente o gateway com origens CORS exatas |
+| `select-client-backend.ps1` | alterna os próximos builds entre Cloud e self-hosted |
+| `restore-local-domain.ps1` | para o Tunnel e volta ao loopback/Cloud sem remover dados |
+| `test-domain-config.ps1` | valida domínio, SMTP, Auth e CORS sem publicar o servidor |
 | `common.ps1` | validações compartilhadas; não deve ser executado diretamente |
 
 Os scripts usam sempre o Compose oficial e a camada de segurança Marufia. Eles
@@ -38,3 +44,6 @@ que a limpeza devolveu o banco ao estado vazio.
 `test-tunnel.ps1` não publica cadastro nem REST no ensaio temporário. O modo
 permanente exige domínio HTTPS real, URLs alinhadas, confirmação automática
 desativada e SMTP real. O token fica em arquivo ignorado pelo Git.
+
+Consulte `docs/SERVER_PUBLIC_DOMAIN.md` antes de configurar o modo permanente.
+Não informe senha SMTP ou token em argumentos visíveis, conversa, logs ou Git.

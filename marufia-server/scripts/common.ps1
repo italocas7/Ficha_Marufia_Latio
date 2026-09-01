@@ -61,6 +61,119 @@ function Test-MarufiaLoopbackUrl {
     return $loopback
 }
 
+function ConvertTo-MarufiaPublicHostname {
+    param([Parameter(Mandatory = $true)][string]$Value)
+
+    $hostname = $Value.Trim().TrimEnd(".").ToLowerInvariant()
+    if ($hostname -notmatch "^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$" -or
+        $hostname -match "(?:^|\.)(?:localhost|example|invalid|test)$" -or
+        $hostname.EndsWith(".trycloudflare.com")) {
+        throw "O hostname público deve ser um domínio HTTPS real controlado pelo Mestre."
+    }
+    return $hostname
+}
+
+function Assert-MarufiaSmtpSafety {
+    param([Parameter(Mandatory = $true)][hashtable]$Environment)
+
+    foreach ($key in @("SMTP_ADMIN_EMAIL", "SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS")) {
+        if (-not $Environment.ContainsKey($key) -or [string]::IsNullOrWhiteSpace($Environment[$key])) {
+            throw "O servidor externo exige configuração SMTP completa; $key está ausente."
+        }
+    }
+    try {
+        $senderAddress = [System.Net.Mail.MailAddress]::new($Environment["SMTP_ADMIN_EMAIL"])
+    } catch {
+        throw "SMTP_ADMIN_EMAIL deve conter um remetente válido."
+    }
+    $reservedSuffixes = @(".invalid", ".test", ".example", ".localhost")
+    $smtpHostIsReserved = $Environment["SMTP_HOST"] -in @("localhost", "127.0.0.1", "::1")
+    $senderIsReserved = $false
+    foreach ($suffix in $reservedSuffixes) {
+        $smtpHostIsReserved = $smtpHostIsReserved -or $Environment["SMTP_HOST"].EndsWith($suffix, [System.StringComparison]::OrdinalIgnoreCase)
+        $senderIsReserved = $senderIsReserved -or $senderAddress.Host.EndsWith($suffix, [System.StringComparison]::OrdinalIgnoreCase)
+    }
+    if ($smtpHostIsReserved -or $senderIsReserved) {
+        throw "O servidor externo exige um SMTP real e um remetente válido."
+    }
+    $smtpPort = 0
+    if (-not [int]::TryParse($Environment["SMTP_PORT"], [ref]$smtpPort) -or $smtpPort -lt 1 -or $smtpPort -gt 65535) {
+        throw "SMTP_PORT deve ser uma porta válida entre 1 e 65535."
+    }
+}
+
+function Get-MarufiaCorsOrigins {
+    param([Parameter(Mandatory = $true)][hashtable]$Environment)
+
+    if (-not $Environment.ContainsKey("SITE_URL") -or [string]::IsNullOrWhiteSpace($Environment["SITE_URL"])) {
+        throw "SITE_URL é obrigatória para configurar CORS."
+    }
+    $rawOrigins = @($Environment["SITE_URL"], "http://tauri.localhost")
+    if ($Environment.ContainsKey("MARUFIA_CORS_ALLOWED_ORIGINS") -and
+        -not [string]::IsNullOrWhiteSpace($Environment["MARUFIA_CORS_ALLOWED_ORIGINS"])) {
+        $rawOrigins += $Environment["MARUFIA_CORS_ALLOWED_ORIGINS"].Split(",", [System.StringSplitOptions]::RemoveEmptyEntries)
+    } elseif ($Environment.ContainsKey("ADDITIONAL_REDIRECT_URLS")) {
+        $rawOrigins += $Environment["ADDITIONAL_REDIRECT_URLS"].Split(",", [System.StringSplitOptions]::RemoveEmptyEntries)
+    }
+
+    $origins = [System.Collections.Generic.List[string]]::new()
+    foreach ($rawOrigin in $rawOrigins) {
+        try {
+            $uri = [System.Uri]::new($rawOrigin.Trim())
+        } catch {
+            throw "A lista CORS contém uma origem inválida."
+        }
+        if (-not $uri.IsAbsoluteUri -or $uri.UserInfo -or $uri.Query -or $uri.Fragment -or
+            $uri.AbsolutePath -notin @("", "/")) {
+            throw "Cada origem CORS deve conter somente protocolo, hostname e porta opcional."
+        }
+        $origin = $uri.GetLeftPart([System.UriPartial]::Authority).TrimEnd("/")
+        $loopback = $uri.Host -in @("localhost", "127.0.0.1", "::1", "[::1]")
+        $tauriOrigin = $origin -eq "http://tauri.localhost"
+        if ($uri.Scheme -ne "https" -and -not $loopback -and -not $tauriOrigin) {
+            throw "Origem CORS externa deve usar HTTPS."
+        }
+        if (-not $origins.Contains($origin)) { $origins.Add($origin) }
+    }
+    if ($origins.Count -gt 12) { throw "A lista CORS aceita no máximo 12 origens exatas." }
+    $siteOrigin = ([System.Uri]::new($Environment["SITE_URL"])).GetLeftPart([System.UriPartial]::Authority).TrimEnd("/")
+    if (-not $origins.Contains($siteOrigin)) { throw "A origem do SITE_URL deve estar permitida no CORS." }
+    return $origins.ToArray()
+}
+
+function Set-MarufiaEnvironmentValues {
+    param([Parameter(Mandatory = $true)][hashtable]$Values)
+
+    foreach ($entry in $Values.GetEnumerator()) {
+        if ($entry.Key -notmatch "^[A-Z][A-Z0-9_]*$" -or [string]$entry.Value -match "[\r\n]") {
+            throw "Uma alteração inválida de configuração foi recusada."
+        }
+    }
+    $seen = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+    $lines = foreach ($line in [System.IO.File]::ReadAllLines($script:MarufiaEnvPath)) {
+        $separator = $line.IndexOf("=")
+        if ($separator -gt 0) {
+            $key = $line.Substring(0, $separator).Trim()
+            if ($Values.ContainsKey($key)) {
+                $null = $seen.Add($key)
+                "$key=$($Values[$key])"
+                continue
+            }
+        }
+        $line
+    }
+    foreach ($key in @($Values.Keys | Sort-Object)) {
+        if (-not $seen.Contains($key)) { $lines += "$key=$($Values[$key])" }
+    }
+    $temporaryPath = "$($script:MarufiaEnvPath).$PID.$([guid]::NewGuid().ToString('N')).tmp"
+    try {
+        [System.IO.File]::WriteAllLines($temporaryPath, $lines, [System.Text.UTF8Encoding]::new($false))
+        Move-Item -LiteralPath $temporaryPath -Destination $script:MarufiaEnvPath -Force
+    } finally {
+        if (Test-Path -LiteralPath $temporaryPath) { Remove-Item -LiteralPath $temporaryPath -Force }
+    }
+}
+
 function Assert-MarufiaAuthSafety {
     param([Parameter(Mandatory = $true)][hashtable]$Environment)
 
@@ -95,32 +208,8 @@ function Assert-MarufiaAuthSafety {
         throw "Confirmação automática de email é permitida somente no servidor experimental local."
     }
 
-    if (-not $apiIsLoopback) {
-        foreach ($key in @("SMTP_ADMIN_EMAIL", "SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS")) {
-            if (-not $Environment.ContainsKey($key) -or [string]::IsNullOrWhiteSpace($Environment[$key])) {
-                throw "O servidor externo exige configuração SMTP completa; $key está ausente."
-            }
-        }
-        try {
-            $senderAddress = [System.Net.Mail.MailAddress]::new($Environment["SMTP_ADMIN_EMAIL"])
-        } catch {
-            throw "SMTP_ADMIN_EMAIL deve conter um remetente válido."
-        }
-        $reservedSuffixes = @(".invalid", ".test", ".example", ".localhost")
-        $smtpHostIsReserved = $Environment["SMTP_HOST"] -in @("localhost", "127.0.0.1", "::1")
-        $senderIsReserved = $false
-        foreach ($suffix in $reservedSuffixes) {
-            $smtpHostIsReserved = $smtpHostIsReserved -or $Environment["SMTP_HOST"].EndsWith($suffix, [System.StringComparison]::OrdinalIgnoreCase)
-            $senderIsReserved = $senderIsReserved -or $senderAddress.Host.EndsWith($suffix, [System.StringComparison]::OrdinalIgnoreCase)
-        }
-        if ($smtpHostIsReserved -or $senderIsReserved) {
-            throw "O servidor externo exige um SMTP real e um remetente válido."
-        }
-        $smtpPort = 0
-        if (-not [int]::TryParse($Environment["SMTP_PORT"], [ref]$smtpPort) -or $smtpPort -lt 1 -or $smtpPort -gt 65535) {
-            throw "SMTP_PORT deve ser uma porta válida entre 1 e 65535."
-        }
-    }
+    if (-not $apiIsLoopback) { Assert-MarufiaSmtpSafety -Environment $Environment }
+    $null = Get-MarufiaCorsOrigins -Environment $Environment
 }
 
 function Assert-MarufiaEnvironment {

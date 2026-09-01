@@ -33,7 +33,9 @@ e a conexão com a Cloudflare é iniciada de dentro para fora.
 ## Arquivos
 
 - `docker-compose.tunnel.yml`: Envoy e cloudflared isolados;
-- `public-gateway-envoy.yaml`: lista de rotas permitidas em produção;
+- `public-gateway-envoy.yaml`: modelo das rotas e da política CORS de produção;
+- `public-gateway-envoy.generated.yaml`: arquivo local ignorado, com as origens
+  exatas da instalação;
 - `smoke-gateway-envoy.yaml`: filtro ainda menor para o ensaio temporário;
 - `tunnel-token.token`: segredo local ignorado pelo Git, criado apenas pelo
   comando seguro.
@@ -41,9 +43,9 @@ e a conexão com a Cloudflare é iniciada de dentro para fora.
 As imagens estão fixadas em `envoyproxy/envoy:v1.39.0` e
 `cloudflare/cloudflared:2026.7.2`. Não use `latest`.
 
-## Configuração futura no painel Cloudflare
+## Configuração permanente no painel Cloudflare
 
-Na Fase 9, crie um Tunnel gerenciado remotamente e um hostname público HTTPS. O
+Crie um Tunnel gerenciado remotamente e um hostname público HTTPS. O
 serviço/origem do hostname deve ser exatamente:
 
 ```text
@@ -68,6 +70,11 @@ Para rotacionar um token comprometido, gere outro no painel e execute:
 Nunca envie o token por conversa, log ou commit. O token dá autoridade para
 executar o conector e deve ser revogado no painel se houver suspeita de exposição.
 
+Antes de guardar o token, configure SMTP e domínio pelos comandos descritos em
+`docs/SERVER_PUBLIC_DOMAIN.md`. O gateway remove o CORS amplo do upstream e
+recria somente a lista de origens HTTPS autorizadas, além da origem local do
+aplicativo Tauri no Windows. Curingas não são permitidos.
+
 ## Ensaio temporário
 
 `test-tunnel.ps1` usa um Quick Tunnel aleatório apenas para validar HTTPS e
@@ -77,4 +84,5 @@ cadastro e REST são bloqueados. O endereço e os containers são removidos ao f
 Quick Tunnel não é ambiente de produção: não possui SLA, usa endereço aleatório
 e tem limites próprios. Não o use para jogadores.
 
-Consulte `docs/SERVER_CLOUDFLARE_TUNNEL.md` antes de ativar o modo permanente.
+Consulte `docs/SERVER_CLOUDFLARE_TUNNEL.md` e
+`docs/SERVER_PUBLIC_DOMAIN.md` antes de ativar o modo permanente.

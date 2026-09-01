@@ -83,7 +83,7 @@ test("refuses unsafe named publication and cleans up only exact tunnel container
   assert.match(start, /CLOUDFLARE_TUNNEL_HOSTNAME/);
   assert.match(start, /SUPABASE_PUBLIC_URL/);
   assert.match(start, /MARUFIA_PUBLIC_URL/);
-  assert.match(start, /trycloudflare\.com/);
+  assert.match(common, /trycloudflare\.com/);
   assert.match(common, /ValidateSet\("marufia-cloudflared", "marufia-cloudflared-quick", "marufia-public-gateway", "marufia-tunnel-smoke-gateway"\)/);
   assert.match(stopServer, /Remove-MarufiaTunnelContainers/);
   assert.match(ignore, /cloudflare\/\*\.token/);

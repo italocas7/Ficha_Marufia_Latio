@@ -44,6 +44,7 @@
     "test:server-rls": "node --test tests/js/marufia_server_rls.test.cjs",
     "test:server-realtime": "node --test tests/js/marufia_server_realtime.test.cjs",
     "test:server-tunnel": "node --test tests/js/marufia_server_tunnel.test.cjs",
+    "test:server-domain": "node --test tests/js/marufia_server_domain.test.cjs",
     "vendor:supabase": "node tools/vendor_supabase.cjs",
     "supabase:version": "supabase --version"
   },

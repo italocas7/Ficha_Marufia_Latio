@@ -14,12 +14,7 @@ function Assert-MarufiaTunnelHostname {
         [string]::IsNullOrWhiteSpace($Environment["CLOUDFLARE_TUNNEL_HOSTNAME"])) {
         throw "CLOUDFLARE_TUNNEL_HOSTNAME ainda não foi configurado no .env."
     }
-    $hostname = $Environment["CLOUDFLARE_TUNNEL_HOSTNAME"].Trim().TrimEnd(".").ToLowerInvariant()
-    if ($hostname -notmatch "^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$" -or
-        $hostname -match "(?:^|\.)(?:localhost|example|invalid|test)$" -or
-        $hostname.EndsWith(".trycloudflare.com")) {
-        throw "CLOUDFLARE_TUNNEL_HOSTNAME deve ser um domínio HTTPS real controlado pelo Mestre."
-    }
+    $hostname = ConvertTo-MarufiaPublicHostname -Value $Environment["CLOUDFLARE_TUNNEL_HOSTNAME"]
     $expectedUrl = "https://$hostname"
     foreach ($key in @("MARUFIA_PUBLIC_URL", "SUPABASE_PUBLIC_URL")) {
         if (-not $Environment.ContainsKey($key) -or $Environment[$key].TrimEnd("/") -ne $expectedUrl) {
@@ -35,6 +30,8 @@ try {
     Assert-MarufiaTunnelTokenFile
     $environment = Get-MarufiaEnvironmentMap
     $hostname = Assert-MarufiaTunnelHostname -Environment $environment
+    & (Join-Path $PSScriptRoot "render-public-gateway.ps1")
+    if ($LASTEXITCODE -ne 0) { throw "A configuração pública restrita não pôde ser gerada." }
 
     Remove-MarufiaTunnelContainers -Names @("marufia-cloudflared-quick", "marufia-tunnel-smoke-gateway")
     Write-MarufiaMessage -Level INFO -Message "Iniciando o caminho público protegido do Marufia Server..."

@@ -18,6 +18,10 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 . (Join-Path $PSScriptRoot "common.ps1")
 
+if (-not (Test-MarufiaLoopbackUrl -Value $PublicUrl -Label "PublicUrl")) {
+    throw "O preparo inicial aceita somente loopback. Use configure-public-domain.ps1 depois de configurar SMTP."
+}
+
 function ConvertTo-Base64Url {
     param([Parameter(Mandatory = $true)][byte[]]$Bytes)
     return [Convert]::ToBase64String($Bytes).TrimEnd("=").Replace("+", "-").Replace("/", "_")
@@ -161,6 +165,7 @@ try {
         "API_EXTERNAL_URL" = "$($PublicUrl.TrimEnd('/'))/auth/v1"
         "SITE_URL" = $SiteUrl.TrimEnd("/")
         "ADDITIONAL_REDIRECT_URLS" = $AdditionalRedirectUrls
+        "MARUFIA_CORS_ALLOWED_ORIGINS" = "$($SiteUrl.TrimEnd('/')),http://tauri.localhost,http://127.0.0.1:4173,http://localhost:4173"
     }
 
     $outputLines = foreach ($line in [System.IO.File]::ReadAllLines($templatePath)) {

@@ -30,6 +30,11 @@ SUPABASE_PUBLISHABLE_KEY=<chave pública do servidor>
 MARUFIA_SITE_URL=https://marufia.example
 ```
 
+Os endereços `.example` acima são apenas ilustrativos. Na operação real, use os
+comandos de `docs/SERVER_PUBLIC_DOMAIN.md`: eles geram o `.env.local` público
+sem incluir segredos e recusam domínio reservado, SMTP incompleto ou URLs
+inseguras.
+
 A ordem de precedência, do menor para o maior, é:
 
 1. perfil em `config/public-backends/<modo>.env`;
