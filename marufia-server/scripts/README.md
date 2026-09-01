@@ -11,6 +11,7 @@
 | `verify-schema.ps1` | confere tabelas, RLS, RPCs, gatilhos, Realtime e histórico |
 | `test-schema-security.ps1` | executa 35 ataques RLS transacionais e confirma rollback |
 | `test-auth.ps1` | cria duas contas locais descartáveis, valida sessões e papéis e remove tudo |
+| `test-rls.ps1` | ataca a API local com três identidades, valida as oito tabelas e remove tudo |
 | `common.ps1` | validações compartilhadas; não deve ser executado diretamente |
 
 Os scripts usam sempre o Compose oficial e a camada de segurança Marufia. Eles
@@ -23,3 +24,7 @@ não substitui o sistema de backup, restore e retenção das Fases 11 e 12.
 `test-auth.ps1` recusa endereços externos e só funciona com a confirmação
 automática do ambiente experimental local. A configuração compartilhada impede
 que essa confirmação automática seja usada quando a API estiver na internet.
+
+`test-rls.ps1` também recusa endereços externos e exige que o banco experimental
+esteja vazio. Ele usa somente a chave pública, nunca `service_role`, e confirma
+que a limpeza devolveu o banco ao estado vazio.

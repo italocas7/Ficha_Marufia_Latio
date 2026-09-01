@@ -41,6 +41,7 @@
     "test:rolls": "node --test tests/js/rolls.test.cjs tests/js/online_rolls.test.cjs tests/js/roll_registration_migration.test.cjs tests/js/roll_realtime_migration.test.cjs tests/js/roll_visibility_migration.test.cjs tests/js/roll_history_clear_migration.test.cjs tests/js/live_rolls.test.cjs",
     "test:database:remote": "node tools/test_supabase_database.cjs",
     "test:server-layout": "node --test tests/js/marufia_server_layout.test.cjs",
+    "test:server-rls": "node --test tests/js/marufia_server_rls.test.cjs",
     "vendor:supabase": "node tools/vendor_supabase.cjs",
     "supabase:version": "supabase --version"
   },
