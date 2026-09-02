@@ -26,6 +26,8 @@ try {
         ADDITIONAL_REDIRECT_URLS = "https://app.marufia.dev"
         MARUFIA_CORS_ALLOWED_ORIGINS = "https://app.marufia.dev,http://tauri.localhost"
         ENABLE_EMAIL_AUTOCONFIRM = "false"
+        AUTH_MAX_REQUEST_DURATION = "30s"
+        AUTH_MAILER_EXTERNAL_HOSTS = "api.marufia.dev"
         SMTP_ADMIN_EMAIL = "servidor@marufia.dev"
         SMTP_HOST = "smtp.marufia.dev"
         SMTP_PORT = "587"

@@ -167,6 +167,10 @@ test("logs out and follows authentication state changes", async () => {
 test("translates server errors without exposing technical details", () => {
   assert.equal(authTools.friendlyAuthMessage(new Error("Invalid login credentials")), "Email ou senha incorretos.");
   assert.equal(authTools.friendlyAuthMessage(new Error("Email not confirmed")), "Confirme seu email antes de entrar.");
+  assert.equal(
+    authTools.friendlyAuthMessage({ code: "request_timeout", message: "Processing this request timed out" }),
+    "O serviço de contas demorou para enviar o email. Aguarde um momento e tente criar a conta novamente.",
+  );
   assert.equal(authTools.friendlyAuthMessage(new Error("Failed to fetch token at internal endpoint")), "Não foi possível acessar o servidor. A ficha local continua disponível.");
 });
 

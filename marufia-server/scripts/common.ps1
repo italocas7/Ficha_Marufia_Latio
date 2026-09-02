@@ -253,11 +253,29 @@ function Assert-MarufiaAuthSafety {
     if ($autoconfirmText -notin @("true", "false")) {
         throw "ENABLE_EMAIL_AUTOCONFIRM deve ser true ou false."
     }
+    if (-not $Environment.ContainsKey("AUTH_MAX_REQUEST_DURATION") -or
+        $Environment["AUTH_MAX_REQUEST_DURATION"] -notmatch "^(?:[1-5][0-9]|60)s$") {
+        throw "AUTH_MAX_REQUEST_DURATION deve ficar entre 10s e 60s."
+    }
     if (-not $apiIsLoopback -and $autoconfirmText -eq "true") {
         throw "Confirmação automática de email é permitida somente no servidor experimental local."
     }
 
-    if (-not $apiIsLoopback) { Assert-MarufiaSmtpSafety -Environment $Environment }
+    if (-not $apiIsLoopback) {
+        Assert-MarufiaSmtpSafety -Environment $Environment
+        if (-not $Environment.ContainsKey("AUTH_MAILER_EXTERNAL_HOSTS") -or
+            [string]::IsNullOrWhiteSpace($Environment["AUTH_MAILER_EXTERNAL_HOSTS"])) {
+            throw "O hostname público do Auth deve constar em AUTH_MAILER_EXTERNAL_HOSTS."
+        }
+        $mailerHosts = [System.Collections.Generic.List[string]]::new()
+        foreach ($rawHost in $Environment["AUTH_MAILER_EXTERNAL_HOSTS"].Split(",", [System.StringSplitOptions]::RemoveEmptyEntries)) {
+            $hostName = ConvertTo-MarufiaPublicHostname -Value $rawHost
+            if (-not $mailerHosts.Contains($hostName)) { $mailerHosts.Add($hostName) }
+        }
+        if ($mailerHosts.Count -gt 8 -or -not $mailerHosts.Contains($publicUri.Host.ToLowerInvariant())) {
+            throw "AUTH_MAILER_EXTERNAL_HOSTS deve conter o hostname público exato do Auth."
+        }
+    }
     $null = Get-MarufiaCorsOrigins -Environment $Environment
 }
 

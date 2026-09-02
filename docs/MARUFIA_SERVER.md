@@ -111,6 +111,9 @@ RLS, Realtime, backup e acesso externo na nova máquina.
   health check novamente.
 - Tunnel offline com serviços locais online: verifique a internet e o estado do
   Tunnel; não abra a porta 5432 do roteador.
+- Falha ao criar conta após demora no e-mail: aguarde alguns segundos e tente
+  novamente. O Auth aceita até 30 segundos para o SMTP; o aplicativo distingue
+  essa demora de uma queda real do servidor.
 - Jogadores conectados mostra zero: isso é normal sem presença enviada nos
   últimos 90 segundos.
 - Backup inválido: preserve o arquivo, não tente forçar a restauração e use o

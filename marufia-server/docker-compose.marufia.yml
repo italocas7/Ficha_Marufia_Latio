@@ -7,6 +7,10 @@ services:
   auth:
     environment:
       GOTRUE_JWT_KEYS: "${JWT_KEYS}"
+      # Resend pode ocasionalmente ultrapassar o limite upstream de 10s ao
+      # entregar mensagens. O gateway público permanece limitado a 60s.
+      GOTRUE_API_MAX_REQUEST_DURATION: "${AUTH_MAX_REQUEST_DURATION:-30s}"
+      GOTRUE_MAILER_EXTERNAL_HOSTS: "${AUTH_MAILER_EXTERNAL_HOSTS:-}"
 
   realtime:
     environment:

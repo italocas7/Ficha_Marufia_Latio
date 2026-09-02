@@ -24,6 +24,7 @@ try {
         API_EXTERNAL_URL = "$localUrl/auth/v1"
         ADDITIONAL_REDIRECT_URLS = "http://127.0.0.1:4173,http://localhost:4173"
         MARUFIA_CORS_ALLOWED_ORIGINS = "$($environment['SITE_URL']),http://tauri.localhost,http://127.0.0.1:4173,http://localhost:4173"
+        AUTH_MAILER_EXTERNAL_HOSTS = ""
         ENABLE_EMAIL_AUTOCONFIRM = "true"
     }
     Assert-MarufiaEnvironment

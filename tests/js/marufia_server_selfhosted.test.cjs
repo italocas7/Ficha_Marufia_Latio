@@ -66,6 +66,8 @@ test("enables current JWT verification while leaving unused Functions off", () =
     assert.match(override, new RegExp(`${key}:`));
   }
   assert.match(override, /functions:[\s\S]*?profiles:[\s\S]*?- edge-functions/);
+  assert.match(override, /GOTRUE_API_MAX_REQUEST_DURATION: "\$\{AUTH_MAX_REQUEST_DURATION:-30s\}"/);
+  assert.match(override, /GOTRUE_MAILER_EXTERNAL_HOSTS: "\$\{AUTH_MAILER_EXTERNAL_HOSTS:-\}"/);
 });
 
 test("contains no official demo credentials in the public environment template", () => {

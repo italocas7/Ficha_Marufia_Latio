@@ -44,6 +44,10 @@ O domínio `marufiarpg.org`, o hostname `api.marufiarpg.org`, o SMTP e o Tunnel
 nomeado foram configurados e validados. O gateway público continua sendo a única
 entrada externa; PostgreSQL e Studio permanecem locais.
 
+O Auth permite até 30 segundos para a entrega SMTP, ainda abaixo dos 60 segundos
+do gateway público. O hostname exato do Auth é incluído na lista confiável usada
+na geração dos links de confirmação.
+
 O Supabase Cloud continua sendo o backend padrão do aplicativo. Nenhum dado ou
 conta foi migrado, e nenhuma funcionalidade da ficha foi alterada.
 

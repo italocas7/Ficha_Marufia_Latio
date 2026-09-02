@@ -27,6 +27,13 @@ static_resources:
                   virtual_hosts:
                     - name: marufia_public_api
                       domains: ["*"]
+                      # O salto Cloudflare Tunnel -> gateway é HTTP privado,
+                      # mas a origem pública aceita somente HTTPS.
+                      request_headers_to_add:
+                        - header: { key: X-Forwarded-Proto, value: https }
+                          append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                        - header: { key: X-Forwarded-Port, value: "443" }
+                          append_action: OVERWRITE_IF_EXISTS_OR_ADD
                       response_headers_to_remove:
                         - access-control-allow-origin
                         - access-control-allow-methods

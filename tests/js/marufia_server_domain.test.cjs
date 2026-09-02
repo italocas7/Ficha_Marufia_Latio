@@ -26,6 +26,7 @@ test("accepts only a stable user-controlled HTTPS hostname", () => {
   assert.match(configure, /ConvertTo-MarufiaPublicHostname/);
   assert.match(configure, /SUPABASE_PUBLIC_URL = \$publicUrl/);
   assert.match(configure, /API_EXTERNAL_URL = "\$publicUrl\/auth\/v1"/);
+  assert.match(configure, /AUTH_MAILER_EXTERNAL_HOSTS = \$publicHostname/);
   assert.match(configure, /ENABLE_EMAIL_AUTOCONFIRM = "false"/);
   assert.match(setup, /O preparo inicial aceita somente loopback/);
 });
@@ -63,7 +64,10 @@ test("allows only the public site, exact configured origins, and Tauri Windows",
   assert.match(common, /http:\/\/tauri\.localhost/);
   assert.match(common, /A lista CORS aceita no máximo 12 origens exatas/);
   assert.match(common, /Origem CORS externa deve usar HTTPS/);
+  assert.match(common, /AUTH_MAX_REQUEST_DURATION deve ficar entre 10s e 60s/);
+  assert.match(common, /AUTH_MAILER_EXTERNAL_HOSTS deve conter o hostname público exato do Auth/);
   assert.match(configure, /MARUFIA_CORS_ALLOWED_ORIGINS/);
+  assert.match(gateway, /X-Forwarded-Proto, value: https/);
   assert.doesNotMatch(gateway, /allow_headers:\s*"\*"|allow_methods:\s*"[^\n]*TRACE/);
 });
 

@@ -66,6 +66,7 @@ try {
         SITE_URL = $selectedSiteUrl
         ADDITIONAL_REDIRECT_URLS = ($redirects -join ",")
         MARUFIA_CORS_ALLOWED_ORIGINS = ($corsOrigins -join ",")
+        AUTH_MAILER_EXTERNAL_HOSTS = $publicHostname
         ENABLE_EMAIL_AUTOCONFIRM = "false"
     }
     $candidate = $environment.Clone()
