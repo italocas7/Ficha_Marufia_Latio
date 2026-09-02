@@ -17,7 +17,8 @@ $clientEnvironmentPath = Join-Path $projectRoot ".env.local"
 
 try {
     if (Test-Path -LiteralPath $clientEnvironmentPath -PathType Leaf) {
-        $firstLine = [System.IO.File]::ReadLines($clientEnvironmentPath) | Select-Object -First 1
+        $existingLines = [System.IO.File]::ReadAllLines($clientEnvironmentPath)
+        $firstLine = if ($existingLines.Count -gt 0) { $existingLines[0] } else { "" }
         if ($firstLine -ne $marker) {
             throw ".env.local pertence ao usuário e não será sobrescrito. Remova ou renomeie esse arquivo manualmente."
         }

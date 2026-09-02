@@ -29,6 +29,7 @@
 | `status-tunnel.ps1` | mostra estado/saúde sem exibir credenciais |
 | `stop-tunnel.ps1` | remove somente containers sem estado do Tunnel |
 | `test-tunnel.ps1` | ensaia HTTPS e Realtime num Quick Tunnel restrito e temporário |
+| `test-public-clients.ps1` | valida o domínio real com Mestre, vários jogadores, queda e reconexão |
 | `set-smtp.ps1` | grava SMTP real no `.env` sem exibir a senha |
 | `configure-public-domain.ps1` | alinha domínio, Auth, redirects e CORS com rollback automático |
 | `render-public-gateway.ps1` | gera localmente o gateway com origens CORS exatas |
@@ -65,3 +66,8 @@ Os eventos operacionais são gravados em arquivos mensais dentro de
 `marufia-server/logs/`. Dados que se pareçam com senhas, tokens ou chaves são
 ocultados, e somente esses logs operacionais com mais de 90 dias são removidos.
 A inicialização permanece manual até que `configure-startup.ps1` seja executado.
+
+`test-public-clients.ps1` cria somente contas descartáveis pelo endpoint
+administrativo local, entrega aos clientes apenas a chave publicável e remove os
+dados por cascade ao final. A opção `-IncludeOutage` para de verdade o servidor
+e exige a confirmação explícita `TESTAR-QUEDA-MARUFIA`.

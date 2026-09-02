@@ -4,7 +4,7 @@ Esta pasta hospeda o ambiente experimental que permitirá ao computador do Mestr
 executar o backend do Marufia. Ela é independente de `server/`, que continua
 sendo o Worker do site publicado.
 
-## Estado da Fase 12
+## Estado da Fase 13
 
 O runtime oficial do Supabase Self-Hosted está validado na release fixada
 `self-hosted/v0.8.0`. PostgreSQL, Auth, REST, Realtime, Storage, Studio, gateway e
@@ -60,6 +60,12 @@ recentes e o último backup válido. Logs operacionais ocultam credenciais e tê
 retenção de 90 dias. A inicialização junto do Windows é opcional e permanece
 desativada até ser escolhida pelo Mestre.
 
+O domínio público também passou por um ensaio com um Mestre, cinco jogadores e
+uma conta externa. A queda real dos containers e do Tunnel preservou os dados e
+as filas locais; após a recuperação, Realtime, conflitos e novas gravações
+voltaram a funcionar. O corte do Cloud ainda depende do roteiro em um segundo
+computador físico e de uma reinicialização completa do Windows com dados ativos.
+
 ## Pré-requisitos no Windows
 
 - Windows 10/11 compatível com Docker Desktop;
@@ -99,6 +105,15 @@ Para somente verificar a saúde sem abrir o menu:
 
 ```powershell
 .\marufia-server\scripts\health-check.ps1
+```
+
+O ensaio público controlado, que provoca alguns minutos de indisponibilidade, é:
+
+```powershell
+.\marufia-server\scripts\test-public-clients.ps1 `
+  -PlayerCount 5 `
+  -IncludeOutage `
+  -Confirmation "TESTAR-QUEDA-MARUFIA"
 ```
 
 Os comandos individuais continuam disponíveis:
@@ -206,7 +221,9 @@ externa dos conjuntos de backup continua sendo responsabilidade do Mestre.
 
 Consulte `docs/MARUFIA_SERVER.md`,
 `docs/MARUFIA_SERVER_PHASE_12.md`,
+`docs/MARUFIA_SERVER_PHASE_13.md`,
 `docs/SERVER_MANAGER.md`,
+`docs/SERVER_ACCEPTANCE_TEST.md`,
 `docs/SERVER_BACKUP_AND_RESTORE.md`,
 `docs/SERVER_PUBLIC_DOMAIN.md` e `docs/SERVER_CLOUDFLARE_TUNNEL.md` para
 resultados, operação e segurança.

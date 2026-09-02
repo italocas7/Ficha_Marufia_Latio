@@ -128,3 +128,13 @@ permanecem locais. O cliente recebe apenas a URL pública e a chave publicável.
 Consulte também `docs/SERVER_MANAGER.md`,
 `docs/SERVER_BACKUP_AND_RESTORE.md`, `docs/SERVER_PUBLIC_DOMAIN.md` e
 `docs/SERVER_CLOUDFLARE_TUNNEL.md`.
+
+## Validação final antes do corte
+
+O ensaio automatizado pela internet, inclusive queda e reconexão, já está
+disponível. O roteiro e o instalador para o segundo computador estão descritos
+em `docs/SERVER_ACCEPTANCE_TEST.md`.
+
+Não troque o backend padrão nem abandone o Supabase Cloud antes de concluir esse
+roteiro em duas máquinas e confirmar a persistência após reiniciar o Windows do
+computador do Mestre.
