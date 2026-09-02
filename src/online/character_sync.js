@@ -1,5 +1,7 @@
 (function initMarufiaCharacterSync(root, factory) {
-  const api = factory(root);
+  const retryTools = root?.MARUFIA_OFFLINE
+    ?? (typeof module === "object" && module.exports ? require("./offline.js") : null);
+  const api = factory(root, retryTools);
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.MARUFIA_CHARACTER_SYNC = api;
   if (root?.document) Promise.resolve().then(() => api.init(
@@ -12,7 +14,7 @@
     root.LATIO_STORAGE,
     root.MARUFIA_ERRORS,
   ));
-})(typeof window !== "undefined" ? window : globalThis, function createMarufiaCharacterSyncApi(root) {
+})(typeof window !== "undefined" ? window : globalThis, function createMarufiaCharacterSyncApi(root, retryTools) {
   "use strict";
 
   const REMOTE_SAVE_DEBOUNCE_MS = 1000;
@@ -24,6 +26,7 @@
     online: Object.freeze({ label: "Online", title: "Conta conectada; alterações da ficha vinculada podem ser salvas online." }),
     syncing: Object.freeze({ label: "Sincronizando", title: "Salvando as alterações da ficha online." }),
     offline: Object.freeze({ label: "Offline", title: "Sem conexão; alterações continuam salvas neste computador." }),
+    unavailable: Object.freeze({ label: "Servidor indisponível", title: "Servidor de Marufia indisponível. As alterações estão salvas neste computador e serão sincronizadas automaticamente." }),
     error: Object.freeze({ label: "Erro de sincronização", title: "A ficha local está salva, mas a atualização online falhou." }),
   });
 
@@ -44,6 +47,7 @@
     let syncActive = false;
     let syncFailed = false;
     let realtimeFailed = false;
+    let serverUnavailable = false;
 
     function connected() {
       return String(accountButton?.dataset?.authState ?? "") === "online"
@@ -57,9 +61,11 @@
         syncActive = false;
         syncFailed = false;
         realtimeFailed = false;
+        serverUnavailable = false;
       }
       if (!connected()) return applySyncStatus(element, "offline");
       if (syncActive) return applySyncStatus(element, "syncing");
+      if (serverUnavailable) return applySyncStatus(element, "unavailable");
       if (syncFailed || realtimeFailed) return applySyncStatus(element, "error");
       return applySyncStatus(element, "online");
     }
@@ -81,11 +87,19 @@
       success() {
         syncActive = false;
         syncFailed = false;
+        serverUnavailable = false;
+        refresh();
+      },
+      unavailable() {
+        syncActive = false;
+        syncFailed = false;
+        serverUnavailable = true;
         refresh();
       },
       error() {
         syncActive = false;
         syncFailed = true;
+        serverUnavailable = false;
         refresh();
       },
       realtimeSuccess() {
@@ -119,8 +133,9 @@
     return stateSignature({ ...state, meta });
   }
 
-  function syncMetadataId(userId, characterId) {
-    return `${String(userId ?? "").trim()}|${String(characterId ?? "").trim()}`;
+  function syncMetadataId(userId, characterId, backendId = "") {
+    return retryTools?.scopedIdentity?.(backendId, userId, characterId)
+      ?? `${String(backendId ?? "").trim() ? `${String(backendId).trim()}|` : ""}${String(userId ?? "").trim()}|${String(characterId ?? "").trim()}`;
   }
 
   function readSyncMetadata(storage) {
@@ -132,8 +147,12 @@
     }
   }
 
-  function syncedCharacterMetadata(storage, userId, characterId) {
-    const value = readSyncMetadata(storage)[syncMetadataId(userId, characterId)];
+  function syncedCharacterMetadata(storage, userId, characterId, backendId = "") {
+    const values = readSyncMetadata(storage);
+    const value = values[syncMetadataId(userId, characterId, backendId)]
+      ?? (retryTools?.allowsLegacyCloudRecords?.(backendId)
+        ? values[syncMetadataId(userId, characterId)]
+        : null);
     const revision = Number(value?.revision);
     if (!Number.isSafeInteger(revision) || revision < 1) return null;
     return Object.freeze({
@@ -144,12 +163,12 @@
     });
   }
 
-  function rememberSyncedCharacter(storage, userId, character) {
+  function rememberSyncedCharacter(storage, userId, character, backendId = "") {
     const revision = Number(character?.revision);
     if (!userId || !character?.id || !Number.isSafeInteger(revision) || revision < 1
       || typeof storage?.saveLocal !== "function") return false;
     try {
-      const key = syncMetadataId(userId, character.id);
+      const key = syncMetadataId(userId, character.id, backendId);
       storage.saveLocal(SYNC_METADATA_KEY, {
         ...readSyncMetadata(storage),
         [key]: {
@@ -174,14 +193,21 @@
     }
   }
 
-  function pendingOfflineSave(storage, userId, characterId) {
-    const value = readOfflineQueue(storage)[syncMetadataId(userId, characterId)];
+  function pendingOfflineSave(storage, userId, characterId, backendId = "") {
+    const values = readOfflineQueue(storage);
+    const value = values[syncMetadataId(userId, characterId, backendId)]
+      ?? (retryTools?.allowsLegacyCloudRecords?.(backendId)
+        ? values[syncMetadataId(userId, characterId)]
+        : null);
     if (!value || value.userId !== userId || value.characterId !== characterId
+      || (String(value.backendId ?? "") !== String(backendId ?? "")
+        && !(retryTools?.allowsLegacyCloudRecords?.(backendId) && !value.backendId))
       || value.state?.meta?.appId !== "marufia-latio"
       || Number(value.state?.meta?.schemaVersion) !== 5) return null;
     return Object.freeze({
       userId,
       characterId,
+      backendId: String(backendId ?? ""),
       state: value.state,
       expectedRevision: Number.isSafeInteger(Number(value.expectedRevision)) && Number(value.expectedRevision) > 0
         ? Number(value.expectedRevision)
@@ -193,15 +219,17 @@
   function persistOfflineSave(storage, target, snapshot, now = () => new Date().toISOString()) {
     const userId = String(target?.userId ?? "");
     const characterId = String(target?.characterId ?? "");
+    const backendId = String(target?.backendId ?? "");
     if (!userId || !characterId || snapshot?.meta?.appId !== "marufia-latio"
       || Number(snapshot?.meta?.schemaVersion) !== 5 || typeof storage?.saveLocal !== "function") return false;
     try {
-      const key = syncMetadataId(userId, characterId);
+      const key = syncMetadataId(userId, characterId, backendId);
       storage.saveLocal(OFFLINE_QUEUE_KEY, {
         ...readOfflineQueue(storage),
         [key]: {
           userId,
           characterId,
+          backendId,
           state: snapshot,
           expectedRevision: Number.isSafeInteger(Number(target?.expectedRevision)) && Number(target.expectedRevision) > 0
             ? Number(target.expectedRevision)
@@ -215,13 +243,16 @@
     }
   }
 
-  function removeOfflineSave(storage, userId, characterId) {
+  function removeOfflineSave(storage, userId, characterId, backendId = "") {
     if (!userId || !characterId || typeof storage?.saveLocal !== "function") return false;
     try {
-      const key = syncMetadataId(userId, characterId);
+      const key = syncMetadataId(userId, characterId, backendId);
       const queue = readOfflineQueue(storage);
-      if (!Object.hasOwn(queue, key)) return true;
+      const legacyKey = syncMetadataId(userId, characterId);
+      if (!Object.hasOwn(queue, key)
+        && !(retryTools?.allowsLegacyCloudRecords?.(backendId) && Object.hasOwn(queue, legacyKey))) return true;
       delete queue[key];
+      if (retryTools?.allowsLegacyCloudRecords?.(backendId)) delete queue[legacyKey];
       storage.saveLocal(OFFLINE_QUEUE_KEY, queue);
       return true;
     } catch {
@@ -232,7 +263,8 @@
   function transientNetworkError(error) {
     const detail = `${error?.code ?? ""} ${error?.message ?? ""}`.toLowerCase();
     return detail.includes("fetch") || detail.includes("network") || detail.includes("offline")
-      || detail.includes("timed out") || detail.includes("timeout");
+      || detail.includes("timed out") || detail.includes("timeout")
+      || detail.includes("não foi possível acessar");
   }
 
   function conflictError(error) {
@@ -287,6 +319,7 @@
       conflict = Object.freeze({
         characterId: String(target?.characterId ?? remote?.id ?? ""),
         userId: String(target?.userId ?? remote?.owner_id ?? ""),
+        backendId: String(target?.backendId ?? ""),
         local: snapshot,
         remote: remote ?? null,
         error,
@@ -369,7 +402,7 @@
       if (destroyed || !snapshot) return Promise.resolve(lastResult);
       if (conflict) {
         conflict = Object.freeze({ ...conflict, local: snapshot });
-        persistDeferred({ characterId: conflict.characterId, userId: conflict.userId }, snapshot);
+        persistDeferred({ characterId: conflict.characterId, userId: conflict.userId, backendId: conflict.backendId }, snapshot);
         notify(onConflict, conflict);
         return Promise.resolve(lastResult);
       }
@@ -377,9 +410,9 @@
       return kick();
     }
 
-    function registerRemoteConflict(snapshot, remote, userId = remote?.owner_id) {
+    function registerRemoteConflict(snapshot, remote, userId = remote?.owner_id, backendId = "") {
       if (!snapshot || !remote?.id) return null;
-      return registerConflict(snapshot, { characterId: remote.id, userId }, remote, null);
+      return registerConflict(snapshot, { characterId: remote.id, userId, backendId }, remote, null);
     }
 
     function matchesActiveRemote(remote) {
@@ -398,6 +431,7 @@
         target: {
           characterId: current.characterId,
           userId: current.userId,
+          backendId: current.backendId,
           expectedRevision: current.remote.revision,
         },
       };
@@ -480,12 +514,12 @@
     });
   }
 
-  async function linkedCharacterId(accountButton, service, storage, importTools, snapshot) {
+  async function linkedCharacterId(accountButton, service, storage, importTools, snapshot, backendId = "") {
     if (accountButton?.dataset?.authState !== "online") return "";
     const identity = importTools?.localSheetIdentity?.(snapshot);
     if (!identity) return "";
     const userId = await service.currentUserId();
-    return String(importTools.importedCharacterId?.(storage, userId, identity) ?? "");
+    return String(importTools.importedCharacterId?.(storage, userId, identity, backendId) ?? "");
   }
 
   async function linkedCharacterTarget(accountButton, service, storage, importTools, snapshot, options = {}) {
@@ -493,19 +527,20 @@
     const identity = importTools?.localSheetIdentity?.(snapshot);
     if (!identity) return null;
     const userId = await service.currentUserId();
-    const characterId = String(importTools.importedCharacterId?.(storage, userId, identity) ?? "");
+    const backendId = String(options.backendId ?? "");
+    const characterId = String(importTools.importedCharacterId?.(storage, userId, identity, backendId) ?? "");
     if (!characterId) return null;
-    let metadata = syncedCharacterMetadata(storage, userId, characterId);
+    let metadata = syncedCharacterMetadata(storage, userId, characterId, backendId);
     if (!metadata) {
-      if (options.allowRemote === false) return { characterId, userId, expectedRevision: null };
+      if (options.allowRemote === false) return { characterId, userId, backendId, expectedRevision: null };
       const remote = await service.loadOwn(characterId);
       if (stateContentSignature(remote.state) !== stateContentSignature(snapshot)) {
-        return { characterId, userId, expectedRevision: remote.revision, conflictRemote: remote };
+        return { characterId, userId, backendId, expectedRevision: remote.revision, conflictRemote: remote };
       }
-      rememberSyncedCharacter(storage, userId, remote);
-      metadata = syncedCharacterMetadata(storage, userId, characterId);
+      rememberSyncedCharacter(storage, userId, remote, backendId);
+      metadata = syncedCharacterMetadata(storage, userId, characterId, backendId);
     }
-    return { characterId, userId, expectedRevision: metadata?.revision ?? null };
+    return { characterId, userId, backendId, expectedRevision: metadata?.revision ?? null };
   }
 
   function dispatchRemoteCharacterChange(view, change) {
@@ -540,6 +575,7 @@
     queue,
     statusController,
     errorTools,
+    backendId = "",
     view,
   }) {
     let subscription = null;
@@ -557,18 +593,18 @@
       const local = appBridge.snapshot?.();
       if (!remote || !local) return;
       const userId = remote.owner_id;
-      const metadata = syncedCharacterMetadata(storage, userId, remote.id);
+      const metadata = syncedCharacterMetadata(storage, userId, remote.id, backendId);
       if (metadata && metadata.revision >= remote.revision) return;
       if (queue?.matchesActiveRemote?.(remote) || stateContentSignature(remote.state) === stateContentSignature(local)) {
-        rememberSyncedCharacter(storage, userId, remote);
+        rememberSyncedCharacter(storage, userId, remote, backendId);
         return;
       }
       if (canApplyGmRemote(remote, local, metadata) && appBridge.applyRemoteSnapshot?.(remote.state)) {
-        rememberSyncedCharacter(storage, userId, remote);
+        rememberSyncedCharacter(storage, userId, remote, backendId);
         statusController.realtimeSuccess?.();
         return;
       }
-      queue?.registerRemoteConflict?.(local, remote, userId);
+      queue?.registerRemoteConflict?.(local, remote, userId, backendId);
     }
 
     async function stopCurrent() {
@@ -593,7 +629,7 @@
       }
       try {
         const snapshot = appBridge.snapshot?.();
-        const nextCharacterId = await linkedCharacterId(accountButton, service, storage, importTools, snapshot);
+        const nextCharacterId = await linkedCharacterId(accountButton, service, storage, importTools, snapshot, backendId);
         if (destroyed || token !== generation) return;
         if (subscription && nextCharacterId === characterId) return;
         await stopCurrent();
@@ -604,12 +640,12 @@
         const local = appBridge.snapshot?.();
         if (local && typeof service.loadOwn === "function") {
           const userId = await service.currentUserId();
-          if (!syncedCharacterMetadata(storage, userId, nextCharacterId)) {
+          if (!syncedCharacterMetadata(storage, userId, nextCharacterId, backendId)) {
             const remote = await service.loadOwn(nextCharacterId);
             if (stateContentSignature(remote.state) === stateContentSignature(local)) {
-              rememberSyncedCharacter(storage, userId, remote);
+              rememberSyncedCharacter(storage, userId, remote, backendId);
             } else {
-              queue?.registerRemoteConflict?.(local, remote, userId);
+              queue?.registerRemoteConflict?.(local, remote, userId, backendId);
             }
           }
         }
@@ -685,9 +721,11 @@
     if (!client) return null;
 
     const view = document.defaultView ?? root ?? globalThis;
+    const backendId = retryTools?.backendScope?.(view.MARUFIA_ONLINE_CONFIG) ?? "unconfigured";
     const onlineErrors = errorTools ?? view.MARUFIA_ERRORS;
     const statusController = createSyncStatusController(syncStatus, accountButton, view);
     const service = characterTools.createCharacterService(client, view.LATIO_STATE);
+    let retryScheduler = null;
     const realtimeService = typeof realtimeTools?.createCharacterRealtimeService === "function"
       ? realtimeTools.createCharacterRealtimeService(client, characterTools)
       : null;
@@ -700,16 +738,23 @@
         storage,
         importTools,
         snapshot,
-        { allowRemote: view.navigator?.onLine !== false },
+        { allowRemote: view.navigator?.onLine !== false, backendId },
       ),
       onStart: () => statusController.syncing(),
       onSuccess: (character, target) => {
-        rememberSyncedCharacter(storage, target.userId, character);
+        rememberSyncedCharacter(storage, target.userId, character, target.backendId);
+        retryScheduler?.success?.();
         statusController.success();
       },
       onError: (error) => {
-        statusController.error();
-        onlineErrors?.report?.(error, { scope: "sync", operation: "save" }, view);
+        if (transientNetworkError(error)) {
+          statusController.unavailable();
+          onlineErrors?.report?.(error, { scope: "server", operation: "availability" }, view);
+          retryScheduler?.schedule?.();
+        } else {
+          statusController.error();
+          onlineErrors?.report?.(error, { scope: "sync", operation: "save" }, view);
+        }
       },
       onConflict: (conflict) => {
         statusController.error();
@@ -718,7 +763,7 @@
       onDeferred: () => statusController.refresh(),
       isOnline: () => view.navigator?.onLine !== false,
       persistDeferred: (target, snapshot) => persistOfflineSave(storage, target, snapshot),
-      clearDeferred: (target) => removeOfflineSave(storage, target?.userId, target?.characterId),
+      clearDeferred: (target) => removeOfflineSave(storage, target?.userId, target?.characterId, target?.backendId),
     });
     const debouncer = createRemoteSaveDebouncer(queue);
     const unsubscribe = appBridge.onLocalSave((snapshot) => {
@@ -743,6 +788,7 @@
         queue,
         statusController,
         errorTools: onlineErrors,
+        backendId,
         view,
       })
       : null;
@@ -757,28 +803,42 @@
       try {
         const snapshot = appBridge.snapshot?.();
         const identity = importTools?.localSheetIdentity?.(snapshot);
-        if (!identity) return false;
+        if (!identity) return true;
         const userId = await service.currentUserId();
-        const characterId = String(importTools.importedCharacterId?.(storage, userId, identity) ?? "");
-        if (!characterId || !pendingOfflineSave(storage, userId, characterId)) return false;
+        const characterId = String(importTools.importedCharacterId?.(storage, userId, identity, backendId) ?? "");
+        if (!characterId || !pendingOfflineSave(storage, userId, characterId, backendId)) return true;
         await queue.enqueue(snapshot);
         await queue.flush();
-        return !pendingOfflineSave(storage, userId, characterId);
+        if (queue.currentConflict?.()) return true;
+        if (queue.lastError?.() && !transientNetworkError(queue.lastError())) return true;
+        return !pendingOfflineSave(storage, userId, characterId, backendId);
       } catch (error) {
+        if (transientNetworkError(error)) {
+          statusController.unavailable();
+          onlineErrors?.report?.(error, { scope: "server", operation: "availability" }, view);
+          return false;
+        }
         statusController.error();
         onlineErrors?.report?.(error, { scope: "sync", operation: "resume" }, view);
-        return false;
+        return true;
       } finally {
         resumingOffline = false;
       }
     };
-    const resumeWhenOnline = () => void resumeOfflineSave();
+    retryScheduler = retryTools?.createRetryScheduler?.(resumeOfflineSave, {
+      isReady: () => view.navigator?.onLine !== false && accountButton.dataset.authState === "online",
+      setTimer: view.setTimeout?.bind?.(view),
+      clearTimer: view.clearTimeout?.bind?.(view),
+    }) ?? null;
+    const resumeWhenOnline = () => void (retryScheduler?.wake?.() ?? resumeOfflineSave());
+    const pauseWhenOffline = () => retryScheduler?.pause?.();
     view.addEventListener?.("online", resumeWhenOnline);
+    view.addEventListener?.("offline", pauseWhenOffline);
     const resumeObserver = typeof view.MutationObserver === "function"
       ? new view.MutationObserver(resumeWhenOnline)
       : null;
     resumeObserver?.observe(accountButton, { attributes: true, attributeFilter: ["data-auth-state"] });
-    void resumeOfflineSave();
+    void (retryScheduler?.wake?.() ?? resumeOfflineSave());
     accountButton.dataset.characterSyncInitialized = "true";
 
     return Object.freeze({
@@ -787,13 +847,17 @@
       service,
       statusController,
       realtimeCoordinator,
+      retryScheduler,
+      backendId,
       destroy() {
         unsubscribe?.();
         document.removeEventListener?.("visibilitychange", flushWhenHidden);
         view.removeEventListener?.("pagehide", flushWhenLeaving);
         view.removeEventListener?.(CHARACTER_CONFLICT_RESOLUTION_EVENT, resolveConflict);
         view.removeEventListener?.("online", resumeWhenOnline);
+        view.removeEventListener?.("offline", pauseWhenOffline);
         resumeObserver?.disconnect?.();
+        retryScheduler?.destroy?.();
         debouncer.destroy();
         void realtimeCoordinator?.destroy();
         statusController.destroy();

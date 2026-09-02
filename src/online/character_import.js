@@ -1,5 +1,7 @@
 (function initMarufiaCharacterImport(root, factory) {
-  const api = factory(root);
+  const offlineTools = root?.MARUFIA_OFFLINE
+    ?? (typeof module === "object" && module.exports ? require("./offline.js") : null);
+  const api = factory(root, offlineTools);
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.MARUFIA_CHARACTER_IMPORT = api;
   if (root?.document) Promise.resolve().then(() => api.init(
@@ -9,7 +11,7 @@
     root.MARUFIA_APP_BRIDGE,
     root.LATIO_STORAGE,
   ));
-})(typeof window !== "undefined" ? window : globalThis, function createMarufiaCharacterImportApi(root) {
+})(typeof window !== "undefined" ? window : globalThis, function createMarufiaCharacterImportApi(root, offlineTools) {
   "use strict";
 
   const IMPORT_MARKERS_KEY = "marufia-online-character-imports-v1";
@@ -39,8 +41,9 @@
     return createdAt ? `marufia-latio:${createdAt}` : "";
   }
 
-  function markerId(userId, identity) {
-    return `${String(userId ?? "").trim()}|${String(identity ?? "").trim()}`;
+  function markerId(userId, identity, backendId = "") {
+    return offlineTools?.scopedIdentity?.(backendId, userId, identity)
+      ?? `${String(backendId ?? "").trim() ? `${String(backendId).trim()}|` : ""}${String(userId ?? "").trim()}|${String(identity ?? "").trim()}`;
   }
 
   function readImportMarkers(storage) {
@@ -52,12 +55,12 @@
     }
   }
 
-  function importedCharacterId(storage, userId, identity) {
-    return String(readImportMarkers(storage)[markerId(userId, identity)] ?? "");
+  function importedCharacterId(storage, userId, identity, backendId = "") {
+    return String(readImportMarkers(storage)[markerId(userId, identity, backendId)] ?? "");
   }
 
-  function markImported(storage, userId, identity, characterId) {
-    const key = markerId(userId, identity);
+  function markImported(storage, userId, identity, characterId, backendId = "") {
+    const key = markerId(userId, identity, backendId);
     if (!userId || !identity || !characterId || typeof storage?.saveLocal !== "function") return false;
     try {
       storage.saveLocal(IMPORT_MARKERS_KEY, { ...readImportMarkers(storage), [key]: String(characterId) });
@@ -100,6 +103,7 @@
     accountButton.dataset.characterImportInitialized = "true";
 
     const view = document.defaultView ?? root ?? globalThis;
+    const backendId = offlineTools?.backendScope?.(view.MARUFIA_ONLINE_CONFIG) ?? "unconfigured";
     let service = null;
     let checking = false;
     let pending = null;
@@ -125,31 +129,34 @@
     }
 
     async function checkLocalSheet() {
-      if (checking || !service || accountButton.dataset.authState !== "online" || !appBridge.hasExistingSheet?.()) return;
+      if (checking) return false;
+      if (!service || accountButton.dataset.authState !== "online" || !appBridge.hasExistingSheet?.()) return true;
       const snapshot = appBridge.snapshot?.();
       const identity = localSheetIdentity(snapshot);
-      if (!identity) return;
+      if (!identity) return true;
       checking = true;
       try {
         const userId = await service.currentUserId();
-        const key = markerId(userId, identity);
-        if (checked.has(key) || importedCharacterId(storage, userId, identity)) return;
+        const key = markerId(userId, identity, backendId);
+        if (checked.has(key) || importedCharacterId(storage, userId, identity, backendId)) return true;
         const characters = await service.listOwn();
         const existing = characters.find((character) => (
           character.state?.meta?.appId === snapshot.meta.appId
           && character.state?.meta?.createdAt === snapshot.meta.createdAt
         ));
         if (existing) {
-          if (markImported(storage, userId, identity, existing.id)) announceLinkedCharacter(view, existing);
+          if (markImported(storage, userId, identity, existing.id, backendId)) announceLinkedCharacter(view, existing);
           checked.add(key);
-          return;
+          return true;
         }
         checked.add(key);
-        pending = { userId, identity };
+        pending = { userId, identity, backendId };
         state = { mode: "prompt", busy: false, snapshot, message: "", messageKind: "" };
         renderDialog();
+        return true;
       } catch {
-        // A ficha local continua disponível; uma nova autenticação tentará novamente.
+        // A ficha local continua disponível; o coordenador tentará novamente com espera limitada.
+        return false;
       } finally {
         checking = false;
       }
@@ -164,7 +171,7 @@
         if (!backup?.payload) throw new Error("backup unavailable");
         const snapshot = appBridge.snapshot?.();
         const character = await service.createIndependent(snapshot);
-        if (markImported(storage, pending.userId, pending.identity, character.id)) announceLinkedCharacter(view, character);
+        if (markImported(storage, pending.userId, pending.identity, character.id, pending.backendId)) announceLinkedCharacter(view, character);
         state = {
           mode: "success",
           busy: false,
@@ -199,16 +206,31 @@
       service = null;
     }
 
+    const retryScheduler = offlineTools?.createRetryScheduler?.(checkLocalSheet, {
+      isReady: () => view.navigator?.onLine !== false && accountButton.dataset.authState === "online",
+      setTimer: view.setTimeout?.bind?.(view),
+      clearTimer: view.clearTimeout?.bind?.(view),
+    }) ?? null;
+    const retryCheck = () => void (retryScheduler?.wake?.() ?? checkLocalSheet());
+    const pauseCheck = () => retryScheduler?.pause?.();
     const observer = typeof view.MutationObserver === "function"
-      ? new view.MutationObserver(() => void checkLocalSheet())
+      ? new view.MutationObserver(retryCheck)
       : null;
     observer?.observe(accountButton, { attributes: true, attributeFilter: ["data-auth-state"] });
-    void checkLocalSheet();
+    view.addEventListener?.("online", retryCheck);
+    view.addEventListener?.("offline", pauseCheck);
+    retryCheck();
 
     return Object.freeze({
-      destroy() { observer?.disconnect?.(); },
+      destroy() {
+        observer?.disconnect?.();
+        view.removeEventListener?.("online", retryCheck);
+        view.removeEventListener?.("offline", pauseCheck);
+        retryScheduler?.destroy?.();
+      },
       service,
       checkLocalSheet,
+      retryScheduler,
     });
   }
 
@@ -217,6 +239,7 @@
     CHARACTER_LINKED_EVENT,
     announceLinkedCharacter,
     localSheetIdentity,
+    markerId,
     readImportMarkers,
     importedCharacterId,
     markImported,

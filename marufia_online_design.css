@@ -90,6 +90,7 @@ body:not(.dark) {
 
 .sync-status[data-sync-state="online"] { color: var(--ok); }
 .sync-status[data-sync-state="syncing"] { color: var(--online-gold); }
+.sync-status[data-sync-state="unavailable"] { color: var(--warn); }
 .sync-status[data-sync-state="error"] { color: var(--danger); }
 
 /* Moldura comum das telas online */

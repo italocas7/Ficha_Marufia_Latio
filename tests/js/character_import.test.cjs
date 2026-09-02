@@ -39,6 +39,18 @@ test("records successful imports separately for each account and local sheet", (
   assert.equal(importTools.importedCharacterId(storage, "user-2", identity), "");
 });
 
+test("does not reuse a character link from another backend", () => {
+  const storage = fakeStorage();
+  const identity = importTools.localSheetIdentity(snapshot());
+  const cloud = "cloud@https://project.supabase.co";
+  const selfHosted = "selfhosted@https://api.marufiarpg.org";
+  assert.equal(importTools.markImported(storage, "user-1", identity, "cloud-character", cloud), true);
+  assert.equal(importTools.importedCharacterId(storage, "user-1", identity, cloud), "cloud-character");
+  assert.equal(importTools.importedCharacterId(storage, "user-1", identity, selfHosted), "");
+  assert.equal(importTools.markImported(storage, "user-1", identity, "local-character", selfHosted), true);
+  assert.equal(importTools.importedCharacterId(storage, "user-1", identity, selfHosted), "local-character");
+});
+
 test("fails closed when the local marker storage is unavailable", () => {
   const storage = {
     loadLocal() { throw new Error("indisponível"); },

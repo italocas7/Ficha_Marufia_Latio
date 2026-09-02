@@ -28,6 +28,7 @@
     online: "A ficha vinculada pode enviar alterações ao serviço online.",
     syncing: "As alterações locais estão sendo enviadas agora.",
     offline: "As alterações continuam salvas somente neste computador enquanto estiver offline.",
+    unavailable: "O servidor de Marufia está indisponível. Os dados locais continuam acessíveis e a sincronização será tentada automaticamente.",
     error: "A ficha local está salva, mas a atualização online precisa ser tentada novamente.",
   });
 
@@ -64,9 +65,9 @@
     const hasSheet = Boolean(safeBridgeValue(() => appBridge?.hasExistingSheet?.(), false));
     const realtimeState = String(accountButton?.dataset?.realtimeState || "").toLowerCase();
     let syncDetail = String(syncStatus?.title || SYNC_DETAILS[syncState]);
-    if (signedIn && realtimeState === "unlinked") {
+    if (signedIn && syncState === "online" && realtimeState === "unlinked") {
       syncDetail = "A conta está conectada, mas esta ficha ainda não foi vinculada a um personagem online.";
-    } else if (signedIn && realtimeState === "subscribed") {
+    } else if (signedIn && syncState === "online" && realtimeState === "subscribed") {
       syncDetail = "A ficha está vinculada e recebendo atualizações autorizadas em tempo real.";
     }
 

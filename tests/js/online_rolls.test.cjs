@@ -143,12 +143,19 @@ test("keeps each offline roll and replays only the current account and character
   assert.equal(queue.pending().length, 3);
   assert.equal(recorded.length, 0);
 
+  queue.destroy();
   online = true;
-  await queue.flush();
+  const resumedQueue = rollTools.createRollQueue({
+    service,
+    storage,
+    resolveTarget: async () => ({ userId: USER_ID, characterId: CHARACTER_ID }),
+    isOnline: () => online,
+  });
+  await resumedQueue.flush();
   assert.deepEqual(recorded.map((item) => item.total), [20, 30]);
   assert.deepEqual(recorded.map((item) => item.visibility), ["public", "secret"]);
-  assert.equal(queue.pending().length, 1);
-  assert.equal(queue.pending()[0].userId, OTHER_USER_ID);
+  assert.equal(resumedQueue.pending().length, 1);
+  assert.equal(resumedQueue.pending()[0].userId, OTHER_USER_ID);
 });
 
 test("drops a queued roll that never belonged to a campaign", async () => {
@@ -170,8 +177,51 @@ test("drops a queued roll that never belonged to a campaign", async () => {
   assert.equal(queue.pending().length, 0);
 });
 
+test("never replays a queued roll through a different backend", async () => {
+  const storage = memoryStorage();
+  const cloud = "cloud@https://project.supabase.co";
+  const selfHosted = "selfhosted@https://api.marufiarpg.org";
+  rollTools.persistPendingRoll(storage, {
+    userId: USER_ID,
+    characterId: CHARACTER_ID,
+    backendId: selfHosted,
+  }, skillRoll(), ROLL_ID);
+  const recorded = [];
+  const service = { async record(_characterId, _roll, rollId) { recorded.push(rollId); return { id: rollId }; } };
+  const cloudQueue = rollTools.createRollQueue({
+    service,
+    storage,
+    resolveTarget: async () => ({ userId: USER_ID, characterId: CHARACTER_ID, backendId: cloud }),
+  });
+  await cloudQueue.flush();
+  assert.deepEqual(recorded, []);
+  assert.equal(cloudQueue.pending().length, 1);
+
+  const selfHostedQueue = rollTools.createRollQueue({
+    service,
+    storage,
+    resolveTarget: async () => ({ userId: USER_ID, characterId: CHARACTER_ID, backendId: selfHosted }),
+  });
+  await selfHostedQueue.flush();
+  assert.deepEqual(recorded, [ROLL_ID]);
+  assert.equal(selfHostedQueue.pending().length, 0);
+
+  const legacyRollId = "66666666-6666-4666-8666-666666666666";
+  rollTools.persistPendingRoll(storage, {
+    userId: USER_ID,
+    characterId: CHARACTER_ID,
+  }, skillRoll(), legacyRollId);
+  await selfHostedQueue.flush();
+  assert.deepEqual(recorded, [ROLL_ID]);
+  await cloudQueue.flush();
+  assert.deepEqual(recorded, [ROLL_ID, legacyRollId]);
+});
+
 test("classifies campaign and malformed-payload refusals as terminal", () => {
   assert.equal(rollTools.terminalRollError({ code: "LAT-ROLL-CAMPAIGN-001" }), true);
   assert.equal(rollTools.terminalRollError({ code: "LAT-ROLL-PAYLOAD-001" }), true);
   assert.equal(rollTools.terminalRollError({ code: "LAT-ROLL-SAVE-001" }), false);
+  assert.equal(rollTools.retryableRollError({ code: "NETWORK", message: "fetch failed" }), true);
+  assert.equal(rollTools.retryableRollError({ code: "LAT-ROLL-SAVE-001", message: "A rolagem continuará na fila até a conexão voltar." }), true);
+  assert.equal(rollTools.retryableRollError({ code: "LAT-ROLL-SESSION-001", message: "Sessão expirada" }), false);
 });

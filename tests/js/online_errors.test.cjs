@@ -11,6 +11,13 @@ test("uses the approved local-first synchronization failure message", () => {
   assert.equal(message.detail, "Os dados continuam salvos neste computador.");
 });
 
+test("explains a temporarily unavailable Marufia Server without discarding local work", () => {
+  const message = errorTools.friendlyOnlineError("server");
+  assert.equal(message.title, "Servidor de Marufia indisponível.");
+  assert.match(message.detail, /dados locais/i);
+  assert.match(message.detail, /sincronizadas quando a conexão retornar/i);
+});
+
 test("records only bounded diagnostics and never retains sensitive error content", () => {
   const log = errorTools.createSafeErrorLog({ now: () => "2026-08-22T05:00:00.000Z" });
   const failure = Object.assign(

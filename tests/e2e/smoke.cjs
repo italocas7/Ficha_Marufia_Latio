@@ -269,22 +269,23 @@ async function exercise(page, url, viewport) {
   await page.waitForFunction(() => document.querySelector("#onlineSyncStatus")?.dataset.syncState === "online");
 
   await page.evaluate(() => localStorage.setItem("marufia-e2e-character-save-fails", "true"));
-  await name.fill("Falha remota preservada localmente");
+  await name.fill("Teste recuperado");
   await page.waitForFunction(() => document.querySelector("#onlineSyncStatus")?.dataset.syncState === "syncing");
-  await page.waitForFunction(() => document.querySelector("#onlineSyncStatus")?.dataset.syncState === "error");
-  assert.equal((await syncStatus.innerText()).trim(), "Erro de sincronização");
-  await page.waitForFunction(() => document.querySelector('[data-online-error-key="sync:save"]'));
-  const safeSyncError = await page.locator('[data-online-error-key="sync:save"]').innerText();
-  assert.match(safeSyncError, /Não foi possível sincronizar sua ficha\./);
-  assert.match(safeSyncError, /Os dados continuam salvos neste computador\./);
+  await page.waitForFunction(() => document.querySelector("#onlineSyncStatus")?.dataset.syncState === "unavailable");
+  assert.equal((await syncStatus.innerText()).trim(), "Servidor indisponível");
+  await page.waitForFunction(() => document.querySelector('[data-online-error-key="server:availability"]'));
+  const safeSyncError = await page.locator('[data-online-error-key="server:availability"]').innerText();
+  assert.match(safeSyncError, /Servidor de Marufia indisponível\./);
+  assert.match(safeSyncError, /dados locais/i);
+  assert.match(safeSyncError, /sincronizadas quando a conexão retornar/i);
   const safeOnlineLog = await page.evaluate(() => window.MARUFIA_ERRORS?.entries?.() ?? []);
-  assert.ok(safeOnlineLog.some((entry) => entry.scope === "sync" && entry.operation === "save" && entry.kind === "network"));
+  assert.ok(safeOnlineLog.some((entry) => entry.scope === "server" && entry.operation === "availability" && entry.kind === "network"));
   assert.doesNotMatch(JSON.stringify(safeOnlineLog), /senha-segura|password|bearer|service.?role|refresh.?token/i);
   const failedSave = await page.evaluate(() => ({
     local: JSON.parse(localStorage.getItem("marufia-latio-state-v1") || "null"),
     remote: JSON.parse(localStorage.getItem("marufia-e2e-characters") || "[]")[0],
   }));
-  assert.equal(failedSave.local.character.name, "Falha remota preservada localmente");
+  assert.equal(failedSave.local.character.name, "Teste recuperado");
   assert.equal(failedSave.remote.state.character.name, "Teste sincronizado");
   assert.equal(
     await page.evaluate(() => window.__marufiaRemoteEvents.length),
@@ -293,8 +294,6 @@ async function exercise(page, url, viewport) {
   );
 
   await page.evaluate(() => localStorage.removeItem("marufia-e2e-character-save-fails"));
-  await name.fill("Teste recuperado");
-  await page.waitForFunction(() => document.querySelector("#onlineSyncStatus")?.dataset.syncState === "syncing");
   await page.waitForFunction(() => {
     const remote = JSON.parse(localStorage.getItem("marufia-e2e-characters") || "[]");
     return remote[0]?.state?.character?.name === "Teste recuperado"

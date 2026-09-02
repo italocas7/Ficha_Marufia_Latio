@@ -64,6 +64,17 @@ test("explains local-only and unlinked states without inventing controls", () =>
     snapshot: () => ({ meta: { schemaVersion: 5 } }),
   });
   assert.match(unlinked.sync.detail, /ainda não foi vinculada/);
+
+  const unavailable = settingsTools.settingsSnapshot(fakeDocument({
+    syncState: "unavailable",
+    syncLabel: "Servidor indisponível",
+    syncTitle: "",
+  }), {}, {
+    hasExistingSheet: () => true,
+    snapshot: () => ({ meta: { schemaVersion: 5 } }),
+  });
+  assert.equal(unavailable.sync.state, "unavailable");
+  assert.match(unavailable.sync.detail, /sincronização será tentada automaticamente/i);
 });
 
 test("renders safe actionable settings without cache deletion", () => {

@@ -407,6 +407,16 @@ button[hidden] {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-2) 18%, transparent);
 }
 
+.sync-status[data-sync-state="unavailable"] {
+  border-color: color-mix(in srgb, var(--warn) 42%, var(--line));
+  color: var(--warn);
+}
+
+.sync-status[data-sync-state="unavailable"] .sync-status-dot {
+  background: var(--warn);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--warn) 18%, transparent);
+}
+
 .sync-status[data-sync-state="error"] {
   border-color: color-mix(in srgb, var(--danger) 42%, var(--line));
   color: var(--danger);

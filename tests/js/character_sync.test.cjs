@@ -80,12 +80,13 @@ function fakeStatusElement() {
   };
 }
 
-test("renders the four synchronization states with accessible labels", () => {
+test("renders all synchronization states with accessible labels", () => {
   const element = fakeStatusElement();
   for (const [state, label] of [
     ["online", "Online"],
     ["syncing", "Sincronizando"],
     ["offline", "Offline"],
+    ["unavailable", "Servidor indisponível"],
     ["error", "Erro de sincronização"],
   ]) {
     assert.equal(syncTools.applySyncStatus(element, state), state);
@@ -131,6 +132,11 @@ test("keeps connection, activity, and failure states distinct", () => {
   view.navigator.onLine = true;
   events.get("online")();
   assert.equal(element.dataset.syncState, "error");
+  controller.success();
+  assert.equal(element.dataset.syncState, "online");
+  controller.unavailable();
+  assert.equal(element.dataset.syncState, "unavailable");
+  assert.match(element.title, /sincronizadas automaticamente/i);
   controller.success();
   assert.equal(element.dataset.syncState, "online");
   controller.realtimeError();
@@ -376,11 +382,61 @@ test("defers while offline and sends only the latest state after reconnection", 
   assert.deepEqual(calls, []);
   assert.equal(syncTools.pendingOfflineSave(storage, USER_ID, CHARACTER_ID).state.character.name, "Mais recente offline");
 
+  queue.destroy();
   online = true;
-  await queue.enqueue(syncTools.pendingOfflineSave(storage, USER_ID, CHARACTER_ID).state);
-  await queue.flush();
+  const resumedQueue = syncTools.createRemoteSaveQueue({
+    service: {
+      async saveState(characterId, state, expectedRevision) {
+        calls.push({ characterId, name: state.character.name, expectedRevision });
+        return remoteRecord(state.character.name, expectedRevision + 1);
+      },
+    },
+    storage,
+    resolveTarget: async () => target,
+    isOnline: () => online,
+    persistDeferred: (nextTarget, state) => syncTools.persistOfflineSave(storage, nextTarget, state),
+    clearDeferred: (nextTarget) => syncTools.removeOfflineSave(storage, nextTarget.userId, nextTarget.characterId),
+  });
+  await resumedQueue.enqueue(syncTools.pendingOfflineSave(storage, USER_ID, CHARACTER_ID).state);
+  await resumedQueue.flush();
   assert.deepEqual(calls, [{ characterId: CHARACTER_ID, name: "Mais recente offline", expectedRevision: 5 }]);
   assert.equal(syncTools.pendingOfflineSave(storage, USER_ID, CHARACTER_ID), null);
+});
+
+test("isolates revision metadata and pending saves between Cloud and self-hosted", () => {
+  const storage = markerStorage();
+  const cloud = "cloud@https://project.supabase.co";
+  const selfHosted = "selfhosted@https://api.marufiarpg.org";
+  syncTools.rememberSyncedCharacter(storage, USER_ID, remoteRecord("Cloud", 4), cloud);
+  syncTools.rememberSyncedCharacter(storage, USER_ID, remoteRecord("Local", 2), selfHosted);
+  assert.equal(syncTools.syncedCharacterMetadata(storage, USER_ID, CHARACTER_ID, cloud).revision, 4);
+  assert.equal(syncTools.syncedCharacterMetadata(storage, USER_ID, CHARACTER_ID, selfHosted).revision, 2);
+
+  syncTools.persistOfflineSave(storage, {
+    userId: USER_ID,
+    characterId: CHARACTER_ID,
+    backendId: selfHosted,
+    expectedRevision: 2,
+  }, snapshot("Somente servidor próprio"));
+  assert.equal(syncTools.pendingOfflineSave(storage, USER_ID, CHARACTER_ID, cloud), null);
+  assert.equal(
+    syncTools.pendingOfflineSave(storage, USER_ID, CHARACTER_ID, selfHosted).state.character.name,
+    "Somente servidor próprio",
+  );
+
+  const legacyStorage = markerStorage();
+  syncTools.persistOfflineSave(legacyStorage, {
+    userId: USER_ID,
+    characterId: CHARACTER_ID,
+    expectedRevision: 7,
+  }, snapshot("Fila Cloud anterior"));
+  assert.equal(
+    syncTools.pendingOfflineSave(legacyStorage, USER_ID, CHARACTER_ID, cloud).state.character.name,
+    "Fila Cloud anterior",
+  );
+  assert.equal(syncTools.pendingOfflineSave(legacyStorage, USER_ID, CHARACTER_ID, selfHosted), null);
+  assert.equal(syncTools.removeOfflineSave(legacyStorage, USER_ID, CHARACTER_ID, cloud), true);
+  assert.equal(syncTools.pendingOfflineSave(legacyStorage, USER_ID, CHARACTER_ID, cloud), null);
 });
 
 test("keeps a transient network failure in the persistent queue", async () => {
@@ -400,6 +456,10 @@ test("keeps a transient network failure in the persistent queue", async () => {
   await queue.flush();
   assert.equal(syncTools.pendingOfflineSave(storage, USER_ID, CHARACTER_ID).state.character.name, "Rede instável");
   assert.equal(syncTools.transientNetworkError(queue.lastError()), true);
+  assert.equal(syncTools.transientNetworkError(Object.assign(
+    new Error("Não foi possível acessar seus personagens agora. A ficha local continua disponível."),
+    { code: "LAT-CHARACTER-SAVE-001" },
+  )), true);
 });
 
 test("waits one second and collapses a burst into the newest remote snapshot", async () => {
