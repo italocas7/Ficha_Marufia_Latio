@@ -22,8 +22,10 @@ try {
     $sample = @{
         SUPABASE_PUBLIC_URL = "https://api.marufia.dev"
         API_EXTERNAL_URL = "https://api.marufia.dev/auth/v1"
-        SITE_URL = "https://app.marufia.dev"
-        ADDITIONAL_REDIRECT_URLS = "https://app.marufia.dev"
+        MARUFIA_CLIENT_SITE_URL = "https://app.marufia.dev"
+        SITE_URL = "https://api.marufia.dev/auth-confirmed"
+        AUTH_REDIRECT_URL = "https://api.marufia.dev/auth-confirmed"
+        ADDITIONAL_REDIRECT_URLS = "https://api.marufia.dev/auth-confirmed"
         MARUFIA_CORS_ALLOWED_ORIGINS = "https://app.marufia.dev,http://tauri.localhost"
         ENABLE_EMAIL_AUTOCONFIRM = "false"
         AUTH_MAX_REQUEST_DURATION = "30s"
@@ -36,7 +38,8 @@ try {
     }
     Assert-MarufiaAuthSafety -Environment $sample
     $origins = @(Get-MarufiaCorsOrigins -Environment $sample)
-    if ($origins.Count -ne 2 -or "https://app.marufia.dev" -notin $origins -or "http://tauri.localhost" -notin $origins) {
+    if ($origins.Count -ne 3 -or "https://api.marufia.dev" -notin $origins -or
+        "https://app.marufia.dev" -notin $origins -or "http://tauri.localhost" -notin $origins) {
         throw "As origens CORS exatas não foram preservadas."
     }
 

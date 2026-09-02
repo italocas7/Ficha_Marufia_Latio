@@ -43,14 +43,23 @@ try {
     if (-not $publishableKey.StartsWith("sb_publishable_") -or $publishableKey -match "[\r\n]") {
         throw "A chave pública do cliente é inválida. Nenhuma configuração foi escrita."
     }
-    $siteUrl = ([System.Uri]::new($environment["SITE_URL"])).GetLeftPart([System.UriPartial]::Authority).TrimEnd("/")
+    $clientSiteValue = if ($environment.ContainsKey("MARUFIA_CLIENT_SITE_URL") -and
+        -not [string]::IsNullOrWhiteSpace($environment["MARUFIA_CLIENT_SITE_URL"])) {
+        $environment["MARUFIA_CLIENT_SITE_URL"]
+    } else { $environment["SITE_URL"] }
+    $siteUrl = ([System.Uri]::new($clientSiteValue)).GetLeftPart([System.UriPartial]::Authority).TrimEnd("/")
+    $authRedirectUrl = if ($environment.ContainsKey("AUTH_REDIRECT_URL") -and
+        -not [string]::IsNullOrWhiteSpace($environment["AUTH_REDIRECT_URL"])) {
+        $environment["AUTH_REDIRECT_URL"].TrimEnd("/")
+    } else { $environment["SITE_URL"].TrimEnd("/") }
     $lines = @(
         $marker,
         "MARUFIA_BUILD_ENV=production",
         "MARUFIA_BACKEND_MODE=selfhosted",
         "SUPABASE_URL=$expectedUrl",
         "SUPABASE_PUBLISHABLE_KEY=$publishableKey",
-        "MARUFIA_SITE_URL=$siteUrl"
+        "MARUFIA_SITE_URL=$siteUrl",
+        "MARUFIA_AUTH_REDIRECT_URL=$authRedirectUrl"
     )
     $temporaryPath = "$clientEnvironmentPath.$PID.tmp"
     try {

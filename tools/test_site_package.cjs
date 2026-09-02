@@ -27,6 +27,7 @@ const expectedConfig = loadPublicConfig();
 if (generatedConfig.supabaseUrl !== expectedConfig.supabaseUrl
   || generatedConfig.publishableKey !== expectedConfig.publishableKey
   || generatedProject.siteUrl !== expectedConfig.siteUrl
+  || generatedProject.authRedirectUrl !== expectedConfig.authRedirectUrl
   || generatedProject.backendMode !== expectedConfig.backendMode) {
   throw new Error("O pacote web não contém o ambiente público selecionado.");
 }

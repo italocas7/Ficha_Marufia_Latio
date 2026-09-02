@@ -40,6 +40,8 @@ documentação ou ao histórico do Git.
 - o arquivo final do Envoy é gerado localmente e ignorado pelo Git;
 - qualquer falha ao aplicar o domínio restaura o `.env` anterior;
 - o seletor do cliente usa apenas URL, site e chave pública;
+- o retorno do Auth usa uma página isolada no hostname da API e não reutiliza a
+  ficha hospedada;
 - o rollback para Cloud/loopback não remove volumes nem dados.
 
 ## Fluxo preparado
@@ -100,6 +102,7 @@ configuração local.
 | DNS do e-mail | DKIM, SPF e DMARC publicados e domínio aprovado pela Resend |
 | SMTP direto | mensagem entregue no endereço de teste oficial da Resend |
 | cadastro pelo Auth público | HTTP 200 e mensagem de confirmação entregue |
+| retorno da confirmação | HTTP 200 em `/auth-confirmed`; link antigo também deixa de abrir a ficha hospedada |
 | build web self-hosted | pacote `selfhosted/production` gerado e validado |
 | build desktop self-hosted | executável Tauri de release gerado |
 | integridade Windows | executável e instalador com hashes válidos; Alpha sem assinatura |
@@ -151,8 +154,8 @@ ensaio controlado com dois computadores, evitando um corte antecipado.
 - um token do Tunnel exposto deve ser revogado e rotacionado;
 - indisponibilidade futura da Resend impede novas confirmações enquanto durar;
 - alteração de domínio exige novo build/distribuição do cliente;
-- redirect após o clique real de um usuário ainda será confirmado no ensaio de
-  dois computadores;
+- a confirmação por clique real foi validada; cada link continua sendo de uso
+  único e o usuário deve abrir somente o email mais recente;
 - o site e o instalador self-hosted ainda não foram distribuídos aos jogadores;
 - contas e sessões do Cloud não são transferidas por esta fase;
 - nenhum corte definitivo deve ocorrer antes do teste com dois computadores.

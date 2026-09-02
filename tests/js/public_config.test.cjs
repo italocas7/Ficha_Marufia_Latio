@@ -30,6 +30,7 @@ test("loads the tracked Cloud fallback without an administrative secret", () => 
   assert.match(config.supabaseUrl, /^https:\/\/[a-z]+\.supabase\.co$/);
   assert.match(config.publishableKey, /^sb_publishable_/);
   assert.equal(config.siteUrl, "https://ficha-marufia-latio.italocas7.chatgpt.site");
+  assert.equal(config.authRedirectUrl, config.siteUrl);
 });
 
 test("applies public environment precedence without reading unrelated process values", () => {
@@ -54,6 +55,7 @@ test("applies public environment precedence without reading unrelated process va
     supabaseUrl: "https://process.supabase.co",
     publishableKey: "sb_publishable_environment",
     siteUrl: "https://local-override.example.com",
+    authRedirectUrl: "https://local-override.example.com",
   });
 });
 
@@ -67,10 +69,12 @@ test("accepts local loopback and an external HTTPS self-hosted gateway", () => {
       SUPABASE_URL: "http://127.0.0.1:54321",
       SUPABASE_PUBLISHABLE_KEY: "local-public-key",
       MARUFIA_SITE_URL: "http://localhost:4173",
+      MARUFIA_AUTH_REDIRECT_URL: "http://localhost:4173/auth-confirmed",
     },
   });
   assert.equal(local.supabaseUrl, "http://127.0.0.1:54321");
   assert.equal(local.siteUrl, "http://localhost:4173");
+  assert.equal(local.authRedirectUrl, "http://localhost:4173/auth-confirmed");
 
   const selfhosted = tools.loadPublicConfig({
     root,
@@ -80,9 +84,11 @@ test("accepts local loopback and an external HTTPS self-hosted gateway", () => {
       SUPABASE_URL: "https://api.marufia.example",
       SUPABASE_PUBLISHABLE_KEY: "selfhosted-public-key",
       MARUFIA_SITE_URL: "https://marufia.example",
+      MARUFIA_AUTH_REDIRECT_URL: "https://api.marufia.example/auth-confirmed",
     },
   });
   assert.equal(selfhosted.supabaseUrl, "https://api.marufia.example");
+  assert.equal(selfhosted.authRedirectUrl, "https://api.marufia.example/auth-confirmed");
 });
 
 test("rejects unsafe modes, origins, and administrative keys", () => {
@@ -113,6 +119,12 @@ test("rejects unsafe modes, origins, and administrative keys", () => {
     SUPABASE_URL: "https://project.supabase.co",
     SUPABASE_PUBLISHABLE_KEY: "sb_secret_forbidden",
   } }), /administrativa/i);
+  assert.throws(() => tools.loadPublicConfig({ root, env: {
+    ...base,
+    MARUFIA_BACKEND_MODE: "cloud",
+    SUPABASE_URL: "https://project.supabase.co",
+    MARUFIA_AUTH_REDIRECT_URL: "http://external.example/auth-confirmed",
+  } }), /AUTH_REDIRECT_URL.*HTTPS/i);
 });
 
 test("renders one immutable browser configuration while the source stays unconfigured", () => {
@@ -123,6 +135,7 @@ test("renders one immutable browser configuration while the source stays unconfi
     supabaseUrl: "",
     publishableKey: "",
     siteUrl: "",
+    authRedirectUrl: "",
   });
   const expected = tools.loadPublicConfig();
   const rendered = tools.renderProjectSource(expected);

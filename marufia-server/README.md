@@ -48,6 +48,11 @@ O Auth permite até 30 segundos para a entrega SMTP, ainda abaixo dos 60 segundo
 do gateway público. O hostname exato do Auth é incluído na lista confiável usada
 na geração dos links de confirmação.
 
+Os emails retornam para `/auth-confirmed` no próprio hostname da API. Essa rota
+serve somente uma confirmação simples, limpa o conteúdo de autenticação da barra
+de endereço e manda a pessoa voltar ao aplicativo; ela não carrega a ficha web.
+O site usado pelo manifesto de atualização permanece configurado separadamente.
+
 O Supabase Cloud continua sendo o backend padrão do aplicativo. Nenhum dado ou
 conta foi migrado, e nenhuma funcionalidade da ficha foi alterada.
 

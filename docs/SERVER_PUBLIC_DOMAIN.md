@@ -58,6 +58,8 @@ O comando:
 
 - exige SMTP real antes de alterar qualquer URL;
 - configura Auth e Realtime para o domínio HTTPS;
+- cria `https://<hostname>/auth-confirmed` como retorno exclusivo dos emails,
+  mantendo `SiteUrl` separado para o manifesto de atualização do aplicativo;
 - desativa confirmação automática de email;
 - permite no CORS somente o site, origens adicionais explícitas e o aplicativo
   Windows em `http://tauri.localhost`;
@@ -93,7 +95,8 @@ pnpm build:site
 pnpm tauri:build
 ```
 
-O seletor grava somente URL HTTPS, modo, endereço do site e a chave pública. Ele
+O seletor grava somente URL HTTPS, modo, endereço do site, página de confirmação
+e a chave pública. Ele
 recusa chaves administrativas e não sobrescreve um `.env.local` criado pelo
 usuário. O build gera automaticamente a CSP do aplicativo Windows para HTTPS e
 WebSocket do domínio selecionado.
@@ -124,7 +127,8 @@ O rollback não remove volumes, contas, migrations ou arquivos de backup.
 |---|---|
 | domínio recusado | use um hostname real da zona Cloudflare; `.example` e Quick Tunnel não são produção |
 | SMTP recusado | confirme remetente, host, porta, usuário e senha reais |
-| confirmação volta ao endereço errado | confira `SiteUrl` e redirects antes de reiniciar o Tunnel |
+| confirmação abre outra ficha | use um email novo; o retorno correto é `https://api.marufiarpg.org/auth-confirmed` |
+| link informa que expirou | solicite **Reenviar confirmação** e abra somente o email mais recente; cada link é de uso único |
 | navegador mostra erro CORS | inclua a origem HTTPS exata; não use `*` |
 | aplicativo Windows não conecta | gere novamente o pacote após selecionar `SelfHosted` |
 | Tunnel não inicia | confira token, hostname e serviço interno no painel |
@@ -139,6 +143,8 @@ A ativação real foi concluída com:
 - Resend em `smtp.resend.com:587`, remetente
   `noreply@marufiarpg.org` e domínio validado por DKIM, SPF e DMARC;
 - HTTPS, Auth, REST/RPC e WebSocket Realtime aprovados pela internet;
+- página de confirmação isolada em `https://api.marufiarpg.org/auth-confirmed`,
+  com cache desativado e remoção imediata do conteúdo sensível da URL;
 - PostgreSQL e os serviços administrativos restritos ao computador do Mestre;
 - perfil self-hosted selecionado localmente para novos builds;
 - perfil Cloud preservado como fallback versionado.

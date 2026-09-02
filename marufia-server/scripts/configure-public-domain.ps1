@@ -37,14 +37,19 @@ try {
     Assert-MarufiaSmtpSafety -Environment $environment
     $publicHostname = ConvertTo-MarufiaPublicHostname -Value $Hostname
     $publicUrl = "https://$publicHostname"
-    $selectedSiteUrl = if ([string]::IsNullOrWhiteSpace($SiteUrl)) { $environment["SITE_URL"] } else { $SiteUrl }
+    $existingClientSite = if ($environment.ContainsKey("MARUFIA_CLIENT_SITE_URL") -and
+        -not [string]::IsNullOrWhiteSpace($environment["MARUFIA_CLIENT_SITE_URL"])) {
+        $environment["MARUFIA_CLIENT_SITE_URL"]
+    } else { $environment["SITE_URL"] }
+    $selectedSiteUrl = if ([string]::IsNullOrWhiteSpace($SiteUrl)) { $existingClientSite } else { $SiteUrl }
     if (Test-MarufiaLoopbackUrl -Value $selectedSiteUrl -Label "SiteUrl") {
-        throw "O site usado em confirmação de conta deve ser um endereço HTTPS público."
+        throw "O site público do aplicativo deve ser um endereço HTTPS público."
     }
     $selectedSiteUrl = ([System.Uri]::new($selectedSiteUrl)).GetLeftPart([System.UriPartial]::Authority).TrimEnd("/")
+    $authRedirectUrl = "$publicUrl/auth-confirmed"
 
     $redirects = [System.Collections.Generic.List[string]]::new()
-    $redirects.Add($selectedSiteUrl)
+    $redirects.Add($authRedirectUrl)
     foreach ($rawRedirect in $AdditionalRedirectUrls.Split(",", [System.StringSplitOptions]::RemoveEmptyEntries)) {
         $redirect = $rawRedirect.Trim()
         $null = Test-MarufiaLoopbackUrl -Value $redirect -Label "AdditionalRedirectUrls"
@@ -63,7 +68,9 @@ try {
         MARUFIA_PUBLIC_URL = $publicUrl
         SUPABASE_PUBLIC_URL = $publicUrl
         API_EXTERNAL_URL = "$publicUrl/auth/v1"
-        SITE_URL = $selectedSiteUrl
+        MARUFIA_CLIENT_SITE_URL = $selectedSiteUrl
+        SITE_URL = $authRedirectUrl
+        AUTH_REDIRECT_URL = $authRedirectUrl
         ADDITIONAL_REDIRECT_URLS = ($redirects -join ",")
         MARUFIA_CORS_ALLOWED_ORIGINS = ($corsOrigins -join ",")
         AUTH_MAILER_EXTERNAL_HOSTS = $publicHostname

@@ -15,6 +15,7 @@ const PUBLIC_VARIABLES = Object.freeze([
   "SUPABASE_PUBLISHABLE_KEY",
   "SUPABASE_ANON_KEY",
   "MARUFIA_SITE_URL",
+  "MARUFIA_AUTH_REDIRECT_URL",
 ]);
 
 function parseEnv(source = "") {
@@ -92,6 +93,26 @@ function validateSiteUrl(value) {
   return parsePublicUrl(value, "MARUFIA_SITE_URL").origin;
 }
 
+function validateAuthRedirectUrl(value, fallback) {
+  const candidate = String(value ?? "").trim() || fallback;
+  let url;
+  try {
+    url = new URL(candidate);
+  } catch {
+    throw new Error("MARUFIA_AUTH_REDIRECT_URL inválida.");
+  }
+  if (url.username || url.password || url.search || url.hash) {
+    throw new Error("MARUFIA_AUTH_REDIRECT_URL não pode conter credenciais, consulta ou fragmento.");
+  }
+  if (!isLoopback(url.hostname) && url.protocol !== "https:") {
+    throw new Error("MARUFIA_AUTH_REDIRECT_URL externa deve usar HTTPS.");
+  }
+  if (isLoopback(url.hostname) && !["http:", "https:"].includes(url.protocol)) {
+    throw new Error("MARUFIA_AUTH_REDIRECT_URL local deve usar HTTP ou HTTPS.");
+  }
+  return url.href.replace(/\/$/, "");
+}
+
 function decodeJwtPayload(value) {
   const parts = String(value).split(".");
   if (parts.length !== 3) return null;
@@ -144,12 +165,14 @@ function loadPublicConfig(options = {}) {
     ...processValues,
   };
   const publishableKey = values.SUPABASE_PUBLISHABLE_KEY || values.SUPABASE_ANON_KEY;
+  const siteUrl = validateSiteUrl(values.MARUFIA_SITE_URL);
   return Object.freeze({
     backendMode,
     buildEnvironment,
     supabaseUrl: validateBackendUrl(values.SUPABASE_URL, backendMode),
     publishableKey: validatePublishableKey(publishableKey),
-    siteUrl: validateSiteUrl(values.MARUFIA_SITE_URL),
+    siteUrl,
+    authRedirectUrl: validateAuthRedirectUrl(values.MARUFIA_AUTH_REDIRECT_URL, siteUrl),
   });
 }
 
@@ -237,6 +260,7 @@ module.exports = {
   renderProjectSource,
   tauriConfigOverlay,
   validateBackendUrl,
+  validateAuthRedirectUrl,
   validatePublishableKey,
   validateSiteUrl,
   websocketOrigin,

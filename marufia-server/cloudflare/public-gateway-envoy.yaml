@@ -53,6 +53,39 @@ __MARUFIA_CORS_ORIGIN_MATCHERS__
                           allow_credentials: false
                           forward_not_matching_preflights: false
                       routes:
+                        - match: { path: "/auth-confirmed" }
+                          direct_response:
+                            status: 200
+                            body:
+                              inline_string: |-
+                                <!doctype html>
+                                <html lang="pt-BR">
+                                <head>
+                                  <meta charset="utf-8">
+                                  <meta name="viewport" content="width=device-width,initial-scale=1">
+                                  <title>Conta confirmada — Marufia</title>
+                                  <style>
+                                    :root{color-scheme:dark}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#111827;color:#f9fafb;font-family:system-ui,sans-serif}.card{max-width:34rem;margin:1.5rem;padding:2rem;border:1px solid #374151;border-radius:1rem;background:#1f2937;box-shadow:0 1rem 3rem #0006}h1{margin-top:0;color:#fbbf24}p{line-height:1.6}.hint{color:#d1d5db}
+                                  </style>
+                                </head>
+                                <body>
+                                  <main class="card">
+                                    <h1 id="title">Conta confirmada</h1>
+                                    <p id="message">Seu acesso ao Marufia Server foi liberado.</p>
+                                    <p class="hint">Você já pode fechar esta página, voltar ao aplicativo Marufia e entrar com seu email e senha.</p>
+                                  </main>
+                                  <script>
+                                    (()=>{const p=new URLSearchParams(location.hash.slice(1));const failed=p.has('error');history.replaceState(null,'',location.pathname);if(failed){document.getElementById('title').textContent='Link inválido ou expirado';document.getElementById('message').textContent='Volte ao aplicativo Marufia e solicite um novo email de confirmação.'}})();
+                                  </script>
+                                </body>
+                                </html>
+                          response_headers_to_add:
+                            - header: { key: content-type, value: "text/html; charset=utf-8" }
+                            - header: { key: cache-control, value: "no-store" }
+                            - header: { key: referrer-policy, value: "no-referrer" }
+                            - header: { key: x-frame-options, value: "DENY" }
+                            - header: { key: x-content-type-options, value: "nosniff" }
+                            - header: { key: content-security-policy, value: "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'" }
                         - match: { prefix: "/auth/v1/" }
                           route: { cluster: supabase_api, timeout: 60s }
                         - match: { prefix: "/rest/v1/" }

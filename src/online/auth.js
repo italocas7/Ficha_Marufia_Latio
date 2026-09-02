@@ -388,7 +388,9 @@
 
     try {
       const client = supabaseTools?.getSupabaseClient?.();
-      service = client ? createAuthService(client, { emailRedirectTo: projectConfig.siteUrl }) : null;
+      service = client ? createAuthService(client, {
+        emailRedirectTo: projectConfig.authRedirectUrl || projectConfig.siteUrl,
+      }) : null;
     } catch (error) {
       state.message = friendlyAuthMessage(error);
       state.messageKind = "error";

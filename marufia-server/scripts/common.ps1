@@ -157,7 +157,16 @@ function Get-MarufiaCorsOrigins {
     if (-not $Environment.ContainsKey("SITE_URL") -or [string]::IsNullOrWhiteSpace($Environment["SITE_URL"])) {
         throw "SITE_URL é obrigatória para configurar CORS."
     }
-    $rawOrigins = @($Environment["SITE_URL"], "http://tauri.localhost")
+    try {
+        $siteUri = [System.Uri]::new($Environment["SITE_URL"])
+    } catch {
+        throw "SITE_URL contém um endereço inválido."
+    }
+    if (-not $siteUri.IsAbsoluteUri -or $siteUri.UserInfo -or $siteUri.Query -or $siteUri.Fragment) {
+        throw "SITE_URL deve ser um endereço absoluto sem credenciais, consulta ou fragmento."
+    }
+    $siteOrigin = $siteUri.GetLeftPart([System.UriPartial]::Authority).TrimEnd("/")
+    $rawOrigins = @($siteOrigin, "http://tauri.localhost")
     if ($Environment.ContainsKey("MARUFIA_CORS_ALLOWED_ORIGINS") -and
         -not [string]::IsNullOrWhiteSpace($Environment["MARUFIA_CORS_ALLOWED_ORIGINS"])) {
         $rawOrigins += $Environment["MARUFIA_CORS_ALLOWED_ORIGINS"].Split(",", [System.StringSplitOptions]::RemoveEmptyEntries)
@@ -185,7 +194,6 @@ function Get-MarufiaCorsOrigins {
         if (-not $origins.Contains($origin)) { $origins.Add($origin) }
     }
     if ($origins.Count -gt 12) { throw "A lista CORS aceita no máximo 12 origens exatas." }
-    $siteOrigin = ([System.Uri]::new($Environment["SITE_URL"])).GetLeftPart([System.UriPartial]::Authority).TrimEnd("/")
     if (-not $origins.Contains($siteOrigin)) { throw "A origem do SITE_URL deve estar permitida no CORS." }
     return $origins.ToArray()
 }
@@ -226,7 +234,7 @@ function Set-MarufiaEnvironmentValues {
 function Assert-MarufiaAuthSafety {
     param([Parameter(Mandatory = $true)][hashtable]$Environment)
 
-    foreach ($key in @("SUPABASE_PUBLIC_URL", "API_EXTERNAL_URL", "SITE_URL", "ADDITIONAL_REDIRECT_URLS", "ENABLE_EMAIL_AUTOCONFIRM")) {
+    foreach ($key in @("SUPABASE_PUBLIC_URL", "API_EXTERNAL_URL", "SITE_URL", "AUTH_REDIRECT_URL", "MARUFIA_CLIENT_SITE_URL", "ADDITIONAL_REDIRECT_URLS", "ENABLE_EMAIL_AUTOCONFIRM")) {
         if (-not $Environment.ContainsKey($key) -or [string]::IsNullOrWhiteSpace($Environment[$key])) {
             throw "A variável $key é obrigatória para a segurança do Auth."
         }
@@ -235,6 +243,8 @@ function Assert-MarufiaAuthSafety {
     $apiIsLoopback = Test-MarufiaLoopbackUrl -Value $Environment["SUPABASE_PUBLIC_URL"] -Label "SUPABASE_PUBLIC_URL"
     $authIsLoopback = Test-MarufiaLoopbackUrl -Value $Environment["API_EXTERNAL_URL"] -Label "API_EXTERNAL_URL"
     $null = Test-MarufiaLoopbackUrl -Value $Environment["SITE_URL"] -Label "SITE_URL"
+    $null = Test-MarufiaLoopbackUrl -Value $Environment["AUTH_REDIRECT_URL"] -Label "AUTH_REDIRECT_URL"
+    $null = Test-MarufiaLoopbackUrl -Value $Environment["MARUFIA_CLIENT_SITE_URL"] -Label "MARUFIA_CLIENT_SITE_URL"
     foreach ($redirect in $Environment["ADDITIONAL_REDIRECT_URLS"].Split(",", [System.StringSplitOptions]::RemoveEmptyEntries)) {
         $null = Test-MarufiaLoopbackUrl -Value $redirect.Trim() -Label "ADDITIONAL_REDIRECT_URLS"
     }
@@ -247,6 +257,14 @@ function Assert-MarufiaAuthSafety {
         $publicUri.Port -ne $authUri.Port -or $authUri.AbsolutePath.TrimEnd("/") -ne $expectedAuthPath -or
         $apiIsLoopback -ne $authIsLoopback) {
         throw "API_EXTERNAL_URL deve corresponder a SUPABASE_PUBLIC_URL seguida de /auth/v1."
+    }
+    if ($Environment["SITE_URL"].TrimEnd("/") -ne $Environment["AUTH_REDIRECT_URL"].TrimEnd("/")) {
+        throw "SITE_URL e AUTH_REDIRECT_URL devem apontar para a mesma página segura de confirmação."
+    }
+    $allowedRedirects = @($Environment["ADDITIONAL_REDIRECT_URLS"].Split(",", [System.StringSplitOptions]::RemoveEmptyEntries) |
+        ForEach-Object { $_.Trim().TrimEnd("/") })
+    if ($Environment["AUTH_REDIRECT_URL"].TrimEnd("/") -notin $allowedRedirects) {
+        throw "AUTH_REDIRECT_URL deve constar em ADDITIONAL_REDIRECT_URLS."
     }
 
     $autoconfirmText = $Environment["ENABLE_EMAIL_AUTOCONFIRM"].Trim().ToLowerInvariant()

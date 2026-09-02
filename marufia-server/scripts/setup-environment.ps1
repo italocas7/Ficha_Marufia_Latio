@@ -136,6 +136,13 @@ try {
         crv = "P-256"; x = ConvertTo-Base64Url -Bytes $parameters.Q.X; y = ConvertTo-Base64Url -Bytes $parameters.Q.Y
     }
 
+    $setupRedirects = [System.Collections.Generic.List[string]]::new()
+    $setupRedirects.Add($SiteUrl.TrimEnd("/"))
+    foreach ($rawRedirect in $AdditionalRedirectUrls.Split(",", [System.StringSplitOptions]::RemoveEmptyEntries)) {
+        $redirect = $rawRedirect.Trim().TrimEnd("/")
+        if ($redirect -and -not $setupRedirects.Contains($redirect)) { $setupRedirects.Add($redirect) }
+    }
+
     $values = @{
         "MARUFIA_PUBLIC_URL" = $PublicUrl.TrimEnd("/")
         "MARUFIA_STUDIO_URL" = $PublicUrl.TrimEnd("/")
@@ -163,8 +170,10 @@ try {
         "POOLER_TENANT_ID" = "marufia-$(Get-RandomHex -Count 8)"
         "SUPABASE_PUBLIC_URL" = $PublicUrl.TrimEnd("/")
         "API_EXTERNAL_URL" = "$($PublicUrl.TrimEnd('/'))/auth/v1"
+        "MARUFIA_CLIENT_SITE_URL" = $SiteUrl.TrimEnd("/")
         "SITE_URL" = $SiteUrl.TrimEnd("/")
-        "ADDITIONAL_REDIRECT_URLS" = $AdditionalRedirectUrls
+        "AUTH_REDIRECT_URL" = $SiteUrl.TrimEnd("/")
+        "ADDITIONAL_REDIRECT_URLS" = ($setupRedirects -join ",")
         "MARUFIA_CORS_ALLOWED_ORIGINS" = "$($SiteUrl.TrimEnd('/')),http://tauri.localhost,http://127.0.0.1:4173,http://localhost:4173"
     }
 

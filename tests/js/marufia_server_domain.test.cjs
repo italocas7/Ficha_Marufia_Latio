@@ -26,6 +26,8 @@ test("accepts only a stable user-controlled HTTPS hostname", () => {
   assert.match(configure, /ConvertTo-MarufiaPublicHostname/);
   assert.match(configure, /SUPABASE_PUBLIC_URL = \$publicUrl/);
   assert.match(configure, /API_EXTERNAL_URL = "\$publicUrl\/auth\/v1"/);
+  assert.match(configure, /AUTH_REDIRECT_URL = \$authRedirectUrl/);
+  assert.match(configure, /SITE_URL = \$authRedirectUrl/);
   assert.match(configure, /AUTH_MAILER_EXTERNAL_HOSTS = \$publicHostname/);
   assert.match(configure, /ENABLE_EMAIL_AUTOCONFIRM = "false"/);
   assert.match(setup, /O preparo inicial aceita somente loopback/);
@@ -68,12 +70,19 @@ test("allows only the public site, exact configured origins, and Tauri Windows",
   assert.match(common, /AUTH_MAILER_EXTERNAL_HOSTS deve conter o hostname público exato do Auth/);
   assert.match(configure, /MARUFIA_CORS_ALLOWED_ORIGINS/);
   assert.match(gateway, /X-Forwarded-Proto, value: https/);
+  assert.match(gateway, /path: "\/auth-confirmed"/);
+  assert.match(gateway, /Conta confirmada/);
+  assert.match(gateway, /history\.replaceState/);
+  assert.match(gateway, /cache-control, value: "no-store"/);
+  assert.match(gateway, /referrer-policy, value: "no-referrer"/);
+  assert.match(gateway, /x-content-type-options, value: "nosniff"/);
   assert.doesNotMatch(gateway, /allow_headers:\s*"\*"|allow_methods:\s*"[^\n]*TRACE/);
 });
 
 test("switches the generated client without weakening the tracked Cloud fallback", () => {
   assert.match(selectBackend, /MARUFIA_BACKEND_MODE=selfhosted/);
   assert.match(selectBackend, /SUPABASE_PUBLISHABLE_KEY=\$publishableKey/);
+  assert.match(selectBackend, /MARUFIA_AUTH_REDIRECT_URL=\$authRedirectUrl/);
   assert.match(selectBackend, /\.env\.local pertence ao usuário e não será sobrescrito/);
   assert.match(selectBackend, /Cliente configurado para o Supabase Cloud pelo perfil versionado de fallback/);
   assert.doesNotMatch(selectBackend, /SERVICE_ROLE_KEY|SUPABASE_SECRET_KEY|JWT_SECRET/);

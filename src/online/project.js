@@ -12,6 +12,7 @@
       supabaseUrl: "",
       publishableKey: "",
       siteUrl: "",
+      authRedirectUrl: "",
     });
   }
 
@@ -21,5 +22,6 @@
     supabaseUrl: String(source.supabaseUrl || ""),
     publishableKey: String(source.publishableKey || ""),
     siteUrl: String(source.siteUrl || ""),
+    authRedirectUrl: String(source.authRedirectUrl || source.siteUrl || ""),
   });
 });

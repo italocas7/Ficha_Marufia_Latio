@@ -18,6 +18,7 @@ MARUFIA_BACKEND_MODE=local
 SUPABASE_URL=http://127.0.0.1:54321
 SUPABASE_PUBLISHABLE_KEY=<chave pública local>
 MARUFIA_SITE_URL=http://127.0.0.1:4173
+MARUFIA_AUTH_REDIRECT_URL=http://127.0.0.1:4173/auth-confirmed
 ```
 
 Para o futuro servidor publicado:
@@ -28,6 +29,7 @@ MARUFIA_BACKEND_MODE=selfhosted
 SUPABASE_URL=https://api.marufia.example
 SUPABASE_PUBLISHABLE_KEY=<chave pública do servidor>
 MARUFIA_SITE_URL=https://marufia.example
+MARUFIA_AUTH_REDIRECT_URL=https://api.marufia.example/auth-confirmed
 ```
 
 Os endereços `.example` acima são apenas ilustrativos. Na operação real, use os
@@ -64,10 +66,11 @@ Os arquivos públicos registram apenas:
 - `SUPABASE_URL`;
 - `SUPABASE_PUBLISHABLE_KEY` (ou o nome legado `SUPABASE_ANON_KEY`);
 - `MARUFIA_SITE_URL`.
+- `MARUFIA_AUTH_REDIRECT_URL`.
 
 A chave `publishable` foi criada para uso em aplicações públicas e depende das políticas de Row Level Security. Chaves `secret`, JWT com papel `service_role`, senhas e tokens administrativos são rejeitados e nunca podem ser incluídos no aplicativo, no repositório ou em arquivos exportados.
 
-`MARUFIA_SITE_URL` controla o retorno da confirmação de conta e a consulta do manifesto do aplicativo Windows. HTTPS é obrigatório fora da própria máquina; endereços HTTP de loopback são aceitos somente para desenvolvimento.
+`MARUFIA_SITE_URL` controla a consulta do manifesto do aplicativo Windows. `MARUFIA_AUTH_REDIRECT_URL` controla separadamente a página aberta depois da confirmação da conta e pode incluir um caminho. HTTPS é obrigatório fora da própria máquina; endereços HTTP de loopback são aceitos somente para desenvolvimento.
 
 ## Fluxo futuro
 
