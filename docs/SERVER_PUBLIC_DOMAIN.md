@@ -131,7 +131,19 @@ O rollback não remove volumes, contas, migrations ou arquivos de backup.
 
 ## Estado atual
 
-A automação e as proteções estão prontas e foram testadas localmente. A ativação
-real aguarda um domínio sob controle do usuário, configuração SMTP e token do
-Tunnel. Até lá, o Cloud permanece como backend padrão e o servidor fica em
-loopback.
+A ativação real foi concluída com:
+
+- `https://api.marufiarpg.org` como endpoint público;
+- Tunnel nomeado `marufia-server` apontando exclusivamente para o gateway
+  público;
+- Resend em `smtp.resend.com:587`, remetente
+  `noreply@marufiarpg.org` e domínio validado por DKIM, SPF e DMARC;
+- HTTPS, Auth, REST/RPC e WebSocket Realtime aprovados pela internet;
+- PostgreSQL e os serviços administrativos restritos ao computador do Mestre;
+- perfil self-hosted selecionado localmente para novos builds;
+- perfil Cloud preservado como fallback versionado.
+
+As credenciais continuam em arquivos ignorados pelo Git. O site público dos
+jogadores ainda aponta para o Cloud e não deve ser republicado antes do teste
+controlado com dois computadores. Essa separação permite manter os dois
+ambientes funcionando durante a validação.

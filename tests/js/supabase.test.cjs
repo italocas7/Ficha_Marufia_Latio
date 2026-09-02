@@ -1,9 +1,16 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
 const configTools = require("../../src/online/config.js");
 const supabaseTools = require("../../src/online/supabase.js");
 const projectConfig = require("../../src/online/project.js");
-const { loadPublicConfig } = require("../../tools/public_config.cjs");
+const publicConfigTools = require("../../tools/public_config.cjs");
+const { loadPublicConfig } = publicConfigTools;
+const trackedCloudProfile = publicConfigTools.parseEnv(fs.readFileSync(
+  path.join(__dirname, "..", "..", "config", "public-backends", "cloud.env"),
+  "utf8",
+));
 
 function fakeSdk() {
   const calls = [];
@@ -24,7 +31,7 @@ function serviceRoleJwt() {
 
 test("keeps source unconfigured and resolves only the selected public project identity", () => {
   assert.equal(configTools.readPublicConfig(projectConfig).configured, false);
-  const resolved = loadPublicConfig();
+  const resolved = loadPublicConfig({ env: trackedCloudProfile });
   const config = configTools.readPublicConfig(resolved);
   assert.equal(config.configured, true);
   assert.match(config.supabaseUrl, /^https:\/\/[a-z]+\.supabase\.co$/);

@@ -8,6 +8,10 @@ const test = require("node:test");
 const vm = require("node:vm");
 
 const tools = require("../../tools/public_config.cjs");
+const trackedCloudProfile = tools.parseEnv(fs.readFileSync(
+  path.join(__dirname, "..", "..", "config", "public-backends", "cloud.env"),
+  "utf8",
+));
 
 function temporaryRoot() {
   return fs.mkdtempSync(path.join(os.tmpdir(), "marufia-public-config-"));
@@ -20,7 +24,7 @@ function writeEnv(root, relative, values) {
 }
 
 test("loads the tracked Cloud fallback without an administrative secret", () => {
-  const config = tools.loadPublicConfig();
+  const config = tools.loadPublicConfig({ env: trackedCloudProfile });
   assert.equal(config.backendMode, "cloud");
   assert.equal(config.buildEnvironment, "production");
   assert.match(config.supabaseUrl, /^https:\/\/[a-z]+\.supabase\.co$/);
