@@ -8,8 +8,55 @@ $script:MarufiaOverrideComposePath = Join-Path $script:MarufiaServerRoot "docker
 $script:MarufiaTunnelComposePath = Join-Path $script:MarufiaServerRoot "cloudflare\docker-compose.tunnel.yml"
 $script:MarufiaTunnelTokenPath = Join-Path $script:MarufiaServerRoot "cloudflare\tunnel-token.token"
 $script:MarufiaBackupDirectory = Join-Path $script:MarufiaServerRoot "backups"
+$script:MarufiaLogDirectory = Join-Path $script:MarufiaServerRoot "logs"
 $script:MarufiaComposeProject = "marufia-server"
 $script:MinimumComposeVersion = [version]"2.24.4"
+
+function Protect-MarufiaLogMessage {
+    param([Parameter(Mandatory = $true)][string]$Message)
+
+    $safe = $Message -replace "[\r\n]+", " "
+    $rules = @(
+        @{ Pattern = '(?i)(authorization\s*:\s*bearer\s+)\S+'; Replacement = '$1[REDACTED]' },
+        @{ Pattern = '(?i)((?:password|secret|token|service_role|smtp_pass|jwt_secret)\s*[=:]\s*)\S+'; Replacement = '$1[REDACTED]' },
+        @{ Pattern = '(?<![A-Za-z0-9_])re_[A-Za-z0-9]{20,}(?![A-Za-z0-9_])'; Replacement = '[REDACTED]' },
+        @{ Pattern = 'sb_secret_[A-Za-z0-9_-]{16,}'; Replacement = '[REDACTED]' },
+        @{ Pattern = 'eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}'; Replacement = '[REDACTED]' }
+    )
+    foreach ($rule in $rules) {
+        $safe = [regex]::Replace($safe, $rule.Pattern, $rule.Replacement)
+    }
+    if ($safe.Length -gt 1500) { $safe = $safe.Substring(0, 1500) + "…" }
+    return $safe
+}
+
+function Write-MarufiaOperationalLog {
+    param(
+        [Parameter(Mandatory = $true)][ValidateSet("INFO", "WARNING", "ERROR")][string]$Level,
+        [Parameter(Mandatory = $true)][string]$Message
+    )
+
+    try {
+        if (-not (Test-Path -LiteralPath $script:MarufiaLogDirectory -PathType Container)) {
+            $null = New-Item -ItemType Directory -Path $script:MarufiaLogDirectory
+        }
+        $safe = Protect-MarufiaLogMessage -Message $Message
+        $logPath = Join-Path $script:MarufiaLogDirectory "operations-$((Get-Date).ToString('yyyy-MM')).log"
+        $line = "$([DateTimeOffset]::Now.ToString('o')) [$Level] $safe`n"
+        [System.IO.File]::AppendAllText($logPath, $line, [System.Text.UTF8Encoding]::new($false))
+
+        $cutoff = [DateTimeOffset]::UtcNow.AddDays(-90)
+        $logRoot = [System.IO.Path]::GetFullPath($script:MarufiaLogDirectory).TrimEnd([System.IO.Path]::DirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
+        foreach ($oldLog in @(Get-ChildItem -LiteralPath $script:MarufiaLogDirectory -File -Filter "operations-*.log" | Where-Object LastWriteTimeUtc -LT $cutoff.UtcDateTime)) {
+            $candidate = [System.IO.Path]::GetFullPath($oldLog.FullName)
+            if ($candidate.StartsWith($logRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
+                Remove-Item -LiteralPath $candidate -Force
+            }
+        }
+    } catch {
+        # Logs auxiliares nunca interrompem a operação principal.
+    }
+}
 
 function Write-MarufiaMessage {
     param(
@@ -22,6 +69,7 @@ function Write-MarufiaMessage {
     )
 
     Write-Host "[$Level] $Message"
+    Write-MarufiaOperationalLog -Level $Level -Message $Message
 }
 
 function Get-MarufiaEnvironmentMap {

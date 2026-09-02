@@ -4,7 +4,7 @@ Esta pasta hospeda o ambiente experimental que permitirá ao computador do Mestr
 executar o backend do Marufia. Ela é independente de `server/`, que continua
 sendo o Worker do site publicado.
 
-## Estado da Fase 11
+## Estado da Fase 12
 
 O runtime oficial do Supabase Self-Hosted está validado na release fixada
 `self-hosted/v0.8.0`. PostgreSQL, Auth, REST, Realtime, Storage, Studio, gateway e
@@ -40,9 +40,9 @@ público dos builds com rollback automático. Ela exige SMTP real, bloqueia
 domínios temporários e mantém o Tunnel parado até a revisão final. O gateway
 remove o CORS amplo do upstream e libera somente origens exatas.
 
-A ativação permanente ainda aguarda um domínio sob controle do usuário, SMTP e
-token do Tunnel. Não foi criado recurso permanente numa conta Cloudflare, o
-servidor continua local e a Fase 9 permanece parcial.
+O domínio `marufiarpg.org`, o hostname `api.marufiarpg.org`, o SMTP e o Tunnel
+nomeado foram configurados e validados. O gateway público continua sendo a única
+entrada externa; PostgreSQL e Studio permanecem locais.
 
 O Supabase Cloud continua sendo o backend padrão do aplicativo. Nenhum dado ou
 conta foi migrado, e nenhuma funcionalidade da ficha foi alterada.
@@ -52,6 +52,13 @@ diários e quatro semanais, proteção criptografada da chave persistente e rest
 testado em banco descartável. Uma tarefa do Windows executa o backup às 18h e
 registra sucesso ou falha sem gravar segredos. O caminho de produção cria um
 rollback preventivo, valida o dump isoladamente e só então entra em manutenção.
+
+O Mestre agora pode usar um painel simples para verificar os serviços, iniciar,
+parar, reiniciar, fazer backup e abrir o Studio local. O health check cobre
+Database, Auth, REST, Realtime, Storage e Tunnel, além de mostrar jogadores
+recentes e o último backup válido. Logs operacionais ocultam credenciais e têm
+retenção de 90 dias. A inicialização junto do Windows é opcional e permanece
+desativada até ser escolhida pelo Mestre.
 
 ## Pré-requisitos no Windows
 
@@ -81,6 +88,20 @@ O preparo inicial aceita apenas o servidor local. Use
 externo com rollback seguro.
 
 ## Operação
+
+Para a operação diária, abra o painel:
+
+```powershell
+.\marufia-server\scripts\server-manager.ps1
+```
+
+Para somente verificar a saúde sem abrir o menu:
+
+```powershell
+.\marufia-server\scripts\health-check.ps1
+```
+
+Os comandos individuais continuam disponíveis:
 
 ```powershell
 .\marufia-server\scripts\start-server.ps1
@@ -118,8 +139,19 @@ uso. Leia `docs/SERVER_BACKUP_AND_RESTORE.md` antes do modo de produção. O
 agendamento pode ser removido com `remove-backup-schedule.ps1`; isso não apaga
 os dumps existentes.
 
-Após possuir domínio e SMTP reais, siga `docs/SERVER_PUBLIC_DOMAIN.md`. A
-operação permanente usa:
+Para habilitar opcionalmente o servidor no logon do Windows e depois voltar ao
+modo manual:
+
+```powershell
+.\marufia-server\scripts\configure-startup.ps1
+.\marufia-server\scripts\remove-startup.ps1
+```
+
+A tarefa inicia o Docker Desktop oculto, aguarda o mecanismo ficar disponível e
+então inicia os serviços e o Tunnel. Ela não recebe privilégios administrativos.
+
+Para revisar ou transferir a configuração pública, siga
+`docs/SERVER_PUBLIC_DOMAIN.md`. A operação permanente usa:
 
 ```powershell
 .\marufia-server\scripts\set-smtp.ps1 `
@@ -172,7 +204,9 @@ logs não fazem parte do dump. O Storage ainda está vazio e não é usado pelo
 cliente, mas uma futura adoção exigirá backup próprio dos objetos. A cópia
 externa dos conjuntos de backup continua sendo responsabilidade do Mestre.
 
-Consulte `docs/MARUFIA_SERVER_PHASE_11.md`,
+Consulte `docs/MARUFIA_SERVER.md`,
+`docs/MARUFIA_SERVER_PHASE_12.md`,
+`docs/SERVER_MANAGER.md`,
 `docs/SERVER_BACKUP_AND_RESTORE.md`,
 `docs/SERVER_PUBLIC_DOMAIN.md` e `docs/SERVER_CLOUDFLARE_TUNNEL.md` para
 resultados, operação e segurança.

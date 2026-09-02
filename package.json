@@ -46,6 +46,7 @@
     "test:server-tunnel": "node --test tests/js/marufia_server_tunnel.test.cjs",
     "test:server-domain": "node --test tests/js/marufia_server_domain.test.cjs",
     "test:server-backup": "node --test tests/js/marufia_server_backup.test.cjs",
+    "test:server-manager": "node --test tests/js/marufia_server_manager.test.cjs",
     "vendor:supabase": "node tools/vendor_supabase.cjs",
     "supabase:version": "supabase --version"
   },

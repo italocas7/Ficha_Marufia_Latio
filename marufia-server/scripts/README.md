@@ -5,6 +5,8 @@
 | `setup-environment.ps1` | cria uma vez o `.env` privado e todas as chaves |
 | `start-server.ps1` | valida configuração/Docker e inicia serviços saudáveis |
 | `status-server.ps1` | exibe o estado de todos os containers |
+| `health-check.ps1` | verifica banco, Auth, REST, Realtime, Storage, Tunnel, jogadores e backup |
+| `server-manager.ps1` | oferece um painel simples para administrar o servidor |
 | `restart-server.ps1` | recria containers sem remover dados |
 | `stop-server.ps1` | para containers sem remover volumes ou arquivos |
 | `backup.ps1` | cria dump lógico, checksum e chave criptográfica protegida; aplica retenção segura |
@@ -13,6 +15,9 @@
 | `configure-backup-schedule.ps1` | instala o backup diário opcional no Agendador do Windows |
 | `remove-backup-schedule.ps1` | remove somente o agendamento, preservando todos os backups |
 | `run-scheduled-backup.ps1` | executor não interativo do backup diário com log mensal sem segredos |
+| `configure-startup.ps1` | habilita opcionalmente o início no logon do Windows |
+| `remove-startup.ps1` | retorna à inicialização manual sem remover dados |
+| `run-startup.ps1` | executor seguro da inicialização automática |
 | `migrate-schema.ps1` | valida hashes, cria rollback e aplica somente migrations pendentes |
 | `verify-schema.ps1` | confere tabelas, RLS, RPCs, gatilhos, Realtime e histórico |
 | `test-schema-security.ps1` | executa 35 ataques RLS transacionais e confirma rollback |
@@ -55,3 +60,8 @@ desativada e SMTP real. O token fica em arquivo ignorado pelo Git.
 Consulte `docs/SERVER_PUBLIC_DOMAIN.md` antes de configurar o modo permanente.
 Não informe senha SMTP ou token em argumentos visíveis, conversa, logs ou Git.
 Consulte `docs/SERVER_BACKUP_AND_RESTORE.md` antes de uma restauração real.
+
+Os eventos operacionais são gravados em arquivos mensais dentro de
+`marufia-server/logs/`. Dados que se pareçam com senhas, tokens ou chaves são
+ocultados, e somente esses logs operacionais com mais de 90 dias são removidos.
+A inicialização permanece manual até que `configure-startup.ps1` seja executado.
