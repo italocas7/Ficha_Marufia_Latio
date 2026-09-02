@@ -7,6 +7,7 @@ $script:MarufiaBaseComposePath = Join-Path $script:MarufiaServerRoot "supabase\d
 $script:MarufiaOverrideComposePath = Join-Path $script:MarufiaServerRoot "docker-compose.marufia.yml"
 $script:MarufiaTunnelComposePath = Join-Path $script:MarufiaServerRoot "cloudflare\docker-compose.tunnel.yml"
 $script:MarufiaTunnelTokenPath = Join-Path $script:MarufiaServerRoot "cloudflare\tunnel-token.token"
+$script:MarufiaBackupDirectory = Join-Path $script:MarufiaServerRoot "backups"
 $script:MarufiaComposeProject = "marufia-server"
 $script:MinimumComposeVersion = [version]"2.24.4"
 
@@ -393,14 +394,17 @@ function Invoke-MarufiaDatabaseSql {
         [Parameter(Mandatory = $true)]
         [string]$Sql,
 
-        [switch]$TuplesOnly
+        [switch]$TuplesOnly,
+
+        [ValidatePattern("^[a-z][a-z0-9_]{0,62}$")]
+        [string]$Database = "postgres"
     )
 
     $dockerCommand = Resolve-DockerCommand
     $arguments = @(
         "exec", "--interactive", "supabase-db",
         "psql", "--no-psqlrc", "--set", "ON_ERROR_STOP=1",
-        "--username", "postgres", "--dbname", "postgres"
+        "--username", "postgres", "--dbname", $Database
     )
     if ($TuplesOnly) {
         $arguments += @("--tuples-only", "--no-align", "--quiet")
@@ -412,7 +416,7 @@ function Invoke-MarufiaDatabaseSql {
         if ([string]::IsNullOrWhiteSpace($details)) {
             $details = "psql terminou com código $LASTEXITCODE."
         }
-        throw "Falha ao executar SQL no banco local: $details"
+        throw "Falha ao executar SQL no banco local '$Database': $details"
     }
     return ($output | Out-String).Trim()
 }

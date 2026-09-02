@@ -7,6 +7,12 @@
 | `status-server.ps1` | exibe o estado de todos os containers |
 | `restart-server.ps1` | recria containers sem remover dados |
 | `stop-server.ps1` | para containers sem remover volumes ou arquivos |
+| `backup.ps1` | cria dump lógico, checksum e chave criptográfica protegida; aplica retenção segura |
+| `restore.ps1` | testa restore em banco descartável por padrão; produção exige confirmação explícita e rollback |
+| `test-backup-restore.ps1` | cria um backup real, rejeita uma cópia adulterada e restaura em banco isolado |
+| `configure-backup-schedule.ps1` | instala o backup diário opcional no Agendador do Windows |
+| `remove-backup-schedule.ps1` | remove somente o agendamento, preservando todos os backups |
+| `run-scheduled-backup.ps1` | executor não interativo do backup diário com log mensal sem segredos |
 | `migrate-schema.ps1` | valida hashes, cria rollback e aplica somente migrations pendentes |
 | `verify-schema.ps1` | confere tabelas, RLS, RPCs, gatilhos, Realtime e histórico |
 | `test-schema-security.ps1` | executa 35 ataques RLS transacionais e confirma rollback |
@@ -31,7 +37,8 @@ não carregam ou imprimem os segredos do `.env` e retornam código diferente de 
 quando uma validação ou comando falha.
 
 O dump criado antes da migração de schema é um ponto de rollback desta fase; ele
-não substitui o sistema de backup, restore e retenção das Fases 11 e 12.
+permanece preservado. O sistema regular da Fase 11 usa conjuntos próprios com
+SHA-256, metadados e uma cópia criptografada da chave persistente do PostgreSQL.
 
 `test-auth.ps1` recusa endereços externos e só funciona com a confirmação
 automática do ambiente experimental local. A configuração compartilhada impede
@@ -47,3 +54,4 @@ desativada e SMTP real. O token fica em arquivo ignorado pelo Git.
 
 Consulte `docs/SERVER_PUBLIC_DOMAIN.md` antes de configurar o modo permanente.
 Não informe senha SMTP ou token em argumentos visíveis, conversa, logs ou Git.
+Consulte `docs/SERVER_BACKUP_AND_RESTORE.md` antes de uma restauração real.

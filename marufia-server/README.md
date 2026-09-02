@@ -4,7 +4,7 @@ Esta pasta hospeda o ambiente experimental que permitirá ao computador do Mestr
 executar o backend do Marufia. Ela é independente de `server/`, que continua
 sendo o Worker do site publicado.
 
-## Estado da Fase 9
+## Estado da Fase 11
 
 O runtime oficial do Supabase Self-Hosted está validado na release fixada
 `self-hosted/v0.8.0`. PostgreSQL, Auth, REST, Realtime, Storage, Studio, gateway e
@@ -46,6 +46,12 @@ servidor continua local e a Fase 9 permanece parcial.
 
 O Supabase Cloud continua sendo o backend padrão do aplicativo. Nenhum dado ou
 conta foi migrado, e nenhuma funcionalidade da ficha foi alterada.
+
+O PostgreSQL agora possui backup lógico verificado, retenção de sete pontos
+diários e quatro semanais, proteção criptografada da chave persistente e restore
+testado em banco descartável. Uma tarefa do Windows executa o backup às 18h e
+registra sucesso ou falha sem gravar segredos. O caminho de produção cria um
+rollback preventivo, valida o dump isoladamente e só então entra em manutenção.
 
 ## Pré-requisitos no Windows
 
@@ -98,6 +104,20 @@ Para aplicar migrations pendentes ou confirmar o schema atual:
 .\marufia-server\scripts\test-tunnel.ps1 -Mode Quick
 ```
 
+Para backup e restauração segura:
+
+```powershell
+.\marufia-server\scripts\backup.ps1
+.\marufia-server\scripts\restore.ps1
+.\marufia-server\scripts\test-backup-restore.ps1
+.\marufia-server\scripts\configure-backup-schedule.ps1 -At "18:00"
+```
+
+`restore.ps1` usa um banco descartável por padrão e não substitui o banco em
+uso. Leia `docs/SERVER_BACKUP_AND_RESTORE.md` antes do modo de produção. O
+agendamento pode ser removido com `remove-backup-schedule.ps1`; isso não apaga
+os dumps existentes.
+
 Após possuir domínio e SMTP reais, siga `docs/SERVER_PUBLIC_DOMAIN.md`. A
 operação permanente usa:
 
@@ -146,12 +166,13 @@ procedimento preservando dados em `docs/MARUFIA_SERVER_PHASE_4.md`.
 
 ## Limite desta fase
 
-O runtime continua operacional em `127.0.0.1` e contém o schema vazio do
-Marufia. Domínio, SMTP, DNS e token definitivos são recursos externos ausentes;
-por isso o Tunnel nomeado e os builds self-hosted definitivos não foram
-executados. Backups automáticos e migração de dados continuam reservados às
-fases próprias.
+O backup lógico cobre o PostgreSQL, inclusive Auth, RLS, RPCs, gatilhos e
+metadados do Storage. Arquivos físicos do Storage, `.env`, token do Tunnel e
+logs não fazem parte do dump. O Storage ainda está vazio e não é usado pelo
+cliente, mas uma futura adoção exigirá backup próprio dos objetos. A cópia
+externa dos conjuntos de backup continua sendo responsabilidade do Mestre.
 
-Consulte `docs/MARUFIA_SERVER_PHASE_9.md`,
+Consulte `docs/MARUFIA_SERVER_PHASE_11.md`,
+`docs/SERVER_BACKUP_AND_RESTORE.md`,
 `docs/SERVER_PUBLIC_DOMAIN.md` e `docs/SERVER_CLOUDFLARE_TUNNEL.md` para
 resultados, operação e segurança.
