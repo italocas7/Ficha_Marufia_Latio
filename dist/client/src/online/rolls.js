@@ -1,5 +1,7 @@
 (function initMarufiaOnlineRolls(root, factory) {
-  const api = factory(root);
+  const retryTools = root?.MARUFIA_OFFLINE
+    ?? (typeof module === "object" && module.exports ? require("./offline.js") : null);
+  const api = factory(root, retryTools);
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.MARUFIA_ONLINE_ROLLS = api;
   if (root?.document) Promise.resolve().then(() => api.init(
@@ -8,8 +10,9 @@
     root.MARUFIA_CHARACTER_IMPORT,
     root.MARUFIA_APP_BRIDGE,
     root.LATIO_STORAGE,
+    root.MARUFIA_ERRORS,
   ));
-})(typeof window !== "undefined" ? window : globalThis, function createMarufiaOnlineRollsApi(root) {
+})(typeof window !== "undefined" ? window : globalThis, function createMarufiaOnlineRollsApi(root, retryTools) {
   "use strict";
 
   const PENDING_ROLLS_KEY = "marufia-online-pending-rolls-v1";
@@ -209,6 +212,7 @@
       id: normalizeUuid(rollId, "Rolagem"),
       userId: normalizeUuid(target.userId, "Usuário"),
       characterId: normalizeUuid(target.characterId, "Personagem"),
+      backendId: String(target.backendId ?? ""),
       roll: normalizeRollDraft(draft),
       visibility: normalizeRequestedVisibility(visibility),
       queuedAt: now(),
@@ -239,6 +243,13 @@
     return ["LAT-ROLL-CAMPAIGN-001", "LAT-ROLL-PAYLOAD-001", "LAT-ROLL-ID-001"].includes(error?.code);
   }
 
+  function retryableRollError(error) {
+    const detail = `${error?.code ?? ""} ${error?.message ?? ""}`.toLowerCase();
+    return detail.includes("fetch") || detail.includes("network") || detail.includes("offline")
+      || detail.includes("timeout") || detail.includes("timed out")
+      || (error?.code === "LAT-ROLL-SAVE-001" && detail.includes("fila"));
+  }
+
   function createRollQueue({ service, storage, resolveTarget, isOnline = () => true, cryptoApi, onSuccess, onError } = {}) {
     if (typeof service?.record !== "function" || typeof resolveTarget !== "function") {
       throw rollError("LAT-ROLL-QUEUE-001", "A fila de rolagens não está disponível.");
@@ -257,6 +268,8 @@
         while (!halted) {
           const entries = readPendingRolls(storage).filter((entry) => (
             entry?.userId === target.userId && entry?.characterId === target.characterId
+            && (String(entry?.backendId ?? "") === String(target.backendId ?? "")
+              || (retryTools?.allowsLegacyCloudRecords?.(target.backendId) && !entry?.backendId))
           ));
           if (!entries.length) break;
           for (const entry of entries) {
@@ -314,7 +327,7 @@
     return true;
   }
 
-  function init(document, supabaseTools, importTools, appBridge, storage) {
+  function init(document, supabaseTools, importTools, appBridge, storage, errorTools) {
     const accountButton = document.querySelector("#onlineAccountButton");
     if (!accountButton || accountButton.dataset.rollRegistrationInitialized === "true"
       || typeof appBridge?.onRoll !== "function"
@@ -329,6 +342,7 @@
     if (!client) return null;
 
     const view = document.defaultView ?? root ?? globalThis;
+    const backendId = retryTools?.backendScope?.(view.MARUFIA_ONLINE_CONFIG) ?? "unconfigured";
     const service = createRollService(client, view.crypto);
     const resolveTarget = async () => {
       if (accountButton.dataset.authState !== "online") return null;
@@ -336,22 +350,51 @@
       const identity = importTools.localSheetIdentity(snapshot);
       if (!identity) return null;
       const userId = await service.currentUserId();
-      const characterId = String(importTools.importedCharacterId?.(storage, userId, identity) ?? "");
-      return characterId ? { userId, characterId } : null;
+      const characterId = String(importTools.importedCharacterId?.(storage, userId, identity, backendId) ?? "");
+      return characterId ? { userId, characterId, backendId } : null;
     };
+    let retryRollId = "";
+    let retryScheduler = null;
     const queue = createRollQueue({
       service,
       storage,
       resolveTarget,
       isOnline: () => view.navigator?.onLine !== false,
       cryptoApi: view.crypto,
-      onSuccess: (result) => dispatchRollRecorded(view, result),
+      onSuccess: (result) => {
+        if (result?.id === retryRollId) {
+          retryRollId = "";
+          retryScheduler?.success?.();
+        }
+        dispatchRollRecorded(view, result);
+      },
+      onError: (error, entry) => {
+        if (!retryableRollError(error)) return;
+        retryRollId = String(entry?.id ?? "");
+        (errorTools ?? view.MARUFIA_ERRORS)?.report?.(
+          error,
+          { scope: "server", operation: "availability" },
+          view,
+        );
+        retryScheduler?.schedule?.();
+      },
     });
+    retryScheduler = retryTools?.createRetryScheduler?.(async () => {
+      if (!retryRollId || !queue.pending().some((entry) => entry?.id === retryRollId)) return true;
+      await queue.flush();
+      return !retryRollId || !queue.pending().some((entry) => entry?.id === retryRollId);
+    }, {
+      isReady: () => view.navigator?.onLine !== false && accountButton.dataset.authState === "online",
+      setTimer: view.setTimeout?.bind?.(view),
+      clearTimer: view.clearTimeout?.bind?.(view),
+    }) ?? null;
     const unsubscribe = appBridge.onRoll((draft) => {
       void queue.enqueue(draft).catch(() => {});
     });
     const flush = () => void queue.flush().catch(() => {});
+    const pause = () => retryScheduler?.pause?.();
     view.addEventListener?.("online", flush);
+    view.addEventListener?.("offline", pause);
     const observer = typeof view.MutationObserver === "function" ? new view.MutationObserver(flush) : null;
     observer?.observe(accountButton, { attributes: true, attributeFilter: ["data-auth-state"] });
     accountButton.dataset.rollRegistrationInitialized = "true";
@@ -360,10 +403,14 @@
     return Object.freeze({
       service,
       queue,
+      retryScheduler,
+      backendId,
       destroy() {
         unsubscribe?.();
         observer?.disconnect?.();
         view.removeEventListener?.("online", flush);
+        view.removeEventListener?.("offline", pause);
+        retryScheduler?.destroy?.();
         queue.destroy();
         delete accountButton.dataset.rollRegistrationInitialized;
       },
@@ -384,6 +431,7 @@
     persistPendingRoll,
     removePendingRoll,
     terminalRollError,
+    retryableRollError,
     createRollQueue,
     dispatchRollRecorded,
     init,

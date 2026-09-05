@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const { assertVersionContract } = require("./check_version.cjs");
+const { PRODUCTION_BACKEND } = require("./public_config.cjs");
 
 const root = path.resolve(__dirname, "..");
 const windowsReleaseRoot = path.join(root, "src-tauri", "target", "release");
@@ -41,11 +42,20 @@ function readReleaseContract() {
   };
 }
 
+function assertReleaseBackend(manifest) {
+  if (manifest?.backendMode !== PRODUCTION_BACKEND.backendMode
+    || manifest?.backendUrl !== PRODUCTION_BACKEND.supabaseUrl) {
+    throw new Error("A release Windows não aponta para o servidor oficial do Marufia.");
+  }
+  return manifest;
+}
+
 function assertReleaseContract(contract = readReleaseContract()) {
   const { manifest, notes, tag, version } = contract;
   if (manifest.productName !== "Marufia Online" || manifest.version !== version || manifest.architecture !== "x64") {
     throw new Error("O relatório Windows não corresponde ao Marufia Online Alpha x64 atual.");
   }
+  assertReleaseBackend(manifest);
   const files = Array.isArray(manifest.files) ? manifest.files : [];
   const names = files.map((file) => file.name);
   if (files.length !== expectedNames.length || expectedNames.some((name) => !names.includes(name))) {
@@ -91,4 +101,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { assertInside, assertReleaseContract, expectedNames, readReleaseContract, sha256 };
+module.exports = { assertInside, assertReleaseBackend, assertReleaseContract, expectedNames, readReleaseContract, sha256 };

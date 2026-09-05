@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "appId": "com.marufia.online",
   "channel": "alpha",
-  "version": "0.2.2",
-  "notes": "Atualiza a ficha automática com as regras do Sistema Beta para Magia Fina, Faceta Fluida, escudos, Vigor efetivo, Aparar e Fissura Celeste.",
-  "publishedAt": "2026-08-29T00:00:00.000Z",
-  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.2.2"
+  "version": "0.2.3",
+  "notes": "Unifica o site e o aplicativo Windows no servidor oficial do Marufia e impede builds de produção conectados ao banco antigo.",
+  "publishedAt": "2026-09-05T00:00:00.000Z",
+  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.2.3"
 }

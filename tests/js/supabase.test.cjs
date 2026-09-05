@@ -29,6 +29,20 @@ function serviceRoleJwt() {
   return `${encode({ alg: "HS256" })}.${encode({ role: "service_role" })}.signature`;
 }
 
+function sessionJwt(issuer) {
+  const encode = (value) => Buffer.from(JSON.stringify(value)).toString("base64url");
+  return `${encode({ alg: "RS256" })}.${encode({ iss: issuer, sub: "user-1" })}.signature`;
+}
+
+function fakeStorage(entries = {}) {
+  const values = new Map(Object.entries(entries));
+  return {
+    getItem(key) { return values.has(key) ? values.get(key) : null; },
+    setItem(key, value) { values.set(key, String(value)); },
+    value(key) { return values.get(key); },
+  };
+}
+
 test("keeps source unconfigured and resolves only the selected public project identity", () => {
   assert.equal(configTools.readPublicConfig(projectConfig).configured, false);
   const resolved = loadPublicConfig({ env: trackedCloudProfile });
@@ -63,9 +77,31 @@ test("creates the official client with a public key and persistent browser auth"
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true,
-      storageKey: "marufia-online-auth-v1",
+      storageKey: "marufia-online-auth-v2-https-marufia-supabase-co",
     },
   });
+});
+
+test("isolates authentication sessions by backend", () => {
+  const cloud = supabaseTools.authStorageKey("https://project.supabase.co");
+  const selfHosted = supabaseTools.authStorageKey("https://api.marufiarpg.org");
+  assert.notEqual(cloud, selfHosted);
+  assert.match(cloud, /^marufia-online-auth-v2-/);
+  assert.doesNotMatch(cloud + selfHosted, /publishable|secret/i);
+});
+
+test("migrates only a legacy session issued by the selected backend", () => {
+  const selfHostedUrl = "https://api.marufiarpg.org";
+  const matching = JSON.stringify({ access_token: sessionJwt(`${selfHostedUrl}/auth/v1`) });
+  const legacyKey = supabaseTools.LEGACY_AUTH_STORAGE_KEY;
+  const storage = fakeStorage({ [legacyKey]: matching });
+  assert.equal(supabaseTools.migrateLegacyAuthSession(storage, { supabaseUrl: selfHostedUrl }), true);
+  assert.equal(storage.value(supabaseTools.authStorageKey(selfHostedUrl)), matching);
+
+  const cloudSession = JSON.stringify({ access_token: sessionJwt("https://project.supabase.co/auth/v1") });
+  const mismatched = fakeStorage({ [legacyKey]: cloudSession });
+  assert.equal(supabaseTools.migrateLegacyAuthSession(mismatched, { supabaseUrl: selfHostedUrl }), false);
+  assert.equal(mismatched.value(supabaseTools.authStorageKey(selfHostedUrl)), undefined);
 });
 
 test("reuses one configured client and replaces it when the project changes", () => {

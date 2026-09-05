@@ -12,6 +12,10 @@ const trackedCloudProfile = tools.parseEnv(fs.readFileSync(
   path.join(__dirname, "..", "..", "config", "public-backends", "cloud.env"),
   "utf8",
 ));
+const trackedSelfHostedProfile = tools.parseEnv(fs.readFileSync(
+  path.join(__dirname, "..", "..", "config", "public-backends", "selfhosted.env"),
+  "utf8",
+));
 
 function temporaryRoot() {
   return fs.mkdtempSync(path.join(os.tmpdir(), "marufia-public-config-"));
@@ -23,7 +27,7 @@ function writeEnv(root, relative, values) {
   fs.writeFileSync(target, `${Object.entries(values).map(([key, value]) => `${key}=${value}`).join("\n")}\n`);
 }
 
-test("loads the tracked Cloud fallback without an administrative secret", () => {
+test("loads the legacy Cloud profile only when it is explicitly selected", () => {
   const config = tools.loadPublicConfig({ env: trackedCloudProfile });
   assert.equal(config.backendMode, "cloud");
   assert.equal(config.buildEnvironment, "production");
@@ -31,6 +35,17 @@ test("loads the tracked Cloud fallback without an administrative secret", () => 
   assert.match(config.publishableKey, /^sb_publishable_/);
   assert.equal(config.siteUrl, "https://ficha-marufia-latio.italocas7.chatgpt.site");
   assert.equal(config.authRedirectUrl, config.siteUrl);
+});
+
+test("uses the official self-hosted server in a clean production checkout", () => {
+  const root = temporaryRoot();
+  writeEnv(root, "config/public-backends/selfhosted.env", trackedSelfHostedProfile);
+  const config = tools.loadPublicConfig({ root, env: {} });
+  assert.equal(config.backendMode, "selfhosted");
+  assert.equal(config.buildEnvironment, "production");
+  assert.equal(config.supabaseUrl, "https://api.marufiarpg.org");
+  assert.equal(config.authRedirectUrl, "https://api.marufiarpg.org/auth-confirmed");
+  assert.doesNotThrow(() => tools.assertProductionBackend(config));
 });
 
 test("applies public environment precedence without reading unrelated process values", () => {
@@ -47,7 +62,7 @@ test("applies public environment precedence without reading unrelated process va
   writeEnv(root, ".env.local", { MARUFIA_SITE_URL: "https://local-override.example.com" });
   const config = tools.loadPublicConfig({
     root,
-    env: { SUPABASE_URL: "https://process.supabase.co", UNRELATED_SECRET: "must-not-be-read" },
+    env: { MARUFIA_BACKEND_MODE: "cloud", SUPABASE_URL: "https://process.supabase.co", UNRELATED_SECRET: "must-not-be-read" },
   });
   assert.deepEqual(config, {
     backendMode: "cloud",
@@ -57,6 +72,22 @@ test("applies public environment precedence without reading unrelated process va
     siteUrl: "https://local-override.example.com",
     authRedirectUrl: "https://local-override.example.com",
   });
+});
+
+test("refuses production packages connected to a different database", () => {
+  const official = tools.loadPublicConfig({ env: trackedSelfHostedProfile });
+  assert.doesNotThrow(() => tools.assertProductionBackend(official));
+  assert.throws(() => tools.assertProductionBackend({
+    ...official,
+    backendMode: "cloud",
+    supabaseUrl: "https://project.supabase.co",
+  }), /Build de produção recusado/);
+  assert.doesNotThrow(() => tools.assertProductionBackend({
+    ...official,
+    buildEnvironment: "development",
+    backendMode: "cloud",
+    supabaseUrl: "https://project.supabase.co",
+  }));
 });
 
 test("accepts local loopback and an external HTTPS self-hosted gateway", () => {

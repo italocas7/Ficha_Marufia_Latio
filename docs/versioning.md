@@ -1,6 +1,6 @@
 # Versionamento — Fase 47
 
-O produto adota [Semantic Versioning](https://semver.org/lang/pt-BR/) e está na versão **0.2.2**, com a identidade visível **Marufia Online Alpha**. O número canônico fica em `package.json` e precisa coincidir com Tauri, Cargo, o manifesto de atualização e a informação exibida no aplicativo.
+O produto adota [Semantic Versioning](https://semver.org/lang/pt-BR/) e está na versão **0.2.3**, com a identidade visível **Marufia Online Alpha**. O número canônico fica em `package.json` e precisa coincidir com Tauri, Cargo e a informação exibida no aplicativo. O manifesto público só avança depois que a release correspondente existe.
 
 Durante o desenvolvimento inicial:
 
@@ -8,11 +8,12 @@ Durante o desenvolvimento inicial:
 - `0.2.0`: aviso seguro de novas versões no aplicativo Windows;
 - `0.2.1`: correções da visualização completa de personagens, do zoom e dos cartões no aplicativo Windows;
 - `0.2.2`: atualização da ficha automática com as regras do Sistema Beta fornecidas pelo usuário;
+- `0.2.3`: fixa o Marufia Server como backend oficial e bloqueia builds Windows ou do site conectados ao banco legado;
 - `0.3.0` e demais versões `0.x`: novos ciclos compatíveis do Alpha;
 - correções que não acrescentam capacidade usam o incremento de patch;
 - `1.0.0`: primeira versão declarada estável, somente após os critérios de lançamento próprios.
 
-O rótulo **Alpha** descreve o canal atual e não é acrescentado ao número `0.2.2`. Assim, o instalador conserva um número aceito pelo empacotamento Windows enquanto a interface comunica claramente que o produto ainda está em desenvolvimento.
+O rótulo **Alpha** descreve o canal atual e não é acrescentado ao número `0.2.3`. Assim, o instalador conserva um número aceito pelo empacotamento Windows enquanto a interface comunica claramente que o produto ainda está em desenvolvimento.
 
 ## Contratos independentes
 
@@ -28,7 +29,7 @@ Incrementar o produto não altera automaticamente o JSON da ficha, o banco, prob
 ## Processo de versão
 
 1. Escolher o próximo número conforme a mudança realizada.
-2. Atualizar o número canônico e sincronizar Tauri, Cargo, a informação de execução e `app-update.json`.
+2. Atualizar o número canônico e sincronizar Tauri, Cargo e a informação de execução; `app-update.json` permanece na versão já publicada durante a preparação.
 3. Executar `pnpm test:version`, o build oficial e a suíte de navegador.
 4. Gerar novamente executável, instalador e hashes.
 5. Publicar primeiro os executáveis e a GitHub Release; somente depois publicar o manifesto no site.

@@ -10,6 +10,8 @@ const config = JSON.parse(fs.readFileSync(path.join(root, "src-tauri", "tauri.co
 const packageJson = require("../../package.json");
 const buildScript = fs.readFileSync(path.join(root, "tools", "build_windows.cjs"), "utf8");
 const { assertInside, currentReleaseVersion, sha256 } = require("../../tools/build_windows.cjs");
+const { assertReleaseBackend } = require("../../tools/check_release.cjs");
+const { PRODUCTION_BACKEND } = require("../../tools/public_config.cjs");
 
 test("configures a Portuguese current-user NSIS installer", () => {
   assert.deepEqual(config.bundle.targets, ["nsis"]);
@@ -35,7 +37,9 @@ test("exposes one stable Windows build command and delivery names", () => {
   assert.match(buildScript, /Marufia-Setup\.exe/);
   assert.match(buildScript, /windows-artifacts\.json/);
   assert.match(buildScript, /sha256/);
-  assert.match(buildScript, /tauriConfigOverlay\(loadPublicConfig\(\)\)/);
+  assert.match(buildScript, /assertProductionBackend\(loadPublicConfig\(\)\)/);
+  assert.match(buildScript, /backendMode:\s*publicConfig\.backendMode/);
+  assert.match(buildScript, /backendUrl:\s*publicConfig\.supabaseUrl/);
   assert.match(buildScript, /"--config", overlay/);
   assert.equal(currentReleaseVersion(), packageJson.version);
   assert.match(buildScript, /expectedSuffix/);
@@ -52,4 +56,15 @@ test("computes a stable SHA-256 digest", () => {
   const fixture = path.join(__dirname, "windows_build.test.cjs");
   assert.equal(sha256(fixture), sha256(fixture));
   assert.match(sha256(fixture), /^[a-f0-9]{64}$/);
+});
+
+test("rejects Windows artifacts built for another campaign database", () => {
+  assert.doesNotThrow(() => assertReleaseBackend({
+    backendMode: PRODUCTION_BACKEND.backendMode,
+    backendUrl: PRODUCTION_BACKEND.supabaseUrl,
+  }));
+  assert.throws(() => assertReleaseBackend({
+    backendMode: "cloud",
+    backendUrl: "https://project.supabase.co",
+  }), /servidor oficial do Marufia/);
 });

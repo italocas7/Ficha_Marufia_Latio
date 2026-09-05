@@ -8,6 +8,12 @@ const PROJECT_TEMPLATE = path.join(ROOT, "src", "online", "project.js");
 const CONFIG_TOKEN = "__MARUFIA_PUBLIC_CONFIG__";
 const BACKEND_MODES = new Set(["cloud", "local", "selfhosted"]);
 const BUILD_ENVIRONMENTS = new Set(["development", "production", "local"]);
+const PRODUCTION_BACKEND = Object.freeze({
+  backendMode: "selfhosted",
+  supabaseUrl: "https://api.marufiarpg.org",
+  siteUrl: "https://ficha-marufia-latio.italocas7.chatgpt.site",
+  authRedirectUrl: "https://api.marufiarpg.org/auth-confirmed",
+});
 const PUBLIC_VARIABLES = Object.freeze([
   "MARUFIA_BACKEND_MODE",
   "MARUFIA_BUILD_ENV",
@@ -133,6 +139,16 @@ function validatePublishableKey(value) {
   return key;
 }
 
+function assertProductionBackend(config) {
+  if (config?.buildEnvironment !== "production") return config;
+  for (const [field, expected] of Object.entries(PRODUCTION_BACKEND)) {
+    if (config?.[field] !== expected) {
+      throw new Error(`Build de produção recusado: ${field} deve ser ${expected}.`);
+    }
+  }
+  return config;
+}
+
 function loadPublicConfig(options = {}) {
   const root = path.resolve(options.root ?? ROOT);
   const processValues = publicProcessEnv(options.env ?? process.env);
@@ -152,7 +168,7 @@ function loadPublicConfig(options = {}) {
       ?? localValues.MARUFIA_BACKEND_MODE
       ?? environmentValues.MARUFIA_BACKEND_MODE
       ?? baseValues.MARUFIA_BACKEND_MODE
-      ?? "cloud",
+      ?? "selfhosted",
     BACKEND_MODES,
     "MARUFIA_BACKEND_MODE",
   );
@@ -233,7 +249,7 @@ function main(args = process.argv.slice(2)) {
   if (command !== "render" || !destination) {
     throw new Error("Uso: node tools/public_config.cjs render <arquivo-project.js>");
   }
-  const config = loadPublicConfig();
+  const config = assertProductionBackend(loadPublicConfig());
   renderProjectFile(destination, config);
   console.log(`Configuração pública gerada para ${config.backendMode}/${config.buildEnvironment}.`);
 }
@@ -251,7 +267,9 @@ module.exports = {
   BACKEND_MODES,
   BUILD_ENVIRONMENTS,
   CONFIG_TOKEN,
+  PRODUCTION_BACKEND,
   PUBLIC_VARIABLES,
+  assertProductionBackend,
   buildTauriCsp,
   isLoopback,
   loadPublicConfig,

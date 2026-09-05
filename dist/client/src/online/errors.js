@@ -16,6 +16,10 @@
       title: "Não foi possível sincronizar sua ficha.",
       detail: "Os dados continuam salvos neste computador.",
     }),
+    server: Object.freeze({
+      title: "Servidor de Marufia indisponível.",
+      detail: "Você ainda pode usar os dados locais. As alterações serão sincronizadas quando a conexão retornar.",
+    }),
     realtime: Object.freeze({
       title: "A conexão ao vivo foi interrompida.",
       detail: "A ficha local continua disponível e tentará reconectar.",

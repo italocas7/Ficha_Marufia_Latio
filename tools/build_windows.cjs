@@ -4,7 +4,7 @@ const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
-const { loadPublicConfig, tauriConfigOverlay } = require("./public_config.cjs");
+const { assertProductionBackend, loadPublicConfig, tauriConfigOverlay } = require("./public_config.cjs");
 
 const root = path.resolve(__dirname, "..");
 const tauriRoot = path.join(root, "src-tauri");
@@ -28,12 +28,12 @@ function assertWindows() {
   }
 }
 
-function runTauriBuild() {
+function runTauriBuild(publicConfig) {
   const tauriCli = path.join(root, "node_modules", "@tauri-apps", "cli", "tauri.js");
   if (!fs.existsSync(tauriCli)) {
     throw new Error("Tauri CLI ausente. Execute pnpm install antes do build.");
   }
-  const overlay = JSON.stringify(tauriConfigOverlay(loadPublicConfig()));
+  const overlay = JSON.stringify(tauriConfigOverlay(publicConfig));
   const result = spawnSync(process.execPath, [tauriCli, "build", "--bundles", "nsis", "--config", overlay], {
     cwd: root,
     env: process.env,
@@ -78,7 +78,7 @@ function sha256(filePath) {
   return hash.digest("hex");
 }
 
-function copyDeliverables(generatedInstaller) {
+function copyDeliverables(generatedInstaller, publicConfig) {
   for (const destination of [deliverableExecutable, deliverableInstaller, manifestPath]) {
     assertInside(releaseRoot, destination);
   }
@@ -102,6 +102,8 @@ function copyDeliverables(generatedInstaller) {
     productName: packageJson.productName,
     version: packageJson.version,
     architecture: process.arch,
+    backendMode: publicConfig.backendMode,
+    backendUrl: publicConfig.supabaseUrl,
     files,
   }, null, 2)}\n`);
   return files;
@@ -109,8 +111,9 @@ function copyDeliverables(generatedInstaller) {
 
 function main() {
   assertWindows();
-  runTauriBuild();
-  const files = copyDeliverables(findGeneratedInstaller());
+  const publicConfig = assertProductionBackend(loadPublicConfig());
+  runTauriBuild(publicConfig);
+  const files = copyDeliverables(findGeneratedInstaller(), publicConfig);
   console.log("\nBuild Windows concluído:");
   for (const file of files) console.log(`- ${file.path} (${file.sha256})`);
   console.log(`- ${path.relative(root, manifestPath).replaceAll(path.sep, "/")}`);

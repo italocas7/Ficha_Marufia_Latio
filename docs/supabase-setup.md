@@ -2,15 +2,15 @@
 
 O Marufia pode gerar o site e o aplicativo Windows para três destinos sem alterar o código da ficha:
 
-- `cloud`: Supabase Cloud atual e fallback seguro durante a migração;
+- `cloud`: Supabase Cloud legado, disponível somente para diagnóstico ou rollback explícito;
 - `local`: Supabase em `localhost`, destinado a desenvolvimento;
-- `selfhosted`: gateway HTTPS do futuro Marufia Server.
+- `selfhosted`: gateway HTTPS oficial do Marufia Server.
 
 O arquivo-fonte `src/online/project.js` permanece sem endereço ou chave. `pnpm build:site` valida o ambiente escolhido e grava somente URL, chave pública, modo e endereço de retorno dentro de `dist/client/src/online/project.js`. O build falha antes de criar um pacote se a configuração estiver incompleta ou insegura.
 
 ## Selecionar um ambiente
 
-O perfil versionado `config/public-backends/cloud.env` mantém o Cloud atual como padrão. Para selecionar outro ambiente, copie `.env.example` para `.env.local` e altere apenas os valores públicos:
+O perfil versionado `config/public-backends/selfhosted.env` mantém o Marufia Server como padrão. Um build de produção é recusado se tentar apontar para outro banco. Para selecionar um ambiente local de desenvolvimento, copie `.env.example` para `.env.local` e altere apenas os valores públicos:
 
 ```dotenv
 MARUFIA_BUILD_ENV=local

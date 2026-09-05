@@ -67,6 +67,9 @@
     if (detail.includes("rate limit") || detail.includes("too many requests")) {
       return "Muitas tentativas foram feitas. Aguarde um pouco e tente novamente.";
     }
+    if (detail.includes("request_timeout") || detail.includes("processing this request timed out")) {
+      return "O serviço de contas demorou para enviar o email. Aguarde um momento e tente criar a conta novamente.";
+    }
     if (detail.includes("fetch") || detail.includes("network") || detail.includes("offline")) {
       return "Não foi possível acessar o servidor. A ficha local continua disponível.";
     }
@@ -385,7 +388,9 @@
 
     try {
       const client = supabaseTools?.getSupabaseClient?.();
-      service = client ? createAuthService(client, { emailRedirectTo: projectConfig.siteUrl }) : null;
+      service = client ? createAuthService(client, {
+        emailRedirectTo: projectConfig.authRedirectUrl || projectConfig.siteUrl,
+      }) : null;
     } catch (error) {
       state.message = friendlyAuthMessage(error);
       state.messageKind = "error";
