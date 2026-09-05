@@ -16,6 +16,7 @@ const common = script("common.ps1");
 const configureStartup = script("configure-startup.ps1");
 const removeStartup = script("remove-startup.ps1");
 const runStartup = script("run-startup.ps1");
+const safeDockerStart = script("start-docker-safe.ps1");
 
 test("health check covers every published server component", () => {
   for (const name of ["Database", "Auth", "REST API", "Realtime", "Storage", "Tunnel"]) {
@@ -60,11 +61,25 @@ test("Windows startup remains optional, limited, and removable", () => {
   assert.match(configureStartup, /New-ScheduledTaskTrigger -AtLogOn/);
   assert.match(configureStartup, /RunLevel Limited/);
   assert.match(configureStartup, /run-startup\.ps1/);
-  assert.match(runStartup, /Docker Desktop\.exe/);
-  assert.match(runStartup, /WindowStyle Hidden/);
-  assert.match(runStartup, /AddMinutes\(5\)/);
+  assert.match(runStartup, /start-server\.ps1/);
+  assert.match(safeDockerStart, /Docker Desktop\.exe/);
+  assert.match(safeDockerStart, /WindowStyle Hidden/);
+  assert.match(safeDockerStart, /WaitSeconds/);
   assert.match(removeStartup, /Unregister-ScheduledTask/);
   assert.doesNotMatch(removeStartup, /Remove-Item|docker|down\s+-v/i);
+});
+
+test("Docker startup self-heals only the known inaccessible runtime sockets", () => {
+  const startServer = script("start-server.ps1");
+  const restartServer = script("restart-server.ps1");
+  assert.match(startServer, /start-docker-safe\.ps1/);
+  assert.match(restartServer, /start-docker-safe\.ps1/);
+  assert.match(safeDockerStart, /sailor-ingest/);
+  assert.match(safeDockerStart, /docker-secrets-engine/);
+  assert.match(safeDockerStart, /The file cannot be accessed by the system/);
+  assert.match(safeDockerStart, /Move-Item -LiteralPath/);
+  assert.match(safeDockerStart, /wsl\.exe --shutdown/);
+  assert.doesNotMatch(safeDockerStart, /factory\s+reset|down\s+-v|volume\s+rm|system\s+prune|Remove-Item/i);
 });
 
 test("manager and main guide document manual operation and recovery", () => {

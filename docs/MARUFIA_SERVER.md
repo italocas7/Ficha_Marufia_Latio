@@ -107,6 +107,11 @@ RLS, Realtime, backup e acesso externo na nova máquina.
 ## Problemas comuns
 
 - `Docker não está em execução`: abra o Docker Desktop e aguarde concluir.
+- Erro contendo `sailor-ingest.sock` ou `docker-secrets-engine/engine.sock`:
+  execute `start-server.ps1` normalmente. O inicializador identifica somente
+  essa falha conhecida, preserva as pastas temporárias defeituosas e tenta
+  iniciar o Docker novamente sem resetar volumes. Nesta máquina, mantenha o
+  Docker Desktop em 4.89.0 ou superior.
 - Um componente aparece `FALHA`: abra os logs pelo gerenciador e execute o
   health check novamente.
 - Tunnel offline com serviços locais online: verifique a internet e o estado do
@@ -121,6 +126,12 @@ RLS, Realtime, backup e acesso externo na nova máquina.
 - O servidor consome recursos durante outro jogo: pare-o pelo gerenciador. Manter
   WSL e Plataforma de Máquina Virtual habilitados, por si só, não mantém os
   containers em execução.
+
+Para evitar sockets presos, sempre pare o Marufia Server pelo gerenciador antes
+de desligar manualmente o Docker Desktop. Se o Windows reiniciar ou faltar
+energia, a recuperação automática será executada no próximo início do servidor.
+Nunca escolha **Reset to factory defaults** para este erro, pois isso pode remover
+containers e dados locais.
 
 ## Segurança
 

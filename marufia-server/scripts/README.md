@@ -3,7 +3,8 @@
 | Comando | Função |
 |---|---|
 | `setup-environment.ps1` | cria uma vez o `.env` privado e todas as chaves |
-| `start-server.ps1` | valida configuração/Docker e inicia serviços saudáveis |
+| `start-docker-safe.ps1` | inicia o Docker e recupera somente os sockets temporários conhecidos, sem reset ou perda de volumes |
+| `start-server.ps1` | valida configuração, inicia/recupera o Docker e sobe serviços saudáveis |
 | `status-server.ps1` | exibe o estado de todos os containers |
 | `health-check.ps1` | verifica banco, Auth, REST, Realtime, Storage, Tunnel, jogadores e backup |
 | `server-manager.ps1` | oferece um painel simples para administrar o servidor |
@@ -66,6 +67,14 @@ Os eventos operacionais são gravados em arquivos mensais dentro de
 `marufia-server/logs/`. Dados que se pareçam com senhas, tokens ou chaves são
 ocultados, e somente esses logs operacionais com mais de 90 dias são removidos.
 A inicialização permanece manual até que `configure-startup.ps1` seja executado.
+
+No Windows 11 build 26200, sockets AF_UNIX do Docker podem permanecer como
+pontos de ligação inacessíveis depois que o aplicativo encerra. O inicializador
+seguro reconhece exclusivamente os erros de `sailor-ingest.sock` e
+`docker-secrets-engine/engine.sock`, preserva as pastas temporárias com o sufixo
+`.stale-*` e tenta iniciar novamente. Ele não usa **Reset to factory defaults**,
+não remove volumes e não lê segredos. Docker Desktop 4.89.0 ou superior é
+obrigatório por conter a primeira correção oficial para essa classe de falha.
 
 `test-public-clients.ps1` cria somente contas descartáveis pelo endpoint
 administrativo local, entrega aos clientes apenas a chave publicável e remove os

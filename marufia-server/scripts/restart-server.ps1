@@ -7,6 +7,9 @@ $ErrorActionPreference = "Stop"
 
 try {
     Assert-MarufiaEnvironment
+    $global:LASTEXITCODE = 0
+    & (Join-Path $PSScriptRoot "start-docker-safe.ps1")
+    if ($LASTEXITCODE -ne 0) { throw "O Docker Desktop não iniciou com segurança." }
     Assert-DockerReady
     Write-MarufiaMessage -Level INFO -Message "Recriando os serviços sem remover dados persistentes..."
     Invoke-MarufiaCompose -ComposeArguments @("up", "--detach", "--wait", "--force-recreate")
