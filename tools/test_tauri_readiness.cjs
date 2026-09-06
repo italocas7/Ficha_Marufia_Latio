@@ -6,8 +6,9 @@ const { spawnSync } = require("node:child_process");
 
 const root = path.resolve(__dirname, "..");
 const packageJson = require("../package.json");
+const { pythonExecutable } = require("./build_windows.cjs");
 const node = process.execPath;
-const python = process.env.LATIO_PYTHON || "python";
+const python = process.env.LATIO_PYTHON || pythonExecutable(process.env);
 
 const STEPS = Object.freeze([
   ["Ficha web", python, ["tools/build_site.py"]],

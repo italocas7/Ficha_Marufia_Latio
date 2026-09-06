@@ -22,6 +22,7 @@
   const OFFLINE_QUEUE_KEY = "marufia-online-pending-saves-v1";
   const CHARACTER_CONFLICT_EVENT = "marufia:character-conflict";
   const CHARACTER_CONFLICT_RESOLUTION_EVENT = "marufia:character-conflict-resolved";
+  const BEFORE_APP_UPDATE_EVENT = "marufia:before-app-update";
   const SYNC_STATUS = Object.freeze({
     online: Object.freeze({ label: "Online", title: "Conta conectada; alterações da ficha vinculada podem ser salvas online." }),
     syncing: Object.freeze({ label: "Sincronizando", title: "Salvando as alterações da ficha online." }),
@@ -785,8 +786,12 @@
     const flushWhenLeaving = () => {
       void debouncer.flush();
     };
+    const flushBeforeAppUpdate = (event) => {
+      event?.detail?.waitUntil?.(debouncer.flush());
+    };
     document.addEventListener("visibilitychange", flushWhenHidden);
     view.addEventListener?.("pagehide", flushWhenLeaving);
+    view.addEventListener?.(BEFORE_APP_UPDATE_EVENT, flushBeforeAppUpdate);
     const realtimeCoordinator = realtimeService
       ? createRealtimeCoordinator({
         accountButton,
@@ -864,6 +869,7 @@
         unsubscribe?.();
         document.removeEventListener?.("visibilitychange", flushWhenHidden);
         view.removeEventListener?.("pagehide", flushWhenLeaving);
+        view.removeEventListener?.(BEFORE_APP_UPDATE_EVENT, flushBeforeAppUpdate);
         view.removeEventListener?.(CHARACTER_CONFLICT_RESOLUTION_EVENT, resolveConflict);
         view.removeEventListener?.("online", resumeWhenOnline);
         view.removeEventListener?.("offline", pauseWhenOffline);
@@ -879,6 +885,7 @@
 
   return {
     REMOTE_SAVE_DEBOUNCE_MS,
+    BEFORE_APP_UPDATE_EVENT,
     SYNC_METADATA_KEY,
     OFFLINE_QUEUE_KEY,
     CHARACTER_CONFLICT_EVENT,

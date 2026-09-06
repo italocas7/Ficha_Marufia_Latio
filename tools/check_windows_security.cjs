@@ -9,6 +9,7 @@ const projectRoot = path.resolve(__dirname, "..");
 const releaseRoot = path.join(projectRoot, "src-tauri", "target", "release");
 const manifestPath = path.join(releaseRoot, "bundle", "windows-artifacts.json");
 const expectedNames = Object.freeze(["Marufia.exe", "Marufia-Setup.exe"]);
+const expectedUpdaterName = "Marufia-Setup.exe.sig";
 
 function assertInside(parent, target) {
   const relative = path.relative(parent, target);
@@ -86,6 +87,26 @@ function verifyArtifact(artifact) {
   }
 }
 
+function verifyUpdaterArtifact(updater, releaseVersion) {
+  if (updater?.name !== expectedUpdaterName) throw new Error("Assinatura do atualizador ausente no relatório.");
+  const filePath = path.resolve(projectRoot, updater.path);
+  assertInside(releaseRoot, filePath);
+  const stat = fs.statSync(filePath, { throwIfNoEntry: false });
+  if (!stat?.isFile() || stat.size !== updater.bytes || sha256(filePath) !== updater.sha256) {
+    throw new Error("Integridade divergente para a assinatura do atualizador.");
+  }
+  const signature = fs.readFileSync(filePath, "utf8").trim();
+  if (signature !== updater.signature || signature.length < 64 || !/^[A-Za-z0-9+/=]+$/.test(signature)) {
+    throw new Error("Conteúdo da assinatura do atualizador inválido.");
+  }
+  const updaterManifest = JSON.parse(fs.readFileSync(path.join(projectRoot, updater.manifestPath), "utf8"));
+  const platform = updaterManifest.platforms?.["windows-x86_64"];
+  if (updaterManifest.version !== releaseVersion || platform?.signature !== signature || platform?.url !== updater.downloadUrl) {
+    throw new Error("Manifesto e assinatura do atualizador não correspondem.");
+  }
+  console.log(`${expectedUpdaterName}: assinatura do atualizador e manifesto correspondentes.`);
+}
+
 function main() {
   if (!fs.statSync(manifestPath, { throwIfNoEntry: false })?.isFile()) {
     throw new Error("Relatório de integridade ausente. Execute pnpm build:windows primeiro.");
@@ -96,6 +117,7 @@ function main() {
     throw new Error("O relatório deve conter exatamente os dois artefatos Windows.");
   }
   for (const artifact of manifest.files) verifyArtifact(artifact);
+  verifyUpdaterArtifact(manifest.updater, manifest.version);
   console.log("Verificação Windows concluída sem desativar proteções do sistema.");
 }
 
@@ -108,4 +130,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { assertInside, assertPortableExecutable, getAuthenticodeStatus, main, sha256, verifyArtifact };
+module.exports = { assertInside, assertPortableExecutable, getAuthenticodeStatus, main, sha256, verifyArtifact, verifyUpdaterArtifact };

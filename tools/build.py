@@ -66,6 +66,7 @@ REQUIRED_FILES = [
     "og.png",
     "_headers",
     "app-update.json",
+    "tauri-update.json",
     "vendor/pdf.min.mjs",
     "vendor/pdf.worker.min.mjs",
     *SCRIPT_ORDER,

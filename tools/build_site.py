@@ -15,9 +15,15 @@ DIST = ROOT / "dist"
 STAGE = ROOT / "dist.next"
 CLIENT_FILES = [*dict.fromkeys(offline_build.REQUIRED_FILES)]
 SERVER_ENTRY = "server/index.js"
-UPDATE_MANIFEST = "app-update.json"
-UPDATE_MANIFEST_ASSET = ".marufia/app-update.json"
+UPDATE_MANIFEST_ASSETS = {
+    "app-update.json": ".marufia/app-update.json",
+    "tauri-update.json": ".marufia/tauri-update.json",
+}
 PROJECT_CONFIG = "src/online/project.js"
+
+
+def client_path(relative: str) -> str:
+    return UPDATE_MANIFEST_ASSETS.get(relative, relative)
 
 
 def checked_remove_tree(path: Path) -> None:
@@ -34,8 +40,8 @@ def copy_site() -> None:
     for relative in CLIENT_FILES:
         source = ROOT / relative
         target = STAGE / "client" / relative
-        if relative == UPDATE_MANIFEST:
-            target = STAGE / "client" / UPDATE_MANIFEST_ASSET
+        if relative in UPDATE_MANIFEST_ASSETS:
+            target = STAGE / "client" / UPDATE_MANIFEST_ASSETS[relative]
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
     subprocess.run(
@@ -62,12 +68,12 @@ def copy_site() -> None:
 
 def validate_site() -> None:
     missing = [
-        f"client/{UPDATE_MANIFEST_ASSET if relative == UPDATE_MANIFEST else relative}"
+        f"client/{client_path(relative)}"
         for relative in CLIENT_FILES
         if not (
             DIST
             / "client"
-            / (UPDATE_MANIFEST_ASSET if relative == UPDATE_MANIFEST else relative)
+            / client_path(relative)
         ).is_file()
     ]
     if not (DIST / SERVER_ENTRY).is_file():

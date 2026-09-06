@@ -11,6 +11,7 @@ const root = path.resolve(__dirname, "..");
 const windowsReleaseRoot = path.join(root, "src-tauri", "target", "release");
 const manifestPath = path.join(windowsReleaseRoot, "bundle", "windows-artifacts.json");
 const expectedNames = Object.freeze(["Marufia.exe", "Marufia-Setup.exe"]);
+const expectedUpdaterName = "Marufia-Setup.exe.sig";
 
 function assertInside(parent, target) {
   const relative = path.relative(parent, target);
@@ -78,10 +79,28 @@ function assertReleaseContract(contract = readReleaseContract()) {
       throw new Error(`As notas não registram o artefato ${artifact.name} e seu SHA-256.`);
     }
   }
+  const updater = manifest.updater;
+  const updaterPath = path.resolve(root, updater?.path ?? "");
+  assertInside(windowsReleaseRoot, updaterPath);
+  const updaterStat = fs.statSync(updaterPath, { throwIfNoEntry: false });
+  if (updater?.name !== expectedUpdaterName || !updaterStat?.isFile()
+    || updaterStat.size !== updater.bytes || sha256(updaterPath) !== updater.sha256
+    || fs.readFileSync(updaterPath, "utf8").trim() !== updater.signature) {
+    throw new Error("A assinatura do instalador está ausente ou divergente.");
+  }
+  const updaterManifest = JSON.parse(fs.readFileSync(path.join(root, updater.manifestPath), "utf8"));
+  const platform = updaterManifest.platforms?.["windows-x86_64"];
+  if (updaterManifest.version !== version || platform?.url !== updater.downloadUrl || platform?.signature !== updater.signature) {
+    throw new Error("O manifesto assinado não corresponde ao instalador da release.");
+  }
+  if (!notes.includes(updater.name) || !notes.includes(updater.sha256)) {
+    throw new Error("As notas não registram a assinatura do atualizador e seu SHA-256.");
+  }
   if (!notes.includes(`Marufia Online Alpha ${version}`)
     || !notes.includes(`\`${tag}\``)
     || !/pré-lançamento/i.test(notes)
-    || !/sem assinatura digital/i.test(notes)) {
+    || !/sem assinatura Authenticode/i.test(notes)
+    || !/assinatura criptográfica do atualizador/i.test(notes)) {
     throw new Error("As notas não identificam claramente versão, tag, canal Alpha e assinatura.");
   }
   return contract;
@@ -89,7 +108,7 @@ function assertReleaseContract(contract = readReleaseContract()) {
 
 function main() {
   const contract = assertReleaseContract();
-  console.log(`Release local ${contract.tag} pronta: notas e dois artefatos Windows íntegros.`);
+  console.log(`Release local ${contract.tag} pronta: dois executáveis e a assinatura do atualizador estão íntegros.`);
 }
 
 if (require.main === module) {

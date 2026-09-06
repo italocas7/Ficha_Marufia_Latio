@@ -2037,6 +2037,19 @@ tr:last-child td {
   color: var(--muted);
 }
 
+.app-update-progress {
+  width: 100%;
+  min-height: 14px;
+  accent-color: var(--accent);
+}
+
+.app-update-progress-label {
+  min-height: 1.5em;
+  color: var(--text);
+  font-weight: 700;
+  text-align: center;
+}
+
 .app-update-error {
   padding: 10px 12px;
   border: 1px solid var(--danger);

@@ -8,6 +8,7 @@ const PROJECT_TEMPLATE = path.join(ROOT, "src", "online", "project.js");
 const CONFIG_TOKEN = "__MARUFIA_PUBLIC_CONFIG__";
 const BACKEND_MODES = new Set(["cloud", "local", "selfhosted"]);
 const BUILD_ENVIRONMENTS = new Set(["development", "production", "local"]);
+const UPDATER_ORIGIN = "https://marufiarpg.org";
 const PRODUCTION_BACKEND = Object.freeze({
   backendMode: "selfhosted",
   supabaseUrl: "https://api.marufiarpg.org",
@@ -208,6 +209,7 @@ function buildTauriCsp(config) {
     config.supabaseUrl,
     websocketOrigin(config.supabaseUrl),
     config.siteUrl,
+    UPDATER_ORIGIN,
   ]).join(" ");
   const imageOrigins = unique(["'self'", "data:", "blob:", config.siteUrl]).join(" ");
   return [
@@ -269,6 +271,7 @@ module.exports = {
   CONFIG_TOKEN,
   PRODUCTION_BACKEND,
   PUBLIC_VARIABLES,
+  UPDATER_ORIGIN,
   assertProductionBackend,
   buildTauriCsp,
   isLoopback,

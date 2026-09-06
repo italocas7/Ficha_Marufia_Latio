@@ -962,10 +962,27 @@ async function exercise(page, url, viewport) {
 
 async function exerciseWindowsUpdate(browser, url, viewport) {
   const context = await browser.newContext({ viewport });
-  const updateRequests = [];
   await context.addInitScript(() => {
+    window.__marufiaUpdateState = { checks: 0, downloads: 0, closed: 0 };
     window.__TAURI_INTERNALS__ = {};
     window.__TAURI__ = {
+      updater: {
+        check() {
+          window.__marufiaUpdateState.checks += 1;
+          return Promise.resolve({
+            version: "0.3.0",
+            body: "Versão futura usada somente pelo teste local.",
+            close() { window.__marufiaUpdateState.closed += 1; return Promise.resolve(); },
+            downloadAndInstall(listener) {
+              window.__marufiaUpdateState.downloads += 1;
+              listener({ event: "Started", data: { contentLength: 100 } });
+              listener({ event: "Progress", data: { chunkLength: 100 } });
+              listener({ event: "Finished" });
+              return Promise.resolve();
+            },
+          });
+        },
+      },
       opener: {
         openUrl(releaseUrl) {
           window.__marufiaOpenedUpdateUrl = releaseUrl;
@@ -974,24 +991,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
       },
     };
   });
-  await context.route("**/app-update.json*", (route) => route.fulfill({
-    status: 200,
-    contentType: "application/json",
-    headers: { "Access-Control-Allow-Origin": "*", "Cache-Control": "no-store" },
-    body: JSON.stringify({
-      schemaVersion: 1,
-      appId: "com.marufia.online",
-      channel: "alpha",
-      version: "0.3.0",
-      notes: "Versão futura usada somente pelo teste local.",
-      publishedAt: "2026-08-22T00:00:00.000Z",
-      releaseUrl: "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.3.0",
-    }),
-  }));
   const page = await context.newPage();
-  page.on("request", (request) => {
-    if (request.url().includes("app-update.json")) updateRequests.push(request.url());
-  });
   try {
     await page.goto(url);
     await page.waitForTimeout(250);
@@ -1001,7 +1001,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
       initialized: document.documentElement.dataset.appUpdateInitialized ?? "",
     }));
     assert.deepEqual(initialized, { hasApi: true, isTauri: true, initialized: "true" });
-    assert.equal(updateRequests.length, 1, "O aplicativo Windows deve consultar o manifesto uma vez ao iniciar.");
+    assert.equal(await page.evaluate(() => window.__marufiaUpdateState.checks), 1, "O aplicativo Windows deve consultar o atualizador nativo uma vez ao iniciar.");
     const updateModal = page.locator("#modalRoot .modal").filter({ hasText: "Atualização disponível" });
     if (await updateModal.count() === 0) {
       const firstRun = page.getByRole("button", { name: "Criar ficha nova" });
@@ -1009,7 +1009,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
       await firstRun.click();
     }
     await updateModal.waitFor({ state: "visible" });
-    assert.equal(await updateModal.getByRole("button", { name: "Atualizar aplicativo" }).count(), 1);
+    assert.equal(await updateModal.getByRole("button", { name: "Baixar e instalar" }).count(), 1);
     assert.equal(await updateModal.getByRole("button", { name: "Agora não" }).count(), 1);
     const dimensions = await updateModal.evaluate((modal) => ({
       clientWidth: modal.clientWidth,
@@ -1029,8 +1029,26 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
 
   const freshContext = await browser.newContext({ viewport });
   await freshContext.addInitScript(() => {
+    window.__marufiaUpdateState = { checks: 0, downloads: 0, closed: 0 };
     window.__TAURI_INTERNALS__ = {};
     window.__TAURI__ = {
+      updater: {
+        check() {
+          window.__marufiaUpdateState.checks += 1;
+          return Promise.resolve({
+            version: "0.3.0",
+            body: "Versão futura usada somente pelo teste local.",
+            close() { window.__marufiaUpdateState.closed += 1; return Promise.resolve(); },
+            downloadAndInstall(listener) {
+              window.__marufiaUpdateState.downloads += 1;
+              listener({ event: "Started", data: { contentLength: 100 } });
+              listener({ event: "Progress", data: { chunkLength: 100 } });
+              listener({ event: "Finished" });
+              return Promise.resolve();
+            },
+          });
+        },
+      },
       opener: {
         openUrl(releaseUrl) {
           window.__marufiaOpenedUpdateUrl = releaseUrl;
@@ -1039,32 +1057,16 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
       },
     };
   });
-  await freshContext.route("**/app-update.json*", (route) => route.fulfill({
-    status: 200,
-    contentType: "application/json",
-    headers: { "Access-Control-Allow-Origin": "*", "Cache-Control": "no-store" },
-    body: JSON.stringify({
-      schemaVersion: 1,
-      appId: "com.marufia.online",
-      channel: "alpha",
-      version: "0.3.0",
-      notes: "Versão futura usada somente pelo teste local.",
-      publishedAt: "2026-08-22T00:00:00.000Z",
-      releaseUrl: "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.3.0",
-    }),
-  }));
   const freshPage = await freshContext.newPage();
   try {
     await freshPage.goto(url);
     const updateModal = freshPage.locator("#modalRoot .modal").filter({ hasText: "Atualização disponível" });
     if (await updateModal.count() === 0) await freshPage.getByRole("button", { name: "Criar ficha nova" }).click();
     await updateModal.waitFor({ state: "visible" });
-    await updateModal.getByRole("button", { name: "Atualizar aplicativo" }).click();
-    await freshPage.waitForFunction(() => Boolean(window.__marufiaOpenedUpdateUrl));
-    assert.equal(
-      await freshPage.evaluate(() => window.__marufiaOpenedUpdateUrl),
-      "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.3.0",
-    );
+    await updateModal.getByRole("button", { name: "Baixar e instalar" }).click();
+    await freshPage.waitForFunction(() => window.__marufiaUpdateState.downloads === 1);
+    assert.equal(await freshPage.evaluate(() => window.__marufiaUpdateState.downloads), 1);
+    assert.equal(await freshPage.locator("#modalRoot .modal").getAttribute("data-blocking"), "true");
   } finally {
     await freshContext.close();
   }

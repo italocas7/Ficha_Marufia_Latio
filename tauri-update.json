@@ -1,0 +1,11 @@
+{
+  "version": "0.2.4",
+  "notes": "Estabiliza o Painel do Mæstre, adiciona navegação direta da campanha e incorpora atualizações assinadas com confirmação do jogador.",
+  "pub_date": "2026-09-06T00:00:00.000Z",
+  "platforms": {
+    "windows-x86_64": {
+      "url": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/download/v0.2.4/Marufia-Setup.exe",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTR203cEVudWhOcFBLd2RKa3dkckxKMlVNNi9abFFuWmtFVTJOWmpZaFhLK1NObENSOXVPYnZScGlmeU5jWjJqODI4QjBFNjdHeWF0bW9pM2Exb3VudXZlU0tlWGZWTWdJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg4NzIzMzI0CWZpbGU6TWFydWZpYSBPbmxpbmVfMC4yLjRfeDY0LXNldHVwLmV4ZQpweVcwd1ZXd0VSdk5pbVp3WWhvdTkxcnJNQlFqSnc2ZEVKZVUzM2ttbjNjMjBlOVVldjRkd1pGUjRMb2J2a3IyWUpiS1FhTy9wZ3R5Mnk1YTkrQXlBQT09Cg=="
+    }
+  }
+}

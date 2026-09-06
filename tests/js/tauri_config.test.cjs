@@ -18,8 +18,8 @@ test("configures the Marufia Windows identity and existing web build", () => {
   assert.equal(config.productName, "Marufia Online");
   assert.equal(config.identifier, "com.marufia.online");
   assert.equal(config.build.frontendDist, "../dist/client");
-  assert.equal(config.build.beforeDevCommand, "pnpm build:site");
-  assert.equal(config.build.beforeBuildCommand, "pnpm build:site");
+  assert.equal(config.build.beforeDevCommand, "node tools/run_site_build.cjs");
+  assert.equal(config.build.beforeBuildCommand, "node tools/run_site_build.cjs");
   assert.deepEqual(config.bundle.targets, ["nsis"]);
 });
 
@@ -48,6 +48,7 @@ test("keeps the base CSP offline and adds only the selected public services at r
   assert.match(csp, new RegExp(selected.supabaseUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.match(csp, new RegExp(publicConfig.websocketOrigin(selected.supabaseUrl).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.match(csp, new RegExp(selected.siteUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.match(csp, new RegExp(publicConfig.UPDATER_ORIGIN.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.match(csp, /frame-src 'self'/);
   assert.doesNotMatch(csp, /frame-src[^;]*(?:https?:|\*)|unsafe-eval|connect-src[^;]*\*/);
 });
@@ -61,7 +62,7 @@ test("passes the generated CSP overlay to the official Tauri command", () => {
   assert.deepEqual(JSON.parse(args[4]), publicConfig.tauriConfigOverlay(selected));
 });
 
-test("grants only the scoped release opener and native zoom to the Windows app", () => {
+test("grants only signed updater, scoped release opener and native zoom permissions", () => {
   assert.deepEqual(capability.windows, ["main"]);
   assert.deepEqual(capability.platforms, ["windows"]);
   assert.equal(config.app.withGlobalTauri, true);
@@ -71,9 +72,16 @@ test("grants only the scoped release opener and native zoom to the Windows app",
       allow: [{ url: "https://github.com/italocas7/Ficha_Marufia_Latio/releases/*" }],
     },
     "core:webview:allow-set-webview-zoom",
+    "updater:allow-check",
+    "updater:allow-download-and-install",
   ]);
   assert.match(cargo, /^tauri-plugin-opener\s*=\s*"2"$/m);
-  assert.doesNotMatch(JSON.stringify(capability.permissions), /shell|filesystem|dialog|open-path|http:\/\/|github\.com\/[^i]/i);
+  assert.match(cargo, /^tauri-plugin-updater\s*=\s*"2"$/m);
+  assert.equal(config.bundle.createUpdaterArtifacts, true);
+  assert.deepEqual(config.plugins.updater.endpoints, ["https://marufiarpg.org/tauri-update.json"]);
+  assert.equal(config.plugins.updater.windows.installMode, "passive");
+  assert.match(config.plugins.updater.pubkey, /^[A-Za-z0-9+/=]+$/);
+  assert.doesNotMatch(JSON.stringify(capability.permissions), /shell|filesystem|dialog|open-path|http:\/\/|process|relaunch|github\.com\/[^i]/i);
 });
 
 test("ships the generated Marufia icon set and stable desktop commands", () => {

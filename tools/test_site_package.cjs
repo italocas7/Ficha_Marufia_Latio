@@ -15,8 +15,10 @@ for (const relative of ["index.html", "gm_view.html", "src/online/project.js", "
     throw new Error(`Pacote web ausente ou incompleto: client/${relative}. Execute pnpm build:site.`);
   }
 }
-if (!fs.existsSync(path.join(client, ".marufia", "app-update.json")) || fs.existsSync(path.join(client, "app-update.json"))) {
-  throw new Error("O manifesto do aplicativo deve ser servido pelo Worker, não diretamente como arquivo estático.");
+for (const manifestName of ["app-update.json", "tauri-update.json"]) {
+  if (!fs.existsSync(path.join(client, ".marufia", manifestName)) || fs.existsSync(path.join(client, manifestName))) {
+    throw new Error(`O manifesto ${manifestName} deve ser servido pelo Worker, não diretamente como arquivo estático.`);
+  }
 }
 if (!fs.existsSync(path.join(dist, "server", "index.js"))) {
   throw new Error("Pacote web ausente ou incompleto: server/index.js. Execute pnpm build:site.");

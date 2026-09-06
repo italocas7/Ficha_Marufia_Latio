@@ -633,10 +633,19 @@ test("wires hidden-page and page-exit flushes without blocking local saves", asy
   viewListeners.get("pagehide")();
   await instance.debouncer.flush();
   assert.deepEqual(saved, ["Oculta", "Saindo"]);
+
+  localSaveListener(snapshot("Atualizando"));
+  let updaterFlush = null;
+  viewListeners.get(syncTools.BEFORE_APP_UPDATE_EVENT)({
+    detail: { waitUntil(task) { updaterFlush = task; } },
+  });
+  await updaterFlush;
+  assert.deepEqual(saved, ["Oculta", "Saindo", "Atualizando"]);
   instance.destroy();
   assert.equal(unsubscribed, true);
   assert.equal(documentListeners.has("visibilitychange"), false);
   assert.equal(viewListeners.has("pagehide"), false);
+  assert.equal(viewListeners.has(syncTools.BEFORE_APP_UPDATE_EVENT), false);
 });
 
 test("opens one realtime channel for the linked character and emits validated remote changes", async () => {

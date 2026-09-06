@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "O aplicativo pode abrir somente releases oficiais e ajustar o zoom da própria janela.",
+  "description": "O aplicativo pode verificar e instalar atualizações assinadas, abrir somente releases oficiais e ajustar o zoom da própria janela.",
   "windows": [
     "main"
   ],
@@ -17,6 +17,8 @@
         }
       ]
     },
-    "core:webview:allow-set-webview-zoom"
+    "core:webview:allow-set-webview-zoom",
+    "updater:allow-check",
+    "updater:allow-download-and-install"
   ]
 }
