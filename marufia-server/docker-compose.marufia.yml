@@ -12,6 +12,11 @@ services:
       GOTRUE_API_MAX_REQUEST_DURATION: "${AUTH_MAX_REQUEST_DURATION:-30s}"
       GOTRUE_MAILER_EXTERNAL_HOSTS: "${AUTH_MAILER_EXTERNAL_HOSTS:-}"
 
+  # PostgREST 16 remove a repeticao automatica e ilimitada de conflitos 40001.
+  # O aplicativo usa esse codigo para detectar edicoes concorrentes da ficha.
+  rest:
+    image: postgrest/postgrest:v16.1
+
   realtime:
     environment:
       API_JWT_JWKS: "${JWT_JWKS}"

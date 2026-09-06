@@ -36,7 +36,7 @@ porta do banco é publicada em todas as interfaces.
 |---|---|
 | PostgreSQL | `supabase/postgres:17.6.1.136` |
 | Auth | `supabase/gotrue:v2.189.0` |
-| REST | `postgrest/postgrest:v14.12` |
+| REST | `postgrest/postgrest:v14.12` na base oficial; `v16.1` ativo pela camada Marufia |
 | Realtime | `supabase/realtime:v2.102.3` |
 | Storage | `supabase/storage-api:v1.60.4` |
 | Studio | `supabase/studio:2026.08.03-sha-022b374` |
@@ -45,6 +45,15 @@ porta do banco é publicada em todas as interfaces.
 | Postgres Meta | `supabase/postgres-meta:v0.96.6` |
 | Imgproxy | `darthsim/imgproxy:v3.30.1` |
 | Edge Runtime | `supabase/edge-runtime:v1.74.0` (desativado por padrão) |
+
+### Atualização operacional do REST
+
+Em 05/09/2026, o serviço REST ativo foi fixado em PostgREST `v16.1` pela camada
+Marufia, sem alterar os arquivos incorporados da distribuição oficial. A versão
+`v14.12` repetia automaticamente conflitos PostgreSQL `40001`; como o Marufia
+usa esse código para impedir que duas edições sobrescrevam uma ficha, um
+conflito podia manter a API e o banco ocupados continuamente. A versão 16
+entrega o conflito ao cliente sem repetição automática.
 
 ## Origem e integridade
 

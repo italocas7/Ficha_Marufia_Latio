@@ -28,8 +28,20 @@ inseguras e foi substituído pelo modelo seguro na raiz de `marufia-server/`.
 | PostgreSQL | `supabase/postgres:17.6.1.136` |
 | Pooler | `supabase/supavisor:2.9.5` |
 
-Não atualize imagens isoladamente. Uma atualização futura deve incorporar outro
-snapshot oficial completo, depois de backup, teste e possibilidade de rollback.
+Não atualize imagens isoladamente sem uma causa documentada, backup, teste e
+possibilidade de rollback. A única exceção ativa está descrita abaixo.
+
+## Exceção operacional do Marufia
+
+O Compose oficial permanece fixado em `postgrest/postgrest:v14.12`, mas a camada
+`docker-compose.marufia.yml` substitui somente o serviço REST por
+`postgrest/postgrest:v16.1`. A versão anterior repetia indefinidamente
+transações que retornavam `40001`, código usado pelo controle de revisão das
+fichas. PostgREST 16 removeu essa repetição automática. A alteração foi feita
+após backup e mantém o rollback disponível pela remoção da substituição.
+
+Referências oficiais: [PostgREST #3673](https://github.com/PostgREST/postgrest/issues/3673)
+e [changelog da versão 16](https://github.com/PostgREST/postgrest/blob/main/CHANGELOG.md#160---2026-08-07).
 
 ## Endurecimento do Marufia
 

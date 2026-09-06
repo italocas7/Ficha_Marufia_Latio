@@ -35,6 +35,10 @@ test("pins the complete official Supabase v0.8.0 service set", () => {
   const upstream = read("supabase/UPSTREAM.md");
   assert.match(upstream, /self-hosted\/v0\.8\.0/);
   assert.match(upstream, /241bb11c0627f2981746d37033f57dbfa81d29b0/);
+
+  const override = read("docker-compose.marufia.yml");
+  assert.match(override, /rest:[\s\S]*?image:\s*postgrest\/postgrest:v16\.1/);
+  assert.match(upstream, /PostgREST 16 removeu essa repeti[cç][aã]o autom[aá]tica/i);
 });
 
 test("matches every vendored runtime file against its recorded SHA-256", () => {

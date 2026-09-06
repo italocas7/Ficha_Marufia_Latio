@@ -121,6 +121,10 @@ RLS, Realtime, backup e acesso externo na nova máquina.
   essa demora de uma queda real do servidor.
 - Jogadores conectados mostra zero: isso é normal sem presença enviada nos
   últimos 90 segundos.
+- CPU permanece muito alta mesmo sem tráfego: reinicie apenas o serviço REST e
+  confirme que a camada Marufia está usando PostgREST 16.1. A versão 14.12 podia
+  repetir indefinidamente um conflito de revisão da ficha; a versão ativa remove
+  esse comportamento sem desabilitar a proteção contra sobrescrita.
 - Backup inválido: preserve o arquivo, não tente forçar a restauração e use o
   ponto válido anterior.
 - O servidor consome recursos durante outro jogo: pare-o pelo gerenciador. Manter
