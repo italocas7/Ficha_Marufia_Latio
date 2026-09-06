@@ -113,3 +113,17 @@ test("publishes a site-specific social preview from the trusted production origi
   assert.match(index, /name="twitter:card" content="summary_large_image"/);
   assert.equal(fs.existsSync(path.join(root, "og.png")), true);
 });
+
+test("publishes the validated client package to GitHub Pages from main", () => {
+  const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "pages.yml"), "utf8");
+  assert.match(workflow, /branches:\s*(?:\[main\]|- main)/);
+  assert.match(workflow, /pnpm\/action-setup@v4/);
+  assert.match(workflow, /version:\s*11\.19\.0/);
+  assert.match(workflow, /pnpm install --frozen-lockfile/);
+  assert.match(workflow, /pnpm build:site/);
+  assert.match(workflow, /actions\/upload-pages-artifact@v4/);
+  assert.match(workflow, /path:\s*\.\/dist\/client/);
+  assert.match(workflow, /actions\/deploy-pages@v4/);
+  assert.match(workflow, /pages:\s*write/);
+  assert.match(workflow, /id-token:\s*write/);
+});

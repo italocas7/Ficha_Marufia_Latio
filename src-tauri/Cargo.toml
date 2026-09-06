@@ -1,6 +1,6 @@
 [package]
 name = "marufia-online"
-version = "0.2.3"
+version = "0.2.4"
 description = "Aplicativo Windows da ficha multiplayer Marufia Online"
 authors = ["Marufia Online"]
 edition = "2021"

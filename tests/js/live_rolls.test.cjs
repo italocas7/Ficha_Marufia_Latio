@@ -126,11 +126,13 @@ test("subscribes only to new rolls from one campaign", async () => {
   const received = [];
   const statuses = [];
   const clears = [];
+  const unavailable = [];
   const subscription = service.subscribe(
     CAMPAIGN_ID,
     (roll) => received.push(roll),
     (status) => statuses.push(status),
     (revision) => clears.push(revision),
+    () => unavailable.push(true),
   );
   assert.equal(calls.channels[0], `marufia-live-rolls:${CAMPAIGN_ID}`);
   assert.deepEqual(channel.bindings.map((binding) => binding.config), [
@@ -141,7 +143,7 @@ test("subscribes only to new rolls from one campaign", async () => {
       filter: `campaign_id=eq.${CAMPAIGN_ID}`,
     },
     {
-      event: "UPDATE",
+      event: "*",
       schema: "public",
       table: "campaigns",
       filter: `id=eq.${CAMPAIGN_ID}`,
@@ -157,8 +159,10 @@ test("subscribes only to new rolls from one campaign", async () => {
     old: { id: CAMPAIGN_ID, roll_history_revision: 2 },
     new: { id: CAMPAIGN_ID, roll_history_revision: 2 },
   });
+  channel.bindings[1].listener({ eventType: "DELETE", old: { id: CAMPAIGN_ID } });
   assert.equal(received.length, 1);
   assert.deepEqual(clears, [2]);
+  assert.deepEqual(unavailable, [true]);
   assert.equal(statuses.at(-1), "INVALID_PAYLOAD");
   await subscription.unsubscribe();
   assert.equal(calls.removed.length, 1);
@@ -195,16 +199,21 @@ test("renders character, type, die, result, outcome, and time safely", () => {
 });
 
 test("renders a concise live connection state and empty history", () => {
-  const html = liveTools.liveRollsPanelHtml({ connection: "live", loading: false, rolls: [] });
+  const html = liveTools.liveRollsPanelHtml({ campaignId: CAMPAIGN_ID, campaignName: "A Coroa", connection: "live", loading: false, role: "player", rolls: [] });
   assert.match(html, /data-connection="live"/);
   assert.match(html, /Ao vivo/);
   assert.match(html, /Nenhuma rolagem visível/);
   assert.match(html, /aria-live="polite"/);
+  assert.match(html, /data-campaign-workspace-view="campaign"/);
+  assert.match(html, /data-campaign-workspace-view="rolls" aria-current="page"/);
+  assert.doesNotMatch(html, /Painel do Mæstre/);
   assert.doesNotMatch(html, /Limpar histórico/);
 });
 
 test("shows the irreversible clear confirmation only to the gm", () => {
   const gmHtml = liveTools.liveRollsPanelHtml({
+    campaignId: CAMPAIGN_ID,
+    campaignName: "A Coroa",
     connection: "live",
     loading: false,
     role: "gm",
@@ -215,8 +224,27 @@ test("shows the irreversible clear confirmation only to the gm", () => {
   assert.match(gmHtml, /Apagar permanentemente todas as rolagens/);
   assert.match(gmHtml, /Esta ação não pode ser desfeita/);
   assert.match(gmHtml, /PV, PM, condições, itens e sessões não serão alterados/);
+  assert.match(gmHtml, /Painel do Mæstre/);
 
   const playerHtml = liveTools.liveRollsPanelHtml({ connection: "live", loading: false, role: "player", rolls: [] });
   assert.doesNotMatch(playerHtml, /data-online-live-rolls-action="clear"/);
   assert.doesNotMatch(playerHtml, /confirm-clear/);
+});
+
+test("restores campaign roll history scroll after a visible realtime update", () => {
+  const modal = { scrollTop: 120, scrollLeft: 2 };
+  const modalBody = { scrollTop: 80, scrollLeft: 0 };
+  const list = { scrollTop: 260, scrollLeft: 1 };
+  const panel = {
+    closest(selector) { return selector === ".modal" ? modal : selector === ".modal-body" ? modalBody : null; },
+    querySelector(selector) { return selector === ".live-roll-list" ? list : null; },
+  };
+  const snapshot = liveTools.captureLiveRollsView(panel);
+  modal.scrollTop = 0;
+  modalBody.scrollTop = 0;
+  list.scrollTop = 0;
+  assert.equal(liveTools.restoreLiveRollsView(panel, snapshot, { requestAnimationFrame(callback) { callback(); } }), true);
+  assert.equal(modal.scrollTop, 120);
+  assert.equal(modalBody.scrollTop, 80);
+  assert.equal(list.scrollTop, 260);
 });

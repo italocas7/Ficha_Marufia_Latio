@@ -30,6 +30,7 @@ SCRIPT_ORDER = [
     "src/online/offline.js",
     "app.js",
     "src/online/auth.js",
+    "src/online/campaign_workspace.js",
     "src/online/campaigns.js",
     "src/online/characters.js",
     "src/online/home.js",

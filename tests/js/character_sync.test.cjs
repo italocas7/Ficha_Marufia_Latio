@@ -198,6 +198,73 @@ test("applies a gm revision automatically only while the player copy is unchange
   assert.equal(syncTools.canApplyGmRemote(gmRemote, local, null), false);
 });
 
+test("discards a delayed player save after applying a newer gm revision", async () => {
+  const storage = markerStorage();
+  const local = { ...snapshot("Arthur"), resources: { pmCurrent: 20 } };
+  const remote = remoteRecord("Arthur", 4, {
+    last_change_origin: "gm",
+    state: { ...local, resources: { pmCurrent: 7 } },
+  });
+  syncTools.rememberSyncedCharacter(storage, USER_ID, remoteRecord("Arthur", 3, { state: local }));
+
+  const timers = fakeTimers();
+  const saved = [];
+  const queue = syncTools.createRemoteSaveQueue({
+    service: {
+      async saveState(_characterId, state) {
+        saved.push(state.resources.pmCurrent);
+        return remoteRecord("Arthur", 5, { state });
+      },
+    },
+    storage: { async saveRemote(adapter, request) { return adapter.save(request); } },
+    resolveTarget: async () => ({ characterId: CHARACTER_ID, userId: USER_ID, expectedRevision: 4 }),
+  });
+  const debouncer = syncTools.createRemoteSaveDebouncer(queue, {
+    delayMs: 1000,
+    setTimer: timers.set,
+    clearTimer: timers.clear,
+  });
+  debouncer.schedule(local);
+
+  let realtimeChange;
+  let applied = local;
+  const coordinator = syncTools.createRealtimeCoordinator({
+    accountButton: { dataset: { authState: "online" } },
+    service: { async currentUserId() { return USER_ID; } },
+    appBridge: {
+      snapshot: () => applied,
+      applyRemoteSnapshot(next) { applied = next; return true; },
+    },
+    storage,
+    importTools: {
+      IMPORT_MARKERS_KEY: "markers",
+      localSheetIdentity: () => "sheet",
+      importedCharacterId: () => CHARACTER_ID,
+    },
+    realtimeService: {
+      subscribeToCharacter(_characterId, onChange) {
+        realtimeChange = onChange;
+        return { async unsubscribe() { return "ok"; } };
+      },
+    },
+    queue,
+    debouncer,
+    statusController: {},
+    view: { addEventListener() {}, removeEventListener() {} },
+  });
+  await coordinator.refresh();
+  realtimeChange({ event: "UPDATE", character: remote });
+
+  assert.equal(applied.resources.pmCurrent, 7);
+  assert.equal(debouncer.pending(), false);
+  assert.equal(timers.runLatest(), false);
+  await debouncer.flush();
+  assert.deepEqual(saved, []);
+  assert.equal(syncTools.syncedCharacterMetadata(storage, USER_ID, CHARACTER_ID).revision, 4);
+  await coordinator.destroy();
+  debouncer.destroy();
+});
+
 test("persists only the newest offline save per account and character", () => {
   const storage = markerStorage();
   const target = { userId: USER_ID, characterId: CHARACTER_ID, expectedRevision: 3 };

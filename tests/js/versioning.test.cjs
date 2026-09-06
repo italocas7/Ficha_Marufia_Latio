@@ -13,7 +13,7 @@ const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
 
 test("adopts one consistent Semantic Version for the Alpha product", () => {
   const contract = versionTools.assertVersionContract();
-  assert.equal(contract.packageVersion, "0.2.3");
+  assert.equal(contract.packageVersion, "0.2.4");
   assert.equal(contract.runtime.displayName, "Marufia Online Alpha");
   assert.match(contract.packageVersion, versionTools.SEMVER_PATTERN);
 });

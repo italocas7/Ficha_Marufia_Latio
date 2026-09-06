@@ -247,6 +247,8 @@ test("renders campaign content safely and accessibly", () => {
   assert.match(html, /Você: Mæstre/);
   assert.match(html, /data-online-live-rolls-action="open"/);
   assert.match(html, /Rolagens da campanha/);
+  assert.match(html, /data-online-campaign-action="detail"/);
+  assert.match(html, /Abrir campanha/);
   assert.match(html, /data-online-gm-panel-action="open"/);
   assert.match(html, /Painel do Mæstre/);
   assert.match(html, /Editar campanha/);
@@ -287,6 +289,44 @@ test("renders campaign content safely and accessibly", () => {
   assert.match(deleteForm, /data-online-campaign-delete-form/);
   assert.match(deleteForm, /fichas dos personagens serão preservadas/i);
   assert.match(deleteForm, /Excluir permanentemente/);
+});
+
+test("renders one selected campaign inside the shared workspace", () => {
+  const campaigns = [
+    { id: "campaign-1", owner_id: "user-1", name: "A Coroa Partida", description: "Primeiro arco", join_code: "MRF-K7P4-N2" },
+    { id: "campaign-2", owner_id: "user-2", name: "Outra campanha", description: "", join_code: "MRF-P7K4-N2" },
+  ];
+  const memberships = [
+    { campaign_id: "campaign-1", user_id: "user-1", role: "gm" },
+    { campaign_id: "campaign-2", user_id: "user-1", role: "player" },
+  ];
+  const gmHtml = campaignTools.campaignDialogHtml({
+    mode: "detail",
+    selectedCampaignId: "campaign-1",
+    campaigns,
+    memberships,
+    currentUserId: "user-1",
+  });
+  assert.match(gmHtml, /data-online-campaign-detail="campaign-1"/);
+  assert.equal((gmHtml.match(/class="campaign-card/g) ?? []).length, 1);
+  assert.match(gmHtml, /aria-current="page"[^>]*>Campanha/);
+  assert.match(gmHtml, /Painel do Mæstre/);
+  assert.match(gmHtml, /Rolagens/);
+  assert.match(gmHtml, /Ver todas as campanhas/);
+  assert.match(gmHtml, /Editar campanha/);
+  assert.doesNotMatch(gmHtml, /Outra campanha/);
+
+  const playerHtml = campaignTools.campaignDialogHtml({
+    mode: "detail",
+    selectedCampaignId: "campaign-2",
+    campaigns,
+    memberships,
+    currentUserId: "user-1",
+  });
+  assert.match(playerHtml, /data-online-campaign-detail="campaign-2"/);
+  assert.match(playerHtml, />Campanha<\/button>/);
+  assert.match(playerHtml, />Rolagens<\/button>/);
+  assert.doesNotMatch(playerHtml, /Painel do Mæstre|Editar campanha|Excluir campanha|A Coroa Partida/);
 });
 
 test("shows owned characters that can be linked to or detached from a campaign", () => {

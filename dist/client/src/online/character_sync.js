@@ -504,6 +504,13 @@
       schedule,
       flush,
       pending: () => Boolean(latest),
+      discardPending() {
+        const discarded = Boolean(latest);
+        latest = null;
+        if (timer !== null) clearTimer(timer);
+        timer = null;
+        return discarded;
+      },
       destroy() {
         destroyed = true;
         latest = null;
@@ -573,6 +580,7 @@
     importTools,
     realtimeService,
     queue,
+    debouncer,
     statusController,
     errorTools,
     backendId = "",
@@ -600,6 +608,8 @@
         return;
       }
       if (canApplyGmRemote(remote, local, metadata) && appBridge.applyRemoteSnapshot?.(remote.state)) {
+        debouncer?.discardPending?.();
+        removeOfflineSave(storage, userId, remote.id, backendId);
         rememberSyncedCharacter(storage, userId, remote, backendId);
         statusController.realtimeSuccess?.();
         return;
@@ -786,6 +796,7 @@
         importTools,
         realtimeService,
         queue,
+        debouncer,
         statusController,
         errorTools: onlineErrors,
         backendId,

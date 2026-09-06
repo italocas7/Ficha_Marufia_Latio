@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "appId": "com.marufia.online",
   "channel": "alpha",
-  "version": "0.2.3",
-  "notes": "Unifica o site e o aplicativo Windows no servidor oficial do Marufia e impede builds de produção conectados ao banco antigo.",
-  "publishedAt": "2026-09-05T00:00:00.000Z",
-  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.2.3"
+  "version": "0.2.4",
+  "notes": "Estabiliza a rolagem do Painel do Mæstre e adiciona navegação direta entre Campanha, Painel do Mæstre e Rolagens.",
+  "publishedAt": "2026-09-06T00:00:00.000Z",
+  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.2.4"
 }

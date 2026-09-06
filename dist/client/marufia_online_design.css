@@ -189,6 +189,73 @@ body:not(.dark) {
 .online-home { width: min(860px, 100%); }
 .online-home-modal-shell { width: min(940px, calc(100vw - 32px)); }
 
+/* Área de trabalho da campanha */
+.modal:has([data-campaign-workspace-nav]) {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+
+.modal:has([data-campaign-workspace-nav]) > .modal-body {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.campaign-workspace-nav {
+  position: sticky;
+  top: -16px;
+  z-index: 8;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  gap: 7px;
+  margin: -16px 0 16px;
+  padding: 12px;
+  border-bottom: 1px solid var(--online-line);
+  background: color-mix(in srgb, var(--online-surface) 96%, transparent);
+  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(12px);
+}
+
+.campaign-workspace-tab {
+  min-width: 0;
+  padding: 10px 12px;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--online-line);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--panel) 72%, transparent);
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.campaign-workspace-tab:hover,
+.campaign-workspace-tab:focus-visible {
+  border-color: color-mix(in srgb, var(--online-gold) 58%, var(--line));
+  color: var(--ink);
+}
+
+.campaign-workspace-tab.is-active {
+  border-color: color-mix(in srgb, var(--online-gold) 62%, var(--line));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--online-red) 78%, var(--panel)), color-mix(in srgb, var(--online-gold) 40%, var(--panel)));
+  color: #fff8e7;
+  cursor: default;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.campaign-detail-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.campaign-detail-heading > div { min-width: 0; }
+.campaign-detail-heading p { margin: 3px 0 0; }
+
 /* Início principal */
 .online-home-hero,
 .online-home-heading,
@@ -792,6 +859,15 @@ body:not(.dark) {
   .character-import-actions { display: grid; grid-template-columns: 1fr; }
 
   .campaign-heading-actions { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+  .campaign-workspace-nav {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(128px, 1fr);
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .campaign-detail-heading { align-items: stretch; flex-direction: column; }
+  .campaign-detail-heading > button { width: 100%; }
   .live-roll-toolbar-actions { width: 100%; justify-content: space-between; }
   .campaign-code-block { min-width: 0; }
   .auth-identity { grid-template-columns: auto minmax(0, 1fr); }

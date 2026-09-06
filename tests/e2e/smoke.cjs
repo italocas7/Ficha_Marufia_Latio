@@ -219,7 +219,7 @@ async function exercise(page, url, viewport) {
   assert.match(await onlineSettings.innerText(), /Sincronização/i);
   assert.match(await onlineSettings.innerText(), /ficha (?:está )?vinculada/i);
   assert.match(await onlineSettings.innerText(), /Dados locais/i);
-  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.2\.3/i);
+  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.2\.4/i);
   await settingsModal.getByRole("button", { name: "Modo Escuro" }).click();
   assert.equal(await page.locator("body").evaluate((body) => body.classList.contains("dark")), true);
   assert.equal(await settingsModal.getByRole("button", { name: "Modo Escuro" }).getAttribute("aria-pressed"), "true");
@@ -391,6 +391,29 @@ async function exercise(page, url, viewport) {
   assert.match(await ownedCampaign.innerText(), /1 participante/);
   assert.match(await ownedCampaign.innerText(), /Você: Mæstre/);
 
+  await ownedCampaign.getByRole("button", { name: "Abrir campanha" }).click();
+  const campaignDetail = page.locator("[data-online-campaign-detail]");
+  await campaignDetail.waitFor({ state: "visible" });
+  assert.equal(await campaignDetail.locator(".campaign-card").count(), 1, "A área Campanha deve mostrar somente a campanha atual.");
+  assert.equal(await campaignDetail.locator("[data-campaign-workspace-nav] button").count(), 3, "O Mæstre deve receber as três áreas da campanha.");
+  assert.equal(await campaignDetail.getByRole("button", { name: "Campanha", exact: true }).getAttribute("aria-current"), "page");
+  const campaignWorkspaceLayout = await campaignDetail.evaluate((detail) => ({
+    modalOverflow: getComputedStyle(detail.closest(".modal")).overflow,
+    bodyOverflow: getComputedStyle(detail.closest(".modal-body")).overflowY,
+    width: detail.scrollWidth,
+    clientWidth: detail.clientWidth,
+  }));
+  assert.equal(campaignWorkspaceLayout.modalOverflow, "hidden", "O cabeçalho e as abas da campanha devem permanecer fixos.");
+  assert.match(campaignWorkspaceLayout.bodyOverflow, /auto|scroll/);
+  assert.ok(campaignWorkspaceLayout.width <= campaignWorkspaceLayout.clientWidth + 1, "A navegação da campanha não pode causar estouro horizontal.");
+  await campaignDetail.getByRole("button", { name: "Rolagens", exact: true }).click();
+  await page.locator("[data-online-live-rolls-panel]").waitFor({ state: "visible" });
+  assert.equal(await page.locator("[data-online-live-rolls-panel]").getByRole("button", { name: "Rolagens", exact: true }).getAttribute("aria-current"), "page");
+  await page.locator("[data-online-live-rolls-panel]").getByRole("button", { name: "Campanha", exact: true }).click();
+  await campaignDetail.waitFor({ state: "visible" });
+  await campaignDetail.getByRole("button", { name: "Ver todas as campanhas" }).click();
+  await ownedCampaign.waitFor({ state: "visible" });
+
   await ownedCampaign.getByRole("button", { name: "Editar campanha" }).click();
   await page.getByLabel("Nome da campanha").fill("A Coroa Restaurada");
   await page.getByLabel("Descrição").fill("Segundo arco da campanha.");
@@ -403,6 +426,9 @@ async function exercise(page, url, viewport) {
   await page.getByLabel("Nome da campanha").fill("A Coroa Partida");
   await page.getByLabel("Descrição").fill("Campanha de teste do Mæstre.");
   await page.getByRole("button", { name: "Salvar alterações" }).click();
+  await ownedCampaign.waitFor({ state: "visible" });
+
+  await page.getByRole("button", { name: "Ver todas as campanhas" }).click();
   await ownedCampaign.waitFor({ state: "visible" });
 
   await page.getByRole("button", { name: "Nova campanha" }).click();
@@ -549,6 +575,106 @@ async function exercise(page, url, viewport) {
   assert.match(await gmPanel.innerText(), /A Coroa Partida/);
   assert.match(await gmPanel.innerText(), /Online: 1/);
   assert.match(await gmPanel.innerText(), /Ausentes: 0 · Offline: 0/);
+  assert.equal(await gmPanel.locator("[data-campaign-workspace-nav] button").count(), 3, "O Mæstre deve alternar entre as três áreas sem fechar o modal.");
+  assert.equal(await gmPanel.getByRole("button", { name: "Painel do Mæstre", exact: true }).getAttribute("aria-current"), "page");
+  await gmPanel.getByRole("button", { name: "Rolagens", exact: true }).click();
+  const workspaceRolls = page.locator("[data-online-live-rolls-panel]");
+  await workspaceRolls.waitFor({ state: "visible" });
+  await page.waitForFunction(() => document.querySelector("[data-online-live-rolls-panel]")?.dataset.connection === "live");
+  await workspaceRolls.getByRole("button", { name: "Campanha", exact: true }).click();
+  await campaignDetail.waitFor({ state: "visible" });
+  assert.equal(await campaignDetail.locator(".campaign-card").count(), 1);
+  await campaignDetail.getByRole("button", { name: "Painel do Mæstre", exact: true }).click();
+  await gmPanel.waitFor({ state: "visible" });
+  await page.waitForFunction(() => document.querySelector("[data-online-gm-panel]")?.dataset.connection === "live");
+
+  const stableBefore = await page.evaluate(() => {
+    const panel = document.querySelector("[data-online-gm-panel]");
+    const modalBody = panel.closest(".modal-body");
+    const list = panel.querySelector(".gm-character-list");
+    const detail = panel.querySelector("[data-gm-detail-key]");
+    detail.open = true;
+    const input = detail.querySelector("[data-online-gm-item-name]");
+    detail.querySelector("[data-online-gm-condition-name]").value = "Condição em preparo";
+    input.value = "Rascunho preservado";
+    input.focus();
+    input.setSelectionRange(3, 12, "forward");
+    modalBody.scrollTop = Math.min(60, modalBody.scrollHeight - modalBody.clientHeight);
+    list.scrollTop = Math.min(90, list.scrollHeight - list.clientHeight);
+    window.__marufiaStableGmPanel = panel;
+    return { modalBody: modalBody.scrollTop, list: list.scrollTop };
+  });
+  await page.evaluate(() => window.MARUFIA_SUPABASE.getSupabaseClient().rpc("touch_campaign_presence", { p_active: true }));
+  await page.waitForTimeout(250);
+  const stableAfterPresence = await page.evaluate(() => {
+    const panel = document.querySelector("[data-online-gm-panel]");
+    const input = panel.querySelector("[data-online-gm-item-name]");
+    return {
+      samePanel: panel === window.__marufiaStableGmPanel,
+      open: panel.querySelector("[data-gm-detail-key]").open,
+      value: input.value,
+      otherDraft: panel.querySelector("[data-online-gm-condition-name]").value,
+      focused: document.activeElement === input,
+      selection: [input.selectionStart, input.selectionEnd, input.selectionDirection],
+      modalBody: panel.closest(".modal-body").scrollTop,
+      list: panel.querySelector(".gm-character-list").scrollTop,
+    };
+  });
+  assert.equal(stableAfterPresence.samePanel, true, "Um pulso de presença sem mudança visível não pode redesenhar o painel.");
+  assert.equal(stableAfterPresence.open, true);
+  assert.equal(stableAfterPresence.value, "Rascunho preservado");
+  assert.equal(stableAfterPresence.otherDraft, "Condição em preparo");
+  assert.deepEqual(stableAfterPresence.selection, [3, 12, "forward"]);
+
+  const visibleBefore = await page.evaluate(() => {
+    const panel = document.querySelector("[data-online-gm-panel]");
+    const modalBody = panel.closest(".modal-body");
+    const list = panel.querySelector(".gm-character-list");
+    const detail = panel.querySelector("[data-gm-detail-key]");
+    detail.open = true;
+    const input = detail.querySelector("[data-online-gm-item-name]");
+    detail.querySelector("[data-online-gm-condition-name]").value = "Condição em preparo";
+    input.value = "Rascunho preservado";
+    input.focus();
+    input.setSelectionRange(3, 12, "forward");
+    modalBody.scrollTop = Math.min(60, modalBody.scrollHeight - modalBody.clientHeight);
+    list.scrollTop = Math.min(90, list.scrollHeight - list.clientHeight);
+    window.__marufiaStableGmPanel = panel;
+    const kael = JSON.parse(localStorage.getItem("marufia-e2e-characters") || "[]").find((character) => character.name === "Kael");
+    const changed = JSON.parse(JSON.stringify(kael.state));
+    changed.resources.pmCurrent = 19;
+    window.__marufiaFakeRemoteUpdate(kael.id, changed, "player");
+    return { modalBody: modalBody.scrollTop, list: list.scrollTop };
+  });
+  await page.waitForFunction(() => {
+    const card = [...document.querySelectorAll(".gm-character-card")].find((item) => item.innerText.includes("Kael"));
+    return card?.querySelector("[data-online-gm-pm-input]")?.value === "19";
+  });
+  const stableAfterChange = await page.evaluate(() => {
+    const panel = document.querySelector("[data-online-gm-panel]");
+    const input = panel.querySelector("[data-online-gm-item-name]");
+    return {
+      replaced: panel !== window.__marufiaStableGmPanel,
+      open: panel.querySelector("[data-gm-detail-key]").open,
+      value: input.value,
+      otherDraft: panel.querySelector("[data-online-gm-condition-name]").value,
+      focused: document.activeElement === input,
+      selection: [input.selectionStart, input.selectionEnd, input.selectionDirection],
+      modalBody: panel.closest(".modal-body").scrollTop,
+      list: panel.querySelector(".gm-character-list").scrollTop,
+    };
+  });
+  assert.deepEqual(stableAfterChange, {
+    replaced: true,
+    open: true,
+    value: "Rascunho preservado",
+    otherDraft: "Condição em preparo",
+    focused: true,
+    selection: [3, 12, "forward"],
+    modalBody: visibleBefore.modalBody,
+    list: visibleBefore.list,
+  }, "Uma atualização visível deve preservar rolagem, expansão, foco e cursor.");
+  await page.evaluate(() => { delete window.__marufiaStableGmPanel; });
   const sessionName = "A Coroa — Sessão E2E";
   await gmPanel.locator("[data-online-gm-session-name]").fill(sessionName);
   await gmPanel.getByRole("button", { name: "Iniciar sessão" }).click();
@@ -572,6 +698,7 @@ async function exercise(page, url, viewport) {
   await page.waitForFunction(() => document.querySelector("[data-online-gm-panel]")?.innerText.includes("PV máximo → 29"));
   assert.match(await gmPanel.innerText(), /Histórico da campanha/);
   await page.waitForTimeout(250);
+  assert.equal(await page.evaluate(() => saveStateNow()), true, "O teste precisa deixar um salvamento antigo do jogador aguardando envio.");
   await ownCard.locator("[data-online-gm-pm-input]").fill("13");
   await ownCard.getByRole("button", { name: "Alterar PM" }).click();
   await page.waitForFunction(() => {
@@ -579,7 +706,12 @@ async function exercise(page, url, viewport) {
     const remote = JSON.parse(localStorage.getItem("marufia-e2e-characters") || "[]")[0];
     return local?.resources?.pmCurrent === 13 && remote?.state?.resources?.pmCurrent === 13;
   });
-  await page.waitForTimeout(250);
+  await page.waitForTimeout(1250);
+  assert.deepEqual(await page.evaluate(() => {
+    const local = JSON.parse(localStorage.getItem("marufia-latio-state-v1") || "null");
+    const remote = JSON.parse(localStorage.getItem("marufia-e2e-characters") || "[]")[0];
+    return { local: local?.resources?.pmCurrent, remote: remote?.state?.resources?.pmCurrent };
+  }), { local: 13, remote: 13 }, "Um salvamento atrasado do jogador não pode restaurar o PM anterior.");
   await ownCard.locator(".gm-character-management > summary").click();
   await ownCard.locator("[data-online-gm-condition-name]").fill("Marcado pelo Mæstre");
   await ownCard.locator("[data-online-gm-condition-ca]").fill("-2");
@@ -592,7 +724,7 @@ async function exercise(page, url, viewport) {
       && remote?.state?.effects?.some((effect) => effect.name === "Marcado pelo Mæstre");
   });
   await page.waitForTimeout(250);
-  await ownCard.locator(".gm-character-management > summary").click();
+  assert.equal(await ownCard.locator(".gm-character-management").getAttribute("open"), "", "A seção de condições deve permanecer aberta após a atualização.");
   await ownCard.getByRole("button", { name: "Remover condição Marcado pelo Mæstre" }).click();
   await page.waitForFunction(() => {
     const local = JSON.parse(localStorage.getItem("marufia-latio-state-v1") || "null");
@@ -601,7 +733,7 @@ async function exercise(page, url, viewport) {
       && !remote?.state?.effects?.some((effect) => effect.name === "Marcado pelo Mæstre");
   });
   await page.waitForTimeout(250);
-  await ownCard.locator(".gm-character-management > summary").click();
+  assert.equal(await ownCard.locator(".gm-character-management").getAttribute("open"), "", "A seção deve continuar aberta após remover a condição.");
   await ownCard.locator("[data-online-gm-item-name]").fill("Tocha do Mæstre");
   await ownCard.locator("[data-online-gm-item-quantity]").fill("2");
   await ownCard.locator("[data-online-gm-item-weight]").fill("1");
@@ -614,7 +746,7 @@ async function exercise(page, url, viewport) {
       && remote?.state?.inventory?.equipment?.some((item) => item.name === "Tocha do Mæstre" && item.qty === 2);
   });
   await page.waitForTimeout(250);
-  await ownCard.locator(".gm-character-management > summary").click();
+  assert.equal(await ownCard.locator(".gm-character-management").getAttribute("open"), "", "A seção de itens deve permanecer aberta após a atualização.");
   await ownCard.getByRole("button", { name: "Remover item Tocha do Mæstre" }).click();
   await page.waitForFunction(() => {
     const local = JSON.parse(localStorage.getItem("marufia-latio-state-v1") || "null");
@@ -645,7 +777,7 @@ async function exercise(page, url, viewport) {
   await kaelCard.waitFor({ state: "visible" });
   assert.equal(await kaelCard.locator("[data-online-gm-hp-input]").inputValue(), "21");
   assert.equal(await kaelCard.locator("[data-online-gm-hp-input]").getAttribute("max"), "33");
-  assert.equal(await kaelCard.locator("[data-online-gm-pm-input]").inputValue(), "20");
+  assert.equal(await kaelCard.locator("[data-online-gm-pm-input]").inputValue(), "19");
   assert.equal(await kaelCard.locator("[data-online-gm-pm-input]").getAttribute("max"), "26");
   assert.match(await kaelCard.innerText(), /Online/);
   await kaelCard.getByRole("button", { name: "Abrir ficha" }).click();
@@ -781,6 +913,15 @@ async function exercise(page, url, viewport) {
   assert.match(await publicRoll.innerText(), /Pública/);
   assert.equal(await playerPanel.getByRole("button", { name: "Limpar histórico" }).count(), 0, "Jogadores não podem limpar as rolagens da campanha.");
   assert.doesNotMatch(await playerPanel.innerText(), /Privada do Mæstre/, "Jogadores não podem ver rolagens privadas de outra campanha.");
+  assert.equal(await playerPanel.locator("[data-campaign-workspace-nav] button").count(), 2, "Jogadores devem receber somente Campanha e Rolagens.");
+  assert.equal(await playerPanel.getByRole("button", { name: "Painel do Mæstre", exact: true }).count(), 0);
+  await playerPanel.getByRole("button", { name: "Campanha", exact: true }).click();
+  const playerCampaignDetail = page.locator("[data-online-campaign-detail]");
+  await playerCampaignDetail.waitFor({ state: "visible" });
+  assert.equal(await playerCampaignDetail.locator("[data-campaign-workspace-nav] button").count(), 2);
+  assert.equal(await playerCampaignDetail.getByRole("button", { name: "Painel do Mæstre", exact: true }).count(), 0);
+  await playerCampaignDetail.getByRole("button", { name: "Rolagens", exact: true }).click();
+  await playerPanel.waitFor({ state: "visible" });
   await page.locator("#modalRoot").getByRole("button", { name: "Fechar" }).last().click();
   await accountButton.click();
   assert.match(await page.locator("[data-online-auth-modal]").innerText(), /Sessão ativa/);

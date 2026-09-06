@@ -1,5 +1,8 @@
 (function initMarufiaGmPanel(root, factory) {
-  const api = factory(root);
+  const workspaceTools = typeof module === "object" && module.exports
+    ? require("./campaign_workspace.js")
+    : root?.MARUFIA_CAMPAIGN_WORKSPACE;
+  const api = factory(root, workspaceTools);
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.MARUFIA_GM_PANEL = api;
   if (root?.document) Promise.resolve().then(() => api.init(
@@ -12,8 +15,10 @@
     root.MARUFIA_DB,
     root.MARUFIA_MAGIC_CORES,
   ));
-})(typeof window !== "undefined" ? window : globalThis, function createMarufiaGmPanelApi(root) {
+})(typeof window !== "undefined" ? window : globalThis, function createMarufiaGmPanelApi(root, workspaceToolsInput) {
   "use strict";
+
+  const workspaceTools = workspaceToolsInput ?? {};
 
   const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   const STATE_ITEM_ID_PATTERN = /^[A-Za-z0-9._:-]{1,128}$/;
@@ -33,6 +38,22 @@
     itemAdd: true,
     itemRemove: true,
   });
+  const GM_EDITABLE_ATTRIBUTES = Object.freeze([
+    "data-online-gm-session-name",
+    "data-online-gm-hp-input",
+    "data-online-gm-pm-input",
+    "data-online-gm-condition-name",
+    "data-online-gm-condition-ca",
+    "data-online-gm-condition-block",
+    "data-online-gm-item-kind",
+    "data-online-gm-item-name",
+    "data-online-gm-item-category",
+    "data-online-gm-item-quantity",
+    "data-online-gm-item-weight",
+    "data-online-gm-item-damage",
+    "data-online-gm-item-property",
+    "data-online-gm-item-description",
+  ]);
   const CONNECTION_LABELS = Object.freeze({ loading: "Carregando", live: "Ao vivo", error: "Conexão interrompida" });
 
   function gmPanelError(code, message) {
@@ -414,7 +435,7 @@
         .on("postgres_changes", { event: "*", schema: "public", table: "campaign_presence", filter: `campaign_id=eq.${id}` }, accept)
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "campaign_events", filter: `campaign_id=eq.${id}` }, accept)
         .on("postgres_changes", { event: "*", schema: "public", table: "campaign_sessions", filter: `campaign_id=eq.${id}` }, accept)
-        .on("postgres_changes", { event: "UPDATE", schema: "public", table: "campaigns", filter: `id=eq.${id}` }, acceptCampaign)
+        .on("postgres_changes", { event: "*", schema: "public", table: "campaigns", filter: `id=eq.${id}` }, acceptCampaign)
         .subscribe(onStatus);
       return Object.freeze({ channel, unsubscribe: () => client.removeChannel(channel) });
     }
@@ -489,7 +510,7 @@
     const inventory = items.length
       ? `<ul class="gm-action-list">${items.map((item) => `<li><span><strong>${escapeHtml(item.name || "Item")}</strong><small>${escapeHtml(item.detail)}</small></span><button class="danger" type="button" data-online-gm-panel-action="remove-item" data-character-id="${escapeHtml(character.id)}" data-item-kind="${escapeHtml(item.kind)}" data-item-id="${escapeHtml(item.id)}" aria-label="Remover item ${escapeHtml(item.name || "Item")}">Remover</button></li>`).join("")}</ul>`
       : `<div class="empty">Nenhuma arma ou equipamento.</div>`;
-    return `<details class="gm-character-management"><summary>Gerenciar condições e itens</summary><div class="gm-character-management-body">
+    return `<details class="gm-character-management" data-gm-detail-key="character:${escapeHtml(character.id)}"><summary>Gerenciar condições e itens</summary><div class="gm-character-management-body">
       <section><h4>Condições temporárias</h4>${conditions}<div class="gm-action-form gm-condition-form"><label class="field"><span>Nome</span><input type="text" maxlength="120" data-online-gm-condition-name></label><label class="field"><span>CA</span><input type="number" step="1" value="0" data-online-gm-condition-ca></label><label class="field"><span>Bloqueio</span><input type="number" step="1" value="0" data-online-gm-condition-block></label><button class="ghost" type="button" data-online-gm-panel-action="add-condition" data-character-id="${escapeHtml(character.id)}">Adicionar condição</button></div></section>
       <section><h4>Armas e equipamentos</h4>${inventory}<div class="gm-action-form gm-item-form"><label class="field"><span>Tipo de item</span><select data-online-gm-item-kind><option value="equipment">Equipamento</option><option value="weapon">Arma</option></select></label><label class="field"><span>Nome</span><input type="text" maxlength="120" data-online-gm-item-name></label><label class="field"><span>Categoria ou tipo</span><input type="text" maxlength="120" value="Equipamento" data-online-gm-item-category></label><label class="field"><span>Quantidade</span><input type="number" min="1" max="1000000" step="1" value="1" data-online-gm-item-quantity></label><label class="field"><span>Peso</span><input type="text" maxlength="120" data-online-gm-item-weight></label><label class="field"><span>Dano — somente arma</span><input type="text" maxlength="120" data-online-gm-item-damage></label><label class="field"><span>Propriedade — somente arma</span><input type="text" maxlength="1000" data-online-gm-item-property></label><label class="field gm-item-description"><span>Descrição</span><textarea maxlength="5000" data-online-gm-item-description></textarea></label><button class="ghost" type="button" data-online-gm-panel-action="add-item" data-character-id="${escapeHtml(character.id)}">Adicionar item</button></div></section>
     </div></details>`;
@@ -532,7 +553,7 @@
     const active = state.activeSession ?? null;
     const ended = (Array.isArray(state.sessions) ? state.sessions : []).filter((session) => session.status === "ended").slice(0, 5);
     const recent = ended.length
-      ? `<details class="gm-session-recent"><summary>Sessões anteriores (${ended.length})</summary><ul>${ended.map((session) => `<li><strong>${escapeHtml(session.name)}</strong><span>${escapeHtml(formatUpdatedAt(session.startedAt))} — ${escapeHtml(formatUpdatedAt(session.endedAt))}</span></li>`).join("")}</ul></details>`
+      ? `<details class="gm-session-recent" data-gm-detail-key="recent-sessions"><summary>Sessões anteriores (${ended.length})</summary><ul>${ended.map((session) => `<li><strong>${escapeHtml(session.name)}</strong><span>${escapeHtml(formatUpdatedAt(session.startedAt))} — ${escapeHtml(formatUpdatedAt(session.endedAt))}</span></li>`).join("")}</ul></details>`
       : "";
     if (active) {
       return `<section class="gm-session-control" data-campaign-session-status="active"><div><span class="gm-session-status"><i aria-hidden="true"></i>Sessão ativa</span><strong>${escapeHtml(active.name)}</strong><small>Iniciada em ${escapeHtml(formatUpdatedAt(active.startedAt))}</small></div><button class="ghost" type="button" data-online-gm-panel-action="end-session" data-session-id="${escapeHtml(active.id)}">Encerrar sessão</button>${recent}</section>`;
@@ -552,13 +573,139 @@
       : characters.length
         ? characters.map(gmCharacterCardHtml).join("")
         : `<div class="empty">Nenhum personagem está vinculado a esta campanha.</div>`;
+    const navigation = workspaceTools.campaignWorkspaceNavigationHtml?.({
+      campaignId: state.campaignId,
+      campaignName: state.campaignName,
+      activeView: "gm",
+      role: "gm",
+    }) ?? "";
     return `<div class="gm-panel stack" data-online-gm-panel data-connection="${connection}">
+      ${navigation}
       <div class="gm-panel-toolbar"><div><strong>${escapeHtml(state.campaignName ?? "Campanha")}</strong><p class="muted small">Abra qualquer ficha vinculada em modo completo e somente leitura.</p></div><span class="live-roll-connection" role="status" aria-live="polite"><span aria-hidden="true"></span>${escapeHtml(CONNECTION_LABELS[connection])}</span></div>
       <div class="gm-online-summary" role="status"><span aria-hidden="true"></span><strong>Online: ${escapeHtml(state.playersOnline ?? 0)}</strong><small>Ausentes: ${escapeHtml(state.playersAway ?? 0)} · Offline: ${escapeHtml(Math.max(0, (state.playersTotal ?? 0) - (state.playersOnline ?? 0) - (state.playersAway ?? 0)))}</small></div>
       ${sessionsHtml(state)}
       ${message}
       <div class="gm-panel-content"><div class="gm-character-list">${content}</div>${historyHtml(Array.isArray(state.events) ? state.events : [], Array.isArray(state.sessions) ? state.sessions : [])}</div>
     </div>`;
+  }
+
+  function captureScrollPosition(element) {
+    return element ? { top: Number(element.scrollTop) || 0, left: Number(element.scrollLeft) || 0 } : null;
+  }
+
+  function defaultControlValue(control) {
+    if (String(control?.tagName ?? "").toLowerCase() === "select") {
+      const defaultOption = Array.from(control.options ?? []).find((option) => option.defaultSelected)
+        ?? Array.from(control.options ?? [])[0];
+      return String(defaultOption?.value ?? "");
+    }
+    if (Object.hasOwn(control ?? {}, "defaultValue") || typeof control?.defaultValue === "string") {
+      return String(control.defaultValue ?? "");
+    }
+    return String(control?.getAttribute?.("value") ?? "");
+  }
+
+  function controlDraft(control, attribute) {
+    const card = control?.closest?.("[data-gm-character-id]");
+    return Object.freeze({
+      attribute,
+      characterId: String(card?.dataset?.gmCharacterId ?? ""),
+      value: String(control?.value ?? ""),
+    });
+  }
+
+  function captureGmPanelView(panel, document) {
+    if (!panel) return null;
+    const modal = panel.closest?.(".modal") ?? null;
+    const modalBody = panel.closest?.(".modal-body") ?? null;
+    const active = document?.activeElement;
+    const focusedAttribute = active && panel.contains?.(active)
+      ? GM_EDITABLE_ATTRIBUTES.find((attribute) => active.hasAttribute?.(attribute)) ?? ""
+      : "";
+    const focusedCard = focusedAttribute ? active.closest?.("[data-gm-character-id]") : null;
+    const focused = focusedAttribute
+      ? {
+        attribute: focusedAttribute,
+        characterId: String(focusedCard?.dataset?.gmCharacterId ?? ""),
+        value: String(active.value ?? ""),
+        selectionStart: Number.isInteger(active.selectionStart) ? active.selectionStart : null,
+        selectionEnd: Number.isInteger(active.selectionEnd) ? active.selectionEnd : null,
+        selectionDirection: typeof active.selectionDirection === "string" ? active.selectionDirection : "none",
+      }
+      : null;
+    const drafts = [];
+    for (const attribute of GM_EDITABLE_ATTRIBUTES) {
+      for (const control of panel.querySelectorAll?.(`[${attribute}]`) ?? []) {
+        if (control === active || String(control.value ?? "") !== defaultControlValue(control)) {
+          drafts.push(controlDraft(control, attribute));
+        }
+      }
+    }
+    return Object.freeze({
+      scroll: Object.freeze({
+        modal: captureScrollPosition(modal),
+        modalBody: captureScrollPosition(modalBody),
+        characters: captureScrollPosition(panel.querySelector?.(".gm-character-list")),
+        history: captureScrollPosition(panel.querySelector?.(".gm-history-list")),
+      }),
+      openDetails: Object.freeze(Array.from(panel.querySelectorAll?.("[data-gm-detail-key][open]") ?? [])
+        .map((detail) => String(detail.dataset?.gmDetailKey ?? ""))
+        .filter(Boolean)),
+      drafts: Object.freeze(drafts),
+      focused: focused ? Object.freeze(focused) : null,
+    });
+  }
+
+  function findRestoredControl(panel, focused) {
+    if (!panel || !focused || !GM_EDITABLE_ATTRIBUTES.includes(focused.attribute)) return null;
+    const scope = focused.characterId
+      ? Array.from(panel.querySelectorAll?.("[data-gm-character-id]") ?? [])
+        .find((card) => String(card.dataset?.gmCharacterId ?? "") === focused.characterId)
+      : panel;
+    return scope?.querySelector?.(`[${focused.attribute}]`) ?? null;
+  }
+
+  function restoreGmPanelView(panel, snapshot, document, view = globalThis) {
+    if (!panel || !snapshot) return false;
+    const openDetails = new Set(snapshot.openDetails ?? []);
+    for (const detail of panel.querySelectorAll?.("[data-gm-detail-key]") ?? []) {
+      detail.open = openDetails.has(String(detail.dataset?.gmDetailKey ?? ""));
+    }
+
+    for (const draft of snapshot.drafts ?? []) {
+      const draftControl = findRestoredControl(panel, draft);
+      if (draftControl) draftControl.value = draft.value;
+    }
+
+    const control = findRestoredControl(panel, snapshot.focused);
+    if (control) {
+      control.value = snapshot.focused.value;
+      control.focus?.({ preventScroll: true });
+      if (snapshot.focused.selectionStart !== null && typeof control.setSelectionRange === "function") {
+        try {
+          control.setSelectionRange(snapshot.focused.selectionStart, snapshot.focused.selectionEnd, snapshot.focused.selectionDirection);
+        } catch {
+          // Controles numéricos não expõem seleção de texto em todos os navegadores.
+        }
+      }
+    }
+
+    const restoreScroll = () => {
+      const targets = [
+        [panel.closest?.(".modal"), snapshot.scroll?.modal],
+        [panel.closest?.(".modal-body"), snapshot.scroll?.modalBody],
+        [panel.querySelector?.(".gm-character-list"), snapshot.scroll?.characters],
+        [panel.querySelector?.(".gm-history-list"), snapshot.scroll?.history],
+      ];
+      for (const [target, position] of targets) {
+        if (!target || !position) continue;
+        target.scrollTop = position.top;
+        target.scrollLeft = position.left;
+      }
+    };
+    restoreScroll();
+    view?.requestAnimationFrame?.(restoreScroll);
+    return Boolean(control || document?.activeElement || snapshot.scroll);
   }
 
   function init(document, supabaseTools, campaignTools, characterTools, summaryTools, rules, database, magicCores) {
@@ -576,6 +723,7 @@
     let subscription = null;
     let generation = 0;
     let reloadTimer = null;
+    let renderedPanelHtml = "";
 
     let lastActivityAt = Date.now();
     function onlineSessionAvailable() {
@@ -589,12 +737,20 @@
 
     function updatePanel() {
       const current = modalRoot.querySelector("[data-online-gm-panel]");
-      if (current && state) current.outerHTML = gmPanelHtml(state);
+      if (!current || !state) return false;
+      const nextHtml = gmPanelHtml(state);
+      if (nextHtml === renderedPanelHtml) return false;
+      const snapshot = captureGmPanelView(current, document);
+      current.outerHTML = nextHtml;
+      renderedPanelHtml = nextHtml;
+      restoreGmPanelView(modalRoot.querySelector("[data-online-gm-panel]"), snapshot, document, view);
+      return true;
     }
 
     async function stop() {
       generation += 1;
       state = null;
+      renderedPanelHtml = "";
       view.clearTimeout?.(reloadTimer);
       reloadTimer = null;
       const current = subscription;
@@ -613,6 +769,12 @@
         updatePanel();
       } catch (error) {
         if (!state || token !== generation) return;
+        if (workspaceTools.isCampaignAccessUnavailable?.(error)) {
+          const message = "A campanha foi excluída ou seu acesso foi removido. A lista de campanhas foi atualizada.";
+          await stop();
+          workspaceTools.returnToCampaignList?.(view, message);
+          return;
+        }
         state = { ...state, loading: false, connection: "error", message: friendlyGmPanelMessage(error) };
         updatePanel();
       }
@@ -634,14 +796,17 @@
     }
 
     async function open(campaignId, campaignName) {
+      await workspaceTools.deactivateWorkspaceViews?.(view, "gm");
       await stop();
       const token = ++generation;
       let id;
       try { id = normalizeUuid(campaignId, "Campanha"); } catch { return; }
       state = { campaignId: id, campaignName: String(campaignName ?? "Campanha"), loading: true, connection: "loading", characters: [], players: [], playersOnline: 0, playersAway: 0, playersTotal: 0, events: [], sessions: [], activeSession: null, message: "" };
       const footer = `<button class="ghost" type="button" data-action="close-modal" data-online-gm-panel-action="close">Fechar</button>`;
-      if (typeof view.openModal === "function") view.openModal("Painel do Mæstre", gmPanelHtml(state), footer);
-      else modalRoot.innerHTML = `<div class="modal-backdrop"><div class="modal" role="dialog" aria-modal="true"><div class="modal-body">${gmPanelHtml(state)}</div><footer>${footer}</footer></div></div>`;
+      renderedPanelHtml = gmPanelHtml(state);
+      if (typeof view.openModal === "function") view.openModal("Painel do Mæstre", renderedPanelHtml, footer);
+      else modalRoot.innerHTML = `<div class="modal-backdrop"><div class="modal" role="dialog" aria-modal="true"><div class="modal-body">${renderedPanelHtml}</div><footer>${footer}</footer></div></div>`;
+      workspaceTools.focusActiveNavigation?.(modalRoot, view);
       await heartbeat.pulse();
       await reload(token);
       if (!state || token !== generation || state.message) return;
@@ -903,6 +1068,7 @@
       if (state && !modalRoot.querySelector("[data-online-gm-panel]")) void stop();
     }) : null;
     modalObserver?.observe(modalRoot, { childList: true, subtree: true });
+    const unregisterWorkspace = workspaceTools.registerWorkspaceView?.(view, "gm", stop) ?? (() => {});
     if (document.documentElement?.dataset) document.documentElement.dataset.gmPanelInitialized = "true";
     pulse();
 
@@ -911,6 +1077,7 @@
       destroy() {
         void stop();
         heartbeat.destroy();
+        unregisterWorkspace();
         authObserver?.disconnect?.();
         modalObserver?.disconnect?.();
         document.removeEventListener?.("click", click);
@@ -935,6 +1102,7 @@
     HEARTBEAT_MS,
     GM_VIEW_MESSAGE_TYPE,
     GM_ACTIONS,
+    GM_EDITABLE_ATTRIBUTES,
     CONNECTION_LABELS,
     normalizeUuid,
     normalizedPresence,
@@ -951,6 +1119,8 @@
     historyHtml,
     sessionsHtml,
     gmPanelHtml,
+    captureGmPanelView,
+    restoreGmPanelView,
     init,
   };
 });

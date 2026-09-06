@@ -2,9 +2,9 @@
 
 A entrega preparada atualmente é um **pré-lançamento** com estes dados:
 
-- tag: `v0.2.3`;
-- título: **Marufia Online Alpha 0.2.3**;
-- notas: `docs/releases/v0.2.3.md`;
+- tag: `v0.2.4`;
+- título: **Marufia Online Alpha 0.2.4**;
+- notas: `docs/releases/v0.2.4.md`;
 - portátil: `src-tauri/target/release/Marufia.exe`;
 - instalador: `src-tauri/target/release/bundle/Marufia-Setup.exe`.
 

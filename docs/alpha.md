@@ -1,6 +1,6 @@
 # Marufia Online Alpha — Fase 50
 
-O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. O ciclo atual é **0.2.3** e fixa o Marufia Server como backend oficial do site e do aplicativo Windows, preservando a compatibilidade do schema v5 e os recursos online existentes.
+O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. O ciclo atual é **0.2.4** e estabiliza o Painel do Mæstre e a navegação da campanha no site e no aplicativo Windows, preservando a compatibilidade do schema v5 e os recursos online existentes.
 
 ## Escopo obrigatório
 

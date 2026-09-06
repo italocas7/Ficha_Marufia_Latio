@@ -37,7 +37,7 @@ test("keeps all current Alpha capabilities explicit and executable", () => {
 test("runs the Alpha gate through one stable command without adding a new system", () => {
   assert.equal(packageJson.scripts["test:alpha"], "node tools/test_alpha.cjs");
   assert.ok(alpha.uniqueAlphaTests().length >= 20);
-  assert.equal(packageJson.version, "0.2.3");
+  assert.equal(packageJson.version, "0.2.4");
   assert.equal(require("../../src/online/version.js").channel, "alpha");
 });
 

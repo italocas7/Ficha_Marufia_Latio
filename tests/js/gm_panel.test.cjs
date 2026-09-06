@@ -314,7 +314,7 @@ test("subscribes only to panel data from one campaign", async () => {
     { event: "*", schema: "public", table: "campaign_presence", filter: `campaign_id=eq.${CAMPAIGN_ID}` },
     { event: "INSERT", schema: "public", table: "campaign_events", filter: `campaign_id=eq.${CAMPAIGN_ID}` },
     { event: "*", schema: "public", table: "campaign_sessions", filter: `campaign_id=eq.${CAMPAIGN_ID}` },
-    { event: "UPDATE", schema: "public", table: "campaigns", filter: `id=eq.${CAMPAIGN_ID}` },
+    { event: "*", schema: "public", table: "campaigns", filter: `id=eq.${CAMPAIGN_ID}` },
   ]);
   environment.channel.bindings[0].listener({ new: characterRow() });
   environment.channel.bindings[1].listener({ new: { campaign_id: "77777777-7777-4777-8777-777777777777" } });
@@ -327,6 +327,7 @@ test("subscribes only to panel data from one campaign", async () => {
 
 test("renders a compact safe panel with the Phase 28 sheet viewer enabled", () => {
   const html = gmTools.gmPanelHtml({
+    campaignId: CAMPAIGN_ID,
     campaignName: "A <Coroa>",
     connection: "live",
     loading: false,
@@ -339,6 +340,9 @@ test("renders a compact safe panel with the Phase 28 sheet viewer enabled", () =
     activeSession: gmTools.normalizedCampaignSession(sessionRow(), CAMPAIGN_ID),
   });
   assert.match(html, /A &lt;Coroa&gt;/);
+  assert.match(html, /data-campaign-workspace-view="campaign"/);
+  assert.match(html, /data-campaign-workspace-view="gm" aria-current="page"/);
+  assert.match(html, /data-campaign-workspace-view="rolls"/);
   assert.match(html, /Online: 1/);
   assert.match(html, /Ausentes: 0 · Offline: 1/);
   assert.match(html, /Arthur &amp; Kael/);
@@ -351,6 +355,7 @@ test("renders a compact safe panel with the Phase 28 sheet viewer enabled", () =
   assert.match(html, /data-online-gm-panel-action="save-pm"/);
   assert.match(html, /Alterar PM/);
   assert.match(html, /Gerenciar condições e itens/);
+  assert.match(html, new RegExp(`data-gm-detail-key="character:${CHARACTER_ID}"`));
   assert.match(html, /data-online-gm-panel-action="add-condition"/);
   assert.match(html, /data-online-gm-panel-action="add-item"/);
   assert.match(html, /data-presence-status="away"/);
@@ -366,6 +371,97 @@ test("renders a compact safe panel with the Phase 28 sheet viewer enabled", () =
   assert.match(html, />Abrir ficha<\/button>/);
   assert.doesNotMatch(html, /disabled aria-disabled="true"/);
   assert.doesNotMatch(html, /<Coroa>|Arthur & Kael/);
+});
+
+test("captures and restores GM scroll, expanded sections, focused draft, and cursor", () => {
+  const modal = { scrollTop: 145, scrollLeft: 2 };
+  const modalBody = { scrollTop: 90, scrollLeft: 0 };
+  const characters = { scrollTop: 210, scrollLeft: 1 };
+  const history = { scrollTop: 75, scrollLeft: 0 };
+  const card = { dataset: { gmCharacterId: "character-1" } };
+  const input = {
+    value: "Rascunho do Mæstre",
+    defaultValue: "",
+    selectionStart: 4,
+    selectionEnd: 13,
+    selectionDirection: "forward",
+    hasAttribute(attribute) { return attribute === "data-online-gm-item-name"; },
+    closest(selector) { return selector === "[data-gm-character-id]" ? card : null; },
+  };
+  const conditionInput = {
+    value: "Condição inacabada",
+    defaultValue: "",
+    hasAttribute(attribute) { return attribute === "data-online-gm-condition-name"; },
+    closest(selector) { return selector === "[data-gm-character-id]" ? card : null; },
+  };
+  const detail = { open: true, dataset: { gmDetailKey: "character:character-1" } };
+  const panel = {
+    contains(element) { return element === input; },
+    closest(selector) { return selector === ".modal" ? modal : selector === ".modal-body" ? modalBody : null; },
+    querySelector(selector) { return selector === ".gm-character-list" ? characters : selector === ".gm-history-list" ? history : null; },
+    querySelectorAll(selector) {
+      if (selector === "[data-gm-detail-key][open]") return [detail];
+      if (selector === "[data-online-gm-item-name]") return [input];
+      if (selector === "[data-online-gm-condition-name]") return [conditionInput];
+      return [];
+    },
+  };
+  const snapshot = gmTools.captureGmPanelView(panel, { activeElement: input });
+  assert.deepEqual(snapshot.scroll.characters, { top: 210, left: 1 });
+  assert.deepEqual(snapshot.openDetails, ["character:character-1"]);
+  assert.deepEqual(snapshot.drafts, [
+    { attribute: "data-online-gm-condition-name", characterId: "character-1", value: "Condição inacabada" },
+    { attribute: "data-online-gm-item-name", characterId: "character-1", value: "Rascunho do Mæstre" },
+  ]);
+  assert.deepEqual(snapshot.focused, {
+    attribute: "data-online-gm-item-name",
+    characterId: "character-1",
+    value: "Rascunho do Mæstre",
+    selectionStart: 4,
+    selectionEnd: 13,
+    selectionDirection: "forward",
+  });
+
+  const restoredModal = { scrollTop: 0, scrollLeft: 0 };
+  const restoredBody = { scrollTop: 0, scrollLeft: 0 };
+  const restoredCharacters = { scrollTop: 0, scrollLeft: 0 };
+  const restoredHistory = { scrollTop: 0, scrollLeft: 0 };
+  const restoredDetail = { open: false, dataset: { gmDetailKey: "character:character-1" } };
+  const restoredInput = {
+    value: "",
+    focusOptions: null,
+    selection: null,
+    focus(options) { this.focusOptions = options; },
+    setSelectionRange(start, end, direction) { this.selection = [start, end, direction]; },
+  };
+  const restoredConditionInput = { value: "" };
+  const restoredCard = {
+    dataset: { gmCharacterId: "character-1" },
+    querySelector(selector) {
+      if (selector === "[data-online-gm-item-name]") return restoredInput;
+      if (selector === "[data-online-gm-condition-name]") return restoredConditionInput;
+      return null;
+    },
+  };
+  const restoredPanel = {
+    closest(selector) { return selector === ".modal" ? restoredModal : selector === ".modal-body" ? restoredBody : null; },
+    querySelector(selector) { return selector === ".gm-character-list" ? restoredCharacters : selector === ".gm-history-list" ? restoredHistory : null; },
+    querySelectorAll(selector) {
+      if (selector === "[data-gm-detail-key]") return [restoredDetail];
+      if (selector === "[data-gm-character-id]") return [restoredCard];
+      return [];
+    },
+  };
+  assert.equal(gmTools.restoreGmPanelView(restoredPanel, snapshot, {}, { requestAnimationFrame(callback) { callback(); } }), true);
+  assert.equal(restoredDetail.open, true);
+  assert.equal(restoredInput.value, "Rascunho do Mæstre");
+  assert.equal(restoredConditionInput.value, "Condição inacabada");
+  assert.deepEqual(restoredInput.focusOptions, { preventScroll: true });
+  assert.deepEqual(restoredInput.selection, [4, 13, "forward"]);
+  assert.equal(restoredModal.scrollTop, 145);
+  assert.equal(restoredBody.scrollTop, 90);
+  assert.equal(restoredCharacters.scrollTop, 210);
+  assert.equal(restoredHistory.scrollTop, 75);
 });
 
 test("coalesces concurrent heartbeats and stops its timer", async () => {
