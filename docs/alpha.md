@@ -1,6 +1,6 @@
 # Marufia Online Alpha — Fase 50
 
-O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. O ciclo atual é **0.2.4** e estabiliza o Painel do Mæstre e a navegação da campanha no site e no aplicativo Windows, preservando a compatibilidade do schema v5 e os recursos online existentes.
+O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. O ciclo atual é **0.3.0** e automatiza o check de perícias em resultados Extremo ou Crítico natural, além de mostrar a versão atual no cabeçalho do site e do aplicativo Windows. A compatibilidade do schema v5 e os recursos online existentes permanecem preservados.
 
 ## Escopo obrigatório
 
@@ -16,10 +16,11 @@ O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha
 10. **Painel do Mæstre:** visão da campanha e operações granulares autorizadas.
 11. **Permissões:** RLS, papéis por campanha e funções protegidas.
 12. **Executável Windows:** portátil e instalador x64 com hashes verificados.
+13. **Atualização do aplicativo:** pacote assinado pelo atualizador e instalação confirmada dentro do aplicativo.
 
 ## Portão de aceitação
 
-`pnpm test:alpha` confere a versão, executa os contratos dos doze recursos e valida os artefatos Windows existentes. Em uma máquina limpa, gere primeiro os arquivos com `pnpm build:windows`.
+`pnpm test:alpha` confere a versão, executa os contratos dos treze recursos e valida os artefatos Windows existentes. Em uma máquina limpa, gere primeiro os arquivos com `pnpm build:windows`.
 
 Os testes que consultam o projeto Supabase real permanecem deliberadamente opcionais. Para incluí-los em um ambiente já autorizado e configurado, execute o portão com `MARUFIA_ALPHA_REMOTE=1`.
 

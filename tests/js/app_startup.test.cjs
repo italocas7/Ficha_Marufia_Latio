@@ -420,6 +420,69 @@ test("treats natural 01 as critical for attributes and skills", () => {
   assert.match(vm.runInContext("openAttributeModal('FOR'); document.querySelector('#modalRoot').innerHTML", sandbox), /roll-attribute/);
 });
 
+test("automatically checks skills on Extreme and natural Critical rolls in every d100 mode", () => {
+  const { sandbox, localStorage } = createSandbox();
+  const scenarios = [
+    ["normal", [0.09]],
+    ["adv", [0.49, 0.09]],
+    ["dis", [0.08, 0.09]],
+    ["normal", [0]],
+    ["adv", [0.49, 0]],
+    ["dis", [0, 0]],
+  ];
+  for (const [mode, randomValues] of scenarios) {
+    vm.runInContext(`
+      state.skills.Atletismo.added = 70;
+      state.skills.Atletismo.checked = false;
+      window.__randomValues = ${JSON.stringify(randomValues)};
+      Math.random = () => window.__randomValues.shift() ?? 0;
+      rollSkill("Atletismo", "${mode}");
+    `, sandbox);
+    assert.equal(vm.runInContext("state.skills.Atletismo.checked", sandbox), true);
+  }
+  assert.equal(JSON.parse(localStorage.getItem("marufia-latio-state-v1")).skills.Atletismo.checked, true);
+});
+
+test("checks combat and parry skills without changing checks for attributes or ordinary results", () => {
+  const { sandbox, elements } = createSandbox();
+  elements.combatRollSkill.value = "Atletismo";
+  elements.combatTargetCa.value = "0";
+  elements.parrySkill.value = "Lutar (Brigar)";
+
+  vm.runInContext("Math.random = () => 0; rollCombatTest('normal')", sandbox);
+  assert.equal(vm.runInContext("state.skills.Atletismo.checked", sandbox), true);
+
+  vm.runInContext("state.combat.parry.prepared = true; Math.random = () => 0; rollParry('normal')", sandbox);
+  assert.equal(vm.runInContext('state.skills["Lutar (Brigar)"].checked', sandbox), true);
+
+  vm.runInContext(`
+    for (const skill of DB.skills) state.skills[skill.name].checked = false;
+    Math.random = () => 0;
+    rollAttribute("FOR", "normal");
+  `, sandbox);
+  assert.equal(vm.runInContext("DB.skills.some((skill) => state.skills[skill.name].checked)", sandbox), false);
+
+  vm.runInContext(`
+    state.skills.Atletismo.added = 70;
+    Math.random = () => 0.59;
+    rollSkill("Atletismo", "normal");
+  `, sandbox);
+  assert.equal(vm.runInContext("state.skills.Atletismo.checked", sandbox), false);
+});
+
+test("does nothing when the skill check is already selected", () => {
+  const { sandbox } = createSandbox();
+  vm.runInContext(`
+    state.skills.Atletismo.checked = true;
+    window.__localSaves = 0;
+    window.MARUFIA_APP_BRIDGE.onLocalSave(() => { window.__localSaves += 1; });
+    Math.random = () => 0;
+    rollSkill("Atletismo", "normal");
+  `, sandbox);
+  assert.equal(vm.runInContext("state.skills.Atletismo.checked", sandbox), true);
+  assert.equal(vm.runInContext("window.__localSaves", sandbox), 0);
+});
+
 test("publishes every current dice result with its real sheet context", () => {
   const { sandbox, elements } = createSandbox();
   elements.combatRollSkill.value = "Atletismo";

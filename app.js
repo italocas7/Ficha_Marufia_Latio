@@ -105,6 +105,7 @@ let saveInProgress = false;
 let storageFailureRecorded = false;
 const localSaveListeners = new Set();
 const rollResultListeners = new Set();
+const AUTO_SKILL_CHECK_OUTCOMES = new Set(["Extremo", "Crítico natural"]);
 let modalReturnFocus = null;
 let controlSerial = 0;
 
@@ -292,6 +293,23 @@ function scheduleSave() {
   saveTimer = setTimeout(saveStateNow, 250);
 }
 
+function markSkillCheckForRoll(skillName, outcome) {
+  if (GM_VIEW_MODE || !AUTO_SKILL_CHECK_OUTCOMES.has(outcome) || typeof skillName !== "string") return false;
+  if (!DB.skills.some((skill) => skill.name === skillName) || !Object.hasOwn(state.skills ?? {}, skillName)) return false;
+  if (state.skills[skillName].checked) return false;
+
+  state.skills[skillName].checked = true;
+  const path = `skills.${skillName}.checked`;
+  const checkboxes = typeof document.querySelectorAll === "function"
+    ? document.querySelectorAll('input[type="checkbox"][data-path]')
+    : [];
+  for (const checkbox of checkboxes) {
+    if (checkbox.dataset.path === path) checkbox.checked = true;
+  }
+  scheduleSave();
+  return true;
+}
+
 function publishRollResult(rollType, roll, options = {}) {
   const record = Object.freeze({
     rollType,
@@ -311,6 +329,7 @@ function publishRollResult(rollType, roll, options = {}) {
       // A exibição da rolagem local não depende de integrações opcionais.
     }
   }
+  markSkillCheckForRoll(record.skillName, record.outcome);
   return record;
 }
 

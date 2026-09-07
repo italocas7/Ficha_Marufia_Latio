@@ -24,7 +24,7 @@ const validTauriManifest = Object.freeze({
 function fakeUpdate(options = {}) {
   const state = { closed: 0, downloads: 0 };
   const update = {
-    version: options.version ?? "0.3.0",
+    version: options.version ?? "0.3.1",
     body: options.body ?? "Correções e melhorias seguras.",
     async close() { state.closed += 1; },
     async downloadAndInstall(listener) {
@@ -156,7 +156,7 @@ test("keeps ordinary browsers silent without invoking the native updater", async
   const checker = updates.createUpdateChecker({
     document: environment.document,
     view: environment.view,
-    versionInfo: { version: "0.2.4" },
+    versionInfo: { version: "0.3.0" },
     checkImpl: async () => { checks += 1; return fakeUpdate().update; },
   });
   assert.equal(await checker.check(), false);
@@ -166,16 +166,16 @@ test("keeps ordinary browsers silent without invoking the native updater", async
 });
 
 test("shows the confirmation only for a valid newer native update", async () => {
-  for (const [version, expected] of [["0.3.0", true], ["0.2.4", false], ["0.1.9", false], ["inválida", false]]) {
+  for (const [version, expected] of [["0.3.1", true], ["0.3.0", false], ["0.2.4", false], ["inválida", false]]) {
     const resource = fakeUpdate({ version });
     const environment = fakeEnvironment({ updates: [resource.update] });
-    const checker = updates.createUpdateChecker({ document: environment.document, view: environment.view, versionInfo: { version: "0.2.4" } });
+    const checker = updates.createUpdateChecker({ document: environment.document, view: environment.view, versionInfo: { version: "0.3.0" } });
     assert.equal(await checker.check(), expected);
     assert.equal(environment.modal.open, expected);
     if (expected) {
       assert.equal(environment.modal.title, "Atualização disponível");
-      assert.match(environment.modal.body, /Instalada: v0\.2\.4/);
-      assert.match(environment.modal.body, /Nova: v0\.3\.0/);
+      assert.match(environment.modal.body, /Instalada: v0\.3\.0/);
+      assert.match(environment.modal.body, /Nova: v0\.3\.1/);
       assert.match(environment.modal.footer, /Baixar e instalar/);
       assert.match(environment.modal.footer, /Agora não/);
       assert.equal(environment.modal.className, "app-update-modal-shell");
@@ -191,7 +191,7 @@ test("fails silently offline and checks again when the connection returns", asyn
   const checker = updates.createUpdateChecker({
     document: environment.document,
     view: environment.view,
-    versionInfo: { version: "0.2.4" },
+    versionInfo: { version: "0.3.0" },
     checkImpl: async () => { checks += 1; return fakeUpdate().update; },
   });
   assert.equal(await checker.check(), false);
@@ -206,20 +206,20 @@ test("fails silently offline and checks again when the connection returns", asyn
 test("Agora não suppresses one version only for the current application session", async () => {
   const resource = fakeUpdate();
   const environment = fakeEnvironment({ updates: [resource.update] });
-  const checker = updates.createUpdateChecker({ document: environment.document, view: environment.view, versionInfo: { version: "0.2.4" } });
+  const checker = updates.createUpdateChecker({ document: environment.document, view: environment.view, versionInfo: { version: "0.3.0" } });
   await checker.check();
   await checker.handleClick(click("later").event);
-  assert.equal(environment.storage.get(updates.DISMISS_KEY), "0.3.0");
+  assert.equal(environment.storage.get(updates.DISMISS_KEY), "0.3.1");
   assert.equal(environment.modal.open, false);
   assert.equal(resource.state.closed, 1);
 
   const sameSession = fakeEnvironment({ storage: environment.storage });
-  const sameChecker = updates.createUpdateChecker({ document: sameSession.document, view: sameSession.view, versionInfo: { version: "0.2.4" } });
+  const sameChecker = updates.createUpdateChecker({ document: sameSession.document, view: sameSession.view, versionInfo: { version: "0.3.0" } });
   assert.equal(await sameChecker.check(), false);
   assert.equal(sameSession.modal.open, false);
 
   const freshSession = fakeEnvironment();
-  const freshChecker = updates.createUpdateChecker({ document: freshSession.document, view: freshSession.view, versionInfo: { version: "0.2.4" } });
+  const freshChecker = updates.createUpdateChecker({ document: freshSession.document, view: freshSession.view, versionInfo: { version: "0.3.0" } });
   assert.equal(await freshChecker.check(), true);
 });
 
@@ -230,7 +230,7 @@ test("saves pending state, waits for online work and reports signed download pro
   environment.view.addEventListener(updates.BEFORE_APP_UPDATE_EVENT, (event) => {
     event.detail.waitUntil(Promise.resolve().then(() => { onlineFlushed = true; }));
   });
-  const checker = updates.createUpdateChecker({ document: environment.document, view: environment.view, versionInfo: { version: "0.2.4" } });
+  const checker = updates.createUpdateChecker({ document: environment.document, view: environment.view, versionInfo: { version: "0.3.0" } });
   await checker.check();
   await checker.handleClick(click("install").event);
   assert.equal(environment.view.flushes, 1);
@@ -240,7 +240,7 @@ test("saves pending state, waits for online work and reports signed download pro
   assert.equal(environment.modal.dismissible, false);
   assert.equal(environment.progress.value, 100);
   assert.match(environment.progressLabel.textContent, /Instalação iniciada/);
-  assert.equal(environment.storage.get(updates.DISMISS_KEY), "0.3.0");
+  assert.equal(environment.storage.get(updates.DISMISS_KEY), "0.3.1");
 });
 
 test("does not wait longer than the bounded preparation timeout", async () => {
@@ -256,21 +256,21 @@ test("does not wait longer than the bounded preparation timeout", async () => {
 test("offers retry and the scoped manual release after an installation failure", async () => {
   const resource = fakeUpdate({ downloadFailure: true });
   const environment = fakeEnvironment({ updates: [resource.update] });
-  const checker = updates.createUpdateChecker({ document: environment.document, view: environment.view, versionInfo: { version: "0.2.4" } });
+  const checker = updates.createUpdateChecker({ document: environment.document, view: environment.view, versionInfo: { version: "0.3.0" } });
   await checker.check();
   await checker.handleClick(click("install").event);
   assert.equal(environment.modal.title, "Falha na atualização");
   assert.match(environment.modal.footer, /Tentar novamente/);
   assert.match(environment.modal.footer, /Baixar manualmente/);
   await checker.handleClick(click("manual").event);
-  assert.deepEqual(environment.opened, ["https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.3.0"]);
+  assert.deepEqual(environment.opened, ["https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.3.1"]);
   assert.equal(environment.modal.open, false);
 });
 
 test("keeps the failure modal interactive if Windows cannot open the browser", async () => {
   const resource = fakeUpdate({ downloadFailure: true });
   const environment = fakeEnvironment({ updates: [resource.update], openFailure: true });
-  const checker = updates.createUpdateChecker({ document: environment.document, view: environment.view, versionInfo: { version: "0.2.4" } });
+  const checker = updates.createUpdateChecker({ document: environment.document, view: environment.view, versionInfo: { version: "0.3.0" } });
   await checker.check();
   await checker.handleClick(click("install").event);
   const manual = click("manual");
@@ -280,13 +280,13 @@ test("keeps the failure modal interactive if Windows cannot open the browser", a
   assert.match(environment.modal.body, /Windows não conseguiu abrir o navegador/);
 });
 
-test("escapes notes and ships both prepared 0.2.4 manifests", () => {
-  const html = updates.updateBodyHtml({ version: "0.3.0", notes: "<img src=x onerror=alert(1)>" }, "0.2.4");
+test("escapes notes and ships both prepared 0.3.0 manifests", () => {
+  const html = updates.updateBodyHtml({ version: "0.3.1", notes: "<img src=x onerror=alert(1)>" }, "0.3.0");
   assert.doesNotMatch(html, /<img/);
   assert.match(html, /&lt;img/);
   const legacy = JSON.parse(fs.readFileSync(path.join(root, "app-update.json"), "utf8"));
   const signed = JSON.parse(fs.readFileSync(path.join(root, "tauri-update.json"), "utf8"));
-  assert.equal(legacy.version, "0.2.4");
-  assert.equal(signed.version, "0.2.4");
+  assert.equal(legacy.version, "0.3.0");
+  assert.equal(signed.version, "0.3.0");
   assert.deepEqual(updates.validateTauriManifest(signed), signed);
 });

@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "appId": "com.marufia.online",
   "channel": "alpha",
-  "version": "0.2.4",
-  "notes": "Estabiliza o Painel do Mæstre, adiciona navegação direta da campanha e incorpora atualizações assinadas com confirmação do jogador.",
-  "publishedAt": "2026-09-06T00:00:00.000Z",
-  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.2.4"
+  "version": "0.3.0",
+  "notes": "Marca automaticamente perícias após resultados Extremo ou Crítico natural e mostra a versão atual no cabeçalho da ficha.",
+  "publishedAt": "2026-09-07T00:00:00.000Z",
+  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.3.0"
 }

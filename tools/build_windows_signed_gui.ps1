@@ -27,8 +27,11 @@ if (-not (Test-Path -LiteralPath $KeyPath -PathType Leaf)) {
     exit 1
 }
 
+$projectRoot = Split-Path -Parent $PSScriptRoot
+$releaseVersion = (Get-Content -Raw (Join-Path $projectRoot "package.json") | ConvertFrom-Json).version
+
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "Assinar Marufia Online 0.2.4"
+$form.Text = "Assinar Marufia Online $releaseVersion"
 $form.StartPosition = "CenterScreen"
 $form.ClientSize = New-Object System.Drawing.Size(470, 185)
 $form.FormBorderStyle = "FixedDialog"
@@ -86,7 +89,6 @@ $passwordBox.Clear()
 $form.Dispose()
 
 try {
-    $projectRoot = Split-Path -Parent $PSScriptRoot
     $nodePath = (Get-Command node.exe -ErrorAction Stop).Source
     $env:TAURI_SIGNING_PRIVATE_KEY = $KeyPath
     $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD = $password
@@ -102,7 +104,7 @@ try {
     if ($exitCode -ne 0) {
         throw "O build assinado retornou o código $exitCode."
     }
-    Write-Output "Os executáveis e a assinatura da versão 0.2.4 foram gerados com sucesso."
+    Write-Output "Os executáveis e a assinatura da versão $releaseVersion foram gerados com sucesso."
     exit 0
 }
 catch {

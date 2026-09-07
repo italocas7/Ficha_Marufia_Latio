@@ -6,7 +6,7 @@ O Marufia Online usa Tauri 2 para empacotar exatamente a mesma ficha web validad
 
 - produto: Marufia Online;
 - identificador: `com.marufia.online`;
-- versão desktop em preparação: `0.2.4`, apresentada como **Marufia Online Alpha**;
+- versão desktop em preparação: `0.3.0`, apresentada como **Marufia Online Alpha**;
 - janela única, centralizada, redimensionável e com mínimo de 900 × 600;
 - zoom nativo com `Ctrl` + `+`, `Ctrl` + `-` e `Ctrl` + `0`, preservando a adaptação dos cartões ao tamanho disponível;
 - ícones derivados do brasão oficial da ficha.
@@ -17,7 +17,7 @@ A janela recebe uma única capacidade nativa pelo plugin oficial Opener: abrir n
 
 ## Aviso de atualização
 
-Somente o aplicativo Tauri consulta o manifesto público. Quando a versão Alpha publicada é mais nova, ele espera qualquer outro modal terminar e mostra **Atualização disponível**. **Atualizar aplicativo** abre a GitHub Release oficial; **Agora não** dispensa o aviso até o aplicativo ser fechado. Não há download automático, chave privada, execução de instalador ou alteração dos dados da ficha.
+Somente o aplicativo Tauri consulta o manifesto público. Quando a versão Alpha publicada é mais nova, ele espera qualquer outro modal terminar e mostra **Atualização disponível**. **Baixar e instalar** transfere o instalador assinado, valida sua assinatura e inicia a instalação passiva após salvar alterações pendentes. **Agora não** dispensa o aviso até o aplicativo ser fechado. Em caso de falha, a opção manual permanece limitada à GitHub Release oficial. A chave privada nunca acompanha o aplicativo e os dados da ficha não são alterados pelo atualizador.
 
 ## Comandos do projeto
 

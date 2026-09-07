@@ -53,6 +53,9 @@ async function exercise(page, url, viewport) {
   });
   await page.goto(url);
   await page.waitForTimeout(50);
+  const versionLabel = page.locator("[data-marufia-version]");
+  assert.equal(await versionLabel.textContent(), "v0.3.0", "O cabeçalho deve mostrar a versão atual da ficha.");
+  assert.equal(await versionLabel.getAttribute("aria-label"), "Versão 0.3.0 do Marufia Online");
   assert.equal(updateManifestRequests, 0, "O navegador comum não pode consultar atualizações do aplicativo Windows.");
   assert.equal(await page.locator("[data-online-app-update-modal]").count(), 0, "O navegador comum não pode receber o aviso do aplicativo Windows.");
   await page.getByRole("button", { name: "Criar ficha nova" }).click();
@@ -88,7 +91,7 @@ async function exercise(page, url, viewport) {
     window.__marufiaOriginalRandom = Math.random;
     Math.random = () => 0;
   });
-  await page.locator('[data-action="roll-skill"][data-mode="normal"]').first().click();
+  await page.locator('[data-action="roll-skill"][data-skill="Atletismo"][data-mode="normal"]').first().click();
   const rollModal = page.locator("#modalRoot .modal");
   assert.match(await rollModal.innerText(), /Normal\s+1\s+Dados: 1/i, "A rolagem d100 deve usar a camada central e manter o resultado exibido.");
   assert.match(await rollModal.innerText(), /Crítico natural/i);
@@ -98,10 +101,19 @@ async function exercise(page, url, viewport) {
     delete window.__marufiaOriginalRandom;
   });
 
+  await page.waitForTimeout(350);
+  await page.getByRole("tab", { name: /^P&T/ }).click();
+  const athleticsCheck = page.locator('[data-path="skills.Atletismo.checked"]');
+  assert.equal(await athleticsCheck.isChecked(), true, "Um Crítico natural deve marcar automaticamente o check da perícia usada.");
+  await page.getByRole("tab", { name: /^Resumo/ }).click();
+
   const level = page.locator('[data-path="character.level"]');
   await level.fill("3");
   await page.reload();
   assert.equal(await page.locator('[data-path="character.level"]').inputValue(), "3", "O campo numérico ativo não foi salvo ao recarregar.");
+  await page.getByRole("tab", { name: /^P&T/ }).click();
+  assert.equal(await page.locator('[data-path="skills.Atletismo.checked"]').isChecked(), true, "O check automático deve persistir após recarregar a ficha.");
+  await page.getByRole("tab", { name: /^Resumo/ }).click();
 
   const stateBeforeOnlineImport = await page.evaluate(() => JSON.stringify(window.MARUFIA_APP_BRIDGE.snapshot()));
   await page.evaluate(() => {
@@ -219,7 +231,7 @@ async function exercise(page, url, viewport) {
   assert.match(await onlineSettings.innerText(), /Sincronização/i);
   assert.match(await onlineSettings.innerText(), /ficha (?:está )?vinculada/i);
   assert.match(await onlineSettings.innerText(), /Dados locais/i);
-  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.2\.4/i);
+  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.3\.0/i);
   await settingsModal.getByRole("button", { name: "Modo Escuro" }).click();
   assert.equal(await page.locator("body").evaluate((body) => body.classList.contains("dark")), true);
   assert.equal(await settingsModal.getByRole("button", { name: "Modo Escuro" }).getAttribute("aria-pressed"), "true");
@@ -478,7 +490,9 @@ async function exercise(page, url, viewport) {
     window.__marufiaOriginalRandom = Math.random;
     Math.random = () => 0;
   });
-  await page.locator('[data-action="roll-skill"][data-mode="normal"]').first().click();
+  const onlineCriticalButton = page.locator('[data-action="roll-skill"][data-mode="normal"]').first();
+  const onlineCriticalSkill = await onlineCriticalButton.getAttribute("data-skill");
+  await onlineCriticalButton.click();
   await page.locator("#modalRoot .modal").getByRole("button", { name: "Fechar" }).last().click();
   await page.evaluate(() => {
     Math.random = window.__marufiaOriginalRandom;
@@ -497,6 +511,14 @@ async function exercise(page, url, viewport) {
   assert.equal(registeredRoll.outcome, "Crítico natural");
   assert.equal(registeredRoll.visibility, "gm", "Uma rolagem feita pelo Mæstre deve permanecer somente com seu autor.");
   assert.equal(registeredRoll.character_name, "Edição preservada offline");
+  await page.waitForFunction((skillName) => {
+    const local = window.MARUFIA_APP_BRIDGE.snapshot();
+    const remote = JSON.parse(localStorage.getItem("marufia-e2e-characters") || "[]")[0]?.state;
+    return local?.skills?.[skillName]?.checked === true
+      && remote?.skills?.[skillName]?.checked === true
+      && JSON.stringify(local) === JSON.stringify(remote)
+      && document.querySelector("#onlineSyncStatus")?.dataset.syncState === "online";
+  }, onlineCriticalSkill);
 
   await page.context().setOffline(true);
   await page.waitForFunction(() => document.querySelector("#onlineSyncStatus")?.dataset.syncState === "offline");
@@ -970,7 +992,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
         check() {
           window.__marufiaUpdateState.checks += 1;
           return Promise.resolve({
-            version: "0.3.0",
+            version: "0.3.1",
             body: "Versão futura usada somente pelo teste local.",
             close() { window.__marufiaUpdateState.closed += 1; return Promise.resolve(); },
             downloadAndInstall(listener) {
@@ -1036,7 +1058,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
         check() {
           window.__marufiaUpdateState.checks += 1;
           return Promise.resolve({
-            version: "0.3.0",
+            version: "0.3.1",
             body: "Versão futura usada somente pelo teste local.",
             close() { window.__marufiaUpdateState.closed += 1; return Promise.resolve(); },
             downloadAndInstall(listener) {
