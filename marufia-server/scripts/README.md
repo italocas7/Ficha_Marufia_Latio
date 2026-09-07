@@ -3,7 +3,7 @@
 | Comando | Função |
 |---|---|
 | `setup-environment.ps1` | cria uma vez o `.env` privado e todas as chaves |
-| `start-docker-safe.ps1` | inicia o Docker e recupera somente os sockets temporários conhecidos, sem reset ou perda de volumes |
+| `start-docker-safe.ps1` | valida o cadastro do Docker no Windows, inicia o Docker e recupera somente os sockets temporários conhecidos, sem reset ou perda de volumes |
 | `start-server.ps1` | valida configuração, inicia/recupera o Docker e sobe serviços saudáveis |
 | `status-server.ps1` | exibe o estado de todos os containers |
 | `health-check.ps1` | verifica banco, Auth, REST, Realtime, Storage, Tunnel, jogadores e backup |
@@ -75,6 +75,13 @@ seguro reconhece exclusivamente os erros de `sailor-ingest.sock` e
 `.stale-*` e tenta iniciar novamente. Ele não usa **Reset to factory defaults**,
 não remove volumes e não lê segredos. Docker Desktop 4.89.0 ou superior é
 obrigatório por conter a primeira correção oficial para essa classe de falha.
+
+Em instalações por usuário, o script também verifica a chave
+`HKCU\SOFTWARE\Docker Inc.\Docker Desktop`. Se uma atualização tiver removido
+somente o valor `InstallPath`, ele será recriado apenas quando o caminho do
+desinstalador, os arquivos internos e a assinatura digital da Docker Inc.
+forem validados. Caminhos divergentes ou instalações incompletas são recusados
+sem alterar o Registro.
 
 `test-public-clients.ps1` cria somente contas descartáveis pelo endpoint
 administrativo local, entrega aos clientes apenas a chave publicável e remove os

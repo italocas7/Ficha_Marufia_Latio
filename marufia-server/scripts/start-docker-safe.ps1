@@ -27,6 +27,51 @@ function Resolve-MarufiaDockerDesktopExecutable {
     return [System.IO.Path]::GetFullPath($desktop)
 }
 
+function Repair-MarufiaDockerDesktopRegistration {
+    param([Parameter(Mandatory = $true)][string]$DesktopPath)
+
+    $expectedInstallPath = [System.IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA "Programs\DockerDesktop"))
+    $actualInstallPath = [System.IO.Path]::GetFullPath((Split-Path -Parent $DesktopPath))
+    if (-not $actualInstallPath.Equals($expectedInstallPath, [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $false
+    }
+
+    $uninstallRegistryPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Docker Desktop"
+    $uninstallInfo = Get-ItemProperty -LiteralPath $uninstallRegistryPath -ErrorAction SilentlyContinue
+    if (-not $uninstallInfo -or [string]::IsNullOrWhiteSpace([string]$uninstallInfo.InstallLocation)) {
+        throw "O cadastro da instalação por usuário do Docker está incompleto. Remova com -keep-data e instale novamente com --user."
+    }
+
+    $registeredInstallPath = [System.IO.Path]::GetFullPath([string]$uninstallInfo.InstallLocation)
+    if (-not $registeredInstallPath.Equals($expectedInstallPath, [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw "O caminho cadastrado do Docker não corresponde à instalação encontrada; a correção automática foi recusada."
+    }
+
+    $backendPath = Join-Path $expectedInstallPath "resources\com.docker.backend.exe"
+    if (-not (Test-Path -LiteralPath $backendPath -PathType Leaf)) {
+        throw "O componente interno do Docker Desktop não foi encontrado; a correção automática foi recusada."
+    }
+
+    $dockerRegistryPath = "HKCU:\SOFTWARE\Docker Inc.\Docker Desktop"
+    $currentRegistration = Get-ItemProperty -LiteralPath $dockerRegistryPath -Name "InstallPath" -ErrorAction SilentlyContinue
+    if ($currentRegistration -and
+        -not [string]::IsNullOrWhiteSpace([string]$currentRegistration.InstallPath) -and
+        ([System.IO.Path]::GetFullPath([string]$currentRegistration.InstallPath)).Equals($expectedInstallPath, [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $false
+    }
+
+    $signature = Get-AuthenticodeSignature -LiteralPath $DesktopPath
+    if ($signature.Status -ne [System.Management.Automation.SignatureStatus]::Valid -or
+        -not $signature.SignerCertificate -or
+        $signature.SignerCertificate.Subject -notmatch "(?:^|, )O=Docker Inc(?:,|$)") {
+        throw "A assinatura do Docker Desktop não pôde ser validada; a correção automática foi recusada."
+    }
+
+    $null = New-Item -Path $dockerRegistryPath -Force
+    $null = New-ItemProperty -LiteralPath $dockerRegistryPath -Name "InstallPath" -PropertyType String -Value $expectedInstallPath -Force
+    return $true
+}
+
 function Get-MarufiaDockerLogLength {
     param([Parameter(Mandatory = $true)][string]$LogPath)
 
@@ -147,12 +192,17 @@ function Start-MarufiaDockerDesktop {
 
 try {
     $dockerCommand = Resolve-DockerCommand
+    $desktopPath = Resolve-MarufiaDockerDesktopExecutable
+    $registrationRepaired = Repair-MarufiaDockerDesktopRegistration -DesktopPath $desktopPath
+    if ($registrationRepaired) {
+        Write-MarufiaMessage -Level WARNING -Message "Cadastro do Docker Desktop no Windows foi reparado com segurança."
+    }
+
     if (Test-MarufiaDockerEngine -DockerCommand $dockerCommand) {
         Write-MarufiaMessage -Level INFO -Message "Docker Desktop já está disponível."
         exit 0
     }
 
-    $desktopPath = Resolve-MarufiaDockerDesktopExecutable
     $productVersionText = (Get-Item -LiteralPath $desktopPath).VersionInfo.ProductVersion
     $productVersionMatch = [regex]::Match($productVersionText, "\d+\.\d+\.\d+")
     if ($productVersionMatch.Success -and [version]$productVersionMatch.Value -lt [version]"4.89.0") {

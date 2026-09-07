@@ -83,8 +83,8 @@ computador físico e de uma reinicialização completa do Windows com dados ativ
 - ao menos 4 GB de RAM, 2 núcleos e 40 GB SSD disponíveis para o ambiente;
 - recomendado: 8 GB de RAM, 4 núcleos e 80 GB SSD.
 
-Nesta máquina foram validados WSL `2.7.12`, Docker Desktop `4.88.1`, Docker Engine
-`29.7.2` e Docker Compose `5.4.0`.
+Nesta máquina foram validados WSL `2.7.12`, Docker Desktop `4.89.0`, Docker Engine
+`29.7.2` e Docker Compose `5.5.0`.
 
 ## Primeiro preparo
 

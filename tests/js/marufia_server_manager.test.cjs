@@ -82,6 +82,17 @@ test("Docker startup self-heals only the known inaccessible runtime sockets", ()
   assert.doesNotMatch(safeDockerStart, /factory\s+reset|down\s+-v|volume\s+rm|system\s+prune|Remove-Item/i);
 });
 
+test("Docker startup repairs only a verified per-user registration", () => {
+  assert.match(safeDockerStart, /HKCU:\\SOFTWARE\\Docker Inc\.\\Docker Desktop/);
+  assert.match(safeDockerStart, /Uninstall\\Docker Desktop/);
+  assert.match(safeDockerStart, /InstallLocation/);
+  assert.match(safeDockerStart, /resources\\com\.docker\.backend\.exe/);
+  assert.match(safeDockerStart, /Get-AuthenticodeSignature/);
+  assert.match(safeDockerStart, /O=Docker Inc/);
+  assert.match(safeDockerStart, /New-ItemProperty[\s\S]*-Name "InstallPath"/);
+  assert.doesNotMatch(safeDockerStart, /HKLM:/);
+});
+
 test("manager and main guide document manual operation and recovery", () => {
   const managerDoc = read("docs", "SERVER_MANAGER.md");
   const mainDoc = read("docs", "MARUFIA_SERVER.md");

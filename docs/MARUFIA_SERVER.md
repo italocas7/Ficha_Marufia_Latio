@@ -107,6 +107,9 @@ RLS, Realtime, backup e acesso externo na nova máquina.
 ## Problemas comuns
 
 - `Docker não está em execução`: abra o Docker Desktop e aguarde concluir.
+- `cannot find registry key "SOFTWARE\\Docker Inc.\\Docker Desktop"`: execute
+  o inicializador normal do Marufia Server. Ele valida a instalação por usuário
+  e recompõe com segurança somente o caminho perdido antes de iniciar o Docker.
 - Erro contendo `sailor-ingest.sock` ou `docker-secrets-engine/engine.sock`:
   execute `start-server.ps1` normalmente. O inicializador identifica somente
   essa falha conhecida, preserva as pastas temporárias defeituosas e tenta
