@@ -2,11 +2,17 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const rules = require("../../src/core/rules.js");
 
-test("preserves aptitude costs for base and extra spells", () => {
+test("adds the aptitude surcharge only after a spell has reached level six", () => {
   assert.equal(rules.aptitudeUpgradeCost("Fina", 0, 1), 1);
   assert.equal(rules.aptitudeUpgradeCost("Fina", 0, 1, true), 0);
-  assert.equal(rules.spellAptitudeCost("Fina", 6), 7);
-  assert.equal(rules.spellAptitudeCost("Mundo", 10), 36);
+  for (const [type, base] of Object.entries({ Fina: 1, Impacto: 1, Densa: 1, Etérea: 2, Forte: 2, Mundo: 3 })) {
+    assert.equal(rules.aptitudeUpgradeCost(type, 5, 6), base, `${type} N5 → N6 deve manter o custo-base.`);
+    assert.equal(rules.aptitudeUpgradeCost(type, 6, 7), base + 1, `${type} N6 → N7 deve receber +1.`);
+    assert.equal(rules.aptitudeUpgradeCost(type, 8, 9), base + 1, `${type} N8 → N9 deve manter +1.`);
+    assert.equal(rules.aptitudeUpgradeCost(type, 9, 10), base + 2, `${type} N9 → N10 deve receber +2.`);
+  }
+  assert.equal(rules.spellAptitudeCost("Fina", 6), 6);
+  assert.equal(rules.spellAptitudeCost("Mundo", 10), 35);
 });
 
 test("applies Heart rounding with a minimum cost of one", () => {

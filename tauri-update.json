@@ -1,11 +1,11 @@
 {
   "version": "0.3.0",
-  "notes": "Marca automaticamente perícias após resultados Extremo ou Crítico natural e mostra a versão atual no cabeçalho da ficha.",
+  "notes": "Marca automaticamente perícias após resultados Extremo ou Crítico natural, corrige o custo de Aptidão a partir do nível 7 e mostra a versão atual no cabeçalho da ficha.",
   "pub_date": "2026-09-07T00:00:00.000Z",
   "platforms": {
     "windows-x86_64": {
       "url": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/download/v0.3.0/Marufia-Setup.exe",
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTR203cEVudWhOcEIxOS9YQ1d6Z0xrbk5mRU9xcUFSWDZMK29La2QyMXIvNkQwdVJya3hhKzhJZ3BaZzVjUHV1cEZVQmlKS3c2WmhiTm5EeXB0WnJ2Vm5WMGErN0d5UHdBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg4NzUzNTI0CWZpbGU6TWFydWZpYSBPbmxpbmVfMC4zLjBfeDY0LXNldHVwLmV4ZQpLQXNLWkQyMVdVdmNXYmFxak5kS21USC81YUNSK2NINjVTMEIvS1dqajNGZzZ4SmV1b2ZqMU5JVWJKdk5LYVB6bjJKOE92NDRtZ2pEaXVXQy9nM2pEUT09Cg=="
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTR203cEVudWhOcEdlc1BSLy9jcDNDUkJHUFlHSSsyaGN4TkFOV3B0eThudndjUlJTZzc1Ni90NlQ1TjVZZk5QM3h3YmJHNytucHJhZFladE03TWlCOERpRjJHbllGU3dRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg4ODA0NjAzCWZpbGU6TWFydWZpYSBPbmxpbmVfMC4zLjBfeDY0LXNldHVwLmV4ZQp4eVdlSkhkcDlpc3FvSy9QT2lTRUIvdDFoNXRxMFltT0tBWmNJZkdNaTVvSTYyR3I0cmtsN3V0ZTZxc1VJM0pMaHFnZ2JxdTAwMmlUZ09IbGFzaHhBZz09Cg=="
     }
   }
 }

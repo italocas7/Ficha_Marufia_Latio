@@ -3,7 +3,7 @@
   "appId": "com.marufia.online",
   "channel": "alpha",
   "version": "0.3.0",
-  "notes": "Marca automaticamente perícias após resultados Extremo ou Crítico natural e mostra a versão atual no cabeçalho da ficha.",
+  "notes": "Marca automaticamente perícias após resultados Extremo ou Crítico natural, corrige o custo de Aptidão a partir do nível 7 e mostra a versão atual no cabeçalho da ficha.",
   "publishedAt": "2026-09-07T00:00:00.000Z",
   "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.3.0"
 }

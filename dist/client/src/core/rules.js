@@ -27,7 +27,7 @@
 
   function aptitudeCost(type, level) {
     const base = aptitudeBaseCost(type);
-    if (level <= 5) return base;
+    if (level <= 6) return base;
     if (level <= 9) return base + 1;
     return base + 2;
   }

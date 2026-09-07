@@ -10,7 +10,7 @@ Durante o desenvolvimento inicial:
 - `0.2.2`: atualização da ficha automática com as regras do Sistema Beta fornecidas pelo usuário;
 - `0.2.3`: fixa o Marufia Server como backend oficial e bloqueia builds Windows ou do site conectados ao banco legado;
 - `0.2.4`: estabiliza a rolagem do Painel do Mæstre e unifica a navegação entre Campanha, Painel do Mæstre e Rolagens;
-- `0.3.0`: marca automaticamente perícias após Extremo ou Crítico natural e identifica a versão no cabeçalho;
+- `0.3.0`: marca automaticamente perícias após Extremo ou Crítico natural, corrige o custo de Aptidão a partir do nível 7 e identifica a versão no cabeçalho;
 - `0.4.0` e demais versões `0.x`: novos ciclos compatíveis do Alpha;
 - correções que não acrescentam capacidade usam o incremento de patch;
 - `1.0.0`: primeira versão declarada estável, somente após os critérios de lançamento próprios.

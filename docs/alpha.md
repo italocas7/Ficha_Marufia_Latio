@@ -1,6 +1,6 @@
 # Marufia Online Alpha — Fase 50
 
-O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. O ciclo atual é **0.3.0** e automatiza o check de perícias em resultados Extremo ou Crítico natural, além de mostrar a versão atual no cabeçalho do site e do aplicativo Windows. A compatibilidade do schema v5 e os recursos online existentes permanecem preservados.
+O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. O ciclo atual é **0.3.0** e automatiza o check de perícias em resultados Extremo ou Crítico natural, corrige o custo de Aptidão a partir do nível 7 e mostra a versão atual no cabeçalho do site e do aplicativo Windows. A compatibilidade do schema v5 e os recursos online existentes permanecem preservados.
 
 ## Escopo obrigatório
 
