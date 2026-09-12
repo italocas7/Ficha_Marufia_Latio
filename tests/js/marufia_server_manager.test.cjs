@@ -17,6 +17,7 @@ const configureStartup = script("configure-startup.ps1");
 const removeStartup = script("remove-startup.ps1");
 const runStartup = script("run-startup.ps1");
 const safeDockerStart = script("start-docker-safe.ps1");
+const manualLauncher = read("Abrir Marufia Server.cmd");
 
 test("health check covers every published server component", () => {
   for (const name of ["Database", "Auth", "REST API", "Realtime", "Storage", "Tunnel"]) {
@@ -90,7 +91,18 @@ test("Docker startup repairs only a verified per-user registration", () => {
   assert.match(safeDockerStart, /Get-AuthenticodeSignature/);
   assert.match(safeDockerStart, /O=Docker Inc/);
   assert.match(safeDockerStart, /New-ItemProperty[\s\S]*-Name "InstallPath"/);
+  assert.match(safeDockerStart, /DisplayVersion/);
+  assert.match(safeDockerStart, /UninstallString/);
+  assert.match(safeDockerStart, /NoModify/);
   assert.doesNotMatch(safeDockerStart, /HKLM:/);
+});
+
+test("manual launcher opens the manager with an installed PowerShell 7", () => {
+  assert.match(manualLauncher, /LocalAppData%\\Programs\\PowerShell\\7\\pwsh\.exe/i);
+  assert.match(manualLauncher, /PowerShell\\7\\pwsh\.exe/);
+  assert.match(manualLauncher, /server-manager\.ps1/);
+  assert.match(manualLauncher, /-Action "%~1"/);
+  assert.doesNotMatch(manualLauncher, /WindowsApps|codex-runtimes|service_role|JWT_SECRET/i);
 });
 
 test("manager and main guide document manual operation and recovery", () => {
@@ -98,6 +110,7 @@ test("manager and main guide document manual operation and recovery", () => {
   const mainDoc = read("docs", "MARUFIA_SERVER.md");
   const phaseDoc = read("docs", "MARUFIA_SERVER_PHASE_12.md");
   assert.match(managerDoc, /server-manager\.ps1/);
+  assert.match(managerDoc, /dois cliques[\s\S]*Marufia Server/);
   assert.match(managerDoc, /Inicialização com o Windows/);
   assert.match(mainDoc, /Backup e restauração/);
   assert.match(mainDoc, /Transferir para outro computador/);

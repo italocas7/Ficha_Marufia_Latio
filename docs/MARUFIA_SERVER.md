@@ -23,7 +23,10 @@ arquivos locais ignorados pelo Git e nunca devem ser enviados em conversa.
 
 ## Uso diário
 
-Abra o painel a partir da pasta do projeto:
+Abra o atalho **Marufia Server** na Área de Trabalho e escolha a opção desejada.
+Também é possível abrir `Abrir Marufia Server.cmd` na pasta principal do projeto.
+
+Para abrir pelo PowerShell:
 
 ```powershell
 .\marufia-server\scripts\server-manager.ps1

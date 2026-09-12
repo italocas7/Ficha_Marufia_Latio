@@ -5,7 +5,11 @@ Mestre. Ele não altera fichas, regras do RPG ou dados ao apenas ser aberto.
 
 ## Abrir o painel
 
-Na pasta do projeto, execute:
+No uso diário, dê dois cliques no atalho **Marufia Server** da Área de Trabalho.
+Ele abre este painel sem exigir que o Mestre digite comandos.
+
+Como alternativa, na pasta do projeto, dê dois cliques em
+`Abrir Marufia Server.cmd` ou execute:
 
 ```powershell
 .\marufia-server\scripts\server-manager.ps1
