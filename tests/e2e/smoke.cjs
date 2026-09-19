@@ -54,8 +54,8 @@ async function exercise(page, url, viewport) {
   await page.goto(url);
   await page.waitForTimeout(50);
   const versionLabel = page.locator("[data-marufia-version]");
-  assert.equal(await versionLabel.textContent(), "v0.3.0", "O cabeçalho deve mostrar a versão atual da ficha.");
-  assert.equal(await versionLabel.getAttribute("aria-label"), "Versão 0.3.0 do Marufia Online");
+  assert.equal(await versionLabel.textContent(), "v0.3.1", "O cabeçalho deve mostrar a versão atual da ficha.");
+  assert.equal(await versionLabel.getAttribute("aria-label"), "Versão 0.3.1 do Marufia Online");
   assert.equal(updateManifestRequests, 0, "O navegador comum não pode consultar atualizações do aplicativo Windows.");
   assert.equal(await page.locator("[data-online-app-update-modal]").count(), 0, "O navegador comum não pode receber o aviso do aplicativo Windows.");
   await page.getByRole("button", { name: "Criar ficha nova" }).click();
@@ -216,6 +216,23 @@ async function exercise(page, url, viewport) {
   await ownCharacters.waitFor({ state: "visible" });
   assert.match(await ownCharacters.innerText(), /Teste de regressão/);
   assert.match(await ownCharacters.innerText(), /Schema v5/);
+  assert.equal(await ownCharacters.locator("[data-online-home-action='select-character'][aria-pressed='true']").count(), 1, "A primeira ficha online deve ser selecionada automaticamente.");
+  await ownCharacters.getByRole("button", { name: "Abrir ficha selecionada" }).click();
+  const switchConfirmation = page.locator('[data-online-home-modal][data-online-home-view="character-confirm"]');
+  if (await switchConfirmation.count()) {
+    assert.match(await switchConfirmation.innerText(), /backup/i, "Trocar uma ficha local deve explicar o backup automático.");
+    await switchConfirmation.getByRole("button", { name: "Abrir ficha da conta" }).click();
+  }
+  try {
+    await page.locator("[data-online-home-modal]").waitFor({ state: "detached", timeout: 5000 });
+  } catch {
+    throw new Error(`A ficha da conta não foi aberta: ${await page.locator("[data-online-home-modal]").innerText()}`);
+  }
+  assert.equal(await page.locator('[data-path="character.name"]').inputValue(), "Teste de regressão", "A ficha escolhida na conta deve ser carregada na tela.");
+  await homeButton.click();
+  await page.locator('[data-online-home-modal][data-online-home-view="home"]').waitFor({ state: "visible" });
+  await page.locator('[data-online-home-modal][data-online-home-view="home"]').getByRole("button", { name: /Minhas fichas/i }).click();
+  await page.locator('[data-online-home-modal][data-online-home-view="characters"]').waitFor({ state: "visible" });
   await ownCharacters.getByRole("button", { name: "Voltar ao início" }).click();
   await page.locator('[data-online-home-modal][data-online-home-view="home"]').getByRole("button", { name: /Entrar em campanha/i }).click();
   await page.locator("[data-online-campaign-join-form]").waitFor({ state: "visible" });
@@ -231,7 +248,7 @@ async function exercise(page, url, viewport) {
   assert.match(await onlineSettings.innerText(), /Sincronização/i);
   assert.match(await onlineSettings.innerText(), /ficha (?:está )?vinculada/i);
   assert.match(await onlineSettings.innerText(), /Dados locais/i);
-  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.3\.0/i);
+  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.3\.1/i);
   await settingsModal.getByRole("button", { name: "Modo Escuro" }).click();
   assert.equal(await page.locator("body").evaluate((body) => body.classList.contains("dark")), true);
   assert.equal(await settingsModal.getByRole("button", { name: "Modo Escuro" }).getAttribute("aria-pressed"), "true");
@@ -992,7 +1009,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
         check() {
           window.__marufiaUpdateState.checks += 1;
           return Promise.resolve({
-            version: "0.3.1",
+            version: "0.3.2",
             body: "Versão futura usada somente pelo teste local.",
             close() { window.__marufiaUpdateState.closed += 1; return Promise.resolve(); },
             downloadAndInstall(listener) {
@@ -1058,7 +1075,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
         check() {
           window.__marufiaUpdateState.checks += 1;
           return Promise.resolve({
-            version: "0.3.1",
+            version: "0.3.2",
             body: "Versão futura usada somente pelo teste local.",
             close() { window.__marufiaUpdateState.closed += 1; return Promise.resolve(); },
             downloadAndInstall(listener) {

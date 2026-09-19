@@ -391,11 +391,26 @@ body:not(.dark) {
 }
 
 .online-home-character-card {
+  width: 100%;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px;
   padding: 15px;
+}
+
+.online-home-character-card:hover,
+.online-home-character-card:focus-visible {
+  border-color: var(--online-accent);
+}
+
+.online-home-character-card.is-selected {
+  border-color: var(--online-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--online-accent) 24%, transparent), 0 12px 26px rgba(0, 0, 0, 0.08);
 }
 
 .online-home-character-card > div {

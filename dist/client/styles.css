@@ -305,6 +305,11 @@ button[hidden] {
 }
 
 .online-home-character-card {
+  width: 100%;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -313,6 +318,16 @@ button[hidden] {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--panel-2);
+}
+
+.online-home-character-card:hover,
+.online-home-character-card:focus-visible {
+  border-color: var(--accent);
+}
+
+.online-home-character-card.is-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent);
 }
 
 .online-home-character-card > div {

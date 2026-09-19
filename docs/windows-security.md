@@ -6,7 +6,7 @@
 
 O SmartScreen considera a reputação do arquivo e do publicador. Como os artefatos atuais não têm assinatura, cada nova versão começa sem reputação própria. Uma assinatura válida identifica o publicador e permite construir reputação consistente, mas não garante que o primeiro download de uma versão nova fique sem aviso.
 
-Na versão `0.3.0`, o aplicativo pode abrir somente páginas sob `https://github.com/italocas7/Ficha_Marufia_Latio/releases/*` no navegador padrão. O atualizador oficial pode verificar e instalar somente pacotes aceitos pela assinatura criptográfica incorporada; não habilita shell, acesso genérico ao sistema de arquivos ou outras URLs.
+Na versão `0.3.1`, o aplicativo pode abrir somente páginas sob `https://github.com/italocas7/Ficha_Marufia_Latio/releases/*` no navegador padrão. O atualizador oficial pode verificar e instalar somente pacotes aceitos pela assinatura criptográfica incorporada; não habilita shell, acesso genérico ao sistema de arquivos ou outras URLs.
 
 ## Procedimento seguro para o Alpha sem assinatura
 

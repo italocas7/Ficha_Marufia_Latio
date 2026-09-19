@@ -15,7 +15,7 @@ const versionSource = fs.readFileSync(path.join(root, "src", "online", "version.
 
 test("adopts one consistent Semantic Version for the Alpha product", () => {
   const contract = versionTools.assertVersionContract();
-  assert.equal(contract.packageVersion, "0.3.0");
+  assert.equal(contract.packageVersion, "0.3.1");
   assert.equal(contract.runtime.displayName, "Marufia Online Alpha");
   assert.match(contract.packageVersion, versionTools.SEMVER_PATTERN);
 });
@@ -36,9 +36,9 @@ test("shows the canonical version below the sheet name", () => {
   };
   vm.runInNewContext(versionSource, { window });
   assert.match(index, /data-marufia-version/);
-  assert.equal(label.textContent, "v0.3.0");
-  assert.equal(label.attributes["aria-label"], "Versão 0.3.0 do Marufia Online");
-  assert.equal(window.MARUFIA_VERSION.version, "0.3.0");
+  assert.equal(label.textContent, "v0.3.1");
+  assert.equal(label.attributes["aria-label"], "Versão 0.3.1 do Marufia Online");
+  assert.equal(window.MARUFIA_VERSION.version, "0.3.1");
 });
 
 test("loads the version contract before online consumers", () => {
@@ -48,7 +48,7 @@ test("loads the version contract before online consumers", () => {
 });
 
 test("keeps product, sheet schema, backup, and database versions independent", () => {
-  assert.match(versioningDocument, /Produto.*0\.3\.0/is);
+  assert.match(versioningDocument, /Produto.*0\.3\.1/is);
   assert.match(versioningDocument, /schema da ficha.*v5/is);
   assert.match(versioningDocument, /backup online.*v1/is);
   assert.match(versioningDocument, /migrations.*timestamp/is);
@@ -56,7 +56,7 @@ test("keeps product, sheet schema, backup, and database versions independent", (
 });
 
 test("defines the Alpha progression without creating a release tag", () => {
-  assert.match(versioningDocument, /0\.1\.0.*0\.2\.0.*0\.3\.0.*1\.0\.0/s);
+  assert.match(versioningDocument, /0\.1\.0.*0\.2\.0.*0\.3\.0.*0\.3\.1.*1\.0\.0/s);
   assert.match(versioningDocument, /autorização explícita/i);
   assert.match(versioningDocument, /release.*somente depois.*manifesto/is);
   assert.equal(require("../../package.json").scripts["test:version"], "node tools/check_version.cjs");
