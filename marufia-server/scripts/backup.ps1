@@ -157,3 +157,7 @@ try {
         try { Remove-Item -LiteralPath $lockPath -Force } catch { }
     }
 }
+
+# O gerenciador chama este script no mesmo processo. Limpe qualquer código
+# nativo residual das verificações internas depois de um backup concluído.
+$global:LASTEXITCODE = 0

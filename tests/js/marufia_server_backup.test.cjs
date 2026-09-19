@@ -43,6 +43,7 @@ test("does not declare success before dump, archive, copy, checksum, and key ver
   assert.match(common, /AES-256-GCM/);
   assert.match(common, /PBKDF2-SHA256/);
   assert.match(common, /600000/);
+  assert.match(backup, /\$global:LASTEXITCODE = 0/);
 });
 
 test("keeps daily and weekly restore points and refuses unsafe deletion", () => {

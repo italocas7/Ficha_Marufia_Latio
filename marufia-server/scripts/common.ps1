@@ -425,9 +425,23 @@ function Invoke-MarufiaCompose {
 
     $baseArguments = @(Get-MarufiaComposeArguments)
     $dockerCommand = Resolve-DockerCommand
-    & $dockerCommand @baseArguments @ComposeArguments
-    if ($LASTEXITCODE -ne 0) {
-        throw "O Docker Compose terminou com código $LASTEXITCODE."
+    $ignoreOrphansWasSet = Test-Path -LiteralPath "Env:COMPOSE_IGNORE_ORPHANS"
+    $previousIgnoreOrphans = $env:COMPOSE_IGNORE_ORPHANS
+    try {
+        # O Tunnel usa o mesmo projeto Compose, mas é iniciado separadamente.
+        # Suprimir esse aviso não remove nem altera os containers do Tunnel.
+        $env:COMPOSE_IGNORE_ORPHANS = "true"
+        & $dockerCommand @baseArguments @ComposeArguments
+        $composeExitCode = $LASTEXITCODE
+    } finally {
+        if ($ignoreOrphansWasSet) {
+            $env:COMPOSE_IGNORE_ORPHANS = $previousIgnoreOrphans
+        } else {
+            Remove-Item -LiteralPath "Env:COMPOSE_IGNORE_ORPHANS" -ErrorAction SilentlyContinue
+        }
+    }
+    if ($composeExitCode -ne 0) {
+        throw "O Docker Compose terminou com código $composeExitCode."
     }
 }
 

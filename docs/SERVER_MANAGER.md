@@ -7,6 +7,8 @@ Mestre. Ele não altera fichas, regras do RPG ou dados ao apenas ser aberto.
 
 No uso diário, dê dois cliques no atalho **Marufia Server** da Área de Trabalho.
 Ele abre este painel sem exigir que o Mestre digite comandos.
+Após o Docker ser ligado, o painel aguarda por até três minutos para o banco
+terminar sua recuperação antes de iniciar os demais serviços.
 
 Como alternativa, na pasta do projeto, dê dois cliques em
 `Abrir Marufia Server.cmd` ou execute:

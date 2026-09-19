@@ -83,6 +83,22 @@ test("Docker startup self-heals only the known inaccessible runtime sockets", ()
   assert.doesNotMatch(safeDockerStart, /factory\s+reset|down\s+-v|volume\s+rm|system\s+prune|Remove-Item/i);
 });
 
+test("server waits for PostgreSQL recovery before checking dependent services", () => {
+  const startServer = script("start-server.ps1");
+  const stagedDatabase = /@\("up", "--detach", "--wait", "--wait-timeout", "180", "db"\)/;
+  const fullStack = /@\("up", "--detach", "--wait", "--wait-timeout", "180"\)/;
+  assert.match(startServer, stagedDatabase);
+  assert.match(startServer, fullStack);
+  assert.ok(startServer.search(stagedDatabase) < startServer.search(fullStack));
+  assert.match(startServer, /Aguardando o banco concluir a recuperação/);
+});
+
+test("base startup suppresses only the harmless separate Tunnel warning", () => {
+  assert.match(common, /COMPOSE_IGNORE_ORPHANS/);
+  assert.match(common, /previousIgnoreOrphans/);
+  assert.doesNotMatch(common, /--remove-orphans/);
+});
+
 test("Docker startup repairs only a verified per-user registration", () => {
   assert.match(safeDockerStart, /HKCU:\\SOFTWARE\\Docker Inc\.\\Docker Desktop/);
   assert.match(safeDockerStart, /Uninstall\\Docker Desktop/);
