@@ -6,6 +6,8 @@
   "use strict";
 
   const ROLL_REQUEST_VERSION = 1;
+  const TRAY_DICE = Object.freeze(["d4", "d6", "d8", "d10", "d12", "d20", "d100"]);
+  const TRAY_MAX_DICE = 50;
 
   function drawDie(sides, random) {
     const safeSides = Number(sides);
@@ -146,6 +148,74 @@
     return createRollEngine(createLocalRollProvider(random)).rollSync(request);
   }
 
+  function normalizeTrayPool(value) {
+    if (!Array.isArray(value)) throw new TypeError("Selecione pelo menos um dado.");
+    const counts = new Map();
+    for (const entry of value) {
+      const type = String(entry?.type ?? "");
+      const count = Number(entry?.count);
+      if (!TRAY_DICE.includes(type) || !Number.isSafeInteger(count) || count < 1) {
+        throw new TypeError("A seleção contém um dado inválido.");
+      }
+      counts.set(type, (counts.get(type) ?? 0) + count);
+    }
+    const total = [...counts.values()].reduce((sum, count) => sum + count, 0);
+    if (total < 1 || total > TRAY_MAX_DICE) throw new TypeError("Selecione entre 1 e 50 dados.");
+    return TRAY_DICE.filter((type) => counts.has(type)).map((type) => Object.freeze({ type, count: counts.get(type) }));
+  }
+
+  function trayFormula(pool) {
+    return normalizeTrayPool(pool).map(({ type, count }) => `${count}${type}`).join(" + ");
+  }
+
+  function trayD100(tensDigit, units) {
+    if (![tensDigit, units].every((value) => Number.isInteger(value) && value >= 0 && value <= 9)) {
+      throw new TypeError("As dezenas e unidades do d100 devem estar entre 0 e 9.");
+    }
+    return tensDigit === 0 && units === 0 ? 100 : tensDigit * 10 + units;
+  }
+
+  function normalizeTrayResults(pool, value) {
+    const selection = normalizeTrayPool(pool);
+    const types = selection.flatMap(({ type, count }) => Array(count).fill(type));
+    if (!Array.isArray(value) || value.length !== types.length) throw new TypeError("Resultado incompleto da bandeja.");
+    let total = 0;
+    const dice = value.map((entry, index) => {
+      const type = String(entry?.type ?? "");
+      if (type !== types[index]) throw new TypeError("A ordem dos dados não corresponde à seleção.");
+      const result = Number(entry?.result);
+      if (!Number.isSafeInteger(result)) throw new TypeError("Resultado de dado inválido.");
+      if (type === "d100") {
+        const tens = Number(entry?.tens);
+        const units = Number(entry?.units);
+        if (!Number.isInteger(tens) || tens < 0 || tens > 90 || tens % 10 !== 0
+          || !Number.isInteger(units) || units < 0 || units > 9 || trayD100(tens / 10, units) !== result) {
+          throw new TypeError("O d100 não corresponde aos dois d10.");
+        }
+        total += result;
+        return Object.freeze({ type, tens, units, result });
+      }
+      const sides = Number(type.slice(1));
+      if (result < 1 || result > sides) throw new TypeError("Resultado fora das faces do dado.");
+      total += result;
+      return Object.freeze({ type, result });
+    });
+    return Object.freeze({ pool: selection, dice: Object.freeze(dice), total, formula: trayFormula(selection) });
+  }
+
+  function rollTray(pool, random = Math.random) {
+    const selection = normalizeTrayPool(pool);
+    const dice = selection.flatMap(({ type, count }) => Array.from({ length: count }, () => {
+      if (type === "d100") {
+        const tens = drawDie(10, random) - 1;
+        const units = drawDie(10, random) - 1;
+        return { type, tens: tens * 10, units, result: trayD100(tens, units) };
+      }
+      return { type, result: drawDie(Number(type.slice(1)), random) };
+    }));
+    return normalizeTrayResults(selection, dice);
+  }
+
   return {
     ROLL_REQUEST_VERSION,
     createRollResult,
@@ -157,5 +227,12 @@
     createRollEngine,
     rollDie,
     rollD100,
+    TRAY_DICE,
+    TRAY_MAX_DICE,
+    normalizeTrayPool,
+    normalizeTrayResults,
+    trayFormula,
+    trayD100,
+    rollTray,
   };
 });

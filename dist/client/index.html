@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="marufia_latio_design.css">
     <link rel="stylesheet" href="marufia_online_design.css">
+    <link rel="stylesheet" href="dice_tray.css">
   </head>
   <body>
     <header class="topbar">
@@ -51,6 +52,7 @@
           <span class="auth-status-dot" aria-hidden="true"></span>
           <span id="onlineAccountLabel" class="account-label">Conta</span>
         </button>
+        <button id="diceTrayButton" class="ghost dice-header-button" type="button" aria-label="Abrir bandeja de dados" title="Bandeja de dados"><span aria-hidden="true">⚄</span><span>Dados</span></button>
         <button class="icon-button settings-button" type="button" data-action="open-settings" title="Configurações" aria-label="Configurações">⚙</button>
       </div>
     </header>
@@ -60,6 +62,8 @@
 
     <div id="modalRoot"></div>
     <div id="toastRoot" class="toast-root" aria-live="assertive" aria-atomic="true"></div>
+    <div id="diceTrayRoot"></div>
+    <div id="diceNotificationRoot" aria-live="polite"></div>
 
     <script src="data.js"></script>
     <script src="item_descriptions.js"></script>
@@ -92,6 +96,7 @@
     <script src="src/online/app_update.js"></script>
     <script src="src/online/rolls.js"></script>
     <script src="src/online/live_rolls.js"></script>
+    <script src="src/online/dice_tray.js"></script>
     <script src="src/online/character_conflicts.js"></script>
   </body>
 </html>

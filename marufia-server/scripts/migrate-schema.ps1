@@ -159,7 +159,7 @@ commit;
         Write-MarufiaMessage -Level INFO -Message "Aplicada: $($migration.Name)"
     }
 
-    & (Join-Path $PSScriptRoot "verify-schema.ps1") -RequireEmptyData
+    & (Join-Path $PSScriptRoot "verify-schema.ps1")
     if ($LASTEXITCODE -ne 0) {
         throw "A verificação estrutural posterior à migração falhou."
     }

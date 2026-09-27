@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
@@ -108,15 +109,21 @@ test("keeps schema migration separate, checksummed, backed up, and transactional
   const migrations = fs.readdirSync(path.join(root, "supabase", "migrations"))
     .filter((name) => name.endsWith(".sql"))
     .sort();
-  assert.equal(manifest.length, 26);
+  assert.equal(manifest.length, 28);
   assert.deepEqual(manifest.map((line) => line.split(/ {2}/)[1]), migrations);
-  for (const line of manifest) assert.match(line, /^[0-9a-f]{64}  [0-9]{14}_[A-Za-z0-9_]+\.sql$/);
+  for (const line of manifest) {
+    assert.match(line, /^[0-9a-f]{64}  [0-9]{14}_[A-Za-z0-9_]+\.sql$/);
+    const [digest, filename] = line.split(/ {2}/);
+    const actual = crypto.createHash("sha256").update(fs.readFileSync(path.join(root, "supabase", "migrations", filename))).digest("hex");
+    assert.equal(actual, digest, `${filename} não corresponde ao manifesto de migrations.`);
+  }
 
   const migrate = read("scripts/migrate-schema.ps1");
   assert.match(migrate, /Get-FileHash[\s\S]+SHA256/);
   assert.match(migrate, /pg_dump --format=custom/);
   assert.match(migrate, /pg_restore --list/);
   assert.match(migrate, /supabase_migrations\.schema_migrations/);
+  assert.doesNotMatch(migrate, /verify-schema\.ps1"\) -RequireEmptyData/, "Migrações em produção preservam contas e dados existentes.");
   assert.doesNotMatch(migrate, /seed\.sql/);
   assert.doesNotMatch(migrate, /down\s+-v|volume\s+rm/i);
 
@@ -124,6 +131,8 @@ test("keeps schema migration separate, checksummed, backed up, and transactional
   assert.match(security, /rls_security\.test\.sql/);
   assert.match(security, /1\\\.\\\.35/);
   assert.match(security, /RequireEmptyData/);
+  const verify = read("scripts/verify-schema.ps1");
+  assert.match(verify, /public\.roll_dice_tray\(uuid,uuid,jsonb,text,text\)/);
 });
 
 test("validates local Auth without exposing credentials or retaining test accounts", () => {

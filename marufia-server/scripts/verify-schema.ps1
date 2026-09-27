@@ -88,7 +88,8 @@ try {
         "public.end_campaign_session(uuid)",
         "public.update_campaign(uuid,text,text)",
         "public.delete_campaign(uuid,text)",
-        "public.clear_campaign_roll_history(uuid)"
+        "public.clear_campaign_roll_history(uuid)",
+        "public.roll_dice_tray(uuid,uuid,jsonb,text,text)"
     )
     foreach ($signature in $rpcSignatures) {
         $safeSignature = $signature.Replace("'", "''")
@@ -131,7 +132,7 @@ select source from (
         }
     }
 
-    Write-MarufiaMessage -Level INFO -Message "Schema aprovado: 8 tabelas, 13 policies, 15 RPCs, 11 gatilhos e 6 publicações Realtime."
+    Write-MarufiaMessage -Level INFO -Message "Schema aprovado: 8 tabelas, 13 policies, 16 RPCs, 11 gatilhos e 6 publicações Realtime."
 } catch {
     Write-MarufiaMessage -Level ERROR -Message $_.Exception.Message
     exit 1

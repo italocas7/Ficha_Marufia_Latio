@@ -1,6 +1,6 @@
 # Versionamento — Fase 47
 
-O produto adota [Semantic Versioning](https://semver.org/lang/pt-BR/) e está na versão **0.3.1**, com a identidade visível **Marufia Online Alpha**. O número canônico fica em `package.json` e precisa coincidir com Tauri, Cargo e a informação exibida no aplicativo e no site. O manifesto público só avança depois que a release correspondente existe.
+O produto adota [Semantic Versioning](https://semver.org/lang/pt-BR/) e está em preparação na versão **0.4.0**, com a identidade visível **Marufia Online Alpha**. O número canônico fica em `package.json` e precisa coincidir com Tauri, Cargo e a informação exibida no aplicativo e no site. O manifesto público permanece em `0.3.1` até que a nova release exista.
 
 Durante o desenvolvimento inicial:
 
@@ -12,11 +12,12 @@ Durante o desenvolvimento inicial:
 - `0.2.4`: estabiliza a rolagem do Painel do Mæstre e unifica a navegação entre Campanha, Painel do Mæstre e Rolagens;
 - `0.3.0`: marca automaticamente perícias após Extremo ou Crítico natural, corrige o custo de Aptidão a partir do nível 7 e identifica a versão no cabeçalho;
 - `0.3.1`: permite escolher e carregar uma ficha salva na conta, com backup local e sincronização segura durante a troca;
-- `0.4.0` e demais versões `0.x`: novos ciclos compatíveis do Alpha;
+- `0.4.0`: bandeja de dados com rolagens locais e online, temas e histórico;
+- demais versões `0.x`: novos ciclos compatíveis do Alpha;
 - correções que não acrescentam capacidade usam o incremento de patch;
 - `1.0.0`: primeira versão declarada estável, somente após os critérios de lançamento próprios.
 
-O rótulo **Alpha** descreve o canal atual e não é acrescentado ao número `0.3.1`. Assim, o instalador conserva um número aceito pelo empacotamento Windows enquanto a interface comunica claramente que o produto ainda está em desenvolvimento.
+O rótulo **Alpha** descreve o canal atual e não é acrescentado ao número `0.4.0`. Assim, o instalador conserva um número aceito pelo empacotamento Windows enquanto a interface comunica claramente que o produto ainda está em desenvolvimento.
 
 ## Contratos independentes
 

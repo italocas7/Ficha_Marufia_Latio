@@ -16,7 +16,7 @@ const deliverableExecutable = path.join(releaseRoot, "Marufia.exe");
 const deliverableInstaller = path.join(releaseRoot, "bundle", "Marufia-Setup.exe");
 const deliverableSignature = path.join(releaseRoot, "bundle", "Marufia-Setup.exe.sig");
 const artifactManifestPath = path.join(releaseRoot, "bundle", "windows-artifacts.json");
-const updaterManifestPath = path.join(root, "tauri-update.json");
+const updaterManifestPath = path.join(releaseRoot, "bundle", "tauri-update.json");
 const releaseDownloadRoot = "https://github.com/italocas7/Ficha_Marufia_Latio/releases/download";
 
 function assertInside(parent, target) {
@@ -92,6 +92,10 @@ function runTauriBuild(publicConfig, environment = process.env) {
   const overlayConfig = tauriConfigOverlay(publicConfig);
   const overlay = JSON.stringify(overlayConfig);
   const buildEnvironment = { ...environment, LATIO_NODE: process.execPath };
+  const pathKey = Object.keys(buildEnvironment).find((key) => key.toLowerCase() === "path") ?? "PATH";
+  buildEnvironment[pathKey] = [path.dirname(process.execPath), buildEnvironment[pathKey]]
+    .filter(Boolean)
+    .join(path.delimiter);
   run(process.execPath, [tauriCli, "build", "--bundles", "nsis", "--config", overlay], {
     env: buildEnvironment,
     label: "Build Windows",
@@ -156,14 +160,35 @@ function readUpdaterSignature(filePath) {
   return signature;
 }
 
-function writeUpdaterManifest(version, signature) {
+function readUpdaterReleaseInfo(version) {
   const legacy = JSON.parse(fs.readFileSync(path.join(root, "app-update.json"), "utf8"));
-  if (legacy.version !== version) throw new Error("O manifesto legado não corresponde à versão Windows.");
+  if (legacy.version === version) {
+    return { notes: legacy.notes, publishedAt: legacy.publishedAt };
+  }
+
+  const releaseNotesPath = path.join(root, "docs", "releases", `v${version}.md`);
+  if (!fs.statSync(releaseNotesPath, { throwIfNoEntry: false })?.isFile()) {
+    throw new Error(`Notas da release ausentes: docs/releases/v${version}.md.`);
+  }
+  const releaseNotes = fs.readFileSync(releaseNotesPath, "utf8");
+  const title = releaseNotes.match(/^# .+$/m)?.[0]?.trim();
+  const noveltySection = releaseNotes.match(/^## Novidades\s*\r?\n([\s\S]*?)(?=^## |\s*$)/m)?.[1]?.trim();
+  if (!title || !noveltySection) {
+    throw new Error(`Notas da release v${version} não possuem título e novidades válidos.`);
+  }
+  return {
+    notes: `${title}\n\n${noveltySection}`,
+    publishedAt: new Date().toISOString(),
+  };
+}
+
+function writeUpdaterManifest(version, signature) {
+  const releaseInfo = readUpdaterReleaseInfo(version);
   const downloadUrl = `${releaseDownloadRoot}/v${version}/Marufia-Setup.exe`;
   const manifest = {
     version,
-    notes: legacy.notes,
-    pub_date: legacy.publishedAt,
+    notes: releaseInfo.notes,
+    pub_date: releaseInfo.publishedAt,
     platforms: {
       "windows-x86_64": {
         url: downloadUrl,
@@ -176,7 +201,7 @@ function writeUpdaterManifest(version, signature) {
 }
 
 function copyDeliverables(generatedInstaller, publicConfig) {
-  for (const destination of [deliverableExecutable, deliverableInstaller, deliverableSignature, artifactManifestPath]) {
+  for (const destination of [deliverableExecutable, deliverableInstaller, deliverableSignature, artifactManifestPath, updaterManifestPath]) {
     assertInside(releaseRoot, destination);
   }
   if (!fs.existsSync(sourceExecutable)) {

@@ -4,6 +4,8 @@ __pycache__/
 *.pyc
 test-results/
 playwright-report/
+/tmp/release-prep-*
+/tmp/windows-signing-build.log
 /debug.log
 .env
 .env.*

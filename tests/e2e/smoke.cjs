@@ -54,8 +54,8 @@ async function exercise(page, url, viewport) {
   await page.goto(url);
   await page.waitForTimeout(50);
   const versionLabel = page.locator("[data-marufia-version]");
-  assert.equal(await versionLabel.textContent(), "v0.3.1", "O cabeçalho deve mostrar a versão atual da ficha.");
-  assert.equal(await versionLabel.getAttribute("aria-label"), "Versão 0.3.1 do Marufia Online");
+  assert.equal(await versionLabel.textContent(), "v0.4.0", "O cabeçalho deve mostrar a versão atual da ficha.");
+  assert.equal(await versionLabel.getAttribute("aria-label"), "Versão 0.4.0 do Marufia Online");
   assert.equal(updateManifestRequests, 0, "O navegador comum não pode consultar atualizações do aplicativo Windows.");
   assert.equal(await page.locator("[data-online-app-update-modal]").count(), 0, "O navegador comum não pode receber o aviso do aplicativo Windows.");
   await page.getByRole("button", { name: "Criar ficha nova" }).click();
@@ -82,8 +82,61 @@ async function exercise(page, url, viewport) {
   let name = page.locator('[data-path="character.name"]');
   await name.fill("Teste de regressão");
   assert.equal(await name.inputValue(), "Teste de regressão", "Campo Nome não permaneceu editável.");
+  await page.locator("#diceTrayButton").click();
+  const dicePanel = page.locator(".dice-panel");
+  await dicePanel.waitFor({ state: "visible" });
+  assert.equal(await dicePanel.locator("[data-dice-visibility]").inputValue(), "public");
+  await dicePanel.locator('[data-dice-action="add"][data-die="d4"]').click();
+  await dicePanel.locator('[data-dice-action="add"][data-die="d100"]').click();
+  await dicePanel.locator('[data-dice-action="palette"]').click();
+  await dicePanel.locator('[data-dice-action="theme"][data-theme="gold"]').click();
+  await dicePanel.locator("[data-dice-visibility]").selectOption("secret");
+  await dicePanel.locator('[data-dice-action="roll"]').click();
+  await dicePanel.locator(".dice-result-total strong").waitFor();
+  assert.equal((await dicePanel.locator(".dice-result-die").count()), 2);
+  assert.match(await dicePanel.locator(".dice-result-head").innerText(), /ROLAGEM LOCAL/);
+  assert.equal(await dicePanel.getAttribute("data-dice-theme"), "gold");
+  assert.equal(await dicePanel.evaluate((panel) => panel.scrollWidth <= panel.clientWidth + 1), true, "A bandeja não pode ter scroll horizontal.");
+  await dicePanel.evaluate((panel) => {
+    const visible = [...panel.querySelectorAll("button:not([disabled]), select:not([disabled]), summary")]
+      .filter((item) => item.getClientRects().length);
+    visible.at(-1).focus();
+  });
+  await page.keyboard.press("Tab");
+  assert.equal(await dicePanel.evaluate((panel) => panel.contains(document.activeElement)), true, "O foco deve permanecer na bandeja.");
+  const currentTheme = await page.evaluate(() => document.body.classList.contains("dark"));
+  const firstSurface = await dicePanel.evaluate((panel) => getComputedStyle(panel).backgroundColor);
+  if (process.env.MARUFIA_DICE_SCREENSHOTS === "1") {
+    const imageDirectory = path.join(projectRoot, "test-results", "dice-tray");
+    fs.mkdirSync(imageDirectory, { recursive: true });
+    await dicePanel.screenshot({ path: path.join(imageDirectory, `${viewport.width}-${currentTheme ? "dark" : "light"}.png`) });
+  }
+  await page.evaluate(() => document.body.classList.toggle("dark"));
+  const alternateSurface = await dicePanel.evaluate((panel) => getComputedStyle(panel).backgroundColor);
+  assert.notEqual(firstSurface, alternateSurface, "A bandeja deve respeitar os dois temas da ficha.");
+  if (process.env.MARUFIA_DICE_SCREENSHOTS === "1") {
+    const imageDirectory = path.join(projectRoot, "test-results", "dice-tray");
+    fs.mkdirSync(imageDirectory, { recursive: true });
+    await dicePanel.screenshot({ path: path.join(imageDirectory, `${viewport.width}-${currentTheme ? "light" : "dark"}.png`) });
+  }
+  await page.evaluate(() => document.body.classList.toggle("dark"));
+  if (viewport.width <= 900) {
+    await dicePanel.locator('[data-dice-action="tab"][data-tab="history"]').click();
+    assert.equal(await dicePanel.locator(".dice-history-item").count(), 1);
+  } else {
+    assert.equal(await dicePanel.locator(".dice-history-item").count(), 1);
+  }
+  await page.keyboard.press("Escape");
+  await dicePanel.waitFor({ state: "detached" });
+  assert.equal(await page.locator("#diceTrayButton").evaluate((button) => button === document.activeElement), true);
   await page.waitForTimeout(350);
   await page.reload();
+  await page.locator("#diceTrayButton").click();
+  assert.equal(await page.locator(".dice-panel").getAttribute("data-dice-theme"), "gold", "A cor dos dados deve persistir.");
+  assert.equal(await page.locator(".dice-panel [data-dice-visibility]").inputValue(), "secret", "A privacidade padrão deve persistir.");
+  if (viewport.width <= 900) await page.locator('[data-dice-action="tab"][data-tab="history"]').click();
+  assert.equal(await page.locator(".dice-history-item").count(), 1, "Rolagem local deve persistir somente no dispositivo.");
+  await page.keyboard.press("Escape");
   name = page.locator('[data-path="character.name"]');
   assert.equal(await name.inputValue(), "Teste de regressão", "O texto não persistiu enquanto o campo estava focado.");
 
@@ -248,7 +301,7 @@ async function exercise(page, url, viewport) {
   assert.match(await onlineSettings.innerText(), /Sincronização/i);
   assert.match(await onlineSettings.innerText(), /ficha (?:está )?vinculada/i);
   assert.match(await onlineSettings.innerText(), /Dados locais/i);
-  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.3\.1/i);
+  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.4\.0/i);
   await settingsModal.getByRole("button", { name: "Modo Escuro" }).click();
   assert.equal(await page.locator("body").evaluate((body) => body.classList.contains("dark")), true);
   assert.equal(await settingsModal.getByRole("button", { name: "Modo Escuro" }).getAttribute("aria-pressed"), "true");
@@ -962,6 +1015,55 @@ async function exercise(page, url, viewport) {
   await playerCampaignDetail.getByRole("button", { name: "Rolagens", exact: true }).click();
   await playerPanel.waitFor({ state: "visible" });
   await page.locator("#modalRoot").getByRole("button", { name: "Fechar" }).last().click();
+  await page.locator("#diceTrayButton").click();
+  await page.waitForFunction((campaignId) => {
+    const panel = document.querySelector(".dice-panel");
+    return panel && panel.querySelector(".dice-status")?.textContent?.includes("Conectado à mesa")
+      && window.MARUFIA_DICE_TRAY && campaignId;
+  }, playerVisibility.campaignId);
+  const onlineDice = page.locator(".dice-panel");
+  if (viewport.width <= 900) await onlineDice.locator('[data-dice-action="tab"][data-tab="tray"]').click();
+  await onlineDice.locator('[data-dice-action="palette"]').click();
+  await onlineDice.locator('[data-dice-action="theme"][data-theme="gold"]').click();
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem("marufia-e2e-profile") || "{}").dice_theme === "gold");
+  if (await onlineDice.locator('[data-dice-action="clear"]').isEnabled()) await onlineDice.locator('[data-dice-action="clear"]').click();
+  await onlineDice.locator('[data-dice-action="add"][data-die="d20"]').click();
+  await onlineDice.locator("[data-dice-visibility]").selectOption("public");
+  await onlineDice.locator('[data-dice-action="roll"]').click();
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem("marufia-e2e-rolls") || "[]").filter((roll) => roll.roll_type === "tray").length === 1);
+  await onlineDice.locator("[data-dice-visibility]").selectOption("secret");
+  await onlineDice.locator('[data-dice-action="roll"]').click();
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem("marufia-e2e-profile") || "{}").default_roll_visibility === "secret");
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem("marufia-e2e-rolls") || "[]").filter((roll) => roll.roll_type === "tray").length === 2);
+  const onlineTrayRows = await page.evaluate(() => JSON.parse(localStorage.getItem("marufia-e2e-rolls") || "[]").filter((roll) => roll.roll_type === "tray"));
+  assert.deepEqual(onlineTrayRows.map((roll) => roll.visibility), ["public", "secret"]);
+  assert.equal(onlineTrayRows.every((roll) => roll.campaign_id === playerVisibility.campaignId && roll.raw_roll.length === 1 && roll.dice_theme === "gold"), true);
+  assert.equal(onlineTrayRows.every((roll) => roll.total === roll.raw_roll[0].result), true);
+  const rejectedTrayRequests = await page.evaluate(async (characterId) => {
+    const client = window.MARUFIA_SUPABASE.getSupabaseClient();
+    const tooMany = await client.rpc("roll_dice_tray", {
+      p_roll_id: crypto.randomUUID(), p_character_id: characterId,
+      p_dice: [{ type: "d20", count: 51 }], p_visibility: "public", p_dice_theme: "gold",
+    });
+    const wrongOwner = await client.rpc("roll_dice_tray", {
+      p_roll_id: crypto.randomUUID(), p_character_id: crypto.randomUUID(),
+      p_dice: [{ type: "d20", count: 1 }], p_visibility: "public", p_dice_theme: "gold",
+    });
+    return [tooMany.error?.code, wrongOwner.error?.code];
+  }, linkedRollTarget.characterId);
+  assert.deepEqual(rejectedTrayRequests, ["22023", "42501"], "A RPC deve rejeitar limite inválido e personagem de outro proprietário.");
+  assert.match(await onlineDice.locator(".dice-result-head").innerText(), /ROLAGEM DA MESA/);
+  if (viewport.width <= 900) await onlineDice.locator('[data-dice-action="tab"][data-tab="history"]').click();
+  assert.equal(await onlineDice.locator(".dice-history-item").count(), 2, "O retorno oficial e o evento Realtime não podem duplicar o resultado.");
+  assert.equal(await onlineDice.locator('[data-dice-action="filter"][data-filter="private"]').count(), 0, "Jogadores não recebem filtro de rolagens privadas do Mæstre.");
+  await page.context().setOffline(true);
+  if (viewport.width <= 900) await onlineDice.locator('[data-dice-action="tab"][data-tab="tray"]').click();
+  await onlineDice.locator('[data-dice-action="roll"]').click();
+  await onlineDice.locator(".dice-result-head").getByText("ROLAGEM LOCAL").waitFor();
+  await page.context().setOffline(false);
+  await page.waitForTimeout(100);
+  assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("marufia-e2e-rolls") || "[]").filter((roll) => roll.roll_type === "tray").length), 2, "Rolagens locais nunca devem ser sincronizadas após reconectar.");
+  await page.keyboard.press("Escape");
   await accountButton.click();
   assert.match(await page.locator("[data-online-auth-modal]").innerText(), /Sessão ativa/);
   assert.match(await page.locator("[data-online-auth-modal]").innerText(), /jogador@example\.com/);
@@ -993,7 +1095,7 @@ async function exercise(page, url, viewport) {
     assert.equal(layout.tabsBeforeApp, true, "As abas devem permanecer antes da ficha no desktop.");
     assert.equal(layout.tabsPosition, "sticky", "As abas devem permanecer visíveis no topo durante a rolagem no desktop.");
     assert.ok(layout.tabsScrollWidth <= layout.tabsClientWidth + 1, "As abas não devem transbordar no desktop.");
-  } else {
+  } else if (viewport.width <= 520) {
     assert.ok(layout.tabsScrollWidth > layout.tabsClientWidth, "As abas devem ser roláveis no celular.");
   }
   if (errors.length) throw new Error(`Erros novos no navegador: ${errors.join(" | ")}`);
@@ -1009,7 +1111,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
         check() {
           window.__marufiaUpdateState.checks += 1;
           return Promise.resolve({
-            version: "0.3.2",
+            version: "0.4.1",
             body: "Versão futura usada somente pelo teste local.",
             close() { window.__marufiaUpdateState.closed += 1; return Promise.resolve(); },
             downloadAndInstall(listener) {
@@ -1075,7 +1177,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
         check() {
           window.__marufiaUpdateState.checks += 1;
           return Promise.resolve({
-            version: "0.3.2",
+            version: "0.4.1",
             body: "Versão futura usada somente pelo teste local.",
             close() { window.__marufiaUpdateState.closed += 1; return Promise.resolve(); },
             downloadAndInstall(listener) {
@@ -1122,7 +1224,8 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
       console.log("Teste isolado do aviso Windows concluído.");
       return;
     }
-    for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 720 }, { width: 390, height: 844 }]) {
+    for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 720 }, { width: 768, height: 850 }, { width: 390, height: 844 }]
+      .filter((item) => !process.env.MARUFIA_E2E_VIEWPORT || item.width === Number(process.env.MARUFIA_E2E_VIEWPORT))) {
       const context = await browser.newContext({ viewport });
       await exercise(await context.newPage(), `http://127.0.0.1:${port}/`, viewport);
       await context.close();

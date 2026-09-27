@@ -14,7 +14,7 @@
 
   return Object.freeze({
     productName: "Marufia Online",
-    version: "0.3.1",
+    version: "0.4.0",
     channel: "alpha",
     channelLabel: "Alpha",
     displayName: "Marufia Online Alpha",

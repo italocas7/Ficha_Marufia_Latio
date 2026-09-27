@@ -1,6 +1,6 @@
 # Marufia Online Alpha — Fase 50
 
-O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. O ciclo atual é **0.3.1** e permite abrir no site ou no aplicativo uma ficha já salva na conta, preservando a cópia local antes da troca. A compatibilidade do schema v5, o check automático, o custo corrigido de Aptidão e os demais recursos online permanecem preservados.
+O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. A versão **0.4.0** está em preparação com a bandeja de dados; a versão pública permanece **0.3.1** até a nova release. A compatibilidade do schema v5, o check automático, o custo corrigido de Aptidão e os demais recursos online permanecem preservados.
 
 ## Escopo obrigatório
 

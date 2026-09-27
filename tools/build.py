@@ -42,6 +42,7 @@ SCRIPT_ORDER = [
     "src/online/app_update.js",
     "src/online/rolls.js",
     "src/online/live_rolls.js",
+    "src/online/dice_tray.js",
     "src/online/character_conflicts.js",
 ]
 VIEWER_SCRIPT_ORDER = [
@@ -63,6 +64,7 @@ REQUIRED_FILES = [
     "styles.css",
     "marufia_latio_design.css",
     "marufia_online_design.css",
+    "dice_tray.css",
     "og.png",
     "_headers",
     "app-update.json",

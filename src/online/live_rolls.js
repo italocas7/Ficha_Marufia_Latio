@@ -16,7 +16,7 @@
 
   const workspaceTools = workspaceToolsInput ?? {};
 
-  const ROLL_COLUMNS = "id,campaign_id,character_id,user_id,character_name,roll_type,skill_name,mode,formula,raw_roll,modifier,target,total,outcome,visibility,created_at";
+  const ROLL_COLUMNS = "id,campaign_id,character_id,user_id,character_name,player_name,roll_type,skill_name,mode,formula,raw_roll,modifier,target,total,outcome,visibility,dice_theme,dice_pool,session_id,created_at";
   const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   const MAX_LIVE_ROLLS = 50;
   const CONNECTION_LABELS = Object.freeze({
@@ -42,6 +42,19 @@
   }
 
   function normalizedLiveRoll(value, rollTools = root?.MARUFIA_ONLINE_ROLLS) {
+    if (value?.roll_type === "tray") {
+      const trayTools = root?.MARUFIA_DICE_TRAY
+        ?? (typeof module === "object" && module.exports ? require("./dice_tray.js") : null);
+      const tray = trayTools?.normalizeTrayRow?.(value);
+      if (!tray) throw liveRollError("LAT-LIVE-ROLL-DATA-001", "O servidor devolveu uma rolagem de dados inválida.");
+      return Object.freeze({
+        id: tray.id, campaignId: tray.campaignId, characterId: tray.characterId,
+        userId: tray.userId, characterName: tray.characterName, playerName: tray.playerName,
+        rollType: "tray", formula: tray.formula, rawRoll: tray.dice, total: tray.total,
+        visibility: tray.visibility, createdAt: tray.createdAt, diceTheme: tray.theme,
+        sessionId: tray.sessionId, target: null, outcome: null, skillName: null,
+      });
+    }
     if (typeof rollTools?.normalizeRollDraft !== "function") {
       throw liveRollError("LAT-LIVE-ROLL-TOOLS-001", "O validador de rolagens não está disponível.");
     }
@@ -210,6 +223,7 @@
       combat: "Combate",
       world_duration: "Duração do Mundo",
       core_damage_reduction: "Núcleo Antebraço",
+      tray: "Bandeja de dados",
     };
     const label = labels[roll?.rollType] ?? "Rolagem";
     return roll?.skillName ? `${label} · ${roll.skillName}` : label;
@@ -228,6 +242,13 @@
   }
 
   function liveRollItemHtml(roll) {
+    if (roll.rollType === "tray") {
+      const results = roll.rawRoll.map((die) => `${die.type}: ${die.result}`).join(" · ");
+      return `<article class="live-roll-card" data-live-roll-id="${escapeHtml(roll.id)}">
+        <div class="live-roll-heading"><div><strong>${escapeHtml(roll.playerName || roll.characterName)}</strong><span>${escapeHtml(roll.characterName)} · Bandeja de dados</span></div><div class="live-roll-meta"><span class="live-roll-visibility" data-visibility="${escapeHtml(roll.visibility)}">${escapeHtml(visibilityLabel(roll.visibility))}</span><time datetime="${escapeHtml(roll.createdAt)}">${escapeHtml(formatRollTime(roll.createdAt))}</time></div></div>
+        <div class="live-roll-values"><div><span>Dados</span><strong>${escapeHtml(roll.formula)}</strong><small>${escapeHtml(results)}</small></div><div><span>Total</span><strong>${escapeHtml(roll.total)}</strong></div></div>
+      </article>`;
+    }
     const outcome = roll.outcome
       ? `<span class="live-roll-outcome ${roll.outcome === "Falha" ? "is-failure" : "is-success"}">${escapeHtml(roll.outcome)}</span>`
       : `<span class="muted small">Sem teste de sucesso</span>`;

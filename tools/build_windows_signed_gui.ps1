@@ -89,26 +89,50 @@ $passwordBox.Clear()
 $form.Dispose()
 
 try {
-    $nodePath = (Get-Command node.exe -ErrorAction Stop).Source
+    $nodeCandidates = @()
+    if (-not [string]::IsNullOrWhiteSpace($env:LATIO_NODE)) {
+        $nodeCandidates += $env:LATIO_NODE
+    }
+    $nodeCommand = Get-Command node.exe -ErrorAction SilentlyContinue
+    if ($nodeCommand) {
+        $nodeCandidates += $nodeCommand.Source
+    }
+    $nodeCandidates += (Join-Path $env:USERPROFILE ".cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe")
+    $nodePath = $nodeCandidates |
+        Where-Object { $_ -and (Test-Path -LiteralPath $_ -PathType Leaf) } |
+        Select-Object -First 1
+    if ([string]::IsNullOrWhiteSpace($nodePath)) {
+        throw "Node.js não foi encontrado. Instale o Node.js ou configure LATIO_NODE com o caminho completo de node.exe."
+    }
     $env:TAURI_SIGNING_PRIVATE_KEY = $KeyPath
     $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD = $password
     $password = $null
+    $logDirectory = Join-Path $projectRoot "tmp"
+    $logPath = Join-Path $logDirectory "windows-signing-build.log"
+    $null = New-Item -ItemType Directory -Path $logDirectory -Force
     Push-Location $projectRoot
     try {
-        & $nodePath "tools\build_windows.cjs"
+        & $nodePath "tools\build_windows.cjs" *> $logPath
         $exitCode = $LASTEXITCODE
     }
     finally {
         Pop-Location
     }
     if ($exitCode -ne 0) {
-        throw "O build assinado retornou o código $exitCode."
+        $details = (Get-Content -LiteralPath $logPath -Tail 18 -ErrorAction SilentlyContinue | Out-String).Trim()
+        if ([string]::IsNullOrWhiteSpace($details)) { $details = "Nenhum detalhe foi retornado pelo build." }
+        if ($details -match "(?i)password|secret|token|private.?key") {
+            $details = "O build retornou um diagnóstico relacionado à assinatura. Consulte o arquivo tmp/windows-signing-build.log sem compartilhar a senha."
+        }
+        throw "O build assinado retornou o código $exitCode.`n$details"
     }
     Write-Output "Os executáveis e a assinatura da versão $releaseVersion foram gerados com sucesso."
     exit 0
 }
 catch {
-    Show-Message "O build assinado não foi concluído. Volte ao Codex para verificarmos a causa sem expor sua senha." "Build interrompido" ([System.Windows.Forms.MessageBoxIcon]::Error)
+    $message = $_.Exception.Message
+    if ($message.Length -gt 1800) { $message = $message.Substring(0, 1800) + "..." }
+    Show-Message "O build assinado não foi concluído:`n`n$message" "Build interrompido" ([System.Windows.Forms.MessageBoxIcon]::Error)
     exit 1
 }
 finally {

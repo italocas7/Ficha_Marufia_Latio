@@ -45,6 +45,9 @@ test("exposes one stable Windows build command and delivery names", () => {
   assert.match(buildScript, /backendMode:\s*publicConfig\.backendMode/);
   assert.match(buildScript, /backendUrl:\s*publicConfig\.supabaseUrl/);
   assert.match(buildScript, /"--config", overlay/);
+  assert.match(buildScript, /path\.dirname\(process\.execPath\)/);
+  assert.match(buildScript, /buildEnvironment\[pathKey\]/);
+  assert.match(buildScript, /const updaterManifestPath = path\.join\(releaseRoot, "bundle", "tauri-update\.json"\)/);
   assert.ok(fs.statSync(path.join(root, "tools", "run_site_build.cjs")).isFile());
   assert.equal(currentReleaseVersion(), packageJson.version);
   assert.match(buildScript, /expectedSuffix/);

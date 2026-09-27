@@ -118,6 +118,11 @@
     function emitRollChange(roll) {
       const snapshot = JSON.parse(JSON.stringify(roll));
       queueMicrotask(() => {
+        const userId = read(SESSION_KEY)?.user?.id;
+        const membership = (read(MEMBERSHIPS_KEY) ?? []).find((item) => (
+          item.campaign_id === snapshot.campaign_id && item.user_id === userId
+        ));
+        if (!membership || (snapshot.visibility === "secret" && snapshot.user_id !== userId && membership.role !== "gm")) return;
         for (const channel of channels) {
           for (const binding of channel.bindings) {
             if (binding.type !== "postgres_changes"
@@ -352,6 +357,53 @@
       async rpc(name, args) {
         const session = read(SESSION_KEY);
         if (!session?.user) return { data: null, error: { code: "42501", message: "authentication required" } };
+        if (name === "roll_dice_tray") {
+          const character = (read(CHARACTERS_KEY) ?? []).find((item) => (
+            item.id === args?.p_character_id && item.owner_id === session.user.id
+          ));
+          const membership = (read(MEMBERSHIPS_KEY) ?? []).find((item) => (
+            item.campaign_id === character?.campaign_id && item.user_id === session.user.id
+          ));
+          if (!character?.campaign_id || !membership) return { data: null, error: { code: "42501", message: "linked campaign character required" } };
+          const allowed = ["d4", "d6", "d8", "d10", "d12", "d20", "d100"];
+          const pool = args?.p_dice;
+          const count = Array.isArray(pool) ? pool.reduce((sum, die) => sum + die.count, 0) : 0;
+          if (!Array.isArray(pool) || count < 1 || count > 50
+            || pool.some((die) => !allowed.includes(die.type) || !Number.isInteger(die.count) || die.count < 1)
+            || new Set(pool.map((die) => die.type)).size !== pool.length
+            || !["public", "secret"].includes(args?.p_visibility)
+            || !["wine", "azure", "forest", "amethyst", "gold", "obsidian", "ivory", "copper", "rose", "turquoise"].includes(args?.p_dice_theme)) {
+            return { data: null, error: { code: "22023", message: "invalid dice request" } };
+          }
+          const rolls = read(ROLLS_KEY) ?? [];
+          if (rolls.some((roll) => roll.id === args.p_roll_id)) return { data: null, error: { code: "23505", message: "roll identifier already used" } };
+          const dicePool = allowed.filter((type) => pool.some((die) => die.type === type))
+            .map((type) => ({ type, count: pool.find((die) => die.type === type).count }));
+          const results = dicePool.flatMap(({ type, count: diceCount }) => Array.from({ length: diceCount }, () => {
+            const randomDigit = () => crypto.getRandomValues(new Uint32Array(1))[0] % 10;
+            if (type === "d100") {
+              const tens = randomDigit() * 10;
+              const units = randomDigit();
+              return { type, tens, units, result: tens === 0 && units === 0 ? 100 : tens + units };
+            }
+            return { type, result: crypto.getRandomValues(new Uint32Array(1))[0] % Number(type.slice(1)) + 1 };
+          }));
+          const roll = {
+            id: args.p_roll_id, campaign_id: character.campaign_id, character_id: character.id,
+            user_id: session.user.id, character_name: character.name,
+            player_name: read(PROFILE_KEY)?.display_name || character.name,
+            roll_type: "tray", skill_name: null, mode: "normal",
+            formula: dicePool.map(({ type, count: diceCount }) => `${diceCount}${type}`).join(" + "),
+            raw_roll: results, modifier: 0, target: null,
+            total: results.reduce((sum, die) => sum + die.result, 0), outcome: null,
+            visibility: args.p_visibility, dice_theme: args.p_dice_theme, dice_pool: dicePool,
+            session_id: null, created_at: new Date().toISOString(),
+          };
+          rolls.push(roll);
+          write(ROLLS_KEY, rolls);
+          emitRollChange(roll);
+          return { data: JSON.parse(JSON.stringify(roll)), error: null };
+        }
         if (name === "save_character_state") {
           await new Promise((resolve) => setTimeout(resolve, 250));
           if (read(CHARACTER_FAILURE_KEY)) return { data: null, error: { code: "NETWORK", message: "fetch failed" } };
@@ -663,9 +715,19 @@
       },
       from(table) {
         if (table === "profiles") {
+          let update = null;
           return {
             select() { return this; },
-            eq() { return this; },
+            update(value) { update = value; return this; },
+            eq(column, value) {
+              if (update) {
+                const profile = read(PROFILE_KEY);
+                if (!profile || column !== "id" || profile.id !== value) return Promise.resolve({ data: null, error: { code: "42501" } });
+                write(PROFILE_KEY, { ...profile, ...update });
+                return Promise.resolve({ data: null, error: null });
+              }
+              return this;
+            },
             async maybeSingle() { return { data: read(PROFILE_KEY), error: null }; },
           };
         }
@@ -724,6 +786,7 @@
         }
         if (table === "campaign_members") {
           let campaignIds = [];
+          let campaignId = "";
           let selectedUserId = "";
           return {
             select() { return this; },
@@ -733,9 +796,16 @@
               return this;
             },
             eq(column, value) {
-              if (column !== "user_id") throw new Error(`Filtro inesperado: ${column}`);
-              selectedUserId = value;
+              if (column === "user_id") selectedUserId = value;
+              else if (column === "campaign_id") campaignId = value;
+              else throw new Error(`Filtro inesperado: ${column}`);
               return this;
+            },
+            async maybeSingle() {
+              const membership = (read(MEMBERSHIPS_KEY) ?? []).find((item) => (
+                item.campaign_id === campaignId && item.user_id === selectedUserId
+              ));
+              return { data: membership ?? null, error: null };
             },
             async order() {
               const session = read(SESSION_KEY);
@@ -756,11 +826,13 @@
         }
         if (table === "rolls") {
           let campaignId = "";
+          let rollType = "";
           return {
             select() { return this; },
             eq(column, value) {
-              if (column !== "campaign_id") throw new Error(`Filtro inesperado: ${column}`);
-              campaignId = value;
+              if (column === "campaign_id") campaignId = value;
+              else if (column === "roll_type") rollType = value;
+              else throw new Error(`Filtro inesperado: ${column}`);
               return this;
             },
             order() { return this; },
@@ -769,7 +841,7 @@
               const memberships = read(MEMBERSHIPS_KEY) ?? [];
               const rolls = (read(ROLLS_KEY) ?? [])
                 .filter((roll) => {
-                  if (roll.campaign_id !== campaignId) return false;
+                  if (roll.campaign_id !== campaignId || (rollType && roll.roll_type !== rollType)) return false;
                   const membership = memberships.find((item) => (
                     item.campaign_id === roll.campaign_id && item.user_id === session?.user?.id
                   ));
