@@ -1,6 +1,6 @@
 # Versionamento — Fase 47
 
-O produto adota [Semantic Versioning](https://semver.org/lang/pt-BR/) e está em preparação na versão **0.4.0**, com a identidade visível **Marufia Online Alpha**. O número canônico fica em `package.json` e precisa coincidir com Tauri, Cargo e a informação exibida no aplicativo e no site. O manifesto público permanece em `0.3.1` até que a nova release exista.
+O produto adota [Semantic Versioning](https://semver.org/lang/pt-BR/) e está publicado na versão **0.4.0**, com a identidade visível **Marufia Online Alpha**. O número canônico fica em `package.json` e precisa coincidir com Tauri, Cargo e a informação exibida no aplicativo e no site. Os manifestos públicos acompanham a release `v0.4.0`.
 
 Durante o desenvolvimento inicial:
 
@@ -33,10 +33,10 @@ Incrementar o produto não altera automaticamente o JSON da ficha, o banco, prob
 ## Processo de versão
 
 1. Escolher o próximo número conforme a mudança realizada.
-2. Atualizar o número canônico e sincronizar Tauri, Cargo e a informação de execução; `app-update.json` permanece na versão já publicada durante a preparação.
+2. Atualizar o número canônico e sincronizar Tauri, Cargo e a informação de execução; manter `app-update.json` e `tauri-update.json` alinhados à última release publicada.
 3. Executar `pnpm test:version`, o build oficial e a suíte de navegador.
 4. Gerar novamente executável, instalador e hashes.
-5. Publicar primeiro os executáveis e a GitHub Release; somente depois publicar o manifesto no site.
+5. Publicar primeiro os executáveis e a GitHub Release; somente depois publicar os manifestos no site.
 
 A tag, a release e o manifesto público só são enviados após autorização explícita. O aplicativo `0.1.0` não possui o verificador e precisa ser atualizado manualmente uma vez; a partir do `0.2.0`, versões futuras podem exibir o aviso.
 

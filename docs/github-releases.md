@@ -1,15 +1,15 @@
 # GitHub Releases
 
-A versão pública anterior é o **pré-lançamento** `v0.3.1`, com estes dados históricos:
+A versão pública atual é o **pré-lançamento** `v0.4.0`:
 
-- tag: `v0.3.1`;
-- título: **Marufia Online Alpha 0.3.1**;
-- notas: `docs/releases/v0.3.1.md`;
+- tag: `v0.4.0`;
+- título: **Marufia Online Alpha 0.4.0**;
+- notas: `docs/releases/v0.4.0.md`;
 - portátil: `src-tauri/target/release/Marufia.exe`;
 - instalador: `src-tauri/target/release/bundle/Marufia-Setup.exe`;
 - assinatura do atualizador: `src-tauri/target/release/bundle/Marufia-Setup.exe.sig`.
 
-A próxima versão `v0.4.0` ainda está em preparação e não deve reutilizar os executáveis listados acima. As notas preliminares estão em `docs/releases/v0.4.0.md`. Antes de publicar, execute na mesma árvore limpa:
+Antes de uma nova publicação, execute na mesma árvore limpa:
 
 1. `pnpm test:version`;
 2. `pnpm build:windows`;

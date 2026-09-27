@@ -1,6 +1,6 @@
 # Próxima versão — preparação local
 
-Estado: **não publicar ainda**. A versão `v0.4.0` está em preparação; os manifestos públicos continuam em `v0.3.1`.
+Estado: **v0.4.0 publicada**. Este arquivo aguarda a próxima versão.
 
 ## Artefatos preparados
 
@@ -8,21 +8,19 @@ Estado: **não publicar ainda**. A versão `v0.4.0` está em preparação; os ma
 - Windows: `src-tauri/target/release/marufia-online.exe` (compilação de conferência; não é o instalador assinado).
 - Banco: `supabase/migrations/20260926010000_dice_tray.sql` (necessária para rolagens online da bandeja).
 
-## Validação local em 26/09/2026
+## Validação local em 27/09/2026
 
 - `pnpm build:site`: aprovado; 462 testes JavaScript e 12 testes Python.
 - `pnpm test:site`: aprovado em desktop e celular.
 - `pnpm build:desktop`: aprovado; executável de conferência com versão `0.4.0`, sem instalador ou assinatura.
 - `pnpm test:version` e `pnpm test:tauri-config`: aprovados.
 - Verificação do site publicado e do servidor: **não concluída**, pois a conexão retornou `fetch failed` neste ambiente.
-- `pnpm test:release`: **reprovado como esperado**; os artefatos de instalador existentes ainda pertencem à versão anterior.
+- `pnpm test:release`: aprovado; os artefatos correspondem à versão `0.4.0`.
 
-## Antes de publicar
+## Próxima publicação
 
-1. Aplicar a migração ao banco de produção e validar as permissões das rolagens públicas e privadas.
-2. Conferir a versão `0.4.0` no site, Tauri e Cargo, e finalizar `docs/releases/v0.4.0.md`.
-3. Configurar localmente a chave de assinatura do atualizador fora do repositório e executar `pnpm build:windows`.
-4. Validar o instalador, sua assinatura, os hashes e o pacote do site; testar o site publicado e o backend acessíveis pela rede.
-5. Publicar primeiro a GitHub Release com os artefatos assinados; só depois atualizar os manifestos públicos e publicar o site.
+1. Atualizar o número da próxima versão no contrato do produto.
+2. Gerar e validar os novos artefatos Windows.
+3. Publicar primeiro a GitHub Release e só depois atualizar os manifestos públicos.
 
-**Não usar** `src-tauri/target/release/Marufia.exe` nem `src-tauri/target/release/bundle/Marufia-Setup.exe` nesta próxima release: ambos ainda são artefatos da compilação anterior, de 18/09/2026.
+Os artefatos Windows atuais pertencem à release `v0.4.0`.

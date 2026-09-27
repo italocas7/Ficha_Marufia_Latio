@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "appId": "com.marufia.online",
   "channel": "alpha",
-  "version": "0.3.1",
-  "notes": "Permite selecionar e carregar uma ficha salva na conta, com backup automático da ficha local e conclusão dos salvamentos pendentes antes da troca.",
-  "publishedAt": "2026-09-19T00:56:11.559Z",
-  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.3.1"
+  "version": "0.4.0",
+  "notes": "Adiciona a bandeja de dados Marufia com d4, d6, d8, d10, d12, d20 e d100, histórico, temas medievais e rolagens públicas ou privadas.",
+  "publishedAt": "2026-09-27T03:59:28.586Z",
+  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.4.0"
 }

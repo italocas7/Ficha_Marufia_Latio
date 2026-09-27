@@ -1,11 +1,11 @@
 {
-  "version": "0.3.1",
-  "notes": "Permite selecionar e carregar uma ficha salva na conta, com backup automático da ficha local e conclusão dos salvamentos pendentes antes da troca.",
-  "pub_date": "2026-09-19T00:56:11.559Z",
+  "version": "0.4.0",
+  "notes": "Marufia Online Alpha 0.4.0 — bandeja de dados com d4, d6, d8, d10, d12, d20 e d100, histórico, temas medievais e rolagens públicas ou privadas.",
+  "pub_date": "2026-09-27T03:59:28.586Z",
   "platforms": {
     "windows-x86_64": {
-      "url": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/download/v0.3.1/Marufia-Setup.exe",
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTR203cEVudWhOcEVPZFk2KzlwUzlnbDMwTlRSVUI2K3Y3bm9LWGpVL3JmdzY4Q3VqTWNITDhVdkpjcThNQkJrcHpmV0ZBajN5NHVTYkx2TElneno5YWxWbENyWlpQYXdVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg5Nzc5NzYxCWZpbGU6TWFydWZpYSBPbmxpbmVfMC4zLjFfeDY0LXNldHVwLmV4ZQp3ZCtyY2FodjNqeUkyWXZ3TmJWRXpReU8vUmpKZkU3U2VIZUtjUUFzMUNtVVdJSm1uRy9wcTFyVURIZ3BvSjRLMCsrbDB4T0trSU1OcjhIdGhJSjhBdz09Cg=="
+      "url": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/download/v0.4.0/Marufia-Setup.exe",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTR203cEVudWhOcEs5RDM0U2FiOE5xZDBUZzRVTmFFMStCV1h4SXNkb2x6eWJoZmJrT3JSTW1XQnlCQ0JNbUducS9OMzlxWUJvVzZpY3hBSFhtbmc0NmdrZkNXVy94dEEwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzkwNDc5NTU2CWZpbGU6TWFydWZpYSBPbmxpbmVfMC40LjBfeDY0LXNldHVwLmV4ZQptaFA5VnFUcmd5Vi9nZ0tiRm9aVE9IQzUzZS81L0tFZXg0R0laeFE0RStVc2FlTkRxeEk5aVdGVkM3QXBLb09Ebkp1Z1RBSUh2RU91aDY3azI2azVEdz09Cg=="
     }
   }
 }
