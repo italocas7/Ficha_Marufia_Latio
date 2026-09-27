@@ -24,6 +24,21 @@ function Get-MigrationManifest {
     return $entries
 }
 
+function Get-NormalizedMigrationHash {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $source = [System.IO.File]::ReadAllText($Path)
+    $normalized = $source.Replace("`r`n", "`n").Replace("`r", "`n")
+    $bytes = [System.Text.UTF8Encoding]::new($false).GetBytes($normalized)
+    $hasher = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        return [Convert]::ToHexString($hasher.ComputeHash($bytes)).ToLowerInvariant()
+    }
+    finally {
+        $hasher.Dispose()
+    }
+}
+
 function New-SchemaBaselineBackup {
     param([Parameter(Mandatory = $true)][string]$BackupDirectory)
 
@@ -80,7 +95,7 @@ try {
         if (-not $manifest.Contains($migration.Name)) {
             throw "Migration não registrada no manifesto: $($migration.Name)"
         }
-        $actualHash = (Get-FileHash -LiteralPath $migration.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+        $actualHash = Get-NormalizedMigrationHash -Path $migration.FullName
         if ($actualHash -ne $manifest[$migration.Name]) {
             throw "A migration $($migration.Name) mudou após a revisão. Atualize o manifesto conscientemente."
         }

@@ -1,2 +1,6 @@
 # Preserve the official Supabase snapshot byte-for-byte, including upstream formatting.
 marufia-server/supabase/docker/** -whitespace
+
+# Migration checksums are canonical UTF-8/LF on every development and CI platform.
+supabase/migrations/*.sql text eol=lf
+marufia-server/schema/MIGRATIONS.sha256 text eol=lf

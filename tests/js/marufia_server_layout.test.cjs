@@ -114,12 +114,16 @@ test("keeps schema migration separate, checksummed, backed up, and transactional
   for (const line of manifest) {
     assert.match(line, /^[0-9a-f]{64}  [0-9]{14}_[A-Za-z0-9_]+\.sql$/);
     const [digest, filename] = line.split(/ {2}/);
-    const actual = crypto.createHash("sha256").update(fs.readFileSync(path.join(root, "supabase", "migrations", filename))).digest("hex");
+    const normalized = fs.readFileSync(path.join(root, "supabase", "migrations", filename), "utf8")
+      .replace(/\r\n?/g, "\n");
+    const actual = crypto.createHash("sha256").update(normalized, "utf8").digest("hex");
     assert.equal(actual, digest, `${filename} não corresponde ao manifesto de migrations.`);
   }
 
   const migrate = read("scripts/migrate-schema.ps1");
   assert.match(migrate, /Get-FileHash[\s\S]+SHA256/);
+  assert.match(migrate, /Get-NormalizedMigrationHash/);
+  assert.match(migrate, /Replace\("`r`n", "`n"\)\.Replace\("`r", "`n"\)/);
   assert.match(migrate, /pg_dump --format=custom/);
   assert.match(migrate, /pg_restore --list/);
   assert.match(migrate, /supabase_migrations\.schema_migrations/);
