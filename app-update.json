@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "appId": "com.marufia.online",
   "channel": "alpha",
-  "version": "0.4.0",
-  "notes": "Adiciona a bandeja de dados Marufia com d4, d6, d8, d10, d12, d20 e d100, histórico, temas medievais e rolagens públicas ou privadas.",
-  "publishedAt": "2026-09-27T03:59:28.586Z",
-  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.4.0"
+  "version": "0.4.1",
+  "notes": "Adiciona cinco espaços de ficha, exclusão protegida por backup, limite de perícias por campanha, Inspiração persistente, resumo seguro do grupo e sincronização mais resistente.",
+  "publishedAt": "2026-10-01T12:42:12.580Z",
+  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.4.1"
 }

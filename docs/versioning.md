@@ -1,6 +1,6 @@
 # Versionamento — Fase 47
 
-O produto adota [Semantic Versioning](https://semver.org/lang/pt-BR/) e está preparado na versão **0.4.1**, com a identidade visível **Marufia Online Alpha**. O número canônico fica em `package.json` e precisa coincidir com Tauri, Cargo e a informação exibida no aplicativo e no site. Durante a preparação, os manifestos públicos permanecem na última release disponível e só avançam depois que os novos arquivos assinados forem publicados.
+O produto adota [Semantic Versioning](https://semver.org/lang/pt-BR/) e está publicado na versão **0.4.1**, com a identidade visível **Marufia Online Alpha**. O número canônico fica em `package.json` e coincide com Tauri, Cargo, os manifestos públicos e a informação exibida no aplicativo e no site.
 
 Durante o desenvolvimento inicial:
 
