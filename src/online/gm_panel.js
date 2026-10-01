@@ -789,6 +789,10 @@
       }, 80);
     }
 
+    const fallbackRefresh = view.setInterval?.(() => {
+      if (state && document.visibilityState !== "hidden") scheduleReload();
+    }, 10000);
+
     function updateConnection(status) {
       if (!state) return;
       state = { ...state, connection: status === "SUBSCRIBED" ? "live" : ["CHANNEL_ERROR", "TIMED_OUT", "INVALID_PAYLOAD"].includes(status) ? "error" : "loading" };
@@ -1076,6 +1080,7 @@
       service, heartbeat, open, openCharacter, saveHp, savePm, addCondition, removeCondition, addItem, removeItem, startSession, endSession, stop,
       destroy() {
         void stop();
+        if (fallbackRefresh != null) view.clearInterval?.(fallbackRefresh);
         heartbeat.destroy();
         unregisterWorkspace();
         authObserver?.disconnect?.();

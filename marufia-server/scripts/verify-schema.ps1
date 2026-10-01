@@ -61,6 +61,7 @@ try {
         "marufia_add_campaign_owner_after_insert",
         "marufia_campaign_event_session_before_insert",
         "marufia_character_history_after_update",
+        "marufia_character_slots_before_insert",
         "marufia_create_profile_after_signup",
         "marufia_prepare_campaign_before_insert",
         "marufia_prepare_character_before_write",
@@ -89,7 +90,10 @@ try {
         "public.update_campaign(uuid,text,text)",
         "public.delete_campaign(uuid,text)",
         "public.clear_campaign_roll_history(uuid)",
-        "public.roll_dice_tray(uuid,uuid,jsonb,text,text)"
+        "public.roll_dice_tray(uuid,uuid,jsonb,text,text)",
+        "public.update_campaign_details(uuid,text,text,integer)",
+        "public.delete_character(uuid,text,bigint)",
+        "public.list_campaign_party_summary(uuid)"
     )
     foreach ($signature in $rpcSignatures) {
         $safeSignature = $signature.Replace("'", "''")
@@ -132,7 +136,7 @@ select source from (
         }
     }
 
-    Write-MarufiaMessage -Level INFO -Message "Schema aprovado: 8 tabelas, 13 policies, 16 RPCs, 11 gatilhos e 6 publicações Realtime."
+    Write-MarufiaMessage -Level INFO -Message "Schema aprovado: 8 tabelas, 13 policies, 19 RPCs, 12 gatilhos e 6 publicações Realtime."
 } catch {
     Write-MarufiaMessage -Level ERROR -Message $_.Exception.Message
     exit 1

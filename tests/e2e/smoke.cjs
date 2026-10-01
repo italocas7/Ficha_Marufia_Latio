@@ -54,8 +54,8 @@ async function exercise(page, url, viewport) {
   await page.goto(url);
   await page.waitForTimeout(50);
   const versionLabel = page.locator("[data-marufia-version]");
-  assert.equal(await versionLabel.textContent(), "v0.4.0", "O cabeçalho deve mostrar a versão atual da ficha.");
-  assert.equal(await versionLabel.getAttribute("aria-label"), "Versão 0.4.0 do Marufia Online");
+  assert.equal(await versionLabel.textContent(), "v0.4.1", "O cabeçalho deve mostrar a versão atual da ficha.");
+  assert.equal(await versionLabel.getAttribute("aria-label"), "Versão 0.4.1 do Marufia Online");
   assert.equal(updateManifestRequests, 0, "O navegador comum não pode consultar atualizações do aplicativo Windows.");
   assert.equal(await page.locator("[data-online-app-update-modal]").count(), 0, "O navegador comum não pode receber o aviso do aplicativo Windows.");
   await page.getByRole("button", { name: "Criar ficha nova" }).click();
@@ -260,7 +260,7 @@ async function exercise(page, url, viewport) {
   assert.ok(onlineVisual.cardRadius >= 10, "Os cards online devem seguir os cantos do tema oficial.");
   assert.ok(onlineVisual.modalWidth <= onlineVisual.viewportWidth, "O início online não pode exceder a tela.");
   assert.match(await onlineHome.innerText(), /MARUFIA ONLINE/i);
-  assert.match(await onlineHome.innerText(), /1 ficha · 0 campanhas/i);
+  assert.match(await onlineHome.innerText(), /1\/5 fichas · 0 campanhas/i);
   for (const destination of ["Minhas fichas", "Campanhas", "Entrar em campanha", "Configurações"]) {
     assert.equal(await onlineHome.getByRole("button", { name: new RegExp(destination, "i") }).count(), 1, `O início deve mostrar ${destination}.`);
   }
@@ -268,7 +268,7 @@ async function exercise(page, url, viewport) {
   const ownCharacters = page.locator('[data-online-home-modal][data-online-home-view="characters"]');
   await ownCharacters.waitFor({ state: "visible" });
   assert.match(await ownCharacters.innerText(), /Teste de regressão/);
-  assert.match(await ownCharacters.innerText(), /Schema v5/);
+  assert.match(await ownCharacters.innerText(), /Schema v6/);
   assert.equal(await ownCharacters.locator("[data-online-home-action='select-character'][aria-pressed='true']").count(), 1, "A primeira ficha online deve ser selecionada automaticamente.");
   await ownCharacters.getByRole("button", { name: "Abrir ficha selecionada" }).click();
   const switchConfirmation = page.locator('[data-online-home-modal][data-online-home-view="character-confirm"]');
@@ -301,7 +301,7 @@ async function exercise(page, url, viewport) {
   assert.match(await onlineSettings.innerText(), /Sincronização/i);
   assert.match(await onlineSettings.innerText(), /ficha (?:está )?vinculada/i);
   assert.match(await onlineSettings.innerText(), /Dados locais/i);
-  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.4\.0/i);
+  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.4\.1/i);
   await settingsModal.getByRole("button", { name: "Modo Escuro" }).click();
   assert.equal(await page.locator("body").evaluate((body) => body.classList.contains("dark")), true);
   assert.equal(await settingsModal.getByRole("button", { name: "Modo Escuro" }).getAttribute("aria-pressed"), "true");
@@ -321,13 +321,15 @@ async function exercise(page, url, viewport) {
   assert.match(await settingsAccount.innerText(), /Jogador Teste/i);
   await page.locator("#modalRoot .modal").getByRole("button", { name: "Fechar" }).last().click();
 
+  await page.waitForFunction(() => document.querySelector("#onlineSyncStatus")?.dataset.syncState === "online");
+  const writesBeforeBurst = await page.evaluate(() => Number(JSON.parse(localStorage.getItem("marufia-e2e-character-writes") || "0")));
   name = page.locator('[data-path="character.name"]');
   await name.fill("Teste s");
-  await page.waitForTimeout(300);
+  await page.waitForTimeout(100);
   await name.fill("Teste sinc");
-  await page.waitForTimeout(300);
+  await page.waitForTimeout(100);
   await name.fill("Teste sincron");
-  await page.waitForTimeout(300);
+  await page.waitForTimeout(100);
   await name.fill("Teste sincronizado");
   await page.waitForFunction(() => document.querySelector("#onlineSyncStatus")?.dataset.syncState === "syncing");
   assert.equal((await syncStatus.innerText()).trim(), "Sincronizando");
@@ -342,8 +344,8 @@ async function exercise(page, url, viewport) {
     writes: Number(JSON.parse(localStorage.getItem("marufia-e2e-character-writes") || "0")),
   }));
   assert.equal(synchronized.character.name, "Teste sincronizado", "O nome remoto deve ser derivado do estado atualizado.");
-  assert.equal(synchronized.character.schema_version, 5, "A versão remota deve continuar alinhada ao schema v5.");
-  assert.equal(synchronized.writes, 1, "Uma rajada de edições deve produzir somente uma gravação remota.");
+  assert.equal(synchronized.character.schema_version, 6, "A versão remota deve continuar alinhada ao schema v6.");
+  assert.equal(synchronized.writes - writesBeforeBurst, 1, "Uma rajada de edições deve produzir somente uma gravação remota.");
   await page.waitForFunction(() => window.__marufiaRemoteEvents?.some((event) => (
     event.event === "UPDATE" && event.name === "Teste sincronizado"
   )));
@@ -450,6 +452,7 @@ async function exercise(page, url, viewport) {
   const campaignsButton = page.locator("#onlineCampaignsButton");
   await campaignsButton.waitFor({ state: "visible" });
   await campaignsButton.click();
+  await page.getByText("Você ainda não participa de campanhas.").waitFor({ state: "visible" });
   assert.match(await page.locator("[data-online-campaign-modal]").innerText(), /ainda não participa de campanhas/i);
   assert.match(await page.locator("[data-online-campaign-modal]").innerText(), /papel é definido separadamente em cada campanha/i);
   await page.getByRole("button", { name: "Entrar com código" }).click();
@@ -462,16 +465,43 @@ async function exercise(page, url, viewport) {
   await invitedCampaign.waitFor({ state: "visible" });
   assert.match(await invitedCampaign.innerText(), /Você: Jogador/);
   assert.doesNotMatch(await invitedCampaign.innerText(), /participante/);
+  await page.evaluate(() => {
+    const campaigns = JSON.parse(localStorage.getItem("marufia-e2e-campaigns") || "[]");
+    const invited = campaigns.find((item) => item.name === "Campanha Convidada");
+    const characters = JSON.parse(localStorage.getItem("marufia-e2e-characters") || "[]");
+    characters.push({
+      id: "88888888-8888-4888-8888-888888888888",
+      owner_id: "99999999-9999-4999-8999-999999999999",
+      campaign_id: invited.id,
+      name: "Companheiro",
+      state: { resources: { hpCurrent: 17, pmCurrent: 8 }, notes: { history: "Segredo privado" } },
+      revision: 1,
+    });
+    localStorage.setItem("marufia-e2e-characters", JSON.stringify(characters));
+    window.dispatchEvent(new CustomEvent("marufia:remote-character-updated"));
+  });
+  await invitedCampaign.getByText("Companheiro").waitFor({ state: "visible" });
+  assert.match(await invitedCampaign.innerText(), /Vida: 17/);
+  assert.match(await invitedCampaign.innerText(), /PM: 8/);
+  assert.doesNotMatch(await invitedCampaign.innerText(), /Segredo privado|Abrir ficha/);
+  await page.evaluate(() => {
+    const characters = JSON.parse(localStorage.getItem("marufia-e2e-characters") || "[]");
+    localStorage.setItem("marufia-e2e-characters", JSON.stringify(characters.filter((item) => (
+      item.id !== "88888888-8888-4888-8888-888888888888"
+    ))));
+  });
 
   await page.getByRole("button", { name: "Nova campanha" }).click();
   await page.getByLabel("Nome da campanha").fill("A Coroa Partida");
   await page.getByLabel("Descrição").fill("Campanha de teste do Mæstre.");
+  await page.locator("#campaignSkillLimit").fill("90");
   await page.locator("#onlineCampaignForm").getByRole("button", { name: "Criar campanha" }).click();
   const ownedCampaign = page.locator(".campaign-card").filter({ hasText: "A Coroa Partida" });
   await ownedCampaign.waitFor({ state: "visible" });
   assert.match(await ownedCampaign.locator("code").textContent(), /^MRF-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{2}$/);
   assert.match(await ownedCampaign.innerText(), /1 participante/);
   assert.match(await ownedCampaign.innerText(), /Você: Mæstre/);
+  assert.match(await ownedCampaign.innerText(), /Limite de perícias: 90/);
 
   await ownedCampaign.getByRole("button", { name: "Abrir campanha" }).click();
   const campaignDetail = page.locator("[data-online-campaign-detail]");
@@ -499,14 +529,17 @@ async function exercise(page, url, viewport) {
   await ownedCampaign.getByRole("button", { name: "Editar campanha" }).click();
   await page.getByLabel("Nome da campanha").fill("A Coroa Restaurada");
   await page.getByLabel("Descrição").fill("Segundo arco da campanha.");
+  await page.locator("#campaignEditSkillLimit").fill("80");
   await page.getByRole("button", { name: "Salvar alterações" }).click();
   const editedCampaign = page.locator(".campaign-card").filter({ hasText: "A Coroa Restaurada" });
   await editedCampaign.waitFor({ state: "visible" });
   assert.match(await editedCampaign.innerText(), /Segundo arco da campanha/);
+  assert.match(await editedCampaign.innerText(), /Limite de perícias: 80/);
 
   await editedCampaign.getByRole("button", { name: "Editar campanha" }).click();
   await page.getByLabel("Nome da campanha").fill("A Coroa Partida");
   await page.getByLabel("Descrição").fill("Campanha de teste do Mæstre.");
+  await page.locator("#campaignEditSkillLimit").fill("90");
   await page.getByRole("button", { name: "Salvar alterações" }).click();
   await ownedCampaign.waitFor({ state: "visible" });
 
@@ -554,6 +587,9 @@ async function exercise(page, url, viewport) {
   }));
   assert.deepEqual(associationStatus, { sync: "online", realtime: "subscribed", conflict: false }, "A associação não pode criar conflito com um estado de ficha idêntico.");
   await page.locator("#modalRoot").getByRole("button", { name: "Fechar" }).last().click();
+  await page.waitForFunction(() => window.MARUFIA_APP_BRIDGE.campaignSkillPolicy()?.limit === 90);
+  await page.getByRole("tab", { name: /^P&T/ }).click();
+  assert.match(await page.locator("#app").innerText(), /Definido por A Coroa Partida/);
   await page.getByRole("tab", { name: /^Resumo/ }).click();
 
   await page.evaluate(() => {
@@ -620,7 +656,7 @@ async function exercise(page, url, viewport) {
       campaign_id: campaignId,
       name: "Kael",
       state,
-      schema_version: 5,
+      schema_version: 6,
       revision: 1,
       last_change_origin: "player",
       created_at: now,
@@ -643,7 +679,7 @@ async function exercise(page, url, viewport) {
   const restoredHome = page.locator('[data-online-home-modal][data-online-home-view="home"]');
   await restoredHome.waitFor({ state: "visible" });
   await page.waitForFunction(() => document.querySelectorAll("[data-online-home-action='gm']").length === 1);
-  assert.match(await restoredHome.innerText(), /1 ficha · 2 campanhas/i);
+  assert.match(await restoredHome.innerText(), /1\/5 fichas · 2 campanhas/i);
   assert.equal(await restoredHome.getByRole("button", { name: /Painel do Mæstre · A Coroa Partida/i }).count(), 1);
   assert.doesNotMatch(await restoredHome.innerText(), /Painel do Mæstre · Campanha Convidada/i);
   await restoredHome.getByRole("button", { name: /Painel do Mæstre · A Coroa Partida/i }).click();
@@ -1064,6 +1100,31 @@ async function exercise(page, url, viewport) {
   await page.waitForTimeout(100);
   assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("marufia-e2e-rolls") || "[]").filter((roll) => roll.roll_type === "tray").length), 2, "Rolagens locais nunca devem ser sincronizadas após reconectar.");
   await page.keyboard.press("Escape");
+  if (viewport.width === 1440) {
+    await homeButton.click();
+    await page.locator('[data-online-home-action="characters"]').click();
+    await page.locator('[data-online-home-action="new-character"]').click();
+    await page.locator('[data-path="character.name"]').fill("Segundo Personagem");
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem("marufia-e2e-characters") || "[]").some((item) => item.name === "Segundo Personagem"));
+    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("marufia-e2e-characters") || "[]").length), 3);
+    await homeButton.click();
+    await page.locator('[data-online-home-action="characters"]').click();
+    const firstCharacter = page.locator('[data-online-home-action="select-character"]').filter({ hasText: "Edição preservada offline" });
+    await firstCharacter.click();
+    await page.locator('[data-online-home-action="open-character"]').click();
+    await page.locator('[data-online-home-action="confirm-character"]').click();
+    await page.waitForFunction(() => document.querySelector('[data-path="character.name"]')?.value === "Edição preservada offline");
+    assert.equal(await page.locator('[data-path="character.name"]').inputValue(), "Edição preservada offline");
+    await homeButton.click();
+    await page.locator('[data-online-home-action="characters"]').click();
+    await page.locator('[data-online-home-action="select-character"]').filter({ hasText: "Segundo Personagem" }).click();
+    await page.locator('[data-online-home-action="delete-character"]').click();
+    await page.locator("#homeDeleteName").fill("Segundo Personagem");
+    await page.locator("[data-online-home-delete-form]").getByRole("button", { name: "Excluir ficha" }).click();
+    await page.waitForFunction(() => !JSON.parse(localStorage.getItem("marufia-e2e-characters") || "[]").some((item) => item.name === "Segundo Personagem"));
+    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("marufia-latio-backups-v1") || "[]").some((item) => item.label.includes("Antes de excluir Segundo Personagem"))), true);
+    await page.locator('[data-online-home-view="characters"] [data-online-home-action="sheet"]').click();
+  }
   await accountButton.click();
   assert.match(await page.locator("[data-online-auth-modal]").innerText(), /Sessão ativa/);
   assert.match(await page.locator("[data-online-auth-modal]").innerText(), /jogador@example\.com/);
@@ -1111,7 +1172,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
         check() {
           window.__marufiaUpdateState.checks += 1;
           return Promise.resolve({
-            version: "0.4.1",
+            version: "0.4.2",
             body: "Versão futura usada somente pelo teste local.",
             close() { window.__marufiaUpdateState.closed += 1; return Promise.resolve(); },
             downloadAndInstall(listener) {
@@ -1177,7 +1238,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
         check() {
           window.__marufiaUpdateState.checks += 1;
           return Promise.resolve({
-            version: "0.4.1",
+            version: "0.4.2",
             body: "Versão futura usada somente pelo teste local.",
             close() { window.__marufiaUpdateState.closed += 1; return Promise.resolve(); },
             downloadAndInstall(listener) {
@@ -1213,6 +1274,51 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
   }
 }
 
+async function exerciseLocalSheets(browser, url, viewport) {
+  const context = await browser.newContext({ viewport });
+  const page = await context.newPage();
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  try {
+    await page.goto(url);
+    await page.getByRole("button", { name: "Criar ficha nova" }).click();
+    for (let number = 1; number <= 5; number += 1) {
+      await page.locator('[data-path="character.name"]').fill(`Ficha ${number}`);
+      await page.waitForTimeout(320);
+      await page.locator("#onlineHomeButton").click();
+      await page.locator('[data-online-home-action="characters"]').click();
+      const list = page.locator('[data-online-home-view="characters"]');
+      await list.waitFor({ state: "visible" });
+      assert.match(await list.innerText(), new RegExp(`${number}/5 espaços`));
+      if (number < 5) await list.getByRole("button", { name: "Nova ficha" }).click();
+    }
+    const list = page.locator('[data-online-home-view="characters"]');
+    assert.equal(await list.getByRole("button", { name: "Nova ficha" }).isDisabled(), true);
+    await list.locator('[data-online-home-action="open-local"]').filter({ hasText: "Ficha 1" }).click();
+    assert.equal(await page.locator('[data-path="character.name"]').inputValue(), "Ficha 1");
+    await page.getByRole("tab", { name: /^Combate/ }).click();
+    await page.getByRole("button", { name: "Aumentar Inspiração" }).click();
+    await page.getByRole("button", { name: "Aumentar Inspiração" }).click();
+    await page.getByRole("tab", { name: /^P&T/ }).click();
+    assert.match(await page.locator(".inspiration-panel").innerText(), /2 disponível/);
+    await page.reload();
+    assert.equal(await page.locator('[data-path="character.name"]').inputValue(), "Ficha 1");
+    await page.getByRole("tab", { name: /^P&T/ }).click();
+    assert.match(await page.locator(".inspiration-panel").innerText(), /2 disponível/);
+    await page.locator("#onlineHomeButton").click();
+    await page.locator('[data-online-home-action="characters"]').click();
+    await page.locator('[data-online-home-action="delete-local"][aria-label="Excluir Ficha 5"]').click();
+    await page.locator("#homeDeleteName").fill("Ficha 5");
+    await page.locator("[data-online-home-delete-form]").getByRole("button", { name: "Excluir ficha" }).click();
+    await page.waitForFunction(() => window.MARUFIA_SHEET_SLOTS_STORE.list("guest").length === 4);
+    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("marufia-latio-backups-v1") || "[]").some((item) => item.label.includes("Antes de excluir Ficha 5"))), true);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1), true);
+    assert.deepEqual(errors, []);
+  } finally {
+    await context.close();
+  }
+}
+
 (async () => {
   const web = server();
   await new Promise((resolve) => web.listen(0, "127.0.0.1", resolve));
@@ -1230,6 +1336,8 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
       await exercise(await context.newPage(), `http://127.0.0.1:${port}/`, viewport);
       await context.close();
     }
+    await exerciseLocalSheets(browser, `http://127.0.0.1:${port}/`, { width: 1440, height: 900 });
+    await exerciseLocalSheets(browser, `http://127.0.0.1:${port}/`, { width: 390, height: 844 });
     await exerciseWindowsUpdate(browser, `http://127.0.0.1:${port}/`, { width: 1440, height: 900 });
     await exerciseWindowsUpdate(browser, `http://127.0.0.1:${port}/`, { width: 390, height: 844 });
     console.log("Smoke test desktop/mobile concluído.");

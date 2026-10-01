@@ -7,6 +7,7 @@ playwright-report/
 /tmp/release-prep-*
 /tmp/windows-signing-build.log
 /debug.log
+/PUBLICAR_ATUALIZADOR_0.4.0.cmd
 .env
 .env.*
 !.env.example

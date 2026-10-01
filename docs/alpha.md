@@ -1,6 +1,6 @@
 # Marufia Online Alpha — Fase 50
 
-O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. A versão pública atual é **0.4.0**, com a bandeja de dados. A compatibilidade do schema v5, o check automático, o custo corrigido de Aptidão e os demais recursos online permanecem preservados.
+O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. A versão **0.4.1** acrescenta cinco espaços de ficha por conta, controles seguros de criação e exclusão, limite de perícias por campanha e resumo do grupo. A compatibilidade automática com fichas anteriores, o check automático, o custo corrigido de Aptidão e os demais recursos online permanecem preservados.
 
 ## Escopo obrigatório
 
@@ -9,7 +9,7 @@ O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha
 3. **Campanhas:** criação e listagem conforme participação.
 4. **Código de entrada:** convite gerado pelo servidor e entrada como jogador.
 5. **Personagens:** criação, importação e associação à campanha.
-6. **Ficha:** schema v5 e salvamento local prioritário preservados.
+6. **Ficha:** schema v6, migração automática das versões anteriores e salvamento local prioritário preservados.
 7. **Salvamento remoto:** escrita protegida por proprietário e revisão.
 8. **Sincronização:** fila, debounce, modo offline, Realtime e conflitos.
 9. **Rolagens online:** resultado e visibilidade definidos pelo servidor.

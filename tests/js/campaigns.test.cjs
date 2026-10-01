@@ -20,9 +20,10 @@ function fakeClient(options = {}) {
       },
       async rpc(name, args) {
         calls.rpc.push({ name, args });
-        if (name === "update_campaign") {
+        if (name === "list_campaign_party_summary") return { data: options.partySummary ?? [], error: options.partyError ?? null };
+        if (name === "update_campaign_details") {
           return {
-            data: options.updated ?? { id: args.p_campaign_id, name: args.p_name, description: args.p_description, owner_id: "user-1", join_code: "MRF-K7P4-N2" },
+            data: options.updated ?? { id: args.p_campaign_id, name: args.p_name, description: args.p_description, skill_limit: args.p_skill_limit, rules_revision: 2, owner_id: "user-1", join_code: "MRF-K7P4-N2" },
             error: options.updateError ?? null,
           };
         }
@@ -63,7 +64,7 @@ function fakeClient(options = {}) {
                 return { data: null, error: { code: "23505", message: "duplicate key" } };
               }
               return {
-                data: options.created ?? { id: "campaign-1", ...payload, owner_id: "user-1", join_code: "MRF-K7P4-N2" },
+                data: options.created ?? { id: "campaign-1", ...payload, rules_revision: 1, owner_id: "user-1", join_code: "MRF-K7P4-N2" },
                 error: options.createError ?? null,
               };
             },
@@ -102,7 +103,10 @@ test("validates campaign fields without changing their meaning", () => {
   assert.deepEqual(campaignTools.validateCampaignInput({ name: "  A Coroa Partida  ", description: "  Jornada inicial  " }), {
     name: "A Coroa Partida",
     description: "Jornada inicial",
+    skill_limit: 70,
   });
+  assert.equal(campaignTools.validateCampaignInput({ name: "Válida", skillLimit: 85 }).skill_limit, 85);
+  assert.throws(() => campaignTools.validateCampaignInput({ name: "Válida", skillLimit: 0 }), /limite/i);
   assert.throws(() => campaignTools.validateCampaignInput({ name: "" }), /nome/i);
   assert.throws(() => campaignTools.validateCampaignInput({ name: "a".repeat(101) }), /100/);
   assert.throws(() => campaignTools.validateCampaignInput({ name: "Válida", description: "a".repeat(5001) }), /5\.000/);
@@ -146,7 +150,7 @@ test("lists visible campaign memberships with an explicit campaign filter", asyn
 test("creates campaigns without sending owner or invitation code", async () => {
   const { client, calls } = fakeClient();
   const campaign = await campaignTools.createCampaignService(client).create({ name: "A Coroa Partida", description: "Teste" });
-  assert.deepEqual(calls.insert[0], { name: "A Coroa Partida", description: "Teste" });
+  assert.deepEqual(calls.insert[0], { name: "A Coroa Partida", description: "Teste", skill_limit: 70 });
   assert.equal(campaign.owner_id, "user-1");
   assert.match(campaign.join_code, campaignTools.JOIN_CODE_PATTERN);
 });
@@ -209,11 +213,12 @@ test("edits campaigns through the owner-only operation", async () => {
   });
   assert.equal(campaign.name, "A Coroa Restaurada");
   assert.deepEqual(calls.rpc, [{
-    name: "update_campaign",
+    name: "update_campaign_details",
     args: {
       p_campaign_id: "campaign-1",
       p_name: "A Coroa Restaurada",
       p_description: "Segundo arco",
+      p_skill_limit: 70,
     },
   }]);
 });
@@ -289,6 +294,21 @@ test("renders campaign content safely and accessibly", () => {
   assert.match(deleteForm, /data-online-campaign-delete-form/);
   assert.match(deleteForm, /fichas dos personagens serão preservadas/i);
   assert.match(deleteForm, /Excluir permanentemente/);
+});
+
+test("shows only safe party resources and escapes character names", async () => {
+  const { client, calls } = fakeClient({ partySummary: [
+    { character_id: "character-1", character_name: "<Aria>", hp_current: 19, pm_current: 4 },
+    { character_id: "character-2", character_name: "Borin", hp_current: null, pm_current: null },
+  ] });
+  const party = await campaignTools.createCampaignService(client).listPartySummary("campaign-1");
+  assert.deepEqual(calls.rpc.at(-1), { name: "list_campaign_party_summary", args: { p_campaign_id: "campaign-1" } });
+  const html = campaignTools.partySummaryHtml({ id: "campaign-1" }, { partyByCampaign: { "campaign-1": party } });
+  assert.match(html, /&lt;Aria&gt;/);
+  assert.match(html, /Vida: <strong>19<\/strong>/);
+  assert.match(html, /PM: <strong>4<\/strong>/);
+  assert.match(html, /Vida: <strong>Cheia<\/strong>/);
+  assert.doesNotMatch(html, /<Aria>|Abrir ficha/);
 });
 
 test("renders one selected campaign inside the shared workspace", () => {

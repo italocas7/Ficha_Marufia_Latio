@@ -94,6 +94,7 @@ test("renders online character summaries without changing their state", () => {
   };
   const html = homeTools.homeDialogHtml({
     mode: "characters",
+    signedIn: true,
     loading: false,
     selectedCharacterId: "character-1",
     characters: [character],

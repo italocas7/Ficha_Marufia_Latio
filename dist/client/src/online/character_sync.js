@@ -24,6 +24,7 @@
   const CHARACTER_CONFLICT_RESOLUTION_EVENT = "marufia:character-conflict-resolved";
   const BEFORE_APP_UPDATE_EVENT = "marufia:before-app-update";
   const BEFORE_CHARACTER_SWITCH_EVENT = "marufia:before-character-switch";
+  const CURRENT_STATE_VERSION = root?.LATIO_STATE?.STATE_SCHEMA?.currentVersion ?? 6;
   const SYNC_STATUS = Object.freeze({
     online: Object.freeze({ label: "Online", title: "Conta conectada; alterações da ficha vinculada podem ser salvas online." }),
     syncing: Object.freeze({ label: "Sincronizando", title: "Salvando as alterações da ficha online." }),
@@ -205,12 +206,19 @@
       || (String(value.backendId ?? "") !== String(backendId ?? "")
         && !(retryTools?.allowsLegacyCloudRecords?.(backendId) && !value.backendId))
       || value.state?.meta?.appId !== "marufia-latio"
-      || Number(value.state?.meta?.schemaVersion) !== 5) return null;
+      || ![5, CURRENT_STATE_VERSION].includes(Number(value.state?.meta?.schemaVersion))) return null;
+    let snapshot = value.state;
+    if (Number(snapshot.meta.schemaVersion) < CURRENT_STATE_VERSION && root?.LATIO_STATE?.migrateState) {
+      snapshot = root.LATIO_STATE.cloneSafe(snapshot);
+      root.LATIO_STATE.migrateState(snapshot, Number(snapshot.meta.schemaVersion));
+      snapshot.meta.schemaVersion = CURRENT_STATE_VERSION;
+      snapshot.inspiration = Math.max(0, Math.floor(Number(snapshot.inspiration) || 0));
+    }
     return Object.freeze({
       userId,
       characterId,
       backendId: String(backendId ?? ""),
-      state: value.state,
+      state: snapshot,
       expectedRevision: Number.isSafeInteger(Number(value.expectedRevision)) && Number(value.expectedRevision) > 0
         ? Number(value.expectedRevision)
         : null,
@@ -223,7 +231,7 @@
     const characterId = String(target?.characterId ?? "");
     const backendId = String(target?.backendId ?? "");
     if (!userId || !characterId || snapshot?.meta?.appId !== "marufia-latio"
-      || Number(snapshot?.meta?.schemaVersion) !== 5 || typeof storage?.saveLocal !== "function") return false;
+      || ![5, CURRENT_STATE_VERSION].includes(Number(snapshot?.meta?.schemaVersion)) || typeof storage?.saveLocal !== "function") return false;
     try {
       const key = syncMetadataId(userId, characterId, backendId);
       storage.saveLocal(OFFLINE_QUEUE_KEY, {
@@ -375,8 +383,27 @@
           clearDeferred(target);
           notify(onSuccess, lastResult, target, snapshot);
         } catch (error) {
-          if (conflictError(error)) await loadConflict(snapshot, activeTarget ?? entry.target ?? {}, error);
-          else {
+          if (conflictError(error)) {
+            const target = activeTarget ?? entry.target ?? {};
+            let remote = null;
+            try { remote = target.characterId ? await service.loadOwn(target.characterId) : null; } catch { /* A revisão será apresentada como conflito. */ }
+            const metadata = remote && syncedCharacterMetadata(storage, target.userId, remote.id, target.backendId);
+            if (remote && stateContentSignature(remote.state) === stateContentSignature(snapshot)) {
+              rememberSyncedCharacter(storage, target.userId, remote, target.backendId);
+              clearDeferred(target);
+              lastResult = remote;
+              lastError = null;
+              conflict = null;
+              notify(onSuccess, remote, target, snapshot);
+            } else if (remote && metadata?.stateSignature
+              && stateContentSignature(remote.state) === metadata.stateSignature
+              && remote.revision > metadata.revision) {
+              rememberSyncedCharacter(storage, target.userId, remote, target.backendId);
+              pending = { snapshot: pending?.snapshot ?? snapshot, target: { ...target, expectedRevision: remote.revision, conflictRemote: null } };
+            } else {
+              await loadConflict(snapshot, { ...target, conflictRemote: remote }, error);
+            }
+          } else {
             lastError = error;
             const target = activeTarget ?? entry.target;
             if (target && transientNetworkError(error) && persistDeferred(target, snapshot)) {
@@ -440,6 +467,8 @@
       return kick();
     }
 
+    function clearConflict() { conflict = null; }
+
     async function flush() {
       while (!destroyed && (active || pending)) await (active ?? kick());
       return lastResult;
@@ -451,6 +480,7 @@
       registerRemoteConflict,
       matchesActiveRemote,
       overwriteConflict,
+      clearConflict,
       currentConflict: () => conflict,
       lastError: () => lastError,
       destroy() {
@@ -598,10 +628,13 @@
     }
 
     function receiveRemoteChange(change) {
-      dispatchRemoteCharacterChange(view, change);
       const remote = change?.character;
       const local = appBridge.snapshot?.();
       if (!remote || !local) return;
+      const activeSlot = view?.MARUFIA_SHEET_SLOTS_STORE?.active?.();
+      if (remote.id !== characterId || (activeSlot && activeSlot.remoteId !== remote.id)) return;
+      if (!activeSlot && remote.state?.meta?.createdAt !== local.meta?.createdAt) return;
+      dispatchRemoteCharacterChange(view, change);
       const userId = remote.owner_id;
       const metadata = syncedCharacterMetadata(storage, userId, remote.id, backendId);
       if (metadata && metadata.revision >= remote.revision) return;
@@ -698,6 +731,7 @@
       if (event?.key === importTools?.IMPORT_MARKERS_KEY) void refresh();
     };
     view?.addEventListener?.(linkedEvent, refreshLinked);
+    view?.addEventListener?.("marufia:sheet-switched", refreshLinked);
     view?.addEventListener?.("storage", refreshStorage);
     void refresh();
 
@@ -709,6 +743,7 @@
         generation += 1;
         observer?.disconnect?.();
         view?.removeEventListener?.(linkedEvent, refreshLinked);
+        view?.removeEventListener?.("marufia:sheet-switched", refreshLinked);
         view?.removeEventListener?.("storage", refreshStorage);
         await stopCurrent();
         if (accountButton?.dataset) delete accountButton.dataset.realtimeState;
@@ -757,6 +792,7 @@
         rememberSyncedCharacter(storage, target.userId, character, target.backendId);
         retryScheduler?.success?.();
         statusController.success();
+        dispatchRemoteCharacterChange(view, { character });
       },
       onError: (error) => {
         if (transientNetworkError(error)) {
@@ -819,17 +855,36 @@
       if (resumingOffline || view.navigator?.onLine === false || accountButton.dataset.authState !== "online") return false;
       resumingOffline = true;
       try {
-        const snapshot = appBridge.snapshot?.();
-        const identity = importTools?.localSheetIdentity?.(snapshot);
-        if (!identity) return true;
         const userId = await service.currentUserId();
-        const characterId = String(importTools.importedCharacterId?.(storage, userId, identity, backendId) ?? "");
-        if (!characterId || !pendingOfflineSave(storage, userId, characterId, backendId)) return true;
-        await queue.enqueue(snapshot);
-        await queue.flush();
-        if (queue.currentConflict?.()) return true;
-        if (queue.lastError?.() && !transientNetworkError(queue.lastError())) return true;
-        return !pendingOfflineSave(storage, userId, characterId, backendId);
+        const ids = [...new Set(Object.values(readOfflineQueue(storage))
+          .filter((entry) => entry?.userId === userId && String(entry.backendId ?? "") === backendId)
+          .map((entry) => String(entry.characterId ?? "")).filter(Boolean))];
+        for (const characterId of ids) {
+          const pending = pendingOfflineSave(storage, userId, characterId, backendId);
+          if (!pending) continue;
+          const activeSlot = view.MARUFIA_SHEET_SLOTS_STORE?.active?.();
+          if (activeSlot?.remoteId === characterId) {
+            appBridge.flushCurrent?.();
+            await queue.enqueue(appBridge.snapshot?.() ?? pending.state);
+            await queue.flush();
+            if (queue.currentConflict?.() || queue.lastError?.()) return false;
+            continue;
+          }
+          const remote = await service.loadOwn(characterId);
+          if (stateContentSignature(remote.state) === stateContentSignature(pending.state)) {
+            rememberSyncedCharacter(storage, userId, remote, backendId);
+            removeOfflineSave(storage, userId, characterId, backendId);
+            continue;
+          }
+          if (pending.expectedRevision !== remote.revision) {
+            dispatchCharacterConflict(view, { characterId, userId, backendId, local: pending.state, remote, inactive: true });
+            continue;
+          }
+          const saved = await service.saveState(characterId, pending.state, pending.expectedRevision);
+          rememberSyncedCharacter(storage, userId, saved, backendId);
+          removeOfflineSave(storage, userId, characterId, backendId);
+        }
+        return true;
       } catch (error) {
         if (transientNetworkError(error)) {
           statusController.unavailable();
@@ -851,6 +906,8 @@
     const resumeWhenOnline = () => void (retryScheduler?.wake?.() ?? resumeOfflineSave());
     const pauseWhenOffline = () => retryScheduler?.pause?.();
     view.addEventListener?.("online", resumeWhenOnline);
+    const refreshAfterSwitch = () => { queue.clearConflict(); resumeWhenOnline(); };
+    view.addEventListener?.("marufia:sheet-switched", refreshAfterSwitch);
     view.addEventListener?.("offline", pauseWhenOffline);
     const resumeObserver = typeof view.MutationObserver === "function"
       ? new view.MutationObserver(resumeWhenOnline)
@@ -875,6 +932,7 @@
         view.removeEventListener?.(BEFORE_CHARACTER_SWITCH_EVENT, flushBeforeAppUpdate);
         view.removeEventListener?.(CHARACTER_CONFLICT_RESOLUTION_EVENT, resolveConflict);
         view.removeEventListener?.("online", resumeWhenOnline);
+        view.removeEventListener?.("marufia:sheet-switched", refreshAfterSwitch);
         view.removeEventListener?.("offline", pauseWhenOffline);
         resumeObserver?.disconnect?.();
         retryScheduler?.destroy?.();

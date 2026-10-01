@@ -25,6 +25,8 @@
       return "Você só pode associar o personagem a uma campanha da qual participa.";
     }
     if (detail.includes("23503")) return "A campanha escolhida não está mais disponível.";
+    if (detail.includes("character slots full")) return "Sua conta já possui cinco fichas. Exclua uma ficha após criar um backup para liberar espaço.";
+    if (detail.includes("character name confirmation mismatch")) return "O nome digitado não corresponde ao nome da ficha.";
     if (detail.includes("22023") || detail.includes("23514")) return "O estado do personagem não é compatível com o Marufia Online.";
     if (detail.includes("jwt") || detail.includes("authentication") || detail.includes("not authenticated")) {
       return "Sua sessão expirou. Entre novamente para continuar.";
@@ -182,7 +184,22 @@
       return normalizedCharacter(result.data);
     }
 
-    return Object.freeze({ currentUserId, listOwn, loadOwn, createIndependent, saveState, associate });
+    async function remove(characterId, confirmationName, expectedRevision) {
+      const id = normalizeUuid(characterId, "Personagem");
+      const revision = normalizedRevision(expectedRevision);
+      await currentUserId();
+      const result = await client.rpc("delete_character", {
+        p_character_id: id,
+        p_confirmation_name: String(confirmationName ?? "").trim(),
+        p_expected_revision: revision,
+      });
+      if (result.error) throw characterError("LAT-CHARACTER-DELETE-001", friendlyCharacterMessage(result.error));
+      const deleted = Array.isArray(result.data) ? result.data[0] : result.data;
+      if (deleted?.character_id !== id) throw characterError("LAT-CHARACTER-DELETE-002", "O servidor não confirmou a exclusão da ficha.");
+      return deleted;
+    }
+
+    return Object.freeze({ currentUserId, listOwn, loadOwn, createIndependent, saveState, associate, remove });
   }
 
   return {

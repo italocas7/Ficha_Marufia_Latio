@@ -6,14 +6,14 @@ O Marufia Online usa Tauri 2 para empacotar exatamente a mesma ficha web validad
 
 - produto: Marufia Online;
 - identificador: `com.marufia.online`;
-- versão desktop em preparação: `0.4.0`, apresentada como **Marufia Online Alpha**;
+- versão desktop em preparação: `0.4.1`, apresentada como **Marufia Online Alpha**;
 - janela única, centralizada, redimensionável e com mínimo de 900 × 600;
 - zoom nativo com `Ctrl` + `+`, `Ctrl` + `-` e `Ctrl` + `0`, preservando a adaptação dos cartões ao tamanho disponível;
 - ícones derivados do brasão oficial da ficha.
 
 ## Segurança
 
-A janela recebe uma única capacidade nativa pelo plugin oficial Opener: abrir no navegador padrão URLs sob `https://github.com/italocas7/Ficha_Marufia_Latio/releases/*`. Arquivos, shell, diálogos, caminhos locais e outras URLs permanecem bloqueados. A configuração-base permite somente arquivos locais. Ao iniciar ou compilar o aplicativo, `tools/run_tauri.cjs` gera uma política de conteúdo limitada ao Supabase, WebSocket Realtime e site selecionados no ambiente público. Não existem hosts fixos nem curingas nessa política, e frames remotos continuam bloqueados. O build desktop reutiliza o backup local, o schema v5 e toda a lógica web existente.
+A janela recebe uma única capacidade nativa pelo plugin oficial Opener: abrir no navegador padrão URLs sob `https://github.com/italocas7/Ficha_Marufia_Latio/releases/*`. Arquivos, shell, diálogos, caminhos locais e outras URLs permanecem bloqueados. A configuração-base permite somente arquivos locais. Ao iniciar ou compilar o aplicativo, `tools/run_tauri.cjs` gera uma política de conteúdo limitada ao Supabase, WebSocket Realtime e site selecionados no ambiente público. Não existem hosts fixos nem curingas nessa política, e frames remotos continuam bloqueados. O build desktop reutiliza o backup local, o schema v6 e toda a lógica web existente.
 
 ## Aviso de atualização
 

@@ -36,6 +36,8 @@
       id: EXTERNAL_CAMPAIGN_ID,
       name: "Campanha Convidada",
       description: "Campanha preparada para validar a entrada por código.",
+      skill_limit: 70,
+      rules_revision: 1,
       owner_id: "e2e-external-owner",
       join_code: "MRF-PLAY-ER",
       roll_history_revision: 0,
@@ -357,6 +359,21 @@
       async rpc(name, args) {
         const session = read(SESSION_KEY);
         if (!session?.user) return { data: null, error: { code: "42501", message: "authentication required" } };
+        if (name === "list_campaign_party_summary") {
+          const campaignId = String(args?.p_campaign_id ?? "");
+          const member = (read(MEMBERSHIPS_KEY) ?? []).some((item) => (
+            item.campaign_id === campaignId && item.user_id === session.user.id
+          ));
+          if (!member) return { data: null, error: { code: "42501", message: "campaign membership required" } };
+          return { data: (read(CHARACTERS_KEY) ?? [])
+            .filter((item) => item.campaign_id === campaignId)
+            .map((item) => ({
+              character_id: item.id,
+              character_name: item.name,
+              hp_current: item.state?.resources?.hpCurrent ?? null,
+              pm_current: item.state?.resources?.pmCurrent ?? null,
+            })), error: null };
+        }
         if (name === "roll_dice_tray") {
           const character = (read(CHARACTERS_KEY) ?? []).find((item) => (
             item.id === args?.p_character_id && item.owner_id === session.user.id
@@ -643,7 +660,7 @@
           emitPresenceChange(presence, eventType);
           return { data: presence.seen_at, error: null };
         }
-        if (name === "update_campaign") {
+        if (name === "update_campaign_details") {
           const campaigns = read(CAMPAIGNS_KEY) ?? [];
           const campaign = campaigns.find((item) => (
             item.id === args?.p_campaign_id && item.owner_id === session.user.id
@@ -652,15 +669,27 @@
           const previous = JSON.parse(JSON.stringify(campaign));
           const nameValue = String(args?.p_name ?? "").trim();
           const description = String(args?.p_description ?? "").trim();
-          if (!nameValue || nameValue.length > 100 || description.length > 5000) {
+          const skillLimit = Number(args?.p_skill_limit);
+          if (!nameValue || nameValue.length > 100 || description.length > 5000 || !Number.isInteger(skillLimit) || skillLimit < 1 || skillLimit > 999) {
             return { data: null, error: { code: "22023", message: "invalid campaign fields" } };
           }
           campaign.name = nameValue;
           campaign.description = description;
+          if (campaign.skill_limit !== skillLimit) campaign.rules_revision = (campaign.rules_revision ?? 1) + 1;
+          campaign.skill_limit = skillLimit;
           campaign.updated_at = new Date().toISOString();
           write(CAMPAIGNS_KEY, campaigns);
           emitCampaignChange(campaign, previous);
           return { data: JSON.parse(JSON.stringify(campaign)), error: null };
+        }
+        if (name === "delete_character") {
+          const characters = read(CHARACTERS_KEY) ?? [];
+          const character = characters.find((item) => item.id === args?.p_character_id && item.owner_id === session.user.id);
+          if (!character) return { data: null, error: { code: "42501", message: "character owner required" } };
+          if (character.name !== String(args?.p_confirmation_name ?? "").trim()) return { data: null, error: { code: "22023", message: "character name confirmation mismatch" } };
+          if (character.revision !== args?.p_expected_revision) return { data: null, error: { code: "40001", message: "character revision conflict" } };
+          write(CHARACTERS_KEY, characters.filter((item) => item.id !== character.id));
+          return { data: [{ character_id: character.id, character_name: character.name }], error: null };
         }
         if (name === "delete_campaign") {
           const campaigns = read(CAMPAIGNS_KEY) ?? [];
@@ -764,6 +793,8 @@
                 id: `33333333-3333-4333-8333-${String(campaigns.length + 1).padStart(12, "0")}`,
                 name: inserted?.name ?? "",
                 description: inserted?.description ?? "",
+                skill_limit: Number(inserted?.skill_limit ?? 70),
+                rules_revision: 1,
                 owner_id: session.user.id,
                 join_code: `MRF-K7P4-N${(campaigns.length % 8) + 2}`,
                 roll_history_revision: 0,
@@ -978,6 +1009,9 @@
               if (!session?.user) return { data: null, error: { code: "42501", message: "authentication required" } };
               const characters = read(CHARACTERS_KEY) ?? [];
               if (operation === "insert") {
+                if (characters.filter((item) => item.owner_id === session.user.id).length >= 5) {
+                  return { data: null, error: { code: "P0001", message: "character slots full" } };
+                }
                 const now = new Date().toISOString();
                 const character = {
                   id: `44444444-4444-4444-8444-${String(characters.length + 1).padStart(12, "0")}`,

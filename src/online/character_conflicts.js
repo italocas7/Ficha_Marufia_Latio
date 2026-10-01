@@ -76,7 +76,7 @@
     function renderConflict() {
       if (!pending) return;
       const body = conflictDialogHtml(pending);
-      const footer = `<button class="button" type="button" data-online-character-conflict-action="keep-local" ${pending.remote ? "" : "disabled"}>Manter minha versão</button><button class="ghost" type="button" data-online-character-conflict-action="download-online" ${pending.remote ? "" : "disabled"}>Baixar versão online</button><button class="ghost" type="button" data-online-character-conflict-action="later">Decidir depois</button>`;
+      const footer = `<button class="button" type="button" data-online-character-conflict-action="keep-local" ${pending.remote && !pending.inactive ? "" : "disabled"}>Manter minha versão</button><button class="ghost" type="button" data-online-character-conflict-action="download-online" ${pending.remote ? "" : "disabled"}>Baixar versão online</button><button class="ghost" type="button" data-online-character-conflict-action="later">Decidir depois</button>`;
       if (typeof view.openModal === "function") view.openModal("Conflito de sincronização", body, footer);
       else modalRoot.innerHTML = `<div class="modal-backdrop"><div class="modal" role="dialog" aria-modal="true" aria-label="Conflito de sincronização"><div class="modal-body">${body}</div><footer>${footer}</footer></div></div>`;
     }

@@ -146,7 +146,7 @@ function assertInitialAudit() {
   if (!completion.includes("1017ccd") || !completion.includes("marufia-offline-baseline-v2.0.0")) {
     throw new Error("Evidência do baseline da Fase 72 ausente.");
   }
-  if (!/currentVersion:\s*5/.test(state)) throw new Error("A auditoria deixou de encontrar o schema v5.");
+  if (!/currentVersion:\s*6/.test(state)) throw new Error("A auditoria deixou de encontrar o schema atual.");
   if (!/setTimeout\(saveStateNow,\s*250\)/.test(app)) throw new Error("A auditoria deixou de encontrar o debounce local de 250 ms.");
   if (!server.includes("env.ASSETS.fetch")) throw new Error("O servidor estático auditado não foi preservado.");
   if (manifest.packageManager !== "pnpm@11.19.0") throw new Error("Ambiente de testes fixado deixou de ser reconhecido.");

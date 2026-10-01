@@ -23,7 +23,9 @@
       && event?.data?.type === MESSAGE_TYPE
       && event.data.token === token
       && event.data.state?.meta?.appId === "marufia-latio"
-      && Number(event.data.state?.meta?.schemaVersion) === 5,
+      && Number.isInteger(Number(event.data.state?.meta?.schemaVersion))
+      && Number(event.data.state.meta.schemaVersion) >= 1
+      && Number(event.data.state.meta.schemaVersion) <= 6,
     );
   }
 

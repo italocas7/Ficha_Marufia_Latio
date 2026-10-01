@@ -4,7 +4,8 @@ const stateTools = require("../../src/core/state.js");
 
 function defaults() {
   return {
-    meta: { appId: "marufia-latio", schemaVersion: 5, started: false, importedFromPdf: null },
+    meta: { appId: "marufia-latio", schemaVersion: 6, started: false, importedFromPdf: null },
+    inspiration: 0,
     character: { name: "", level: 1 },
     attributes: { FOR: 50 },
     resources: {},
@@ -20,12 +21,12 @@ function defaults() {
   };
 }
 
-const options = { appId: "marufia-latio", schemaVersion: 5 };
+const options = { appId: "marufia-latio", schemaVersion: 6 };
 
-test("declares the stable v5 state contract", () => {
+test("declares the stable v6 state contract", () => {
   assert.deepEqual(stateTools.STATE_SCHEMA, {
     appId: "marufia-latio",
-    currentVersion: 5,
+    currentVersion: 6,
     minimumSupportedVersion: 1,
     mediaType: "application/json",
   });
@@ -52,12 +53,25 @@ test("round-trips the current serialized payload without changing its JSON shape
   const serialized = JSON.stringify(stateTools.persistentPayload(current));
   const prepared = stateTools.prepareImport(JSON.parse(serialized), defaults(), options);
   assert.equal(prepared.migrated, false);
-  assert.equal(prepared.state.meta.schemaVersion, 5);
+  assert.equal(prepared.state.meta.schemaVersion, 6);
   assert.equal(prepared.state.character.name, "Formato estável");
   assert.equal(Object.hasOwn(JSON.parse(serialized), "ui"), false);
 });
 
-test("round-trips the versioned online backup without mixing authority into schema v5", () => {
+test("migrates older sheets to zero Inspiration and keeps a nonnegative integer balance", () => {
+  const old = defaults();
+  old.meta.schemaVersion = 5;
+  delete old.inspiration;
+  const migrated = stateTools.prepareImport(old, defaults(), options);
+  assert.equal(migrated.state.inspiration, 0);
+  assert.equal(migrated.state.meta.schemaVersion, 6);
+  old.inspiration = 3.9;
+  assert.equal(stateTools.prepareImport(old, defaults(), options).state.inspiration, 3);
+  old.inspiration = -4;
+  assert.equal(stateTools.prepareImport(old, defaults(), options).state.inspiration, 0);
+});
+
+test("round-trips the versioned online backup without mixing authority into schema v6", () => {
   const current = defaults();
   current.character.name = "Backup online";
   const backup = stateTools.createOnlineBackup(current, {
@@ -85,7 +99,7 @@ test("imports a protected online character row as state only", () => {
     id: "11111111-1111-4111-8111-111111111111",
     owner_id: "33333333-3333-4333-8333-333333333333",
     campaign_id: "22222222-2222-4222-8222-222222222222",
-    schema_version: 5,
+    schema_version: 6,
     revision: 4,
     last_change_origin: "player",
     updated_at: "2026-08-21T18:00:00.000Z",
@@ -112,7 +126,7 @@ test("migrates v1 and removes session UI", () => {
     world: { active: true },
     ui: { printMode: true, activeTab: "mundo" },
   }, defaults(), options);
-  assert.equal(prepared.state.meta.schemaVersion, 5);
+  assert.equal(prepared.state.meta.schemaVersion, 6);
   assert.equal(prepared.state.world.status, "active");
   assert.equal(Object.hasOwn(prepared.state, "ui"), false);
 });
@@ -123,7 +137,7 @@ test("migrates v2 and removes legacy World combat state", () => {
     world: { status: "active", turns: "1d4" },
     combat: { activeSpells: [{ id: "world", spellId: "base-Mundo", type: "Mundo", name: "Mundo", level: 1, turns: null, maintenanceCost: 2 }] },
   }, defaults(), options);
-  assert.equal(prepared.state.meta.schemaVersion, 5);
+  assert.equal(prepared.state.meta.schemaVersion, 6);
   assert.equal(prepared.state.world.maintenancePaidForTurn, false);
   assert.equal(Object.hasOwn(prepared.state.world, "turns"), false);
   assert.equal(prepared.state.combat.activeSpells.length, 0);
@@ -158,7 +172,7 @@ test("migrates v4 World duration and preserves v5 active spell bonuses", () => {
   assert.equal(current.state.combat.activeSpells[0].effectiveVigor, 10);
 });
 
-for (const invalidVersion of [undefined, "banana", 0, -1, 1.5, 6]) {
+for (const invalidVersion of [undefined, "banana", 0, -1, 1.5, 7]) {
   test(`rejects invalid schema version ${String(invalidVersion)}`, () => {
     const payload = { meta: { appId: "marufia-latio" } };
     if (invalidVersion !== undefined) payload.meta.schemaVersion = invalidVersion;

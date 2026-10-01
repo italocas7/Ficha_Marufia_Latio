@@ -1,6 +1,6 @@
 # Versionamento — Fase 47
 
-O produto adota [Semantic Versioning](https://semver.org/lang/pt-BR/) e está publicado na versão **0.4.0**, com a identidade visível **Marufia Online Alpha**. O número canônico fica em `package.json` e precisa coincidir com Tauri, Cargo e a informação exibida no aplicativo e no site. Os manifestos públicos acompanham a release `v0.4.0`.
+O produto adota [Semantic Versioning](https://semver.org/lang/pt-BR/) e está preparado na versão **0.4.1**, com a identidade visível **Marufia Online Alpha**. O número canônico fica em `package.json` e precisa coincidir com Tauri, Cargo e a informação exibida no aplicativo e no site. Durante a preparação, os manifestos públicos permanecem na última release disponível e só avançam depois que os novos arquivos assinados forem publicados.
 
 Durante o desenvolvimento inicial:
 
@@ -13,17 +13,18 @@ Durante o desenvolvimento inicial:
 - `0.3.0`: marca automaticamente perícias após Extremo ou Crítico natural, corrige o custo de Aptidão a partir do nível 7 e identifica a versão no cabeçalho;
 - `0.3.1`: permite escolher e carregar uma ficha salva na conta, com backup local e sincronização segura durante a troca;
 - `0.4.0`: bandeja de dados com rolagens locais e online, temas e histórico;
+- `0.4.1`: cinco espaços de ficha, exclusão protegida por backup, limite de perícias por campanha, Inspiração persistente e resumo seguro do grupo;
 - demais versões `0.x`: novos ciclos compatíveis do Alpha;
 - correções que não acrescentam capacidade usam o incremento de patch;
 - `1.0.0`: primeira versão declarada estável, somente após os critérios de lançamento próprios.
 
-O rótulo **Alpha** descreve o canal atual e não é acrescentado ao número `0.4.0`. Assim, o instalador conserva um número aceito pelo empacotamento Windows enquanto a interface comunica claramente que o produto ainda está em desenvolvimento.
+O rótulo **Alpha** descreve o canal atual e não é acrescentado ao número `0.4.1`. Assim, o instalador conserva um número aceito pelo empacotamento Windows enquanto a interface comunica claramente que o produto ainda está em desenvolvimento.
 
 ## Contratos independentes
 
 A versão do produto não substitui outros contratos técnicos:
 
-- o schema da ficha permanece **v5**;
+- o schema da ficha está em **v6**, com migração automática desde as versões anteriores;
 - o backup online permanece **v1**;
 - as migrations do Supabase continuam ordenadas por **timestamp**;
 - a versão da interface de rolagens permanece independente.

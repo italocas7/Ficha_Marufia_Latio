@@ -172,7 +172,7 @@ function readUpdaterReleaseInfo(version) {
   }
   const releaseNotes = fs.readFileSync(releaseNotesPath, "utf8");
   const title = releaseNotes.match(/^# .+$/m)?.[0]?.trim();
-  const noveltySection = releaseNotes.match(/^## Novidades\s*\r?\n([\s\S]*?)(?=^## |\s*$)/m)?.[1]?.trim();
+  const noveltySection = releaseNotes.match(/^## Novidades\s*\r?\n([\s\S]*?)(?=^## |$(?![\s\S]))/m)?.[1]?.trim();
   if (!title || !noveltySection) {
     throw new Error(`Notas da release v${version} não possuem título e novidades válidos.`);
   }

@@ -2323,3 +2323,48 @@ body:not(.dark) .level-list li.current {
     -webkit-line-clamp: unset;
   }
 }
+.inspiration-panel {
+  border-left: 3px solid var(--accent);
+}
+
+.inspiration-controls {
+  display: grid;
+  grid-template-columns: 42px minmax(80px, 125px) 42px;
+  gap: 8px;
+  align-items: end;
+}
+
+.inspiration-controls button {
+  min-height: 42px;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.inspiration-controls .field { min-width: 0; }
+.inspiration-controls input { width: 100%; text-align: center; }
+
+.online-home-local-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.online-home-local-row .online-home-character-card {
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.online-home-local-row > .ghost { white-space: nowrap; }
+
+@media (max-width: 520px) {
+  .online-home-local-row { grid-template-columns: minmax(0, 1fr); }
+  .online-home-local-row > .ghost { justify-self: end; }
+  .online-home-inline-actions { flex-wrap: wrap; }
+  .online-home-inline-actions > button { flex: 1 1 45%; min-width: 0; }
+}
+
+@media print {
+  .inspiration-panel { break-inside: avoid; }
+  .inspiration-controls button { display: none; }
+}

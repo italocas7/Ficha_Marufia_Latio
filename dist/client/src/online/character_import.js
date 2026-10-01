@@ -70,6 +70,14 @@
     }
   }
 
+  function forgetImported(storage, userId, identity, backendId = "") {
+    if (!userId || !identity || !storage?.saveLocal) return false;
+    const markers = readImportMarkers(storage);
+    delete markers[markerId(userId, identity, backendId)];
+    storage.saveLocal(IMPORT_MARKERS_KEY, markers);
+    return true;
+  }
+
   function migrationDialogHtml(state = {}) {
     const name = String(state.snapshot?.character?.name ?? "").trim() || "Personagem sem nome";
     const message = state.message
@@ -104,6 +112,7 @@
 
     const view = document.defaultView ?? root ?? globalThis;
     const backendId = offlineTools?.backendScope?.(view.MARUFIA_ONLINE_CONFIG) ?? "unconfigured";
+    const slotStore = view.MARUFIA_SHEET_SLOTS_STORE;
     let service = null;
     let checking = false;
     let pending = null;
@@ -137,15 +146,26 @@
       checking = true;
       try {
         const userId = await service.currentUserId();
+        if (slotStore?.active()?.scope === `${backendId}|${userId}` && !slotStore.active()?.remoteId) return true;
         const key = markerId(userId, identity, backendId);
-        if (checked.has(key) || importedCharacterId(storage, userId, identity, backendId)) return true;
+        const linkedId = importedCharacterId(storage, userId, identity, backendId);
+        if (linkedId) {
+          if (localSheetIdentity(slotStore?.active()?.state) === identity && !slotStore.active()?.remoteId) {
+            slotStore.linkActive(`${backendId}|${userId}`, linkedId);
+          }
+          return true;
+        }
+        if (checked.has(key)) return true;
         const characters = await service.listOwn();
         const existing = characters.find((character) => (
           character.state?.meta?.appId === snapshot.meta.appId
           && character.state?.meta?.createdAt === snapshot.meta.createdAt
         ));
         if (existing) {
-          if (markImported(storage, userId, identity, existing.id, backendId)) announceLinkedCharacter(view, existing);
+          if (markImported(storage, userId, identity, existing.id, backendId)) {
+            if (localSheetIdentity(slotStore?.active()?.state) === identity) slotStore.linkActive(`${backendId}|${userId}`, existing.id);
+            announceLinkedCharacter(view, existing);
+          }
           checked.add(key);
           return true;
         }
@@ -171,7 +191,10 @@
         if (!backup?.payload) throw new Error("backup unavailable");
         const snapshot = appBridge.snapshot?.();
         const character = await service.createIndependent(snapshot);
-        if (markImported(storage, pending.userId, pending.identity, character.id, pending.backendId)) announceLinkedCharacter(view, character);
+        if (markImported(storage, pending.userId, pending.identity, character.id, pending.backendId)) {
+          if (localSheetIdentity(slotStore?.active()?.state) === pending.identity) slotStore.linkActive(`${backendId}|${pending.userId}`, character.id);
+          announceLinkedCharacter(view, character);
+        }
         state = {
           mode: "success",
           busy: false,
@@ -218,6 +241,7 @@
       : null;
     observer?.observe(accountButton, { attributes: true, attributeFilter: ["data-auth-state"] });
     view.addEventListener?.("online", retryCheck);
+    view.addEventListener?.("marufia:sheet-switched", retryCheck);
     view.addEventListener?.("offline", pauseCheck);
     retryCheck();
 
@@ -225,6 +249,7 @@
       destroy() {
         observer?.disconnect?.();
         view.removeEventListener?.("online", retryCheck);
+        view.removeEventListener?.("marufia:sheet-switched", retryCheck);
         view.removeEventListener?.("offline", pauseCheck);
         retryScheduler?.destroy?.();
       },
@@ -243,6 +268,7 @@
     readImportMarkers,
     importedCharacterId,
     markImported,
+    forgetImported,
     migrationDialogHtml,
     init,
   };

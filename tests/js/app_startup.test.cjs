@@ -86,7 +86,7 @@ function createSandbox(initialState = null) {
 test("migrates the representative v1 fixture without losing sheet data", () => {
   const fixture = JSON.parse(fs.readFileSync(path.join(root, "tests", "fixtures", "state-v1.json"), "utf8"));
   const { sandbox } = createSandbox(fixture);
-  assert.equal(vm.runInContext("state.meta.schemaVersion", sandbox), 5);
+  assert.equal(vm.runInContext("state.meta.schemaVersion", sandbox), 6);
   assert.equal(vm.runInContext("state.character.name", sandbox), "Fixture Latio");
   assert.equal(vm.runInContext("state.attributes.CON", sandbox), 60);
   assert.equal(vm.runInContext("state.resources.hpCurrent", sandbox), 10);
@@ -96,7 +96,7 @@ test("migrates the representative v1 fixture without losing sheet data", () => {
 test("backs up the untouched local payload before an online import", () => {
   const fixture = JSON.parse(fs.readFileSync(path.join(root, "tests", "fixtures", "state-v1.json"), "utf8"));
   const { sandbox, localStorage } = createSandbox(fixture);
-  assert.equal(vm.runInContext("state.meta.schemaVersion", sandbox), 5);
+  assert.equal(vm.runInContext("state.meta.schemaVersion", sandbox), 6);
   vm.runInContext("window.MARUFIA_APP_BRIDGE.createOnlineImportBackup()", sandbox);
   const backups = JSON.parse(localStorage.getItem("marufia-latio-backups-v1"));
   const original = JSON.parse(backups[0].payload);
@@ -418,6 +418,52 @@ test("treats natural 01 as critical for attributes and skills", () => {
   assert.equal(vm.runInContext("d100Outcome(1, -500)", sandbox), "Crítico natural");
   assert.equal(vm.runInContext("d100Outcome(2, -500)", sandbox), "Falha");
   assert.match(vm.runInContext("openAttributeModal('FOR'); document.querySelector('#modalRoot').innerHTML", sandbox), /roll-attribute/);
+});
+
+test("level one aptitude is POD divided by seven without level points", () => {
+  const { sandbox } = createSandbox();
+  assert.equal(vm.runInContext("aptitudeTotal()", sandbox), 7);
+  vm.runInContext("state.character.level = 2", sandbox);
+  assert.equal(vm.runInContext("aptitudeTotal()", sandbox), 10);
+  vm.runInContext("state.magicCore.selectedId = 'amago'; state.character.level = 1", sandbox);
+  assert.equal(vm.runInContext("aptitudeTotal()", sandbox), 8);
+});
+
+test("campaign skill limits block increases, not existing values or reductions", () => {
+  const fixture = JSON.parse(fs.readFileSync(path.join(root, "tests", "fixtures", "state-v1.json"), "utf8"));
+  const { sandbox } = createSandbox(fixture);
+  const result = vm.runInContext(`(() => {
+    state.skills.Atletismo.added = 50;
+    const before = state.skills.Atletismo.added;
+    const cap = skillFinal("Atletismo") - 1;
+    window.MARUFIA_APP_BRIDGE.setCampaignSkillPolicy({ campaignId: "campanha", name: "Teste", limit: cap });
+    state.settings.gmOverride = true;
+    state.skills.Atletismo.added = before + 1;
+    const blocked = rejectInvalidSkillAllocation("Atletismo", before, null);
+    state.skills.Atletismo.added = before - 1;
+    const reduced = rejectInvalidSkillAllocation("Atletismo", before, null);
+    return { blocked, reduced, value: state.skills.Atletismo.added, limit: effectiveSkillLimit() };
+  })()`, sandbox);
+  assert.equal(result.blocked, true);
+  assert.equal(result.reduced, false);
+  assert.equal(result.value, 49);
+  assert.ok(result.limit > 0);
+});
+
+test("Inspiration is consumed by Fissure but survives finishing combat", () => {
+  const fixture = JSON.parse(fs.readFileSync(path.join(root, "tests", "fixtures", "state-v1.json"), "utf8"));
+  const { sandbox } = createSandbox(fixture);
+  const result = vm.runInContext(`(() => {
+    state.inspiration = 2;
+    const spent = confirmFissureInspiration();
+    const afterFissure = state.inspiration;
+    finishCombat();
+    return { spent, afterFissure, afterCombat: state.inspiration, points: state.combat.fissure.points };
+  })()`, sandbox);
+  assert.equal(result.spent, true);
+  assert.equal(result.afterFissure, 1);
+  assert.equal(result.afterCombat, 1);
+  assert.equal(result.points, 0);
 });
 
 test("automatically checks skills on Extreme and natural Critical rolls in every d100 mode", () => {

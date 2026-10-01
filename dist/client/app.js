@@ -9,7 +9,7 @@ const ROLL_ENGINE = ROLLS?.createRollEngine(ROLLS.createLocalRollProvider());
 const STORAGE_KEY = "marufia-latio-state-v1";
 const BACKUP_STORAGE_KEY = "marufia-latio-backups-v1";
 const APP_ID = STATE_TOOLS?.STATE_SCHEMA?.appId ?? "marufia-latio";
-const STATE_SCHEMA_VERSION = STATE_TOOLS?.STATE_SCHEMA?.currentVersion ?? 5;
+const STATE_SCHEMA_VERSION = STATE_TOOLS?.STATE_SCHEMA?.currentVersion ?? 6;
 const APP_BASE_URL = new URL(".", document.currentScript?.src || window.location.href).href;
 const MAGIC_TYPES = ["Fina", "Impacto", "Densa", "Mundo", "Forte", "Etérea"];
 const TABS = [
@@ -97,6 +97,8 @@ const fold = (value) => String(value ?? "").normalize("NFD").replace(/[\u0300-\u
 const databaseStartupError = !STORAGE ? "O módulo de armazenamento não foi carregado." : !STATE_TOOLS ? "O módulo de estado não foi carregado." : !RULES ? "O módulo de regras não foi carregado." : !ROLLS ? "O módulo de rolagens não foi carregado." : validateRuntimeDatabase(DB);
 let sessionUi = createDefaultSessionUi();
 let state = databaseStartupError ? null : loadState();
+let campaignSkillPolicy = null;
+let lastBlankCreatedAtMs = 0;
 let previousWorldUnlocked = databaseStartupError ? false : worldUnlocked();
 let pdfLibraryPromise = null;
 let pendingImport = null;
@@ -192,6 +194,7 @@ function createDefaultState() {
     attributes: { FOR: 50, DES: 50, CON: 50, APA: 50, POD: 50, INT: 50, CAR: 50, SAB: 50 },
     resources: { hpCurrent: null, pmCurrent: null, hpMaxBonus: 0, pmMaxBonus: 0, injury: false, unconscious: false, dying: false, deathSuccess: 0, deathFail: 0 },
     settings: { theme: "light", skillLimit: 70, gmOverride: false },
+    inspiration: 0,
     skills: skillState,
     skillExtraPoints: 0,
     effects: [],
@@ -636,28 +639,34 @@ function skillPointsSpent() {
 function skillAllocationValidation(skillName) {
   return RULES.validateSkillAllocation({
     finalValue: skillFinal(skillName),
-    limit: state.settings.skillLimit,
+    limit: effectiveSkillLimit(),
     spent: skillPointsSpent(),
     budget: skillPointsTotal(),
-    gmOverride: state.settings.gmOverride,
+    gmOverride: !campaignSkillPolicy && state.settings.gmOverride,
   });
+}
+
+function effectiveSkillLimit() {
+  return campaignSkillPolicy?.limit ?? num(state.settings.skillLimit, 70);
 }
 
 function rejectInvalidSkillAllocation(skillName, previousValue, target) {
   const result = skillAllocationValidation(skillName);
   if (result.valid) return false;
+  if (["limit", "budget"].includes(result.reason) && num(state.skills[skillName]?.added, 0) <= previousValue) return false;
   state.skills[skillName].added = previousValue;
   if (target) target.value = previousValue;
-  if (result.reason === "limit") addError("LAT-CALC-004", `${skillName}: limite ${state.settings.skillLimit}.`);
+  if (result.reason === "limit") addError("LAT-CALC-004", `${skillName}: limite ${effectiveSkillLimit()}.`);
   else addError("LAT-PT-002", `${skillName}: ${skillPointsSpent()}/${skillPointsTotal()} pontos.`);
   return true;
 }
 
-function sheetSkillValidationIssue() {
-  if (state.settings.gmOverride) return null;
+function sheetSkillValidationIssue(previousValues = null) {
+  if (!campaignSkillPolicy && state.settings.gmOverride) return null;
   if (skillPointsSpent() > skillPointsTotal()) return { reason: "budget", detail: `${skillPointsSpent()}/${skillPointsTotal()} pontos.` };
-  const skill = DB.skills.find((item) => skillFinal(item.name) > num(state.settings.skillLimit, 70));
-  return skill ? { reason: "limit", detail: `${skill.name}: limite ${state.settings.skillLimit}.` } : null;
+  const limit = effectiveSkillLimit();
+  const skill = DB.skills.find((item) => skillFinal(item.name) > limit && (!previousValues || skillFinal(item.name) > Math.max(limit, num(previousValues[item.name], 0))));
+  return skill ? { reason: "limit", detail: `${skill.name}: limite ${limit}.` } : null;
 }
 
 function aptitudeBaseCost(type) {
@@ -688,7 +697,7 @@ function extraSpellCostTotal(type, level) {
 
 function aptitudeTotal() {
   const level = Math.max(1, num(state.character.level, 1));
-  return Math.floor(attr("POD") / 7) + (level * 3) + num(state.magic.extraAptitudes, 0) + (hasCore("amago") ? level : 0);
+  return Math.floor(attr("POD") / 7) + ((level - 1) * 3) + num(state.magic.extraAptitudes, 0) + (hasCore("amago") ? level : 0);
 }
 
 function aptitudeSpent() {
@@ -1177,6 +1186,7 @@ function renderCombate() {
       </div>
     </section>
     ${effectiveVigorPanel()}
+    ${inspirationPanel()}
     ${parryPanel()}
     ${fissureCelestePanel()}
     ${combatWorldCard()}
@@ -1278,12 +1288,13 @@ function renderInventario() {
 function renderPT() {
   const remaining = skillPointsTotal() - skillPointsSpent();
   return `
+    ${inspirationPanel()}
     <section class="panel">
       <div class="section-title"><h2>P&T</h2><span class="tag ${remaining < 0 ? "warn" : "ok"}">Pontos de perícia: ${remaining}/${skillPointsTotal()}</span></div>
       <div class="grid three">
         ${field("Pontos extras", "skillExtraPoints", "number")}
         <label class="field">Base de pontos<select data-path="character.useIntForSkillPoints"><option value="false" ${!state.character.useIntForSkillPoints ? "selected" : ""}>SAB + CON</option><option value="true" ${state.character.useIntForSkillPoints ? "selected" : ""}>INT + CON</option></select></label>
-        ${field("Limite de perícia", "settings.skillLimit", "number")}
+        ${campaignSkillPolicy ? `<div class="field"><span>Limite de perícia</span><strong>${effectiveSkillLimit()}</strong><small>Definido por ${esc(campaignSkillPolicy.name)}</small></div>` : field("Limite de perícia", "settings.skillLimit", "number")}
       </div>
     </section>
     <section class="panel">
@@ -1294,7 +1305,7 @@ function renderPT() {
           <tbody>
             ${DB.skills.map((skill) => {
               const final = skillFinal(skill.name);
-              const over = final > num(state.settings.skillLimit, 70);
+              const over = final > effectiveSkillLimit();
               return `<tr>
                 <td><button class="ghost" type="button" data-action="open-skill" data-skill="${esc(skill.name)}">${esc(skill.name)}</button></td>
                 <td>${baseSkillValue(skill)}</td>
@@ -1779,10 +1790,17 @@ function fissureCelestePanel() {
       </div>
       <div class="inline fissure-actions">
         <button class="button" type="button" data-action="open-fissure-attempt" ${!fissure.points || fissure.prepared ? "disabled" : ""}>Tentar Fissura</button>
-        <button class="ghost" type="button" data-action="open-fissure-inspiration" ${fissure.points >= 8 ? "disabled" : ""}>Usar Inspiração (+1)</button>
+        <button class="ghost" type="button" data-action="open-fissure-inspiration" ${fissure.points >= 8 || state.inspiration < 1 ? "disabled" : ""}>Usar Inspiração (+1)</button>
       </div>
     </div>
   </section>`;
+}
+
+function inspirationPanel() {
+  return `<section class="panel inspiration-panel"><div class="section-title"><h2>Inspiração</h2><span class="tag">${state.inspiration} disponível</span></div>
+    <div class="inspiration-controls"><button class="ghost" type="button" data-action="adjust-inspiration" data-delta="-1" aria-label="Diminuir Inspiração" ${state.inspiration < 1 ? "disabled" : ""}>−</button>
+    <label class="field">Pontos<input type="number" min="0" step="1" data-path="inspiration" value="${state.inspiration}"></label>
+    <button class="button" type="button" data-action="adjust-inspiration" data-delta="1" aria-label="Aumentar Inspiração">+</button></div></section>`;
 }
 
 function combatWorldCard() {
@@ -2420,18 +2438,24 @@ function rollFissureAttempt() {
 
 function openFissureInspiration() {
   const fissure = ensureFissureState();
-  if (fissure.points >= 8) return false;
-  openModal("Usar Inspiração", `<p>Confirme que você gastará <strong>1 Inspiração</strong>, controlada externamente, para receber +1 Ponto de Fissura.</p>`, `<button class="button" type="button" data-action="confirm-fissure-inspiration">Confirmar gasto</button><button class="ghost" type="button" data-action="close-modal">Cancelar</button>`);
+  if (fissure.points >= 8 || state.inspiration < 1) return false;
+  openModal("Usar Inspiração", `<p>Gastar <strong>1 Inspiração</strong> para receber +1 Ponto de Fissura?</p><p>Saldo atual: ${state.inspiration}.</p>`, `<button class="button" type="button" data-action="confirm-fissure-inspiration">Confirmar gasto</button><button class="ghost" type="button" data-action="close-modal">Cancelar</button>`);
 }
 
 function confirmFissureInspiration() {
   const fissure = ensureFissureState();
-  if (fissure.points >= 8) return false;
+  if (fissure.points >= 8 || state.inspiration < 1) return false;
+  state.inspiration -= 1;
   fissure.points += 1;
-  state.combat.log.unshift("1 Inspiração declarada como gasta: +1 Ponto de Fissura.");
+  state.combat.log.unshift("1 Inspiração gasta: +1 Ponto de Fissura.");
   closeModal();
   render();
   return true;
+}
+
+function adjustInspiration(delta) {
+  state.inspiration = Math.max(0, Math.min(Number.MAX_SAFE_INTEGER, state.inspiration + delta));
+  render();
 }
 
 function tripledDamageFormula(formula = "") {
@@ -3076,7 +3100,14 @@ function handleClick(event) {
   const actions = {
     "close-modal": closeModal,
     "open-start": openStartModal,
-    "start-new": () => { STORAGE.removeLocal(STORAGE_KEY); state = createDefaultState(); state.meta.started = true; closeModal(); render(); },
+    "start-new": () => {
+      if (window.MARUFIA_SHEET_SLOTS_STORE) {
+        window.dispatchEvent(new CustomEvent("marufia:new-sheet-requested"));
+        return;
+      }
+      STORAGE.removeLocal(STORAGE_KEY); state = createDefaultState(); state.meta.started = true;
+      campaignSkillPolicy = null; closeModal(); render();
+    },
     "open-settings": openSettings,
     "tab": () => {
       const next = button.dataset.tab;
@@ -3098,6 +3129,7 @@ function handleClick(event) {
     "roll-fissure-attempt": rollFissureAttempt,
     "open-fissure-inspiration": openFissureInspiration,
     "confirm-fissure-inspiration": confirmFissureInspiration,
+    "adjust-inspiration": () => adjustInspiration(num(button.dataset.delta, 0)),
     "open-ca": openCaModal,
     "open-defense-adjust": () => openDefenseAdjustmentModal(button.dataset.defense),
     "adjust-defense": () => adjustDefense(button.dataset.defense, num(button.dataset.delta, 0)),
@@ -3219,13 +3251,17 @@ function handleChange(event) {
     }
   }
   if (target.dataset.path) {
+    if (campaignSkillPolicy && target.dataset.path === "settings.skillLimit") return;
     let value = target.type === "checkbox" ? target.checked : target.value;
     if (target.type === "number") value = num(value, 0);
+    if (target.dataset.path === "inspiration") value = Math.max(0, Math.floor(value));
     if (target.dataset.path === "character.useIntForSkillPoints") value = value === "true";
     const skillMatch = target.dataset.path.match(/^skills\.(.+)\.added$/);
     const previousSkillValue = skillMatch ? num(state.skills[skillMatch[1]]?.added, 0) : null;
     const previousPathValue = getPath(target.dataset.path);
     const previousRegionCode = state.character.regionCode;
+    const affectsSkills = target.dataset.path.startsWith("attributes.") || ["character.cultureId", "character.backgroundFamilyId", "character.backgroundPersonalId", "character.useIntForSkillPoints", "magicCore.selectedId"].includes(target.dataset.path);
+    const previousSkillValues = affectsSkills ? Object.fromEntries(DB.skills.map((skill) => [skill.name, skillFinal(skill.name)])) : null;
     setPath(target.dataset.path, value);
     if (skillMatch && rejectInvalidSkillAllocation(skillMatch[1], previousSkillValue, target)) {
       render();
@@ -3243,9 +3279,8 @@ function handleChange(event) {
       const region = getRegion(value);
       if (region && !region.cultures.some((culture) => culture.id === state.character.cultureId)) state.character.cultureId = "";
     }
-    const affectsSkills = target.dataset.path.startsWith("attributes.") || ["character.cultureId", "character.backgroundFamilyId", "character.backgroundPersonalId", "character.useIntForSkillPoints", "magicCore.selectedId"].includes(target.dataset.path);
     if (affectsSkills) {
-      const issue = sheetSkillValidationIssue();
+      const issue = sheetSkillValidationIssue(previousSkillValues);
       if (issue) {
         setPath(target.dataset.path, previousPathValue);
         if (target.dataset.path === "character.cultureId") state.character.regionCode = previousRegionCode;
@@ -3839,8 +3874,8 @@ function confirmEvolveSkills() {
   const skillName = sessionUi.evolveSkill || DB.skills.find((skill) => state.skills[skill.name]?.checked)?.name;
   const value = num($("#evolveValue").value, -1);
   if (value < 0 || value > 10) return addError("LAT-PT-004");
-  if (!state.settings.gmOverride && skillFinal(skillName) + value > num(state.settings.skillLimit, 70)) {
-    return addError("LAT-CALC-004", `${skillName}: a evolução ultrapassaria o limite ${state.settings.skillLimit}.`);
+  if ((!state.settings.gmOverride || campaignSkillPolicy) && value > 0 && skillFinal(skillName) + value > effectiveSkillLimit()) {
+    return addError("LAT-CALC-004", `${skillName}: a evolução ultrapassaria o limite ${effectiveSkillLimit()}.`);
   }
   state.skills[skillName].evolutions.push({ value, at: new Date().toISOString() });
   state.skills[skillName].checked = false;
@@ -3874,9 +3909,10 @@ function addTalent() {
   const base = DB.talents.find((talent) => talent.name === name);
   if (!base) return addError("LAT-DB-004", name);
   if (!base.stackable && state.talents.some((talent) => talent.name === name)) return toast("Talento já adicionado.", "warn");
+  const previousSkillValues = Object.fromEntries(DB.skills.map((skill) => [skill.name, skillFinal(skill.name)]));
   const talent = { id: uid(), name, level: num($("#talentLevelDraft").value, 1), enabled: !["conditional", "mixed"].includes(base.mode) };
   state.talents.push(talent);
-  const issue = sheetSkillValidationIssue();
+  const issue = sheetSkillValidationIssue(previousSkillValues);
   if (issue) {
     state.talents = state.talents.filter((item) => item.id !== talent.id);
     return addError(issue.reason === "limit" ? "LAT-CALC-004" : "LAT-PT-002", `${name}: ${issue.detail}`);
@@ -3888,9 +3924,10 @@ function addTalent() {
 function toggleTalent(id) {
   const talent = state.talents.find((item) => item.id === id);
   if (talent) {
+    const previousSkillValues = Object.fromEntries(DB.skills.map((skill) => [skill.name, skillFinal(skill.name)]));
     const previous = talent.enabled;
     talent.enabled = !talent.enabled;
-    const issue = sheetSkillValidationIssue();
+    const issue = sheetSkillValidationIssue(previousSkillValues);
     if (issue) {
       talent.enabled = previous;
       return addError(issue.reason === "limit" ? "LAT-CALC-004" : "LAT-PT-002", `${talent.name}: ${issue.detail}`);
@@ -3979,7 +4016,7 @@ function openSettings() {
     <div data-online-settings-slot hidden></div>
     <div class="grid two">
       <div class="card stack"><h3>Tema</h3><div class="inline"><button class="${state.settings.theme === "dark" ? "button" : "ghost"}" type="button" data-action="set-theme" data-theme="dark" aria-pressed="${state.settings.theme === "dark"}">Modo Escuro</button><button class="${state.settings.theme === "light" ? "button" : "ghost"}" type="button" data-action="set-theme" data-theme="light" aria-pressed="${state.settings.theme === "light"}">Modo Claro</button></div></div>
-      <div class="card stack">${field("Limite inicial de Perícia", "settings.skillLimit", "number")}<button class="${state.settings.gmOverride ? "danger" : "ghost"}" type="button" data-action="${state.settings.gmOverride ? "disable-gm-override" : "request-gm-override"}" role="switch" aria-checked="${Boolean(state.settings.gmOverride)}">Modo Mestre: ${state.settings.gmOverride ? "ligado" : "desligado"}</button><p class="muted small">Permite ultrapassar limite e orçamento de Perícias.</p></div>
+      <div class="card stack">${campaignSkillPolicy ? `<p>Limite da campanha <strong>${effectiveSkillLimit()}</strong> (${esc(campaignSkillPolicy.name)}). Apenas o criador pode alterá-lo na campanha.</p>` : field("Limite inicial de Perícia", "settings.skillLimit", "number")}${campaignSkillPolicy ? "" : `<button class="${state.settings.gmOverride ? "danger" : "ghost"}" type="button" data-action="${state.settings.gmOverride ? "disable-gm-override" : "request-gm-override"}" role="switch" aria-checked="${Boolean(state.settings.gmOverride)}">Modo Mestre: ${state.settings.gmOverride ? "ligado" : "desligado"}</button><p class="muted small">Permite ultrapassar limite e orçamento de Perícias fora de campanha.</p>`}</div>
     </div>
     <div class="grid two" style="margin-top: 12px;">
       <div class="card stack"><h3>Importar</h3><input type="file" accept="application/json" data-file="json"><textarea id="jsonPaste" placeholder="Cole um JSON exportado aqui"></textarea><button class="ghost" type="button" data-action="import-json-paste">Importar JSON colado</button></div>
@@ -4004,10 +4041,12 @@ function openSettings() {
 }
 
 function requestGmOverride() {
+  if (campaignSkillPolicy) return;
   openModal("Ativar Modo Mestre", `<p>Esta exceção permite ultrapassar o limite e o orçamento de Perícias. Use somente quando o Mestre autorizar.</p>`, `<button class="danger" type="button" data-action="enable-gm-override">Ativar exceção</button><button class="ghost" type="button" data-action="close-modal">Cancelar</button>`);
 }
 
 function enableGmOverride() {
+  if (campaignSkillPolicy) return false;
   state.settings.gmOverride = true;
   closeModal();
   render();
@@ -4461,7 +4500,41 @@ if (databaseStartupError) {
   window.MARUFIA_APP_BRIDGE = Object.freeze({
     hasExistingSheet: () => Boolean(state?.meta?.started),
     snapshot: () => persistentPayload(),
+    flushCurrent: () => saveTimer === null ? true : flushPendingState(),
+    createBlankSnapshot: () => {
+      const blank = createDefaultState();
+      blank.meta.started = true;
+      lastBlankCreatedAtMs = Math.max(Date.now(), lastBlankCreatedAtMs + 1);
+      blank.meta.createdAt = new Date(lastBlankCreatedAtMs).toISOString();
+      return STATE_TOOLS.persistentPayload(blank);
+    },
+    resetBlank: () => {
+      const blank = createDefaultState();
+      if (!STORAGE.saveLocal(STORAGE_KEY, STATE_TOOLS.persistentPayload(blank))) return false;
+      state = blank;
+      campaignSkillPolicy = null;
+      render();
+      return true;
+    },
+    backupSnapshot: (snapshot, label) => {
+      try {
+        const backup = { id: uid(), at: new Date().toISOString(), label, payload: JSON.stringify(snapshot, null, 2) };
+        STORAGE.saveLocal(BACKUP_STORAGE_KEY, [backup, ...readBackups()].slice(0, 5));
+        return true;
+      } catch {
+        return false;
+      }
+    },
     loadGmViewSnapshot,
+    setCampaignSkillPolicy: (policy) => {
+      const limit = Number(policy?.limit);
+      campaignSkillPolicy = policy?.campaignId && Number.isInteger(limit) && limit >= 1 && limit <= 999
+        ? { campaignId: String(policy.campaignId), name: String(policy.name || "Campanha"), limit, revision: Number(policy.revision) || 1 }
+        : null;
+      render();
+      return campaignSkillPolicy;
+    },
+    campaignSkillPolicy: () => campaignSkillPolicy,
     applyRemoteSnapshot: (raw) => {
       if (GM_VIEW_MODE) return false;
       const prepared = prepareStateImport(raw);
@@ -4472,6 +4545,7 @@ if (databaseStartupError) {
         return false;
       }
       state = nextState;
+      campaignSkillPolicy = null;
       clearTimeout(saveTimer);
       saveTimer = null;
       previousWorldUnlocked = worldUnlocked();

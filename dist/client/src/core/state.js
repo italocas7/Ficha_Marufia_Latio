@@ -7,7 +7,7 @@
 
   const STATE_SCHEMA = Object.freeze({
     appId: "marufia-latio",
-    currentVersion: 5,
+    currentVersion: 6,
     minimumSupportedVersion: 1,
     mediaType: "application/json",
   });
@@ -314,6 +314,7 @@
     state.combat.fissure.attuned = Boolean(state.combat.fissure.attuned);
     state.combat.fissure.magicUsedThisRound = Boolean(state.combat.fissure.magicUsedThisRound);
     state.combat.fissure.prepared = Boolean(state.combat.fissure.prepared);
+    state.inspiration = Math.floor(clampNumber(state.inspiration, 0, Number.MAX_SAFE_INTEGER, 0));
     for (const skill of Object.values(state.skills ?? {})) {
       if (!isPlainObject(skill)) continue;
       skill.added = clampNumber(skill.added, 0, 999, 0);

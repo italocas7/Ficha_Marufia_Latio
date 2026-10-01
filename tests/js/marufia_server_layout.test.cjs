@@ -109,7 +109,7 @@ test("keeps schema migration separate, checksummed, backed up, and transactional
   const migrations = fs.readdirSync(path.join(root, "supabase", "migrations"))
     .filter((name) => name.endsWith(".sql"))
     .sort();
-  assert.equal(manifest.length, 28);
+  assert.equal(manifest.length, 30);
   assert.deepEqual(manifest.map((line) => line.split(/ {2}/)[1]), migrations);
   for (const line of manifest) {
     assert.match(line, /^[0-9a-f]{64}  [0-9]{14}_[A-Za-z0-9_]+\.sql$/);

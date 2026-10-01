@@ -11,7 +11,7 @@
 
   const workspaceTools = workspaceToolsInput ?? {};
 
-  const CAMPAIGN_COLUMNS = "id,name,description,owner_id,join_code,created_at,updated_at";
+  const CAMPAIGN_COLUMNS = "id,name,description,skill_limit,rules_revision,owner_id,join_code,created_at,updated_at";
   const MEMBERSHIP_COLUMNS = "campaign_id,user_id,role,joined_at";
   const JOIN_CODE_PATTERN = /^MRF-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{2}$/;
   const MEMBER_ROLE_LABELS = Object.freeze({
@@ -35,10 +35,12 @@
   function validateCampaignInput(input = {}) {
     const name = String(input.name ?? "").trim();
     const description = String(input.description ?? "").trim();
+    const skillLimit = Number(input.skillLimit ?? 70);
     if (!name) throw campaignError("LAT-CAMPAIGN-INPUT-001", "Informe o nome da campanha.");
     if (name.length > 100) throw campaignError("LAT-CAMPAIGN-INPUT-002", "O nome pode ter no máximo 100 caracteres.");
     if (description.length > 5000) throw campaignError("LAT-CAMPAIGN-INPUT-003", "A descrição pode ter no máximo 5.000 caracteres.");
-    return Object.freeze({ name, description });
+    if (!Number.isInteger(skillLimit) || skillLimit < 1 || skillLimit > 999) throw campaignError("LAT-CAMPAIGN-INPUT-004", "Informe um limite de perícias entre 1 e 999.");
+    return Object.freeze({ name, description, skill_limit: skillLimit });
   }
 
   function normalizeJoinCode(value) {
@@ -64,6 +66,7 @@
     if (detail.includes("campaign owner required")) {
       return "Somente quem criou a campanha pode alterá-la ou excluí-la.";
     }
+    if (detail.includes("invalid campaign settings")) return "Informe um limite de perícias entre 1 e 999.";
     if (detail.includes("23505") || detail.includes("duplicate") || detail.includes("unique")) {
       return "O código de convite coincidiu com outro existente. Tente criar novamente.";
     }
@@ -156,6 +159,18 @@
       return Array.isArray(result.data) ? result.data : [];
     }
 
+    async function listPartySummary(campaignId) {
+      if (typeof client.rpc !== "function") throw campaignError("LAT-CAMPAIGN-PARTY-001", "O resumo dos personagens não está disponível.");
+      const result = await client.rpc("list_campaign_party_summary", { p_campaign_id: String(campaignId ?? "") });
+      if (result.error) throw campaignError("LAT-CAMPAIGN-PARTY-002", friendlyCampaignMessage(result.error));
+      return (Array.isArray(result.data) ? result.data : []).map((row) => Object.freeze({
+        id: String(row.character_id ?? ""),
+        name: cleanText(row.character_name, 120) || "Personagem sem nome",
+        hp: Number.isInteger(Number(row.hp_current)) && row.hp_current !== null ? Number(row.hp_current) : null,
+        pm: Number.isInteger(Number(row.pm_current)) && row.pm_current !== null ? Number(row.pm_current) : null,
+      }));
+    }
+
     async function create(input) {
       const payload = validateCampaignInput(input);
       for (let attempt = 0; attempt < 3; attempt += 1) {
@@ -190,10 +205,11 @@
       const id = String(campaignId ?? "").trim();
       if (!id) throw campaignError("LAT-CAMPAIGN-UPDATE-INPUT-001", "A campanha para edição é inválida.");
       const payload = validateCampaignInput(input);
-      const result = await client.rpc("update_campaign", {
+      const result = await client.rpc("update_campaign_details", {
         p_campaign_id: id,
         p_name: payload.name,
         p_description: payload.description,
+        p_skill_limit: payload.skill_limit,
       });
       if (result.error) throw campaignError("LAT-CAMPAIGN-UPDATE-001", friendlyCampaignMessage(result.error));
       return normalizedCampaign(result.data);
@@ -215,7 +231,7 @@
       return normalizedDeleteResult(result.data);
     }
 
-    return Object.freeze({ currentUserId, listVisible, listOwnMemberships, listVisibleMembers, create, join, update, remove });
+    return Object.freeze({ currentUserId, listVisible, listOwnMemberships, listVisibleMembers, listPartySummary, create, join, update, remove });
   }
 
   function escapeHtml(value) {
@@ -266,6 +282,17 @@
     </section>`;
   }
 
+  function partySummaryHtml(campaign, state = {}) {
+    const party = state.partyByCampaign?.[campaign.id];
+    const rows = Array.isArray(party) ? party : [];
+    return `<section class="campaign-party-summary" aria-label="Personagens da campanha">
+      <strong>Personagens da campanha</strong>
+      ${party === null ? `<p class="muted small">Resumo indisponível no momento.</p>`
+        : rows.length ? `<div class="campaign-party-list">${rows.map((item) => `<div class="campaign-party-row"><span>${escapeHtml(item.name)}</span><span>Vida: <strong>${item.hp === null ? "Cheia" : escapeHtml(item.hp)}</strong></span><span>PM: <strong>${item.pm === null ? "Cheio" : escapeHtml(item.pm)}</strong></span></div>`).join("")}</div>`
+          : `<p class="muted small">Nenhuma ficha vinculada ainda.</p>`}
+    </section>`;
+  }
+
   function campaignCardHtml(campaign, state = {}, options = {}) {
     const membership = membershipSummary(campaign, state.memberships, state.currentUserId);
     const participantCount = membership.role === "gm"
@@ -278,7 +305,7 @@
         <button class="button" type="button" data-online-live-rolls-action="open" data-campaign-id="${escapeHtml(campaign.id)}" data-campaign-name="${escapeHtml(campaign.name)}">Rolagens da campanha</button>
         ${membership.role === "gm" ? `<button class="button" type="button" data-online-gm-panel-action="open" data-campaign-id="${escapeHtml(campaign.id)}" data-campaign-name="${escapeHtml(campaign.name)}">Painel do Mæstre</button>` : ""}`;
     return `<article class="campaign-card ${campaign.id === state.createdId ? "campaign-card-new" : ""}" data-campaign-id="${escapeHtml(campaign.id)}">
-      <div><h3>${escapeHtml(campaign.name)}</h3>${campaign.description ? `<p>${escapeHtml(campaign.description)}</p>` : `<p class="muted">Sem descrição.</p>`}<div class="campaign-members-summary">${participantCount}<span>Você: ${escapeHtml(membership.roleLabel)}</span></div>${characterAssociationHtml(campaign, state.characters, state.busy)}</div>
+      <div><h3>${escapeHtml(campaign.name)}</h3>${campaign.description ? `<p>${escapeHtml(campaign.description)}</p>` : `<p class="muted">Sem descrição.</p>`}<div class="campaign-members-summary">${participantCount}<span>Você: ${escapeHtml(membership.roleLabel)}</span><span>Limite de perícias: ${escapeHtml(campaign.skill_limit ?? 70)}</span></div>${characterAssociationHtml(campaign, state.characters, state.busy)}${partySummaryHtml(campaign, state)}</div>
       <div class="campaign-code-block">
         <span class="muted small">Código de convite</span>
         <code>${escapeHtml(campaign.join_code)}</code>
@@ -301,6 +328,7 @@
         <form id="onlineCampaignForm" class="stack" data-online-campaign-form>
           <div class="field"><label for="campaignName">Nome da campanha</label><input id="campaignName" name="name" type="text" maxlength="100" required></div>
           <div class="field"><label for="campaignDescription">Descrição</label><textarea id="campaignDescription" name="description" maxlength="5000" rows="5"></textarea></div>
+          <div class="field"><label for="campaignSkillLimit">Limite de perícias</label><input id="campaignSkillLimit" name="skillLimit" type="number" min="1" max="999" step="1" value="70" required></div>
           <div class="inline campaign-form-actions">
             <button class="button" type="submit" ${state.busy ? "disabled" : ""}>${state.busy ? "Criando…" : "Criar campanha"}</button>
             <button class="ghost" type="button" data-online-campaign-action="return" ${state.busy ? "disabled" : ""}>Cancelar</button>
@@ -344,11 +372,12 @@
 
     if (state.mode === "edit" && selectedCampaign) {
       return `<div class="campaign-dialog stack" data-online-campaign-modal>
-        <p class="muted">Altere somente o nome e a descrição. O código de convite, participantes e fichas vinculadas permanecem iguais.</p>
+        <p class="muted">Altere o nome, a descrição e o limite de perícias. As fichas acima de um novo limite serão preservadas e sinalizadas.</p>
         ${message}
         <form id="onlineCampaignEditForm" class="stack" data-online-campaign-edit-form>
           <div class="field"><label for="campaignEditName">Nome da campanha</label><input id="campaignEditName" name="name" type="text" maxlength="100" value="${escapeHtml(selectedCampaign.name)}" required></div>
           <div class="field"><label for="campaignEditDescription">Descrição</label><textarea id="campaignEditDescription" name="description" maxlength="5000" rows="5">${escapeHtml(selectedCampaign.description)}</textarea></div>
+          <div class="field"><label for="campaignEditSkillLimit">Limite de perícias</label><input id="campaignEditSkillLimit" name="skillLimit" type="number" min="1" max="999" step="1" value="${escapeHtml(selectedCampaign.skill_limit ?? 70)}" required></div>
           <div class="inline campaign-form-actions">
             <button class="button" type="submit" ${state.busy ? "disabled" : ""}>${state.busy ? "Salvando…" : "Salvar alterações"}</button>
             <button class="ghost" type="button" data-online-campaign-action="return" ${state.busy ? "disabled" : ""}>Cancelar</button>
@@ -397,7 +426,7 @@
     let service = null;
     let characterService = null;
     let dialogOpen = false;
-    let state = { mode: "list", previousMode: "list", loading: false, busy: false, campaigns: [], memberships: [], characters: [], currentUserId: "", createdId: "", selectedCampaignId: "", message: "", messageKind: "" };
+    let state = { mode: "list", previousMode: "list", loading: false, busy: false, campaigns: [], memberships: [], characters: [], partyByCampaign: {}, currentUserId: "", createdId: "", selectedCampaignId: "", message: "", messageKind: "" };
 
     function signedIn() {
       return accountButton.dataset.authState === "online";
@@ -432,6 +461,29 @@
       renderDialog();
     }
 
+    let refreshGeneration = 0;
+    async function refreshCharacterSummaries() {
+      if (!dialogOpen || state.busy || !["list", "detail"].includes(state.mode) || !service) return;
+      const generation = ++refreshGeneration;
+      const campaigns = state.campaigns;
+      try {
+        const [characters, partyEntries] = await Promise.all([
+          characterService?.listOwn?.() ?? [],
+          Promise.all(campaigns.map(async (campaign) => [campaign.id, await service.listPartySummary(campaign.id).catch(() => state.partyByCampaign?.[campaign.id] ?? null)])),
+        ]);
+        if (generation !== refreshGeneration || !dialogOpen || state.busy
+          || !modalRoot.querySelector("[data-online-campaign-modal]")) return;
+        const partyByCampaign = Object.fromEntries(partyEntries);
+        const characterNames = (list) => JSON.stringify(list.map((item) => [item.id, item.name, item.campaign_id]));
+        if (characterNames(characters) !== characterNames(state.characters)
+          || JSON.stringify(partyByCampaign) !== JSON.stringify(state.partyByCampaign)) {
+          applyState({ characters, partyByCampaign });
+        }
+      } catch {
+        // O resumo anterior permanece visível se uma atualização pontual falhar.
+      }
+    }
+
     async function loadCampaigns(message = "", createdId = "", destination = {}) {
       const targetMode = destination.mode === "detail" ? "detail" : "list";
       const targetCampaignId = String(destination.selectedCampaignId ?? "");
@@ -447,15 +499,17 @@
         const currentUserId = await service.currentUserId();
         const ownMemberships = await service.listOwnMemberships(currentUserId);
         const campaigns = await service.listVisible(ownMemberships.map((membership) => membership.campaign_id));
-        const [memberships, characters] = await Promise.all([
+        const [memberships, characters, partyEntries] = await Promise.all([
           service.listVisibleMembers(campaigns.map((campaign) => campaign.id)),
           characterService?.listOwn?.() ?? [],
+          Promise.all(campaigns.map(async (campaign) => [campaign.id, await service.listPartySummary(campaign.id).catch(() => null)])),
         ]);
         const selectedAvailable = targetMode !== "detail" || campaigns.some((campaign) => campaign.id === targetCampaignId);
         applyState({
           campaigns,
           memberships,
           characters,
+          partyByCampaign: Object.fromEntries(partyEntries),
           currentUserId,
           loading: false,
           mode: selectedAvailable ? targetMode : "list",
@@ -467,18 +521,23 @@
           view.dispatchEvent(new view.CustomEvent("marufia:campaign-memberships-changed"));
         }
       } catch (error) {
-        applyState({ campaigns: [], memberships: [], characters: [], currentUserId: "", loading: false, message: friendlyCampaignMessage(error), messageKind: "error" });
+        applyState({ campaigns: [], memberships: [], characters: [], partyByCampaign: {}, currentUserId: "", loading: false, message: friendlyCampaignMessage(error), messageKind: "error" });
       }
     }
 
     function openCampaigns(mode = "list") {
       if (!signedIn() || !service) return;
+      view.MARUFIA_APP_BRIDGE?.flushCurrent?.();
       dialogOpen = true;
       if (mode === "join") {
         applyState({ mode: "join", loading: false, busy: false, message: "", messageKind: "" });
         return;
       }
-      void loadCampaigns();
+      applyState({ mode: "list", loading: true, message: "", messageKind: "" });
+      void (async () => {
+        try { await view.MARUFIA_HOME?.waitForCharacterSwitch?.(view); } catch { /* A ficha local continua preservada. */ }
+        if (dialogOpen) await loadCampaigns();
+      })();
     }
 
     async function openCampaignDetail(campaignId) {
@@ -487,11 +546,9 @@
       if (!id) return;
       await workspaceTools.deactivateWorkspaceViews?.(view, "campaign");
       dialogOpen = true;
-      if (state.campaigns.some((campaign) => campaign.id === id)) {
-        applyState({ mode: "detail", previousMode: "list", selectedCampaignId: id, loading: false, busy: false, message: "", messageKind: "" });
-        return;
-      }
-      void loadCampaigns("", "", { mode: "detail", selectedCampaignId: id });
+      view.MARUFIA_APP_BRIDGE?.flushCurrent?.();
+      try { await view.MARUFIA_HOME?.waitForCharacterSwitch?.(view); } catch { /* O resumo remoto será atualizado no próximo salvamento. */ }
+      if (dialogOpen) void loadCampaigns("", "", { mode: "detail", selectedCampaignId: id });
     }
 
     function returnFromManagement() {
@@ -667,6 +724,14 @@
     }
 
     view.addEventListener?.("marufia:open-campaigns", handleOpenRequest);
+    const yieldToConflict = () => { dialogOpen = false; };
+    view.addEventListener?.("marufia:character-conflict", yieldToConflict);
+    const refreshAfterCharacterChange = () => void refreshCharacterSummaries();
+    view.addEventListener?.("marufia:remote-character-updated", refreshAfterCharacterChange);
+    view.addEventListener?.("marufia:character-linked", refreshAfterCharacterChange);
+    const refreshTimer = view.setInterval?.(() => {
+      if (document.visibilityState !== "hidden") void refreshCharacterSummaries();
+    }, 8000);
 
     try {
       client = supabaseTools?.getSupabaseClient?.();
@@ -688,6 +753,10 @@
       destroy() {
         observer?.disconnect?.();
         view.removeEventListener?.("marufia:open-campaigns", handleOpenRequest);
+        view.removeEventListener?.("marufia:character-conflict", yieldToConflict);
+        view.removeEventListener?.("marufia:remote-character-updated", refreshAfterCharacterChange);
+        view.removeEventListener?.("marufia:character-linked", refreshAfterCharacterChange);
+        if (refreshTimer != null) view.clearInterval?.(refreshTimer);
       },
       service,
       openCampaignDetail,
@@ -708,6 +777,7 @@
     createCampaignService,
     membershipSummary,
     characterAssociationHtml,
+    partySummaryHtml,
     campaignDialogHtml,
     init,
   };

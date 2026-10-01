@@ -657,6 +657,63 @@ test("wires hidden-page and page-exit flushes without blocking local saves", asy
   assert.equal(viewListeners.has(syncTools.BEFORE_CHARACTER_SWITCH_EVENT), false);
 });
 
+test("retries a stale revision when only campaign association changed remotely", async () => {
+  const storage = markerStorage();
+  storage.saveRemote = async (adapter, request) => adapter.save(request);
+  syncTools.rememberSyncedCharacter(storage, USER_ID, remoteRecord("Arthur", 2));
+  const revisions = [];
+  let conflicts = 0;
+  const service = {
+    async saveState(_id, local, revision) {
+      revisions.push(revision);
+      if (revision === 2) throw Object.assign(new Error("revision conflict"), { code: "40001" });
+      return remoteRecord("Arthur editado", 4, { state: local });
+    },
+    async loadOwn() { return remoteRecord("Arthur", 3, { campaign_id: "33333333-3333-4333-8333-333333333333" }); },
+  };
+  const queue = syncTools.createRemoteSaveQueue({
+    service, storage,
+    resolveTarget: async () => ({ characterId: CHARACTER_ID, userId: USER_ID, expectedRevision: 2 }),
+    onConflict: () => { conflicts += 1; },
+    onSuccess: (character) => { syncTools.rememberSyncedCharacter(storage, USER_ID, character); },
+  });
+  await queue.enqueue(snapshot("Arthur editado"));
+  assert.deepEqual(revisions, [2, 3]);
+  assert.equal(conflicts, 0);
+  assert.equal(queue.lastError(), null);
+  assert.equal(syncTools.syncedCharacterMetadata(storage, USER_ID, CHARACTER_ID).revision, 4);
+});
+
+test("preserves the newest edit while retrying a stale campaign revision", async () => {
+  const storage = markerStorage();
+  storage.saveRemote = async (adapter, request) => adapter.save(request);
+  syncTools.rememberSyncedCharacter(storage, USER_ID, remoteRecord("Arthur", 2));
+  let release;
+  const gate = new Promise((resolve) => { release = resolve; });
+  const writes = [];
+  const service = {
+    async saveState(_id, local, revision) {
+      writes.push([local.character.name, revision]);
+      if (revision === 2) {
+        await gate;
+        throw Object.assign(new Error("revision conflict"), { code: "40001" });
+      }
+      return remoteRecord(local.character.name, 4, { state: local });
+    },
+    async loadOwn() { return remoteRecord("Arthur", 3); },
+  };
+  const queue = syncTools.createRemoteSaveQueue({
+    service, storage,
+    resolveTarget: async () => ({ characterId: CHARACTER_ID, userId: USER_ID, expectedRevision: 2 }),
+  });
+  void queue.enqueue(snapshot("Primeira edição"));
+  await new Promise((resolve) => setImmediate(resolve));
+  void queue.enqueue(snapshot("Última edição"));
+  release();
+  await queue.flush();
+  assert.deepEqual(writes, [["Primeira edição", 2], ["Última edição", 3]]);
+});
+
 test("opens one realtime channel for the linked character and emits validated remote changes", async () => {
   const accountButton = { dataset: { authState: "offline" } };
   const listeners = new Map();
