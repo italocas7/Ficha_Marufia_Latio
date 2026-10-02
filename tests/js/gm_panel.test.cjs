@@ -360,7 +360,7 @@ test("renders a compact safe panel with the Phase 28 sheet viewer enabled", () =
   assert.match(html, /data-online-gm-panel-action="add-item"/);
   assert.match(html, /data-presence-status="away"/);
   assert.match(html, />Ausente<\/span>/);
-  assert.match(html, /Histórico da campanha/);
+  assert.match(html, /Atividade recente/);
   assert.match(html, /Arthur: PV 27 → 19/);
   assert.match(html, /data-campaign-event-type="hp_changed"/);
   assert.match(html, /data-campaign-session-id="88888888-8888-4888-8888-888888888888"/);

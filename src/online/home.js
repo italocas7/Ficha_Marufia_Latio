@@ -503,6 +503,21 @@
       void openSelectedCharacter();
     }
 
+    async function openCharacterById(characterId) {
+      const id = String(characterId || "");
+      if (!signedIn() || !id) return false;
+      dialogOpen = true;
+      applyState({ mode: "characters", selectedCharacterId: id, message: "" });
+      await loadSummary();
+      if (!state.characters.some((character) => character.id === id)) {
+        applyState({ message: "Esta ficha não está disponível na sua conta." });
+        return false;
+      }
+      applyState({ selectedCharacterId: id });
+      requestOpenCharacter();
+      return true;
+    }
+
     let syncingDrafts = false;
     async function syncAccountDrafts() {
       if (syncingDrafts || !service || !slotStore || !signedIn() || view.navigator?.onLine === false) return false;
@@ -606,6 +621,7 @@
     return Object.freeze({
       service,
       open,
+      openCharacterById,
       destroy() {
         authObserver?.disconnect?.();
         modalObserver?.disconnect?.();

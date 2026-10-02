@@ -166,6 +166,10 @@
       return (Array.isArray(result.data) ? result.data : []).map((row) => Object.freeze({
         id: String(row.character_id ?? ""),
         name: cleanText(row.character_name, 120) || "Personagem sem nome",
+        ownerId: String(row.owner_id ?? ""),
+        playerName: cleanText(row.player_name, 80),
+        presence: ["online", "away", "offline"].includes(row.presence_status) ? row.presence_status : "offline",
+        portraitPath: String(row.portrait_path ?? ""),
         hp: Number.isInteger(Number(row.hp_current)) && row.hp_current !== null ? Number(row.hp_current) : null,
         pm: Number.isInteger(Number(row.pm_current)) && row.pm_current !== null ? Number(row.pm_current) : null,
       }));
@@ -286,9 +290,14 @@
     const party = state.partyByCampaign?.[campaign.id];
     const rows = Array.isArray(party) ? party : [];
     return `<section class="campaign-party-summary" aria-label="Personagens da campanha">
-      <strong>Personagens da campanha</strong>
+      <div class="section-title"><h3>Personagens da campanha</h3><span class="muted small">${rows.length} ${rows.length === 1 ? "personagem" : "personagens"}</span></div>
       ${party === null ? `<p class="muted small">Resumo indisponível no momento.</p>`
-        : rows.length ? `<div class="campaign-party-list">${rows.map((item) => `<div class="campaign-party-row"><span>${escapeHtml(item.name)}</span><span>Vida: <strong>${item.hp === null ? "Cheia" : escapeHtml(item.hp)}</strong></span><span>PM: <strong>${item.pm === null ? "Cheio" : escapeHtml(item.pm)}</strong></span></div>`).join("")}</div>`
+        : rows.length ? `<div class="campaign-party-list">${rows.map((item) => `<article class="campaign-party-row" data-campaign-character-id="${escapeHtml(item.id)}">
+          <div class="campaign-party-identity"><span class="character-portrait" data-marufia-portrait="${escapeHtml(item.id)}" data-portrait-path="${escapeHtml(item.portraitPath || "")}" data-portrait-name="${escapeHtml(item.name)}" aria-hidden="true">${escapeHtml(item.name.slice(0, 1).toUpperCase())}</span><div><strong>${escapeHtml(item.name)}</strong><small>Jogador: ${escapeHtml(item.playerName || "Não informado")}</small></div></div>
+          <span class="gm-presence-badge" data-presence-status="${escapeHtml(item.presence)}"><i aria-hidden="true"></i>${escapeHtml(({ online: "Online", away: "Ausente", offline: "Offline" })[item.presence] || "Offline")}</span>
+          <div class="campaign-party-resources"><span>PV <strong>${item.hp === null ? "Cheia" : escapeHtml(item.hp)}</strong></span><span>PM <strong>${item.pm === null ? "Cheio" : escapeHtml(item.pm)}</strong></span></div>
+          ${item.ownerId === state.currentUserId ? `<button class="ghost" type="button" data-online-campaign-action="open-character" data-character-id="${escapeHtml(item.id)}">Abrir ficha</button>` : state.memberships?.some((membership) => membership.campaign_id === campaign.id && membership.user_id === state.currentUserId && membership.role === "gm") ? `<button class="ghost" type="button" data-online-gm-panel-action="open-character-from-campaign" data-character-id="${escapeHtml(item.id)}" data-campaign-id="${escapeHtml(campaign.id)}" data-campaign-name="${escapeHtml(campaign.name)}">Abrir ficha</button>` : ""}
+        </article>`).join("")}</div>`
           : `<p class="muted small">Nenhuma ficha vinculada ainda.</p>`}
     </section>`;
   }
@@ -304,6 +313,13 @@
       : `<button class="ghost" type="button" data-online-campaign-action="detail" data-campaign-id="${escapeHtml(campaign.id)}" data-campaign-name="${escapeHtml(campaign.name)}">Abrir campanha</button>
         <button class="button" type="button" data-online-live-rolls-action="open" data-campaign-id="${escapeHtml(campaign.id)}" data-campaign-name="${escapeHtml(campaign.name)}">Rolagens da campanha</button>
         ${membership.role === "gm" ? `<button class="button" type="button" data-online-gm-panel-action="open" data-campaign-id="${escapeHtml(campaign.id)}" data-campaign-name="${escapeHtml(campaign.name)}">Painel do Mæstre</button>` : ""}`;
+    if (options.detail) return `<div class="campaign-overview" data-campaign-id="${escapeHtml(campaign.id)}">
+      <div class="campaign-overview-top"><section class="campaign-overview-intro"><span class="muted small">Campanha atual</span><h3>${escapeHtml(campaign.name)}</h3>${campaign.description ? `<p>${escapeHtml(campaign.description)}</p>` : ""}<div class="campaign-members-summary">${participantCount}<span>Você: ${escapeHtml(membership.roleLabel)}</span><span>Limite de perícias: ${escapeHtml(campaign.skill_limit ?? 70)}</span><span>● Campanha ativa</span></div></section>
+      <section class="campaign-code-block"><span class="muted small">Código de convite</span><code>${escapeHtml(campaign.join_code)}</code><button class="button" type="button" data-online-campaign-action="copy" data-code="${escapeHtml(campaign.join_code)}">Copiar código</button></section></div>
+      ${partySummaryHtml(campaign, state)}
+      ${characterAssociationHtml(campaign, state.characters, state.busy)}
+      ${ownsCampaign ? `<section class="campaign-administration"><h3>Administração da campanha</h3><button class="ghost" type="button" data-online-campaign-action="edit" data-campaign-id="${escapeHtml(campaign.id)}">Editar campanha</button><div class="campaign-danger-zone"><strong>Zona de perigo</strong><button class="danger" type="button" data-online-campaign-action="delete" data-campaign-id="${escapeHtml(campaign.id)}">Excluir campanha</button></div></section>` : ""}
+    </div>`;
     return `<article class="campaign-card ${campaign.id === state.createdId ? "campaign-card-new" : ""}" data-campaign-id="${escapeHtml(campaign.id)}">
       <div><h3>${escapeHtml(campaign.name)}</h3>${campaign.description ? `<p>${escapeHtml(campaign.description)}</p>` : `<p class="muted">Sem descrição.</p>`}<div class="campaign-members-summary">${participantCount}<span>Você: ${escapeHtml(membership.roleLabel)}</span><span>Limite de perícias: ${escapeHtml(campaign.skill_limit ?? 70)}</span></div>${characterAssociationHtml(campaign, state.characters, state.busy)}${partySummaryHtml(campaign, state)}</div>
       <div class="campaign-code-block">
@@ -676,6 +692,10 @@
         returnFromManagement();
       } else if (action === "copy") {
         void copyCode(control.dataset.code ?? "");
+      } else if (action === "open-character") {
+        dialogOpen = false;
+        modalRoot.innerHTML = "";
+        view.MARUFIA_HOME?.openCharacterById?.(String(control.dataset.characterId ?? ""));
       } else if (action === "detach-character") {
         void detachCharacter(String(control.dataset.characterId ?? ""));
       } else if (action === "close") {
@@ -729,6 +749,7 @@
     const refreshAfterCharacterChange = () => void refreshCharacterSummaries();
     view.addEventListener?.("marufia:remote-character-updated", refreshAfterCharacterChange);
     view.addEventListener?.("marufia:character-linked", refreshAfterCharacterChange);
+    view.addEventListener?.("marufia:portrait-updated", refreshAfterCharacterChange);
     const refreshTimer = view.setInterval?.(() => {
       if (document.visibilityState !== "hidden") void refreshCharacterSummaries();
     }, 8000);
@@ -756,6 +777,7 @@
         view.removeEventListener?.("marufia:character-conflict", yieldToConflict);
         view.removeEventListener?.("marufia:remote-character-updated", refreshAfterCharacterChange);
         view.removeEventListener?.("marufia:character-linked", refreshAfterCharacterChange);
+        view.removeEventListener?.("marufia:portrait-updated", refreshAfterCharacterChange);
         if (refreshTimer != null) view.clearInterval?.(refreshTimer);
       },
       service,

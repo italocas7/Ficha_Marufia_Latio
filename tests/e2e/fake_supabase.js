@@ -370,6 +370,15 @@
             .map((item) => ({
               character_id: item.id,
               character_name: item.name,
+              owner_id: item.owner_id,
+              player_name: item.owner_id === session.user.id
+                ? (read(PROFILE_KEY)?.display_name || "Jogador")
+                : "Jogador convidado",
+              presence_status: (read(PRESENCE_KEY) ?? []).some((presence) => (
+                presence.campaign_id === campaignId && presence.user_id === item.owner_id
+                && Date.now() - Date.parse(presence.seen_at) < 120000
+              )) ? "online" : "offline",
+              portrait_path: null,
               hp_current: item.state?.resources?.hpCurrent ?? null,
               pm_current: item.state?.resources?.pmCurrent ?? null,
             })), error: null };

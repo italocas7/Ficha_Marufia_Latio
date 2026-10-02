@@ -1,20 +1,10 @@
-# Versão 0.4.1 — publicação
+# Versão 0.4.2 - preparação
 
-Estado: **v0.4.1 publicada**.
+Estado: **em validação; os manifestos públicos permanecem na v0.4.1**.
 
-## Artefatos preparados
+- Servidor: migração de retratos aplicada após backup e testes de segurança.
+- Código: 12 testes Python e 486 testes JavaScript aprovados.
+- Site e aplicativo Windows: dependem da conclusão dos testes de navegador e da geração dos artefatos desta versão.
+- Publicação: somente após conferir o site, o instalador assinado e os downloads da release.
 
-- Site: `dist/client/` (pacote estático gerado novamente após os testes).
-- Windows: portátil, instalador e assinatura do atualizador gerados e publicados.
-- Banco: migrações de espaços de ficha, limite de perícias por campanha e resumo seguro do grupo.
-
-## Validação local em 01/10/2026
-
-- Testes de lógica: aprovados; 477 testes JavaScript e 12 testes Python.
-- Build do site, navegador desktop/celular, servidor, aplicativo Windows, hashes e release: aprovados.
-
-## Ordem concluída
-
-1. A tag e a pré-release `v0.4.1` receberam os três arquivos Windows.
-2. Os downloads públicos foram conferidos novamente por tamanho e SHA-256.
-3. Os manifestos foram atualizados somente depois dessa validação.
+As novidades e a compatibilidade estão descritas em `docs/releases/v0.4.2.md`.

@@ -28,7 +28,7 @@ try {
     Assert-MarufiaEnvironment
     Assert-DockerReady
 
-    $tables = @("campaign_events", "campaign_members", "campaign_presence", "campaign_sessions", "campaigns", "characters", "profiles", "rolls")
+    $tables = @("campaign_events", "campaign_members", "campaign_presence", "campaign_sessions", "campaigns", "character_portraits", "characters", "profiles", "rolls")
     $tableSql = "select tablename from pg_catalog.pg_tables where schemaname = 'public' order by tablename;"
     Assert-ExactLines -Label "Tabelas públicas" -Expected $tables -Actual (Invoke-MarufiaDatabaseSql -TuplesOnly -Sql $tableSql)
 
@@ -42,6 +42,7 @@ try {
         "campaign_sessions.campaign_sessions_select_campaign_gm:SELECT",
         "campaigns.campaigns_insert_owned:INSERT",
         "campaigns.campaigns_select_member:SELECT",
+        "character_portraits.character_portraits_select_owner:SELECT",
         "characters.characters_insert_owned:INSERT",
         "characters.characters_select_campaign_gm:SELECT",
         "characters.characters_select_owned:SELECT",
@@ -94,6 +95,9 @@ try {
         "public.update_campaign_details(uuid,text,text,integer)",
         "public.delete_character(uuid,text,bigint)",
         "public.list_campaign_party_summary(uuid)"
+        "public.can_upload_character_portrait(text)"
+        "public.can_read_character_portrait(text)"
+        "public.set_character_portrait(uuid,text)"
     )
     foreach ($signature in $rpcSignatures) {
         $safeSignature = $signature.Replace("'", "''")
@@ -125,6 +129,7 @@ select source from (
   union all select 'campaigns', count(*) from public.campaigns
   union all select 'campaign_members', count(*) from public.campaign_members
   union all select 'characters', count(*) from public.characters
+  union all select 'character_portraits', count(*) from public.character_portraits
   union all select 'rolls', count(*) from public.rolls
   union all select 'campaign_events', count(*) from public.campaign_events
   union all select 'campaign_presence', count(*) from public.campaign_presence
@@ -136,7 +141,7 @@ select source from (
         }
     }
 
-    Write-MarufiaMessage -Level INFO -Message "Schema aprovado: 8 tabelas, 13 policies, 19 RPCs, 12 gatilhos e 6 publicações Realtime."
+    Write-MarufiaMessage -Level INFO -Message "Schema aprovado: 9 tabelas, 14 policies, 22 RPCs, 12 gatilhos e 6 publicações Realtime."
 } catch {
     Write-MarufiaMessage -Level ERROR -Message $_.Exception.Message
     exit 1

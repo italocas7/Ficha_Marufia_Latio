@@ -305,9 +305,9 @@ test("shows only safe party resources and escapes character names", async () => 
   assert.deepEqual(calls.rpc.at(-1), { name: "list_campaign_party_summary", args: { p_campaign_id: "campaign-1" } });
   const html = campaignTools.partySummaryHtml({ id: "campaign-1" }, { partyByCampaign: { "campaign-1": party } });
   assert.match(html, /&lt;Aria&gt;/);
-  assert.match(html, /Vida: <strong>19<\/strong>/);
-  assert.match(html, /PM: <strong>4<\/strong>/);
-  assert.match(html, /Vida: <strong>Cheia<\/strong>/);
+  assert.match(html, /PV <strong>19<\/strong>/);
+  assert.match(html, /PM <strong>4<\/strong>/);
+  assert.match(html, /PV <strong>Cheia<\/strong>/);
   assert.doesNotMatch(html, /<Aria>|Abrir ficha/);
 });
 
@@ -328,7 +328,7 @@ test("renders one selected campaign inside the shared workspace", () => {
     currentUserId: "user-1",
   });
   assert.match(gmHtml, /data-online-campaign-detail="campaign-1"/);
-  assert.equal((gmHtml.match(/class="campaign-card/g) ?? []).length, 1);
+  assert.equal((gmHtml.match(/class="campaign-overview"/g) ?? []).length, 1);
   assert.match(gmHtml, /aria-current="page"[^>]*>Campanha/);
   assert.match(gmHtml, /Painel do Mæstre/);
   assert.match(gmHtml, /Rolagens/);

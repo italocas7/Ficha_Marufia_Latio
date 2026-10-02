@@ -981,6 +981,9 @@ function render() {
   if (unlocked && !previousWorldUnlocked) addError("LAT-MAG-005", "", false);
   previousWorldUnlocked = unlocked;
   restoreRenderPosition(renderPosition);
+  if (typeof window.CustomEvent === "function" && typeof window.dispatchEvent === "function") {
+    window.dispatchEvent(new window.CustomEvent("marufia:sheet-rendered"));
+  }
 }
 
 function applyGmViewLock(app = $("#app")) {
@@ -1066,6 +1069,7 @@ function renderResumo() {
     <div class="grid two">
       <section class="panel">
         <div class="section-title"><h2>Resumo</h2><button class="ghost" type="button" data-action="open-start">Importar ou criar</button></div>
+        <div data-sheet-portrait></div>
         <div class="grid two">
           ${field("Nome", "character.name")}
           ${field("Idade", "character.age")}
@@ -1462,6 +1466,7 @@ function renderAntecedentes() {
     </section>
     <section class="panel">
       <div class="section-title"><h2>Aparência</h2></div>
+      <div data-sheet-portrait></div>
       <div class="grid three">
         ${field("Olhos", "notes.eyes")}
         ${field("Idade aparente", "notes.age")}
@@ -4070,6 +4075,13 @@ function exportPayload() {
   return JSON.stringify(payload, null, 2);
 }
 
+async function exportPayloadWithMedia(online = false) {
+  const payload = JSON.parse(online ? exportOnlinePayload() : exportPayload());
+  const media = await window.MARUFIA_CHARACTER_PORTRAITS?.exportActiveMedia?.();
+  if (media) payload._media = media;
+  return JSON.stringify(payload, null, 2);
+}
+
 function exportOnlinePayload() {
   if (!STATE_TOOLS?.createOnlineBackup) throw new Error("Formato de backup online indisponível.");
   const payload = STATE_TOOLS.createOnlineBackup(persistentPayload(), {}, new Date().toISOString());
@@ -4139,17 +4151,17 @@ function downloadBackup(id) {
   if (backup) downloadText(backup.payload, `backup-ficha-marufia-${backup.at.slice(0, 10)}.json`);
 }
 
-function downloadJson() {
+async function downloadJson() {
   try {
-    downloadText(exportPayload(), `${state.character.name || "ficha-marufia-latio"}.json`);
+    downloadText(await exportPayloadWithMedia(), `${state.character.name || "ficha-marufia-latio"}.json`);
   } catch (error) {
     addError("LAT-JSON-004", error.message);
   }
 }
 
-function downloadOnlineJson() {
+async function downloadOnlineJson() {
   try {
-    downloadText(exportOnlinePayload(), `${state.character.name || "ficha-marufia-latio"}-backup-online.json`);
+    downloadText(await exportPayloadWithMedia(true), `${state.character.name || "ficha-marufia-latio"}-backup-online.json`);
   } catch (error) {
     addError("LAT-JSON-004", error.message);
   }
@@ -4157,7 +4169,7 @@ function downloadOnlineJson() {
 
 async function copyJson() {
   try {
-    await navigator.clipboard.writeText(exportPayload());
+    await navigator.clipboard.writeText(await exportPayloadWithMedia());
     toast("JSON copiado.");
   } catch (error) {
     addError("LAT-JSON-004", error.message);
@@ -4168,7 +4180,8 @@ function importJsonText(text, fileName = "JSON colado") {
   try {
     const parsed = JSON.parse(text);
     const prepared = prepareStateImport(parsed);
-    pendingImport = { kind: "json", prepared, fileName };
+    const media = window.MARUFIA_CHARACTER_PORTRAITS?.validateImportMedia?.(parsed._media) ?? null;
+    pendingImport = { kind: "json", prepared, fileName, media };
     const migration = prepared.migrated ? `<span class="tag warn">Migrará v${esc(prepared.sourceVersion)} para v${STATE_SCHEMA_VERSION}</span>` : `<span class="tag ok">Schema v${STATE_SCHEMA_VERSION}</span>`;
     const sourceFormat = prepared.sourceFormat === "local" ? "" : `<span class="tag">Backup online</span>`;
     openModal("Revisar importação JSON", `
@@ -4185,8 +4198,9 @@ function importJsonText(text, fileName = "JSON colado") {
   }
 }
 
-function applyJsonImport(mode) {
+async function applyJsonImport(mode) {
   if (pendingImport?.kind !== "json") return addError("LAT-JSON-001", "Importação pendente não encontrada.");
+  const media = pendingImport.media;
   createBackup(`Antes de importar ${pendingImport.fileName}`);
   state = mode === "replace"
     ? pendingImport.prepared.state
@@ -4195,6 +4209,10 @@ function applyJsonImport(mode) {
   closeModal();
   render();
   saveStateNow();
+  if (media) {
+    try { await window.MARUFIA_CHARACTER_PORTRAITS?.importMedia?.(state.meta.createdAt, media); }
+    catch (error) { toast(`A ficha foi importada, mas a imagem não pôde ser restaurada: ${errorMessage(error)}`, "warn"); }
+  }
   toast("JSON importado com segurança.");
 }
 

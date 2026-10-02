@@ -83,6 +83,7 @@
       characterId: normalizeUuid(value.character_id, "Personagem", true),
       userId: normalizeUuid(value.user_id, "Usuário", true),
       characterName,
+      playerName: String(value.player_name ?? ""),
       ...roll,
       visibility,
       createdAt,
@@ -265,6 +266,12 @@
   function liveRollsPanelHtml(state = {}) {
     const connection = Object.hasOwn(CONNECTION_LABELS, state.connection) ? state.connection : "connecting";
     const rolls = Array.isArray(state.rolls) ? state.rolls : [];
+    const filter = state.filter || "all";
+    const visibleRolls = rolls.filter((roll) => filter === "all"
+      || (filter === "public" && roll.visibility === "public")
+      || (filter === "private" && state.role === "gm" && roll.visibility !== "public")
+      || (filter === "mine" && roll.userId === state.currentUserId));
+    const filters = [["all", "Todas"], ["public", "Públicas"], ...(state.role === "gm" ? [["private", "Privadas"]] : []), ["mine", "Minhas"]];
     const message = state.message
       ? `<p class="campaign-message ${state.messageKind === "success" ? "" : "campaign-message-error"}" role="${state.messageKind === "success" ? "status" : "alert"}">${escapeHtml(state.message)}</p>`
       : "";
@@ -278,8 +285,8 @@
           <div class="inline"><button class="danger" type="button" data-online-live-rolls-action="confirm-clear" ${state.clearing ? "disabled" : ""}>${state.clearing ? "Apagando…" : "Apagar rolagens"}</button><button class="ghost" type="button" data-online-live-rolls-action="cancel-clear" ${state.clearing ? "disabled" : ""}>Cancelar</button></div>
         </section>`
       : "";
-    const content = rolls.length
-      ? rolls.map((roll) => liveRollItemHtml(roll)).join("")
+    const content = visibleRolls.length
+      ? visibleRolls.map((roll) => liveRollItemHtml(roll)).join("")
       : `<div class="empty">${state.loading ? "Carregando rolagens…" : "Nenhuma rolagem visível registrada nesta campanha."}</div>`;
     const navigation = workspaceTools.campaignWorkspaceNavigationHtml?.({
       campaignId: state.campaignId,
@@ -292,6 +299,7 @@
       <div class="live-roll-toolbar"><div><strong>Rolagens da campanha</strong><p class="muted small">Cada participante recebe somente as rolagens permitidas para seu vínculo.</p></div><div class="live-roll-toolbar-actions"><span class="live-roll-connection" role="status" aria-live="polite"><span aria-hidden="true"></span>${escapeHtml(CONNECTION_LABELS[connection])}</span>${clearButton}</div></div>
       ${message}
       ${clearConfirmation}
+      <div class="live-roll-filters" role="group" aria-label="Filtrar rolagens">${filters.map(([id, label]) => `<button class="ghost" type="button" aria-pressed="${filter === id}" data-online-live-rolls-action="filter" data-filter="${id}">${label}</button>`).join("")}</div>
       <div class="live-roll-list stack" aria-live="polite" aria-relevant="additions removals">${content}</div>
     </div>`;
   }
@@ -437,6 +445,8 @@
         message: "",
         messageKind: "",
         role: "",
+        currentUserId: "",
+        filter: "all",
         historyRevision: 0,
         confirmingClear: false,
         clearing: false,
@@ -459,6 +469,7 @@
           connection: "connecting",
           rolls,
           role: membership.role,
+          currentUserId: membership.userId,
         };
         updatePanel();
         subscription = service.subscribe(id, addRoll, updateConnection, (revision) => applyHistoryClear(revision), campaignUnavailable);
@@ -519,6 +530,14 @@
       const control = event.target.closest?.("[data-online-live-rolls-action]");
       if (control?.dataset?.onlineLiveRollsAction === "open") {
         void open(control.dataset.campaignId, control.dataset.campaignName);
+        return;
+      }
+      if (state && control?.dataset?.onlineLiveRollsAction === "filter") {
+        const choice = control.dataset.filter;
+        if (["all", "public", "mine"].includes(choice) || (choice === "private" && state.role === "gm")) {
+          state = { ...state, filter: choice };
+          updatePanel();
+        }
         return;
       }
       if (control?.dataset?.onlineLiveRollsAction === "close") {

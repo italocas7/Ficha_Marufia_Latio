@@ -204,7 +204,7 @@
         .eq("campaign_id", id)
         .order("started_at", { ascending: false });
       const sessionsRequest = typeof orderedSessions?.limit === "function" ? orderedSessions.limit(30) : orderedSessions;
-      const [charactersResult, memberships, presenceResult, historyResult, sessionsResult] = await Promise.all([
+      const [charactersResult, memberships, presenceResult, historyResult, sessionsResult, party] = await Promise.all([
         client.from("characters")
           .select(characterTools.CHARACTER_COLUMNS)
           .eq("campaign_id", id)
@@ -217,6 +217,7 @@
           .order("seen_at", { ascending: false }),
         historyRequest,
         sessionsRequest,
+        (typeof campaignService.listPartySummary === "function" ? campaignService.listPartySummary(id).catch(() => []) : Promise.resolve([])),
       ]);
       if (charactersResult.error) throw gmPanelError("LAT-GM-PANEL-CHARACTERS-001", friendlyGmPanelMessage(charactersResult.error));
       if (presenceResult.error) throw gmPanelError("LAT-GM-PANEL-PRESENCE-002", friendlyGmPanelMessage(presenceResult.error));
@@ -241,10 +242,13 @@
         status: presenceStatus(presenceByUser.get(userId), now()),
       }));
       const statusByUser = new Map(players.map((player) => [player.userId, player.status]));
+      const publicById = new Map(party.map((item) => [item.id, item]));
       const characters = characterRows.map((character) => Object.freeze({
         character,
         resources: summaryTools.resourceSummary(character.state, rules, database, magicCores),
         presence: statusByUser.get(character.owner_id) ?? presenceStatus(presenceByUser.get(character.owner_id), now()),
+        playerName: publicById.get(character.id)?.playerName || "Não informado",
+        portraitPath: publicById.get(character.id)?.portraitPath || "",
       }));
       const events = (Array.isArray(historyResult.data) ? historyResult.data : [])
         .map((value) => normalizedCampaignEvent(value, id));
@@ -280,6 +284,16 @@
       const result = await client.rpc("end_campaign_session", { p_session_id: id });
       if (result.error) throw gmPanelError("LAT-GM-PANEL-SESSION-END-001", friendlyGmPanelMessage(result.error));
       return normalizedCampaignSession(result.data, expectedCampaign);
+    }
+
+    async function listHistoryPage(campaignId, offset, pageSize = 80) {
+      const { campaignId: id } = await requireCampaignGm(campaignId);
+      const start = Math.max(0, Number(offset) || 0);
+      const result = await client.from("campaign_events").select(EVENT_COLUMNS)
+        .eq("campaign_id", id).order("created_at", { ascending: false })
+        .range(start, start + pageSize - 1);
+      if (result.error) throw gmPanelError("LAT-GM-PANEL-HISTORY-002", friendlyGmPanelMessage(result.error));
+      return (Array.isArray(result.data) ? result.data : []).map((value) => normalizedCampaignEvent(value, id));
     }
 
     async function setCharacterHp(characterId, hpCurrent, expectedRevision) {
@@ -445,6 +459,7 @@
       requireCampaignGm,
       touchOwnCampaigns,
       loadCampaign,
+      listHistoryPage,
       startSession,
       endSession,
       setCharacterHp,
@@ -521,10 +536,16 @@
     const resources = item.resources;
     const status = ["online", "away", "offline"].includes(item.presence) ? item.presence : "offline";
     const statusLabel = ({ online: "Online", away: "Ausente", offline: "Offline" })[status];
+    const hpPercent = resources.hp.maximum ? Math.max(0, Math.min(100, Math.round(100 * resources.hp.current / resources.hp.maximum))) : 0;
+    const pmPercent = resources.pm.maximum ? Math.max(0, Math.min(100, Math.round(100 * resources.pm.current / resources.pm.maximum))) : 0;
+    const conditions = Array.isArray(character.state?.effects) ? character.state.effects : [];
+    const items = [...(character.state?.inventory?.weapons ?? []), ...(character.state?.inventory?.equipment ?? [])];
     return `<article class="gm-character-card" data-gm-character-id="${escapeHtml(character.id)}">
-      <div class="gm-character-heading"><div><strong>${escapeHtml(character.name)}</strong><span class="muted small">Atualizada em ${escapeHtml(formatUpdatedAt(character.updated_at))}</span></div><button class="ghost" type="button" data-online-gm-panel-action="open-character" data-character-id="${escapeHtml(character.id)}">Abrir ficha</button></div>
+      <div class="gm-character-heading"><div class="gm-character-identity"><span class="character-portrait" data-marufia-portrait="${escapeHtml(character.id)}" data-portrait-path="${escapeHtml(item.portraitPath || "")}" aria-hidden="true">${escapeHtml(character.name.slice(0, 1).toUpperCase())}</span><div><strong>${escapeHtml(character.name)}</strong><small>Jogador: ${escapeHtml(item.playerName || "Não informado")}</small></div></div><button class="ghost" type="button" data-online-gm-panel-action="open-character" data-character-id="${escapeHtml(character.id)}">Abrir ficha</button></div>
       <span class="gm-presence-badge" data-presence-status="${status}"><i aria-hidden="true"></i>${statusLabel}</span>
-      <div class="gm-character-resources"><span><small>PV</small><span class="gm-hp-control"><input type="number" min="0" max="${escapeHtml(resources.hp.maximum)}" step="1" value="${escapeHtml(resources.hp.current)}" inputmode="numeric" aria-label="PV atual de ${escapeHtml(character.name)}" data-online-gm-hp-input><em>/ ${escapeHtml(resources.hp.maximum)}</em><button class="ghost" type="button" data-online-gm-panel-action="save-hp" data-character-id="${escapeHtml(character.id)}">Alterar PV</button></span></span><span><small>PM</small><span class="gm-hp-control"><input type="number" min="0" max="${escapeHtml(resources.pm.maximum)}" step="1" value="${escapeHtml(resources.pm.current)}" inputmode="numeric" aria-label="PM atual de ${escapeHtml(character.name)}" data-online-gm-pm-input><em>/ ${escapeHtml(resources.pm.maximum)}</em><button class="ghost" type="button" data-online-gm-panel-action="save-pm" data-character-id="${escapeHtml(character.id)}">Alterar PM</button></span></span></div>
+      <div class="gm-character-resources"><span><small>PV</small><span class="gm-resource-meter" role="meter" aria-label="Vida" aria-valuemin="0" aria-valuemax="${escapeHtml(resources.hp.maximum)}" aria-valuenow="${escapeHtml(resources.hp.current)}"><span style="--meter-fill:${hpPercent}%;--meter-color:var(--danger)"></span></span><span class="gm-hp-control"><input type="number" min="0" max="${escapeHtml(resources.hp.maximum)}" step="1" value="${escapeHtml(resources.hp.current)}" inputmode="numeric" aria-label="PV atual de ${escapeHtml(character.name)}" data-online-gm-hp-input><em>/ ${escapeHtml(resources.hp.maximum)}</em><button class="ghost" type="button" data-online-gm-panel-action="save-hp" data-character-id="${escapeHtml(character.id)}">Alterar PV</button></span></span><span><small>PM</small><span class="gm-resource-meter" role="meter" aria-label="Pontos de Magia" aria-valuemin="0" aria-valuemax="${escapeHtml(resources.pm.maximum)}" aria-valuenow="${escapeHtml(resources.pm.current)}"><span style="--meter-fill:${pmPercent}%;--meter-color:var(--online-gold)"></span></span><span class="gm-hp-control"><input type="number" min="0" max="${escapeHtml(resources.pm.maximum)}" step="1" value="${escapeHtml(resources.pm.current)}" inputmode="numeric" aria-label="PM atual de ${escapeHtml(character.name)}" data-online-gm-pm-input><em>/ ${escapeHtml(resources.pm.maximum)}</em><button class="ghost" type="button" data-online-gm-panel-action="save-pm" data-character-id="${escapeHtml(character.id)}">Alterar PM</button></span></span></div>
+      <div class="gm-character-glance"><span>Condições: ${escapeHtml(conditions.length ? conditions.map((effect) => effect.name).slice(0, 2).join(", ") : "Nenhuma")}</span><span>Itens: ${escapeHtml(items.length ? items.slice(0, 2).map((entry) => entry.name).join(", ") : "Nenhum")}</span></div>
+      <small class="muted">Atualizada em ${escapeHtml(formatUpdatedAt(character.updated_at))}</small>
       ${gmCharacterManagementHtml(character)}
     </article>`;
   }
@@ -541,12 +562,17 @@
     return `${name}: ${detail} = ${value(payload.total)}${payload.outcome ? ` · ${payload.outcome}` : ""}`;
   }
 
-  function historyHtml(events = [], sessions = []) {
+  function historyHtml(events = [], sessions = [], options = {}) {
     const sessionNames = new Map(sessions.map((session) => [session.id, session.name]));
-    const content = events.length
-      ? `<ol class="gm-history-list">${events.map((event) => `<li data-campaign-event-type="${escapeHtml(event.eventType)}"${event.sessionId ? ` data-campaign-session-id="${escapeHtml(event.sessionId)}"` : ""}><span class="gm-history-icon" aria-hidden="true"></span><div><strong>${escapeHtml(historyEventText(event))}</strong><span class="gm-history-meta"><time datetime="${escapeHtml(event.createdAt)}">${escapeHtml(formatUpdatedAt(event.createdAt))}</time>${event.sessionId ? `<em>${escapeHtml(sessionNames.get(event.sessionId) ?? "Sessão vinculada")}</em>` : ""}</span></div></li>`).join("")}</ol>`
+    const types = { hp: "hp_changed", pm: "pm_changed", conditions: "conditions_changed", items: "item_changed", rolls: "roll" };
+    const filter = options.filter || "all";
+    const filtered = events.filter((event) => filter === "all" || event.eventType === types[filter]);
+    const visible = options.expanded ? filtered : filtered.slice(0, 12);
+    const content = visible.length
+      ? `<ol class="gm-history-list">${visible.map((event) => `<li data-campaign-event-type="${escapeHtml(event.eventType)}"${event.sessionId ? ` data-campaign-session-id="${escapeHtml(event.sessionId)}"` : ""}><span class="gm-history-icon" aria-hidden="true"></span><div><strong>${escapeHtml(historyEventText(event))}</strong><span class="gm-history-meta"><time datetime="${escapeHtml(event.createdAt)}">${escapeHtml(formatUpdatedAt(event.createdAt))}</time>${event.sessionId ? `<em>${escapeHtml(sessionNames.get(event.sessionId) ?? "Sessão vinculada")}</em>` : ""}</span></div></li>`).join("")}</ol>`
       : `<div class="empty">Nenhum evento relevante registrado ainda.</div>`;
-    return `<section class="gm-history" aria-labelledby="gmHistoryTitle"><div class="section-title"><h3 id="gmHistoryTitle">Histórico da campanha</h3><span class="muted small">PV, PM, condições, itens e rolagens</span></div>${content}</section>`;
+    const filters = [["all", "Todos"], ["hp", "PV"], ["pm", "PM"], ["conditions", "Condições"], ["items", "Itens"], ["rolls", "Rolagens"]];
+    return `<section class="gm-history" aria-labelledby="gmHistoryTitle"><div class="section-title"><h3 id="gmHistoryTitle">Atividade recente</h3></div><div class="gm-history-filters" role="group" aria-label="Filtrar atividade">${filters.map(([id, label]) => `<button class="ghost" type="button" aria-pressed="${filter === id}" data-online-gm-panel-action="history-filter" data-filter="${id}">${label}</button>`).join("")}</div>${content}${!options.expanded && filtered.length > 12 ? `<button class="ghost gm-history-more" type="button" data-online-gm-panel-action="history-expand">Ver histórico completo</button>` : ""}${options.expanded && options.hasMore ? `<button class="ghost gm-history-more" type="button" data-online-gm-panel-action="history-more" ${options.loading ? "disabled" : ""}>${options.loading ? "Carregando…" : "Carregar eventos anteriores"}</button>` : ""}</section>`;
   }
 
   function sessionsHtml(state = {}) {
@@ -556,7 +582,8 @@
       ? `<details class="gm-session-recent" data-gm-detail-key="recent-sessions"><summary>Sessões anteriores (${ended.length})</summary><ul>${ended.map((session) => `<li><strong>${escapeHtml(session.name)}</strong><span>${escapeHtml(formatUpdatedAt(session.startedAt))} — ${escapeHtml(formatUpdatedAt(session.endedAt))}</span></li>`).join("")}</ul></details>`
       : "";
     if (active) {
-      return `<section class="gm-session-control" data-campaign-session-status="active"><div><span class="gm-session-status"><i aria-hidden="true"></i>Sessão ativa</span><strong>${escapeHtml(active.name)}</strong><small>Iniciada em ${escapeHtml(formatUpdatedAt(active.startedAt))}</small></div><button class="ghost" type="button" data-online-gm-panel-action="end-session" data-session-id="${escapeHtml(active.id)}">Encerrar sessão</button>${recent}</section>`;
+      const minutes = Math.max(0, Math.floor((Date.now() - Date.parse(active.startedAt)) / 60000));
+      return `<section class="gm-session-control" data-campaign-session-status="active"><div><span class="gm-session-status"><i aria-hidden="true"></i>Sessão ativa</span><strong>${escapeHtml(active.name)}</strong><small>Iniciada em ${escapeHtml(formatUpdatedAt(active.startedAt))} · Duração ${String(Math.floor(minutes / 60)).padStart(2, "0")}h${String(minutes % 60).padStart(2, "0")}min</small></div><button class="ghost" type="button" data-online-gm-panel-action="end-session" data-session-id="${escapeHtml(active.id)}">Encerrar sessão</button>${recent}</section>`;
     }
     const suggestion = `Sessão ${(Array.isArray(state.sessions) ? state.sessions.length : 0) + 1}`;
     return `<section class="gm-session-control" data-campaign-session-status="idle"><div><strong>Sessão de jogo</strong><small>Novos eventos serão vinculados enquanto a sessão estiver ativa.</small></div><label class="field"><span>Nome da sessão</span><input type="text" maxlength="120" value="${escapeHtml(suggestion)}" data-online-gm-session-name></label><button class="button" type="button" data-online-gm-panel-action="start-session">Iniciar sessão</button>${recent}</section>`;
@@ -585,7 +612,7 @@
       <div class="gm-online-summary" role="status"><span aria-hidden="true"></span><strong>Online: ${escapeHtml(state.playersOnline ?? 0)}</strong><small>Ausentes: ${escapeHtml(state.playersAway ?? 0)} · Offline: ${escapeHtml(Math.max(0, (state.playersTotal ?? 0) - (state.playersOnline ?? 0) - (state.playersAway ?? 0)))}</small></div>
       ${sessionsHtml(state)}
       ${message}
-      <div class="gm-panel-content"><div class="gm-character-list">${content}</div>${historyHtml(Array.isArray(state.events) ? state.events : [], Array.isArray(state.sessions) ? state.sessions : [])}</div>
+      <div class="gm-panel-content"><section aria-label="Personagens da sessão"><div class="section-title"><h3>Personagens da sessão</h3></div><div class="gm-character-list">${content}</div></section>${historyHtml(Array.isArray(state.events) ? state.events : [], Array.isArray(state.sessions) ? state.sessions : [], { filter: state.historyFilter, expanded: state.historyExpanded, hasMore: state.historyHasMore, loading: state.historyLoading })}</div>
     </div>`;
   }
 
@@ -765,7 +792,10 @@
       try {
         const result = await service.loadCampaign(state.campaignId);
         if (!state || token !== generation) return;
-        state = { ...state, loading: false, characters: result.characters, players: result.players, playersOnline: result.playersOnline, playersAway: result.playersAway, playersTotal: result.playersTotal, events: result.events, sessions: result.sessions, activeSession: result.activeSession, message: "" };
+        const events = state.historyExpanded
+          ? [...result.events, ...state.events.filter((event) => !result.events.some((latest) => latest.id === event.id))]
+          : result.events;
+        state = { ...state, loading: false, characters: result.characters, players: result.players, playersOnline: result.playersOnline, playersAway: result.playersAway, playersTotal: result.playersTotal, events, historyHasMore: state.historyExpanded ? state.historyHasMore : result.events.length === 80, sessions: result.sessions, activeSession: result.activeSession, message: "" };
         updatePanel();
       } catch (error) {
         if (!state || token !== generation) return;
@@ -805,7 +835,7 @@
       const token = ++generation;
       let id;
       try { id = normalizeUuid(campaignId, "Campanha"); } catch { return; }
-      state = { campaignId: id, campaignName: String(campaignName ?? "Campanha"), loading: true, connection: "loading", characters: [], players: [], playersOnline: 0, playersAway: 0, playersTotal: 0, events: [], sessions: [], activeSession: null, message: "" };
+      state = { campaignId: id, campaignName: String(campaignName ?? "Campanha"), loading: true, connection: "loading", characters: [], players: [], playersOnline: 0, playersAway: 0, playersTotal: 0, events: [], historyFilter: "all", historyExpanded: false, historyHasMore: false, historyLoading: false, sessions: [], activeSession: null, message: "" };
       const footer = `<button class="ghost" type="button" data-action="close-modal" data-online-gm-panel-action="close">Fechar</button>`;
       renderedPanelHtml = gmPanelHtml(state);
       if (typeof view.openModal === "function") view.openModal("Painel do Mæstre", renderedPanelHtml, footer);
@@ -852,7 +882,7 @@
       control.disabled = true;
       try {
         const character = await service.setCharacterHp(id, nextHp, item.character.revision);
-        const updated = Object.freeze({ character, resources: summaryTools.resourceSummary(character.state, rules, database, magicCores), presence: item.presence });
+        const updated = Object.freeze({ ...item, character, resources: summaryTools.resourceSummary(character.state, rules, database, magicCores) });
         state = {
           ...state,
           characters: Object.freeze(state.characters.map((entry) => entry.character.id === id ? updated : entry)),
@@ -875,9 +905,9 @@
       try {
         const character = await operation(item);
         const updated = Object.freeze({
+          ...item,
           character,
           resources: summaryTools.resourceSummary(character.state, rules, database, magicCores),
-          presence: item.presence,
         });
         state = {
           ...state,
@@ -1022,6 +1052,27 @@
       }
     }
 
+    async function loadMoreHistory() {
+      if (!state || state.historyLoading || !state.historyHasMore) return false;
+      const campaignId = state.campaignId;
+      const offset = state.events.length;
+      state = { ...state, historyLoading: true };
+      updatePanel();
+      try {
+        const page = await service.listHistoryPage(campaignId, offset);
+        if (!state || state.campaignId !== campaignId) return false;
+        const known = new Set(state.events.map((event) => event.id));
+        state = { ...state, events: [...state.events, ...page.filter((event) => !known.has(event.id))], historyHasMore: page.length === 80, historyLoading: false };
+        updatePanel();
+        return true;
+      } catch (error) {
+        if (!state) return false;
+        state = { ...state, historyLoading: false, message: friendlyGmPanelMessage(error), messageKind: "error" };
+        updatePanel();
+        return false;
+      }
+    }
+
     const pulse = () => { void heartbeat.pulse(); };
     const markActivity = () => { lastActivityAt = Date.now(); };
     const historyCleared = (event) => {
@@ -1031,6 +1082,9 @@
       const control = event.target.closest?.("[data-online-gm-panel-action]");
       if (control?.dataset?.onlineGmPanelAction === "open") {
         void open(control.dataset.campaignId, control.dataset.campaignName);
+      } else if (control?.dataset?.onlineGmPanelAction === "open-character-from-campaign") {
+        void open(control.dataset.campaignId, control.dataset.campaignName)
+          .then(() => openCharacter(control.dataset.characterId));
       } else if (state && control?.dataset?.onlineGmPanelAction === "open-character") {
         openCharacter(control.dataset.characterId);
       } else if (state && control?.dataset?.onlineGmPanelAction === "save-hp") {
@@ -1049,6 +1103,14 @@
         void startSession(control);
       } else if (state && control?.dataset?.onlineGmPanelAction === "end-session") {
         void endSession(control);
+      } else if (state && control?.dataset?.onlineGmPanelAction === "history-filter") {
+        state = { ...state, historyFilter: control.dataset.filter || "all" };
+        updatePanel();
+      } else if (state && control?.dataset?.onlineGmPanelAction === "history-expand") {
+        state = { ...state, historyExpanded: true };
+        updatePanel();
+      } else if (state && control?.dataset?.onlineGmPanelAction === "history-more") {
+        void loadMoreHistory();
       } else if (state && control?.dataset?.onlineGmPanelAction === "close") {
         void stop();
       } else if (state && event.target.matches?.('[data-action="close-modal"]')) {
@@ -1065,6 +1127,7 @@
     view.addEventListener?.("online", pulse);
     view.addEventListener?.("marufia:campaign-memberships-changed", pulse);
     view.addEventListener?.("marufia:roll-history-cleared", historyCleared);
+    view.addEventListener?.("marufia:portrait-updated", scheduleReload);
     document.addEventListener("visibilitychange", pulse);
     const authObserver = typeof view.MutationObserver === "function" ? new view.MutationObserver(pulse) : null;
     authObserver?.observe(accountButton, { attributes: true, attributeFilter: ["data-auth-state"] });
@@ -1092,6 +1155,7 @@
         view.removeEventListener?.("online", pulse);
         view.removeEventListener?.("marufia:campaign-memberships-changed", pulse);
         view.removeEventListener?.("marufia:roll-history-cleared", historyCleared);
+        view.removeEventListener?.("marufia:portrait-updated", scheduleReload);
         if (document.documentElement?.dataset) delete document.documentElement.dataset.gmPanelInitialized;
       },
     });
