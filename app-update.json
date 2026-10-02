@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "appId": "com.marufia.online",
   "channel": "alpha",
-  "version": "0.4.1",
-  "notes": "Adiciona cinco espaços de ficha, exclusão protegida por backup, limite de perícias por campanha, Inspiração persistente, resumo seguro do grupo e sincronização mais resistente.",
-  "publishedAt": "2026-10-01T12:42:12.580Z",
-  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.4.1"
+  "version": "0.4.2",
+  "notes": "Centro de Campanha reorganizado, retrato privado por personagem, filtros de atividade e rolagens, e melhor layout em celular e monitores grandes.",
+  "publishedAt": "2026-10-02T01:09:46.000Z",
+  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.4.2"
 }

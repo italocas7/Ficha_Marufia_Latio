@@ -103,7 +103,7 @@ test("packages the strict desktop update manifest without changing sheet data", 
   ]);
   assert.equal(manifest.appId, "com.marufia.online");
   assert.equal(manifest.channel, "alpha");
-  assert.equal(manifest.version, "0.4.1", "O manifesto público deve acompanhar a release assinada publicada.");
+  assert.equal(manifest.version, "0.4.2", "O manifesto público deve acompanhar a release assinada publicada.");
   assert.equal(manifest.releaseUrl, `https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v${manifest.version}`);
   const signed = JSON.parse(fs.readFileSync(path.join(root, "tauri-update.json"), "utf8"));
   assert.equal(signed.version, manifest.version);

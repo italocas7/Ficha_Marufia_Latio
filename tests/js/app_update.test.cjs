@@ -280,13 +280,13 @@ test("keeps the failure modal interactive if Windows cannot open the browser", a
   assert.match(environment.modal.body, /Windows não conseguiu abrir o navegador/);
 });
 
-test("escapes notes and keeps the published 0.4.1 manifests aligned", () => {
+test("escapes notes and keeps the published 0.4.2 manifests aligned", () => {
   const html = updates.updateBodyHtml({ version: "0.4.2", notes: "<img src=x onerror=alert(1)>" }, "0.4.1");
   assert.doesNotMatch(html, /<img/);
   assert.match(html, /&lt;img/);
   const legacy = JSON.parse(fs.readFileSync(path.join(root, "app-update.json"), "utf8"));
   const signed = JSON.parse(fs.readFileSync(path.join(root, "tauri-update.json"), "utf8"));
-  assert.equal(legacy.version, "0.4.1");
-  assert.equal(signed.version, "0.4.1");
+  assert.equal(legacy.version, "0.4.2");
+  assert.equal(signed.version, "0.4.2");
   assert.deepEqual(updates.validateTauriManifest(signed), signed);
 });
