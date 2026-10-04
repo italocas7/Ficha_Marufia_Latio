@@ -657,6 +657,21 @@ test("wires hidden-page and page-exit flushes without blocking local saves", asy
   assert.equal(viewListeners.has(syncTools.BEFORE_CHARACTER_SWITCH_EVENT), false);
 });
 
+test("migrates a queued v6 aged sheet to v7 before reconnecting", () => {
+  const storage = markerStorage();
+  const target = { userId: USER_ID, characterId: CHARACTER_ID, expectedRevision: 3 };
+  const old = snapshot("Antiga offline");
+  old.meta.schemaVersion = 6;
+  old.character.age = "65";
+  old.attributes = { FOR: 65, DES: 60, CON: 55 };
+  assert.equal(syncTools.persistOfflineSave(storage, target, old), true);
+  const queued = syncTools.pendingOfflineSave(storage, USER_ID, CHARACTER_ID);
+  assert.equal(queued.state.meta.schemaVersion, 7);
+  assert.equal(queued.state.ageMechanic.status, "review");
+  assert.equal(queued.state.attributes.CON, 55);
+  assert.equal(old.meta.schemaVersion, 6);
+});
+
 test("retries a stale revision when only campaign association changed remotely", async () => {
   const storage = markerStorage();
   storage.saveRemote = async (adapter, request) => adapter.save(request);

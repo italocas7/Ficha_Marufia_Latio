@@ -86,7 +86,7 @@ function createSandbox(initialState = null) {
 test("migrates the representative v1 fixture without losing sheet data", () => {
   const fixture = JSON.parse(fs.readFileSync(path.join(root, "tests", "fixtures", "state-v1.json"), "utf8"));
   const { sandbox } = createSandbox(fixture);
-  assert.equal(vm.runInContext("state.meta.schemaVersion", sandbox), 6);
+  assert.equal(vm.runInContext("state.meta.schemaVersion", sandbox), 7);
   assert.equal(vm.runInContext("state.character.name", sandbox), "Fixture Latio");
   assert.equal(vm.runInContext("state.attributes.CON", sandbox), 60);
   assert.equal(vm.runInContext("state.resources.hpCurrent", sandbox), 10);
@@ -96,7 +96,7 @@ test("migrates the representative v1 fixture without losing sheet data", () => {
 test("backs up the untouched local payload before an online import", () => {
   const fixture = JSON.parse(fs.readFileSync(path.join(root, "tests", "fixtures", "state-v1.json"), "utf8"));
   const { sandbox, localStorage } = createSandbox(fixture);
-  assert.equal(vm.runInContext("state.meta.schemaVersion", sandbox), 6);
+  assert.equal(vm.runInContext("state.meta.schemaVersion", sandbox), 7);
   vm.runInContext("window.MARUFIA_APP_BRIDGE.createOnlineImportBackup()", sandbox);
   const backups = JSON.parse(localStorage.getItem("marufia-latio-backups-v1"));
   const original = JSON.parse(backups[0].payload);
@@ -418,6 +418,88 @@ test("treats natural 01 as critical for attributes and skills", () => {
   assert.equal(vm.runInContext("d100Outcome(1, -500)", sandbox), "Crítico natural");
   assert.equal(vm.runInContext("d100Outcome(2, -500)", sandbox), "Falha");
   assert.match(vm.runInContext("openAttributeModal('FOR'); document.querySelector('#modalRoot').innerHTML", sandbox), /roll-attribute/);
+});
+
+test("age applies to physical attributes and their existing derived calculations", () => {
+  const { sandbox } = createSandbox();
+  const peak = vm.runInContext('({ con: attr("CON"), hp: maxHp(), body: bodyInfo().total, dodge: skillFinal("Esquivar") })', sandbox);
+  vm.runInContext('state.character.age = "10"; normalizeAgeLosses(); render()', sandbox);
+  assert.equal(vm.runInContext('attr("FOR")', sandbox), 10);
+  assert.equal(vm.runInContext('attr("DES")', sandbox), 10);
+  assert.equal(vm.runInContext('attr("CON")', sandbox), 10);
+  assert.equal(vm.runInContext('state.attributes.CON', sandbox), 50);
+  assert.equal(vm.runInContext('maxHp() < 18', sandbox), true);
+  assert.equal(vm.runInContext('bodyInfo().total < 100', sandbox), true);
+  assert.equal(vm.runInContext('skillFinal("Esquivar") < 40', sandbox), true);
+  vm.runInContext('openAttributeModal("CON")', sandbox);
+  assert.match(sandbox.document.querySelector("#modalRoot").innerHTML, /Auge físico/);
+  assert.match(sandbox.document.querySelector("#modalRoot").innerHTML, /Redução efetiva por idade/);
+  assert.equal(peak.con, 50);
+});
+
+test("age skill grants are separate, suspended from newest first, and restored later", () => {
+  const { sandbox } = createSandbox();
+  vm.runInContext('state.character.age = "65"; state.ageMechanic.skillGrants = ["Percepção", "Percepção", "Percepção", "Percepção", "Tática", "Tática"];', sandbox);
+  assert.equal(vm.runInContext('ageSkillPointsUsed()', sandbox), 30);
+  const tacticsAt65 = vm.runInContext('skillFinal("Tática")', sandbox);
+  vm.runInContext('state.character.age = "42"; render()', sandbox);
+  assert.equal(vm.runInContext('ageSkillPointsUsed()', sandbox), 20);
+  assert.equal(vm.runInContext('state.ageMechanic.skillGrants.length', sandbox), 6);
+  assert.equal(vm.runInContext('skillFinal("Tática")', sandbox), tacticsAt65 - 10);
+  vm.runInContext('state.character.age = "65"; render()', sandbox);
+  assert.equal(vm.runInContext('skillFinal("Tática")', sandbox), tacticsAt65);
+});
+
+test("legacy aged sheets stay unchanged until reviewed with a backup", () => {
+  const fixture = JSON.parse(fs.readFileSync(path.join(root, "tests", "fixtures", "state-v1.json"), "utf8"));
+  fixture.meta.started = true;
+  fixture.character.age = "65";
+  const { sandbox, localStorage, elements } = createSandbox(fixture);
+  assert.equal(vm.runInContext('state.ageMechanic.status', sandbox), "review");
+  assert.equal(vm.runInContext('attr("CON")', sandbox), 60);
+  assert.match(elements.modalRoot.innerHTML, /Revisar auge físico/);
+  for (const [name, value] of Object.entries({ FOR: 75, DES: 65, CON: 60 })) {
+    elements[`agePeak${name}`] = { ...createElement(), value: String(value) };
+  }
+  vm.runInContext('confirmAgeReview()', sandbox);
+  assert.equal(vm.runInContext('state.ageMechanic.status', sandbox), "active");
+  assert.equal(vm.runInContext('attr("CON") < 60', sandbox), true);
+  const backups = JSON.parse(localStorage.getItem("marufia-latio-backups-v1"));
+  assert.equal(JSON.parse(backups[0].payload).ageMechanic.status, "review");
+});
+
+test("PDF age outside peak requires review before applying its attributes", () => {
+  const { sandbox } = createSandbox();
+  assert.equal(vm.runInContext('candidateFromPdfData({ character: { age: "65" }, attributes: { FOR: 75, DES: 65, CON: 60 } }, { source: "text", fieldCount: 4, importedValueCount: 4 }, "old.pdf").ageMechanic.status', sandbox), "review");
+});
+
+test("an aging player can redistribute loss but cannot put over half on one attribute", () => {
+  const { sandbox, elements } = createSandbox();
+  vm.runInContext('state.character.age = "65"; state.attributes.FOR = 75; state.attributes.DES = 65; state.attributes.CON = 60; normalizeAgeLosses()', sandbox);
+  for (const [name, value] of Object.entries({ FOR: 5, DES: 10, CON: 5 })) elements[`ageLoss${name}`] = { ...createElement(), value: String(value) };
+  vm.runInContext('saveAgeLoss()', sandbox);
+  assert.equal(vm.runInContext('attr("FOR")', sandbox), 70);
+  assert.equal(vm.runInContext('attr("DES")', sandbox), 55);
+  for (const [name, value] of Object.entries({ FOR: 20, DES: 0, CON: 0 })) elements[`ageLoss${name}`].value = String(value);
+  vm.runInContext('saveAgeLoss()', sandbox);
+  assert.equal(vm.runInContext('attr("FOR")', sandbox), 70);
+});
+
+test("age skill controls enforce five-point blocks and campaign ceiling", () => {
+  const { sandbox } = createSandbox();
+  vm.runInContext('state.character.age = "65"; campaignSkillPolicy = { campaignId: "campaign", name: "Mesa", limit: 25 }', sandbox);
+  const field = { dataset: { ageSkill: "Percepção" }, value: "5" };
+  sandbox.ageSkillField = field;
+  vm.runInContext('updateAgeSkillPoints(ageSkillField)', sandbox);
+  assert.equal(vm.runInContext('skillFinal("Percepção")', sandbox), 20);
+  assert.equal(vm.runInContext('skillPointsSpent()', sandbox), 0);
+  field.value = "15";
+  vm.runInContext('updateAgeSkillPoints(ageSkillField)', sandbox);
+  assert.equal(field.value, 5);
+  assert.equal(vm.runInContext('skillFinal("Percepção")', sandbox), 20);
+  field.value = "7";
+  vm.runInContext('updateAgeSkillPoints(ageSkillField)', sandbox);
+  assert.equal(field.value, 5);
 });
 
 test("level one aptitude is POD divided by seven without level points", () => {

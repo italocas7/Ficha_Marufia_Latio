@@ -41,6 +41,7 @@ test("offline portrait records remain isolated through a sheet switch", async ()
 test("online upload and removal affect only the linked character path", async () => {
   const oldStorage = globalThis.localStorage;
   const oldSupabase = globalThis.MARUFIA_SUPABASE;
+  const oldFetch = globalThis.fetch;
   const data = new Map();
   const characterId = "93200000-0000-4000-8000-000000000001";
   let remotePath = "";
@@ -51,6 +52,7 @@ test("online upload and removal affect only the linked character path", async ()
     getItem: (key) => data.get(key) ?? null,
     setItem: (key, value) => data.set(key, value),
   };
+  globalThis.fetch = async () => { throw new Error("Failed to fetch"); };
   globalThis.MARUFIA_SUPABASE = { getSupabaseClient: () => ({
     from: (table) => {
       assert.equal(table, "character_portraits");
@@ -88,5 +90,6 @@ test("online upload and removal affect only the linked character path", async ()
   } finally {
     globalThis.localStorage = oldStorage;
     globalThis.MARUFIA_SUPABASE = oldSupabase;
+    globalThis.fetch = oldFetch;
   }
 });

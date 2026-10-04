@@ -9,7 +9,8 @@ test("accepts supported sheet versions only from the parent with the exact viewe
   const event = { source: parent, data: { type: viewer.MESSAGE_TYPE, token: "safe-token", state } };
   assert.equal(viewer.validMessage(event, "safe-token", parent), true);
   assert.equal(viewer.validMessage({ ...event, data: { ...event.data, state: { meta: { appId: "marufia-latio", schemaVersion: 6 } } } }, "safe-token", parent), true);
-  assert.equal(viewer.validMessage({ ...event, data: { ...event.data, state: { meta: { appId: "marufia-latio", schemaVersion: 7 } } } }, "safe-token", parent), false);
+  assert.equal(viewer.validMessage({ ...event, data: { ...event.data, state: { meta: { appId: "marufia-latio", schemaVersion: 7 } } } }, "safe-token", parent), true);
+  assert.equal(viewer.validMessage({ ...event, data: { ...event.data, state: { meta: { appId: "marufia-latio", schemaVersion: 8 } } } }, "safe-token", parent), false);
   assert.equal(viewer.validMessage(event, "wrong-token", parent), false);
   assert.equal(viewer.validMessage({ ...event, source: {} }, "safe-token", parent), false);
   assert.equal(viewer.validMessage({ ...event, data: { ...event.data, state: { meta: { appId: "other", schemaVersion: 5 } } } }, "safe-token", parent), false);

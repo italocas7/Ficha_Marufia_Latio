@@ -10,7 +10,7 @@ const CAMPAIGN_ID = "33333333-3333-4333-8333-333333333333";
 
 function state(name = "Arthur") {
   return {
-    meta: { appId: "marufia-latio", schemaVersion: 6 },
+    meta: { appId: "marufia-latio", schemaVersion: 7 },
     character: { name },
   };
 }
@@ -23,7 +23,7 @@ function record(overrides = {}) {
     campaign_id: null,
     name: "Arthur",
     state: value,
-    schema_version: 6,
+    schema_version: 7,
     revision: 1,
     last_change_origin: "player",
     created_at: "2026-08-20T10:00:00Z",

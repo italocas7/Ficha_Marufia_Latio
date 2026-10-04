@@ -7,7 +7,7 @@
 
   const STATE_SCHEMA = Object.freeze({
     appId: "marufia-latio",
-    currentVersion: 6,
+    currentVersion: 7,
     minimumSupportedVersion: 1,
     mediaType: "application/json",
   });
@@ -193,6 +193,15 @@
       state.world ||= Object.create(null);
       state.world.durationTurns = null;
     }
+    if (sourceVersion <= 6) {
+      const match = String(state.character?.age ?? "").trim().match(/^(\d+)(?:\s*anos?)?$/i);
+      const age = match ? Number(match[1]) : null;
+      state.ageMechanic = {
+        status: age !== null && (age >= 10 && age < 21 || age >= 42) ? "review" : "active",
+        losses: { FOR: 0, DES: 0, CON: 0 },
+        skillGrants: [],
+      };
+    }
     migrateEscalarToAtletismo(state);
     delete state.ui;
     return state;
@@ -289,6 +298,16 @@
     state.combat.fissure ||= { points: 0, attuned: false, magicUsedThisRound: false, prepared: false };
     state.character.level = clampNumber(state.character.level, 1, 20, 1);
     state.character.useIntForSkillPoints = Boolean(state.character.useIntForSkillPoints);
+    state.ageMechanic ||= { status: "active", losses: { FOR: 0, DES: 0, CON: 0 }, skillGrants: [] };
+    state.ageMechanic.status = state.ageMechanic.status === "review" ? "review" : "active";
+    state.ageMechanic.losses ||= { FOR: 0, DES: 0, CON: 0 };
+    for (const key of ["FOR", "DES", "CON"]) state.ageMechanic.losses[key] = Math.floor(clampNumber(state.ageMechanic.losses[key], 0, 50, 0));
+    const grantCounts = Object.create(null);
+    state.ageMechanic.skillGrants = (Array.isArray(state.ageMechanic.skillGrants) ? state.ageMechanic.skillGrants : []).slice(0, 100).filter((name) => {
+      if (typeof name !== "string" || !name || name.length > 100 || (grantCounts[name] ?? 0) >= 4) return false;
+      grantCounts[name] = (grantCounts[name] ?? 0) + 1;
+      return true;
+    }).slice(0, 24);
     state.settings.skillLimit = clampNumber(state.settings.skillLimit, 1, 999, 70);
     state.settings.theme = ["light", "dark"].includes(state.settings.theme) ? state.settings.theme : "light";
     state.settings.gmOverride = Boolean(state.settings.gmOverride);

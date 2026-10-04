@@ -113,10 +113,11 @@
   }
 
   async function dataUrlToBlob(dataUrl) {
-    const response = await root.fetch(dataUrl);
-    const blob = await response.blob();
-    if (blob.type !== "image/webp" || blob.size > MAX_PORTRAIT_BYTES) throw new Error("Imagem inválida para envio.");
-    return blob;
+    validateImportMedia({ portraitWebp: dataUrl });
+    const base64 = dataUrl.slice("data:image/webp;base64,".length);
+    const binary = root.atob(base64);
+    const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    return new root.Blob([bytes], { type: "image/webp" });
   }
 
   function client() {

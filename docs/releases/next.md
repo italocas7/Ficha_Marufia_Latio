@@ -1,11 +1,11 @@
-# Versão 0.4.2 - publicada
+# Versão 0.4.3 - em preparação
 
-Estado: **site e pré-release publicados; manifestos atualizados para v0.4.2**.
+Estado: **código e testes em preparação; manifestos públicos ainda preservados em v0.4.2**.
 
-- Servidor: migração de retratos aplicada após backup e testes de segurança.
-- Código: 12 testes Python e 486 testes JavaScript aprovados.
-- Site: Centro de Campanha 0.4.2 publicado em `https://marufiarpg.org`.
-- Windows: portátil, instalador e assinatura do atualizador aprovados por SHA-256 e publicados na pré-release `v0.4.2`.
-- Atualização: manifestos públicos ativados somente após conferir os downloads remotos.
+- Código: regras de idade e correção da conversão de retratos reunidas na versão 0.4.3.
+- Compatibilidade: ficha elevada ao schema v7, sem alteração no formato do banco ou nas permissões.
+- Site: publicação aguardando a validação final do pacote.
+- Windows: portátil, instalador e assinatura do atualizador aguardam geração e verificação.
+- Atualização: os manifestos públicos somente serão ativados depois de conferir os downloads remotos.
 
-As novidades e a compatibilidade estão descritas em `docs/releases/v0.4.2.md`.
+As novidades e a compatibilidade estão descritas em `docs/releases/v0.4.3.md`.

@@ -17,6 +17,9 @@
 })(typeof window !== "undefined" ? window : globalThis, function createMarufiaCharacterSyncApi(root, retryTools) {
   "use strict";
 
+  const stateTools = root?.LATIO_STATE
+    ?? (typeof module === "object" && module.exports ? require("../core/state.js") : null);
+
   const REMOTE_SAVE_DEBOUNCE_MS = 1000;
   const SYNC_METADATA_KEY = "marufia-online-character-sync-v1";
   const OFFLINE_QUEUE_KEY = "marufia-online-pending-saves-v1";
@@ -24,7 +27,8 @@
   const CHARACTER_CONFLICT_RESOLUTION_EVENT = "marufia:character-conflict-resolved";
   const BEFORE_APP_UPDATE_EVENT = "marufia:before-app-update";
   const BEFORE_CHARACTER_SWITCH_EVENT = "marufia:before-character-switch";
-  const CURRENT_STATE_VERSION = root?.LATIO_STATE?.STATE_SCHEMA?.currentVersion ?? 6;
+  const CURRENT_STATE_VERSION = stateTools?.STATE_SCHEMA?.currentVersion ?? 7;
+  const SYNCABLE_STATE_VERSIONS = [5, 6, CURRENT_STATE_VERSION];
   const SYNC_STATUS = Object.freeze({
     online: Object.freeze({ label: "Online", title: "Conta conectada; alterações da ficha vinculada podem ser salvas online." }),
     syncing: Object.freeze({ label: "Sincronizando", title: "Salvando as alterações da ficha online." }),
@@ -206,11 +210,11 @@
       || (String(value.backendId ?? "") !== String(backendId ?? "")
         && !(retryTools?.allowsLegacyCloudRecords?.(backendId) && !value.backendId))
       || value.state?.meta?.appId !== "marufia-latio"
-      || ![5, CURRENT_STATE_VERSION].includes(Number(value.state?.meta?.schemaVersion))) return null;
+      || !SYNCABLE_STATE_VERSIONS.includes(Number(value.state?.meta?.schemaVersion))) return null;
     let snapshot = value.state;
-    if (Number(snapshot.meta.schemaVersion) < CURRENT_STATE_VERSION && root?.LATIO_STATE?.migrateState) {
-      snapshot = root.LATIO_STATE.cloneSafe(snapshot);
-      root.LATIO_STATE.migrateState(snapshot, Number(snapshot.meta.schemaVersion));
+    if (Number(snapshot.meta.schemaVersion) < CURRENT_STATE_VERSION && stateTools?.migrateState) {
+      snapshot = stateTools.cloneSafe(snapshot);
+      stateTools.migrateState(snapshot, Number(snapshot.meta.schemaVersion));
       snapshot.meta.schemaVersion = CURRENT_STATE_VERSION;
       snapshot.inspiration = Math.max(0, Math.floor(Number(snapshot.inspiration) || 0));
     }
@@ -231,7 +235,7 @@
     const characterId = String(target?.characterId ?? "");
     const backendId = String(target?.backendId ?? "");
     if (!userId || !characterId || snapshot?.meta?.appId !== "marufia-latio"
-      || ![5, CURRENT_STATE_VERSION].includes(Number(snapshot?.meta?.schemaVersion)) || typeof storage?.saveLocal !== "function") return false;
+      || !SYNCABLE_STATE_VERSIONS.includes(Number(snapshot?.meta?.schemaVersion)) || typeof storage?.saveLocal !== "function") return false;
     try {
       const key = syncMetadataId(userId, characterId, backendId);
       storage.saveLocal(OFFLINE_QUEUE_KEY, {

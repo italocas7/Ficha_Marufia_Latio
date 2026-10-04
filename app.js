@@ -9,7 +9,7 @@ const ROLL_ENGINE = ROLLS?.createRollEngine(ROLLS.createLocalRollProvider());
 const STORAGE_KEY = "marufia-latio-state-v1";
 const BACKUP_STORAGE_KEY = "marufia-latio-backups-v1";
 const APP_ID = STATE_TOOLS?.STATE_SCHEMA?.appId ?? "marufia-latio";
-const STATE_SCHEMA_VERSION = STATE_TOOLS?.STATE_SCHEMA?.currentVersion ?? 6;
+const STATE_SCHEMA_VERSION = STATE_TOOLS?.STATE_SCHEMA?.currentVersion ?? 7;
 const APP_BASE_URL = new URL(".", document.currentScript?.src || window.location.href).href;
 const MAGIC_TYPES = ["Fina", "Impacto", "Densa", "Mundo", "Forte", "Etérea"];
 const TABS = [
@@ -192,6 +192,7 @@ function createDefaultState() {
       useIntForSkillPoints: false,
     },
     attributes: { FOR: 50, DES: 50, CON: 50, APA: 50, POD: 50, INT: 50, CAR: 50, SAB: 50 },
+    ageMechanic: { status: "active", losses: { FOR: 0, DES: 0, CON: 0 }, skillGrants: [] },
     resources: { hpCurrent: null, pmCurrent: null, hpMaxBonus: 0, pmMaxBonus: 0, injury: false, unconscious: false, dying: false, deathSuccess: 0, deathFail: 0 },
     settings: { theme: "light", skillLimit: 70, gmOverride: false },
     inspiration: 0,
@@ -481,8 +482,40 @@ function magicCostAfterCore(amount) {
   return RULES.magicCost(amount, hasCore("coracao"));
 }
 
+function ageInfo(source = state) {
+  const profile = RULES.ageProfile(source.character?.age);
+  const active = source.ageMechanic?.status !== "review";
+  const distribution = RULES.distributeAgingLoss(source.attributes, active ? profile.agingLoss : 0, source.ageMechanic?.losses);
+  return { ...profile, active, distribution };
+}
+
+function normalizeAgeLosses() {
+  if (!state.ageMechanic || state.ageMechanic.status === "review") return;
+  const info = ageInfo();
+  if (info.agingLoss) state.ageMechanic.losses = info.distribution.loss;
+}
+
+function savedAgeSkillGrants(source = state) {
+  const valid = new Set(DB.skills.map((skill) => skill.name));
+  return (source.ageMechanic?.skillGrants ?? []).filter((name) => valid.has(name));
+}
+
+function activeAgeSkillGrants(source = state) {
+  const info = ageInfo(source);
+  if (!info.active || !info.valid) return [];
+  return savedAgeSkillGrants(source).slice(0, info.skillPoints / 5);
+}
+
+function ageSkillPointsUsed(source = state) {
+  return activeAgeSkillGrants(source).length * 5;
+}
+
 function attr(name, source = state) {
   let value = num(source.attributes[name], 0);
+  if (RULES.PHYSICAL_ATTRIBUTES.includes(name)) {
+    const info = ageInfo(source);
+    if (info.active) value = RULES.agedPhysicalValue(value, info, info.distribution.loss[name]);
+  }
   if (name === "CON" && hasCore("amago", source)) value += 10;
   for (const talent of activeTalents(source)) value += num(talent.attributeMods?.[name], 0);
   for (const talent of enabledConditionalTalents(source)) value += num(talent.conditionalMods?.attributeMods?.[name], 0);
@@ -584,6 +617,8 @@ function allKnownTalents() {
 function skillModifiers(skillName, source = state) {
   const normalized = normalizeSkillName(skillName);
   const mods = [];
+  const agePoints = activeAgeSkillGrants(source).filter((name) => name === skillName).length * 5;
+  if (agePoints) mods.push({ source: "Idade", value: agePoints, detail: `Experiência por idade: +${agePoints}` });
   const pushMods = (list, source) => {
     for (const mod of list ?? []) {
       const target = normalizeSkillName(mod.skill);
@@ -1065,6 +1100,7 @@ function renderResumo() {
   const region = getRegion();
   const body = bodyInfo();
   const ca = caBreakdown();
+  const age = ageInfo();
   return `
     <div class="grid two">
       <section class="panel">
@@ -1072,7 +1108,7 @@ function renderResumo() {
         <div data-sheet-portrait></div>
         <div class="grid two">
           ${field("Nome", "character.name")}
-          ${field("Idade", "character.age")}
+          <div class="field"><label for="characterAge">Idade</label><input id="characterAge" type="text" inputmode="numeric" data-path="character.age" value="${esc(state.character.age)}"></div>
           ${field("Gênero", "character.gender")}
           ${field("Nascimento", "character.birth")}
           ${field("Nível", "character.level", "number", 'min="1" max="20"')}
@@ -1096,6 +1132,11 @@ function renderResumo() {
       </section>
     </div>
 
+    <section class="panel age-panel" aria-label="Desenvolvimento por idade">
+      <div class="section-title"><h2>Idade e desenvolvimento</h2>${age.active && age.agingLoss ? `<button class="ghost" type="button" data-action="open-age-loss">Redistribuir perda</button>` : ""}</div>
+      ${!age.valid ? `<p class="muted">Informe uma idade válida a partir de 10 anos para aplicar a regra.</p>` : state.ageMechanic.status === "review" ? `<p>Esta ficha antiga precisa confirmar os valores de auge antes de aplicar a idade. Os atributos atuais foram preservados.</p><button class="button" type="button" data-action="review-age">Revisar auge físico</button>` : `<div class="age-summary"><span>${age.growthPenalty ? `Crescimento: −${age.growthPenalty} em FOR, DES e CON` : age.agingLoss ? `Envelhecimento: −${age.distribution.applied} distribuídos entre FOR, DES e CON` : "Auge físico: sem redução"}</span><span>Pontos de perícia por idade: +${age.skillPoints}</span></div>${age.distribution.limited ? `<p class="muted">O mínimo de 25% do auge impede aplicar toda a perda prevista (${age.distribution.requested}).</p>` : ""}`}
+    </section>
+
     ${renderCorePanel("compact")}
 
     <div class="summary-focus-layout">
@@ -1105,7 +1146,8 @@ function renderResumo() {
           ${DB.attributes.map((name) => `
             <div class="attribute-card card compact-attribute-card">
               <button class="ghost" type="button" data-action="open-attribute" data-attribute="${name}"><strong>${name}</strong></button>
-              <input class="number-input" type="number" min="0" max="200" data-path="attributes.${name}" value="${esc(state.attributes[name])}">
+              ${RULES.PHYSICAL_ATTRIBUTES.includes(name) ? `<span class="muted small">Auge</span>` : ""}<input class="number-input" type="number" min="0" max="200" data-path="attributes.${name}" value="${esc(state.attributes[name])}">
+              ${RULES.PHYSICAL_ATTRIBUTES.includes(name) ? `<span class="age-current">Atual: <strong>${attr(name)}</strong></span>` : ""}
               <span class="muted small">${esc(successText(attr(name)))}</span>
             </div>`).join("")}
         </div>
@@ -1291,10 +1333,15 @@ function renderInventario() {
 
 function renderPT() {
   const remaining = skillPointsTotal() - skillPointsSpent();
+  const age = ageInfo();
+  const ageBudget = age.active && age.valid ? age.skillPoints : 0;
+  const ageSaved = savedAgeSkillGrants().length * 5;
+  const ageUsed = ageSkillPointsUsed();
   return `
     ${inspirationPanel()}
     <section class="panel">
       <div class="section-title"><h2>P&T</h2><span class="tag ${remaining < 0 ? "warn" : "ok"}">Pontos de perícia: ${remaining}/${skillPointsTotal()}</span></div>
+      <p class="muted small">Pontos por idade: ${ageBudget - ageUsed}/${ageBudget} disponíveis${ageSaved > ageUsed ? ` · ${ageSaved - ageUsed} suspensos até uma faixa etária maior` : ""}. São distribuídos em blocos de 5, até +20 por perícia.</p>
       <div class="grid three">
         ${field("Pontos extras", "skillExtraPoints", "number")}
         <label class="field">Base de pontos<select data-path="character.useIntForSkillPoints"><option value="false" ${!state.character.useIntForSkillPoints ? "selected" : ""}>SAB + CON</option><option value="true" ${state.character.useIntForSkillPoints ? "selected" : ""}>INT + CON</option></select></label>
@@ -1304,14 +1351,15 @@ function renderPT() {
     <section class="panel">
       <div class="section-title"><h2>Perícias</h2><button class="button" type="button" data-action="open-evolve-skills">Evoluir</button></div>
       <div class="table-wrap">
-        <table>
-          <thead><tr><th>Perícia</th><th>Base</th><th>Pontos adicionados</th><th>Modificadores</th><th>Final</th><th>Check</th></tr></thead>
+        <table class="pt-skills-table">
+          <thead><tr><th>Perícia</th><th>Idade</th><th>Base</th><th>Pontos adicionados</th><th>Modificadores</th><th>Final</th><th>Check</th></tr></thead>
           <tbody>
             ${DB.skills.map((skill) => {
               const final = skillFinal(skill.name);
               const over = final > effectiveSkillLimit();
               return `<tr>
                 <td><button class="ghost" type="button" data-action="open-skill" data-skill="${esc(skill.name)}">${esc(skill.name)}</button></td>
+                <td><input class="number-input" type="number" min="0" max="20" step="5" data-age-skill="${esc(skill.name)}" value="${(state.ageMechanic?.skillGrants ?? []).filter((name) => name === skill.name).length * 5}" aria-label="Pontos por idade em ${esc(skill.name)}" ${!ageBudget ? "disabled" : ""}>${(state.ageMechanic?.skillGrants ?? []).filter((name) => name === skill.name).length > activeAgeSkillGrants().filter((name) => name === skill.name).length ? `<small class="muted">Parte suspensa</small>` : ""}</td>
                 <td>${baseSkillValue(skill)}</td>
                 <td><input class="number-input" type="number" min="0" data-path="skills.${skill.name}.added" value="${num(state.skills[skill.name]?.added, 0)}"></td>
                 <td><button class="ghost" type="button" data-action="open-modifiers" data-skill="${esc(skill.name)}">${skillModifiers(skill.name).reduce((sum, mod) => sum + mod.value, 0)}</button></td>
@@ -2268,8 +2316,15 @@ function openStartModal() {
 
 function openAttributeModal(name) {
   const value = attr(name);
+  const age = ageInfo();
+  const peak = num(state.attributes[name], 0);
+  const physical = RULES.PHYSICAL_ATTRIBUTES.includes(name);
+  const ageLoss = physical && age.active && age.valid ? Math.min(peak, age.growthPenalty + age.distribution.loss[name]) : 0;
+  const agedBase = physical && age.active ? RULES.agedPhysicalValue(peak, age, age.distribution.loss[name]) : peak;
+  const otherMods = value - agedBase;
   openModal(name, `<div class="stack">
     <div class="stat"><span class="muted">Valor atual</span><strong>${value}</strong></div>
+    ${physical ? `<div class="age-attribute-detail"><div><span>${age.active ? "Auge físico" : "Valor registrado"}</span><strong>${peak}</strong></div><div><span>Redução efetiva por idade</span><strong>−${ageLoss}</strong></div><div><span>Outros modificadores</span><strong>${otherMods >= 0 ? "+" : ""}${otherMods}</strong></div></div>${age.active && age.growthPenalty && peak < age.growthPenalty ? `<p class="muted">A regra prevê −${age.growthPenalty}; o valor atual tem mínimo zero.</p>` : ""}${!age.valid ? `<p class="muted">Informe uma idade válida a partir de 10 anos.</p>` : !age.active ? `<p class="muted">Confirme o auge físico desta ficha antiga para aplicar a idade.</p>` : ""}` : ""}
     <p>${esc(successText(value))}</p>
     <div class="inline">
       <button class="button" type="button" data-action="roll-attribute" data-attribute="${esc(name)}" data-mode="normal">Rolar d100</button>
@@ -2277,6 +2332,75 @@ function openAttributeModal(name) {
       <button class="ghost" type="button" data-action="roll-attribute" data-attribute="${esc(name)}" data-mode="dis">Com desvantagem</button>
     </div>
   </div>`);
+}
+
+function openAgeReviewModal() {
+  if (state.ageMechanic?.status !== "review") return;
+  openModal("Revisar auge físico", `<p>Esta ficha foi criada antes da regra de idade. Confira os valores que o personagem teria no auge. Nada mudará até confirmar; antes da alteração, será criado um backup.</p><div class="grid three">${RULES.PHYSICAL_ATTRIBUTES.map((name) => `<div class="field"><label for="agePeak${name}">Auge ${name}</label><input id="agePeak${name}" type="number" min="0" max="200" step="1" value="${esc(state.attributes[name])}"></div>`).join("")}</div>`, `<button class="button" type="button" data-action="confirm-age-review">Confirmar auge</button><button class="ghost" type="button" data-action="close-modal">Decidir depois</button>`);
+}
+
+function maybePromptAgeReview() {
+  if (!GM_VIEW_MODE && state.ageMechanic?.status === "review" && ageInfo().valid) openAgeReviewModal();
+}
+
+function confirmAgeReview() {
+  const peaks = Object.fromEntries(RULES.PHYSICAL_ATTRIBUTES.map((name) => [name, Number($(`#agePeak${name}`)?.value)]));
+  if (Object.values(peaks).some((value) => !Number.isInteger(value) || value < 0 || value > 200)) return toast("Informe valores de auge entre 0 e 200.", "warn");
+  const backup = createBackup("Antes de aplicar a regra de idade");
+  if (!readBackups().some((item) => item.id === backup.id)) {
+    return toast("Não foi possível guardar um backup restaurável. Exporte o JSON antes de tentar novamente.", "warn");
+  }
+  Object.assign(state.attributes, peaks);
+  state.ageMechanic.status = "active";
+  normalizeAgeLosses();
+  closeModal();
+  render();
+  toast("Regra de idade aplicada. Os valores anteriores estão no backup.");
+}
+
+function openAgeLossModal() {
+  const age = ageInfo();
+  if (!age.active || !age.agingLoss) return;
+  openModal("Distribuir perda física", `<p>Distribua ${age.distribution.applied} pontos entre FOR, DES e CON, preferencialmente em blocos de 5. Nenhum atributo pode perder mais da metade da penalidade total quando ela é 10 ou mais.</p><div class="grid three">${RULES.PHYSICAL_ATTRIBUTES.map((name) => `<div class="field"><label for="ageLoss${name}">Perda em ${name}</label><input id="ageLoss${name}" type="number" min="0" max="${age.agingLoss >= 10 ? age.agingLoss / 2 : age.agingLoss}" step="5" value="${age.distribution.loss[name]}"><small>Auge ${state.attributes[name]} · mínimo ${RULES.ageMinimum(state.attributes[name])}</small></div>`).join("")}</div>`, `<button class="button" type="button" data-action="save-age-loss">Aplicar distribuição</button><button class="ghost" type="button" data-action="close-modal">Cancelar</button>`);
+}
+
+function saveAgeLoss() {
+  const values = Object.fromEntries(RULES.PHYSICAL_ATTRIBUTES.map((name) => [name, Number($(`#ageLoss${name}`)?.value)]));
+  const age = ageInfo();
+  const normalized = RULES.distributeAgingLoss(state.attributes, age.agingLoss, values);
+  const valid = RULES.PHYSICAL_ATTRIBUTES.every((name) => Number.isInteger(values[name]) && values[name] >= 0 && values[name] === normalized.loss[name])
+    && normalized.applied === age.distribution.applied;
+  if (!valid) return toast("A distribuição deve somar a perda aplicável e respeitar os limites de cada atributo.", "warn");
+  state.ageMechanic.losses = values;
+  closeModal();
+  render();
+}
+
+function updateAgeSkillPoints(target) {
+  const name = target.dataset.ageSkill;
+  const next = Number(target.value);
+  const age = ageInfo();
+  const grants = state.ageMechanic.skillGrants;
+  const previous = grants.filter((item) => item === name).length * 5;
+  if (!DB.skills.some((skill) => skill.name === name) || !age.active || !age.valid || !Number.isInteger(next) || next < 0 || next > 20 || next % 5) {
+    target.value = previous;
+    return toast("Distribua pontos de idade em blocos de 5, até +20 por perícia.", "warn");
+  }
+  if (next > previous) {
+    if (savedAgeSkillGrants().length * 5 + next - previous > age.skillPoints) {
+      target.value = previous;
+      return toast("Pontos de perícia por idade insuficientes.", "warn");
+    }
+    for (let amount = previous; amount < next; amount += 5) grants.push(name);
+    if (skillFinal(name) > effectiveSkillLimit()) {
+      grants.splice(grants.length - (next - previous) / 5);
+      target.value = previous;
+      return toast(`A perícia ultrapassaria o limite ${effectiveSkillLimit()}.`, "warn");
+    }
+  } else {
+    for (let amount = previous; amount > next; amount -= 5) grants.splice(grants.lastIndexOf(name), 1);
+  }
+  render();
 }
 
 function openCombatRollModal() {
@@ -3105,6 +3229,10 @@ function handleClick(event) {
   const actions = {
     "close-modal": closeModal,
     "open-start": openStartModal,
+    "review-age": openAgeReviewModal,
+    "confirm-age-review": confirmAgeReview,
+    "open-age-loss": openAgeLossModal,
+    "save-age-loss": saveAgeLoss,
     "start-new": () => {
       if (window.MARUFIA_SHEET_SLOTS_STORE) {
         window.dispatchEvent(new CustomEvent("marufia:new-sheet-requested"));
@@ -3246,6 +3374,11 @@ function handleClick(event) {
 function handleChange(event) {
   if (GM_VIEW_MODE) return;
   const target = event.target;
+  if (target.dataset.ageSkill) {
+    updateAgeSkillPoints(target);
+    scheduleSave();
+    return;
+  }
   if (target.id === "combatRollSkill") updateCombatRollPreview();
   if (target.id === "fissureSpend") updateFissureAttemptPreview();
   if (target.id === "customArmorIconPreset") {
@@ -3268,6 +3401,7 @@ function handleChange(event) {
     const affectsSkills = target.dataset.path.startsWith("attributes.") || ["character.cultureId", "character.backgroundFamilyId", "character.backgroundPersonalId", "character.useIntForSkillPoints", "magicCore.selectedId"].includes(target.dataset.path);
     const previousSkillValues = affectsSkills ? Object.fromEntries(DB.skills.map((skill) => [skill.name, skillFinal(skill.name)])) : null;
     setPath(target.dataset.path, value);
+    if (target.dataset.path === "character.age" || RULES.PHYSICAL_ATTRIBUTES.some((name) => target.dataset.path === `attributes.${name}`)) normalizeAgeLosses();
     if (skillMatch && rejectInvalidSkillAllocation(skillMatch[1], previousSkillValue, target)) {
       render();
       return;
@@ -3288,6 +3422,7 @@ function handleChange(event) {
       const issue = sheetSkillValidationIssue(previousSkillValues);
       if (issue) {
         setPath(target.dataset.path, previousPathValue);
+        if (RULES.PHYSICAL_ATTRIBUTES.some((name) => target.dataset.path === `attributes.${name}`)) normalizeAgeLosses();
         if (target.dataset.path === "character.cultureId") state.character.regionCode = previousRegionCode;
         addError(issue.reason === "limit" ? "LAT-CALC-004" : "LAT-PT-002", issue.detail);
         render();
@@ -4140,6 +4275,7 @@ function restoreBackup(id) {
     closeModal();
     render();
     saveStateNow();
+    maybePromptAgeReview();
     toast("Backup restaurado.");
   } catch (error) {
     addError(error.code || "LAT-JSON-001", error.message);
@@ -4209,6 +4345,7 @@ async function applyJsonImport(mode) {
   closeModal();
   render();
   saveStateNow();
+  maybePromptAgeReview();
   if (media) {
     try { await window.MARUFIA_CHARACTER_PORTRAITS?.importMedia?.(state.meta.createdAt, media); }
     catch (error) { toast(`A ficha foi importada, mas a imagem não pôde ser restaurada: ${errorMessage(error)}`, "warn"); }
@@ -4304,6 +4441,7 @@ function candidateFromPdfData(data, result, fileName) {
   const candidate = createDefaultState();
   candidate.settings = { ...candidate.settings, ...state.settings };
   applyImportedPdfPayload(candidate, data);
+  markAgeReviewForImportedPdf(candidate, data);
   candidate.meta.started = true;
   candidate.meta.importedFromPdf = {
     fileName,
@@ -4313,6 +4451,12 @@ function candidateFromPdfData(data, result, fileName) {
     importedValueCount: result.importedValueCount,
   };
   return normalizeState(candidate);
+}
+
+function markAgeReviewForImportedPdf(targetState, data) {
+  const profile = RULES.ageProfile(targetState.character.age);
+  const hasAgeData = hasImportedValue(data?.character?.age) || RULES.PHYSICAL_ATTRIBUTES.some((name) => hasImportedValue(data?.attributes?.[name]));
+  if (profile.valid && hasAgeData && (profile.age < 21 || profile.age >= 42)) targetState.ageMechanic.status = "review";
 }
 
 function applyImportedPdfPayload(targetState, data) {
@@ -4486,6 +4630,7 @@ function applyPdfImport(mode) {
   } else {
     const merged = STATE_TOOLS.persistentPayload(state);
     applyImportedPdfPayload(merged, importedData);
+    markAgeReviewForImportedPdf(merged, importedData);
     merged.meta.started = true;
     merged.meta.importedFromPdf = candidate.meta.importedFromPdf;
     state = normalizeState(merged);
@@ -4498,6 +4643,7 @@ function applyPdfImport(mode) {
   closeModal();
   render();
   saveStateNow();
+  maybePromptAgeReview();
   toast("PDF importado com segurança.");
 }
 
@@ -4568,6 +4714,7 @@ if (databaseStartupError) {
       saveTimer = null;
       previousWorldUnlocked = worldUnlocked();
       render();
+      maybePromptAgeReview();
       return true;
     },
     onLocalSave: (listener) => {
@@ -4600,4 +4747,5 @@ if (databaseStartupError) {
   applyTheme();
   render();
   if (!GM_VIEW_MODE && !state.meta.started) openStartModal();
+  else maybePromptAgeReview();
 }

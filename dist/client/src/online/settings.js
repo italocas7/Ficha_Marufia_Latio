@@ -95,7 +95,7 @@
         productVersion: PRODUCT_VERSION,
         productChannel: PRODUCT_CHANNEL,
         productDisplayName: PRODUCT_DISPLAY_NAME,
-        schemaVersion: Number.isInteger(schemaVersion) ? schemaVersion : 6,
+        schemaVersion: Number.isInteger(schemaVersion) ? schemaVersion : 7,
       }),
     });
   }

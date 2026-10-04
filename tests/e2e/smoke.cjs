@@ -54,8 +54,8 @@ async function exercise(page, url, viewport) {
   await page.goto(url);
   await page.waitForTimeout(50);
   const versionLabel = page.locator("[data-marufia-version]");
-  assert.equal(await versionLabel.textContent(), "v0.4.2", "O cabeçalho deve mostrar a versão atual da ficha.");
-  assert.equal(await versionLabel.getAttribute("aria-label"), "Versão 0.4.2 do Marufia Online");
+  assert.equal(await versionLabel.textContent(), "v0.4.3", "O cabeçalho deve mostrar a versão atual da ficha.");
+  assert.equal(await versionLabel.getAttribute("aria-label"), "Versão 0.4.3 do Marufia Online");
   assert.equal(updateManifestRequests, 0, "O navegador comum não pode consultar atualizações do aplicativo Windows.");
   assert.equal(await page.locator("[data-online-app-update-modal]").count(), 0, "O navegador comum não pode receber o aviso do aplicativo Windows.");
   await page.getByRole("button", { name: "Criar ficha nova" }).click();
@@ -268,7 +268,7 @@ async function exercise(page, url, viewport) {
   const ownCharacters = page.locator('[data-online-home-modal][data-online-home-view="characters"]');
   await ownCharacters.waitFor({ state: "visible" });
   assert.match(await ownCharacters.innerText(), /Teste de regressão/);
-  assert.match(await ownCharacters.innerText(), /Schema v6/);
+  assert.match(await ownCharacters.innerText(), /Schema v7/);
   assert.equal(await ownCharacters.locator("[data-online-home-action='select-character'][aria-pressed='true']").count(), 1, "A primeira ficha online deve ser selecionada automaticamente.");
   await ownCharacters.getByRole("button", { name: "Abrir ficha selecionada" }).click();
   const switchConfirmation = page.locator('[data-online-home-modal][data-online-home-view="character-confirm"]');
@@ -301,7 +301,7 @@ async function exercise(page, url, viewport) {
   assert.match(await onlineSettings.innerText(), /Sincronização/i);
   assert.match(await onlineSettings.innerText(), /ficha (?:está )?vinculada/i);
   assert.match(await onlineSettings.innerText(), /Dados locais/i);
-  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.4\.2/i);
+  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.4\.3/i);
   await settingsModal.getByRole("button", { name: "Modo Escuro" }).click();
   assert.equal(await page.locator("body").evaluate((body) => body.classList.contains("dark")), true);
   assert.equal(await settingsModal.getByRole("button", { name: "Modo Escuro" }).getAttribute("aria-pressed"), "true");
@@ -345,7 +345,7 @@ async function exercise(page, url, viewport) {
     writes: Number(JSON.parse(localStorage.getItem("marufia-e2e-character-writes") || "0")),
   }));
   assert.equal(synchronized.character.name, "Teste sincronizado", "O nome remoto deve ser derivado do estado atualizado.");
-  assert.equal(synchronized.character.schema_version, 6, "A versão remota deve continuar alinhada ao schema v6.");
+  assert.equal(synchronized.character.schema_version, 7, "A versão remota deve continuar alinhada ao schema v7.");
   assert.equal(synchronized.writes - writesBeforeBurst, 1, "Uma rajada de edições deve produzir somente uma gravação remota.");
   await page.waitForFunction(() => window.__marufiaRemoteEvents?.some((event) => (
     event.event === "UPDATE" && event.name === "Teste sincronizado"
@@ -655,7 +655,7 @@ async function exercise(page, url, viewport) {
       campaign_id: campaignId,
       name: "Kael",
       state,
-      schema_version: 6,
+      schema_version: state.meta.schemaVersion,
       revision: 1,
       last_change_origin: "player",
       created_at: now,
@@ -698,7 +698,11 @@ async function exercise(page, url, viewport) {
   await ownedCampaign.getByRole("button", { name: "Painel do Mæstre" }).click();
   const gmPanel = page.locator("[data-online-gm-panel]");
   await gmPanel.waitFor({ state: "visible" });
-  await page.waitForFunction(() => document.querySelector("[data-online-gm-panel]")?.dataset.connection === "live");
+  try {
+    await page.waitForFunction(() => document.querySelector("[data-online-gm-panel]")?.dataset.connection === "live");
+  } catch (error) {
+    throw new Error(`Painel do Mæstre não ficou online (${await gmPanel.getAttribute("data-connection")}): ${(await gmPanel.innerText()).slice(0, 600)}`, { cause: error });
+  }
   assert.match(await gmPanel.innerText(), /A Coroa Partida/);
   assert.match(await gmPanel.innerText(), /Online: 1/);
   assert.match(await gmPanel.innerText(), /Ausentes: 0 · Offline: 0/);
@@ -1171,7 +1175,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
         check() {
           window.__marufiaUpdateState.checks += 1;
           return Promise.resolve({
-            version: "0.4.3",
+            version: "0.4.4",
             body: "Versão futura usada somente pelo teste local.",
             close() { window.__marufiaUpdateState.closed += 1; return Promise.resolve(); },
             downloadAndInstall(listener) {
@@ -1237,7 +1241,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
         check() {
           window.__marufiaUpdateState.checks += 1;
           return Promise.resolve({
-            version: "0.4.3",
+            version: "0.4.4",
             body: "Versão futura usada somente pelo teste local.",
             close() { window.__marufiaUpdateState.closed += 1; return Promise.resolve(); },
             downloadAndInstall(listener) {
@@ -1364,6 +1368,54 @@ async function exercisePortraits(browser, url, viewport) {
   } finally { await context.close(); }
 }
 
+async function exerciseAge(browser, url, viewport) {
+  const context = await browser.newContext({ viewport });
+  const page = await context.newPage();
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  try {
+    await page.goto(url);
+    await page.getByRole("button", { name: "Criar ficha nova" }).click();
+    const age = page.locator('[data-path="character.age"]');
+    await age.fill("65");
+    await age.press("Tab");
+    assert.match(await page.locator(".age-panel").innerText(), /Envelhecimento: −20/);
+    assert.match(await page.locator(".age-panel").innerText(), /\+60/);
+    await page.locator('[data-action="open-attribute"][data-attribute="FOR"]').click();
+    assert.match(await page.locator("#modalRoot .modal").innerText(), /Auge físico/);
+    assert.match(await page.locator("#modalRoot .modal").innerText(), /Redução efetiva por idade/);
+    await page.locator('#modalRoot [data-action="close-modal"]').last().click();
+    if (process.env.MARUFIA_AGE_SCREENSHOTS === "1") {
+      const directory = path.join(projectRoot, "test-results", "age");
+      fs.mkdirSync(directory, { recursive: true });
+      await page.locator(".age-panel").screenshot({ path: path.join(directory, `age-panel-${viewport.width}.png`) });
+      await page.screenshot({ path: path.join(directory, `summary-${viewport.width}.png`) });
+    }
+    await page.getByRole("tab", { name: /^P&T/ }).click();
+    for (const [skill, points] of [["Percepção", "20"], ["Tática", "5"]]) {
+      const field = page.locator(`[data-age-skill="${skill}"]`);
+      await field.fill(points);
+      await field.press("Tab");
+    }
+    await page.waitForTimeout(350);
+    await page.reload();
+    assert.equal(await page.evaluate(() => window.MARUFIA_APP_BRIDGE.snapshot().ageMechanic.skillGrants.length), 5);
+    await page.locator('[data-path="character.age"]').fill("42");
+    await page.locator('[data-path="character.age"]').press("Tab");
+    await page.getByRole("tab", { name: /^P&T/ }).click();
+    assert.match(await page.locator("#app").innerText(), /5 suspensos/);
+    assert.equal(await page.evaluate(() => window.MARUFIA_APP_BRIDGE.snapshot().ageMechanic.skillGrants.length), 5);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1), true);
+    if (process.env.MARUFIA_AGE_SCREENSHOTS === "1") {
+      const directory = path.join(projectRoot, "test-results", "age");
+      await page.screenshot({ path: path.join(directory, `skills-${viewport.width}.png`) });
+    }
+    assert.deepEqual(errors, []);
+  } finally {
+    await context.close();
+  }
+}
+
 (async () => {
   const web = server();
   await new Promise((resolve) => web.listen(0, "127.0.0.1", resolve));
@@ -1381,6 +1433,12 @@ async function exercisePortraits(browser, url, viewport) {
       console.log("Teste isolado dos retratos concluído.");
       return;
     }
+    if (process.env.MARUFIA_E2E_AGE_ONLY === "1") {
+      await exerciseAge(browser, `http://127.0.0.1:${port}/`, { width: 1440, height: 900 });
+      await exerciseAge(browser, `http://127.0.0.1:${port}/`, { width: 390, height: 844 });
+      console.log("Teste isolado de idade concluído.");
+      return;
+    }
     for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 720 }, { width: 768, height: 850 }, { width: 390, height: 844 }]
       .filter((item) => !process.env.MARUFIA_E2E_VIEWPORT || item.width === Number(process.env.MARUFIA_E2E_VIEWPORT))) {
       const context = await browser.newContext({ viewport });
@@ -1391,6 +1449,8 @@ async function exercisePortraits(browser, url, viewport) {
     await exerciseLocalSheets(browser, `http://127.0.0.1:${port}/`, { width: 390, height: 844 });
     await exercisePortraits(browser, `http://127.0.0.1:${port}/`, { width: 1440, height: 900 });
     await exercisePortraits(browser, `http://127.0.0.1:${port}/`, { width: 390, height: 844 });
+    await exerciseAge(browser, `http://127.0.0.1:${port}/`, { width: 1440, height: 900 });
+    await exerciseAge(browser, `http://127.0.0.1:${port}/`, { width: 390, height: 844 });
     await exerciseWindowsUpdate(browser, `http://127.0.0.1:${port}/`, { width: 1440, height: 900 });
     await exerciseWindowsUpdate(browser, `http://127.0.0.1:${port}/`, { width: 390, height: 844 });
     console.log("Smoke test desktop/mobile concluído.");

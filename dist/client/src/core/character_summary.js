@@ -35,8 +35,13 @@
       .find((core) => core.id === state?.magicCore?.selectedId);
   }
 
-  function attributeValue(state, name, database) {
+  function attributeValue(state, name, database, rules = root?.LATIO_RULES) {
     let value = number(state?.attributes?.[name], 0);
+    if (state?.ageMechanic?.status === "active" && rules?.PHYSICAL_ATTRIBUTES?.includes(name)) {
+      const profile = rules.ageProfile(state?.character?.age);
+      const distribution = rules.distributeAgingLoss(state?.attributes, profile.agingLoss, state?.ageMechanic?.losses);
+      value = rules.agedPhysicalValue(value, profile, distribution.loss[name]);
+    }
     if (name === "CON" && hasCore(state, "amago")) value += 10;
     for (const talent of knownTalents(state, database)) value += number(talent.attributeMods?.[name], 0);
     for (const talent of enabledConditionalTalents(state, database)) {
@@ -63,7 +68,7 @@
     const talents = knownTalents(state, database);
     const robust = talents.find((talent) => talent.name === "Robusto");
     const calculatedHp = rules.calculateMaxHp({
-      con: attributeValue(state, "CON", database),
+      con: attributeValue(state, "CON", database, rules),
       level,
       robustAcquiredLevel: robust?.level ?? null,
     });
@@ -73,7 +78,7 @@
     const conditionalPm = enabledConditionalTalents(state, database)
       .reduce((sum, talent) => sum + number(talent.conditionalMods?.resourceMods?.pm, 0), 0);
     const calculatedPm = rules.calculateMaxPm({
-      pod: attributeValue(state, "POD", database),
+      pod: attributeValue(state, "POD", database, rules),
       level,
       umbilicusCore: hasCore(state, "umbigo"),
       talentBonus: passivePm + conditionalPm,

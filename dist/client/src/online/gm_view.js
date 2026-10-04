@@ -1,9 +1,9 @@
 (function initMarufiaGmView(root, factory) {
-  const api = factory();
+  const api = factory(root);
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.MARUFIA_GM_VIEW = api;
   if (root?.document) api.init(root);
-})(typeof window !== "undefined" ? window : globalThis, function createMarufiaGmViewApi() {
+})(typeof window !== "undefined" ? window : globalThis, function createMarufiaGmViewApi(root) {
   "use strict";
 
   const MESSAGE_TYPE = "marufia:gm-view-state";
@@ -25,7 +25,7 @@
       && event.data.state?.meta?.appId === "marufia-latio"
       && Number.isInteger(Number(event.data.state?.meta?.schemaVersion))
       && Number(event.data.state.meta.schemaVersion) >= 1
-      && Number(event.data.state.meta.schemaVersion) <= 6,
+      && Number(event.data.state.meta.schemaVersion) <= (root?.LATIO_STATE?.STATE_SCHEMA?.currentVersion ?? 7),
     );
   }
 
