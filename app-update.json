@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "appId": "com.marufia.online",
   "channel": "alpha",
-  "version": "0.4.2",
-  "notes": "Centro de Campanha reorganizado, retrato privado por personagem, filtros de atividade e rolagens, e melhor layout em celular e monitores grandes.",
-  "publishedAt": "2026-10-02T01:09:46.000Z",
-  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.4.2"
+  "version": "0.4.3",
+  "notes": "Regras de idade com migração protegida para o schema v7 e correção da importação de retratos em ambientes que bloqueiam imagens data:.",
+  "publishedAt": "2026-10-04T01:41:40.969Z",
+  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.4.3"
 }

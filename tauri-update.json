@@ -1,11 +1,11 @@
 {
-  "version": "0.4.2",
-  "notes": "# Marufia Online Alpha 0.4.2\n\n- Centro de Campanha com navegação fixa entre Campanha, Painel do Mæstre e Rolagens, leitura em uma única área rolável e melhor aproveitamento de monitores grandes e celulares.\n- Cartões dos participantes com nome do jogador, presença, PV e PM. Apenas o dono e o Mæstre continuam autorizados a abrir a ficha completa.\n- Painel do Mæstre com sessão ativa em destaque, barras de PV/PM, filtros de atividade e acesso paginado ao histórico.\n- Filtros de rolagens públicas, privadas autorizadas e próprias.\n- Retrato opcional por ficha, escolhido em Resumo ou Antecedentes, salvo localmente e sincronizado com a conta. A imagem é privada para o dono e participantes da mesma campanha.\n- Exportação JSON opcionalmente inclui a imagem comprimida; fichas e backups antigos continuam válidos.",
-  "pub_date": "2026-10-02T01:09:46.000Z",
+  "version": "0.4.3",
+  "notes": "# Marufia Online Alpha 0.4.3\n\n- A idade agora aplica os ajustes físicos previstos pela ficha, preservando os valores máximos originais de FOR, DES e CON.\n- Personagens entre 10 e 20 anos recebem o ajuste de crescimento; personagens a partir de 42 anos distribuem as perdas de envelhecimento e recebem os pontos de perícia correspondentes.\n- A concessão de perícias por idade respeita blocos de cinco pontos, limites individuais e o teto definido pela campanha.\n- Fichas antigas afetadas pela idade passam por revisão protegida e backup antes da ativação do schema v7.\n- A importação de retratos converte a imagem validada diretamente em `Blob`, corrigindo ambientes que bloqueiam a leitura de imagens `data:` por requisição.",
+  "pub_date": "2026-10-04T01:41:40.969Z",
   "platforms": {
     "windows-x86_64": {
-      "url": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/download/v0.4.2/Marufia-Setup.exe",
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTR203cEVudWhOcEJUaGlwZC9NYjY2NXV2cjVFRTErTkt0UnhHMzF4ZU5qRXk3WXN0RFdUYmI5Y3EwSTdHT2VNQXFhSzh2QnJ6WFdPS1VDbWprb25xSXV5OFlLWXZzV2dJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzkwOTAyNDM2CWZpbGU6TWFydWZpYSBPbmxpbmVfMC40LjJfeDY0LXNldHVwLmV4ZQpTOHVieGlMYmM4M2JpVFpmV2xrWVl1T1ovaE9pWlJKVmgyU3ZmaDhzUlRjSjBHS28ybks3Z3dPVHh4d0QzU1pVOERVMG5ySzd2RTkya3lrejNUVFpCZz09Cg=="
+      "url": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/download/v0.4.3/Marufia-Setup.exe",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTR203cEVudWhOcE9MK1V0NUNqbTA1Y2ovYmNYejk3VEtjbFU5U0ZVTW5NdzRSaVNJVlVoT2hFdVhFYUpYbmYyR3VqTXhGSGlaak9FN2V3MEFzYjdpcnJNMXlwb3pKNHdNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzkxMDc4MDk5CWZpbGU6TWFydWZpYSBPbmxpbmVfMC40LjNfeDY0LXNldHVwLmV4ZQpBa0IzMy9Zb0tjdHRLVm1HRzNRcmZYU1ZTcUN4aFp2cFA0Vno2Sld0MklNeFlhcUtKMU9Xejk3VnRKQThiMk1JWHJMVFg0NkVGTDFrYnV5bWhmS1VDZz09Cg=="
     }
   }
 }

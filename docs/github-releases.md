@@ -1,6 +1,6 @@
 # GitHub Releases
 
-O **pré-lançamento** `v0.4.3` está em preparação:
+O **pré-lançamento** `v0.4.3` está publicado:
 
 - tag: `v0.4.3`;
 - título: **Marufia Online Alpha 0.4.3**;
