@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "appId": "com.marufia.online",
   "channel": "alpha",
-  "version": "0.4.3",
-  "notes": "Regras de idade com migração protegida para o schema v7 e correção da importação de retratos em ambientes que bloqueiam imagens data:.",
-  "publishedAt": "2026-10-04T01:41:40.969Z",
-  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.4.3"
+  "version": "0.4.4",
+  "notes": "Corrige o carregamento do limite de perícias da campanha e recupera automaticamente falhas de conexão, preservando fichas e regras.",
+  "publishedAt": "2026-10-11T05:57:58.646Z",
+  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.4.4"
 }
