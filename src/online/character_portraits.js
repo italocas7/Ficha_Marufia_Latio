@@ -179,16 +179,28 @@
     return true;
   }
 
-  async function syncPending() {
-    if (syncPromise) return syncPromise;
+  async function syncPending(scope = null) {
+    if (syncPromise) return scope === null ? syncPromise : syncPromise.then(() => syncPending(scope));
     syncPromise = (async () => {
       const slots = root.MARUFIA_SHEET_SLOTS_STORE?.all?.() ?? [];
+      const items = [];
       for (const slot of slots) {
-        try { await syncOne(slot); }
-        catch (error) { root.toast?.(`Imagem guardada neste aparelho; envio pendente. ${error.message || ""}`, "warn"); }
+        if (scope !== null && slot.scope !== scope) continue;
+        const identity = sheetIdentity(slot.state);
+        const local = await readMedia(identity);
+        if (!local?.dirty) continue;
+        if (!slot.remoteId) { items.push({ id: slot.id, status: "local" }); continue; }
+        try {
+          const sent = await syncOne(slot);
+          items.push({ id: slot.id, status: sent ? "updated" : "pending" });
+        } catch (error) {
+          items.push({ id: slot.id, status: "error" });
+          root.toast?.(`Imagem guardada neste aparelho; envio pendente. ${error.message || ""}`, "warn");
+        }
       }
+      return { source: "portraits", items };
     })();
-    try { await syncPromise; } finally { syncPromise = null; }
+    try { return await syncPromise; } finally { syncPromise = null; }
   }
 
   async function exportActiveMedia() {
@@ -337,9 +349,19 @@
     view.addEventListener("marufia:character-linked", () => { scheduleRefresh(); void syncPending(); });
     view.addEventListener("marufia:portrait-updated", scheduleRefresh);
     view.addEventListener("online", () => void syncPending());
+    const manualSync = (event) => event?.detail?.waitUntil?.((async () => {
+      const account = document.querySelector("#onlineAccountButton");
+      if (account?.dataset?.authState !== "online") return { source: "portraits", items: [] };
+      const session = await client()?.auth?.getSession?.();
+      const userId = session?.data?.session?.user?.id;
+      if (!userId) return { source: "portraits", items: [], error: "Conta desconectada." };
+      const backend = view.MARUFIA_OFFLINE?.backendScope?.(view.MARUFIA_ONLINE_CONFIG) ?? "unconfigured";
+      return syncPending(`${backend}|${userId}`);
+    })());
+    view.addEventListener("marufia:manual-sync", manualSync);
     scheduleRefresh();
     void syncPending();
-    return { refresh, syncPending, destroy() { observer.disconnect(); document.removeEventListener("click", onClick); document.removeEventListener("change", onChange); } };
+    return { refresh, syncPending, destroy() { observer.disconnect(); document.removeEventListener("click", onClick); document.removeEventListener("change", onChange); view.removeEventListener("marufia:manual-sync", manualSync); } };
   }
 
   return { BUCKET, sheetIdentity, validateImportMedia, encodeFile, readMedia, writeMedia, exportActiveMedia, importMedia, syncOne, syncPending, init };

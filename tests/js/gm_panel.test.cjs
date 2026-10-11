@@ -169,6 +169,7 @@ function fakeEnvironment(options = {}) {
         async currentUserId() { return USER_ID; },
         async listOwnMemberships() { return memberships.filter((item) => item.user_id === USER_ID); },
         async listVisibleMembers() { return memberships; },
+        async listVisible() { return [{ id: CAMPAIGN_ID, age_mechanic_enabled: options.ageEnabled ?? true }]; },
       };
     },
   };
@@ -220,6 +221,16 @@ test("loads character resources and counts only recent player presence", async (
   ]);
   assert.equal(environment.calls.gte[0].column, "seen_at");
   assert.equal(environment.calls.gte[0].value, "2026-08-21T14:58:30.000Z");
+});
+
+test("Mæstre sees the same maximum PV when campaign Auge is disabled", async () => {
+  const character = characterRow();
+  character.state.character.age = "10";
+  character.state.ageMechanic = { status: "active", losses: { FOR: 0, DES: 0, CON: 0 } };
+  const enabled = await service(fakeEnvironment({ characters: [character], ageEnabled: true })).loadCampaign(CAMPAIGN_ID);
+  const disabled = await service(fakeEnvironment({ characters: [character], ageEnabled: false })).loadCampaign(CAMPAIGN_ID);
+  assert.equal(enabled.characters[0].resources.hp.maximum, 21);
+  assert.equal(disabled.characters[0].resources.hp.maximum, 33);
 });
 
 test("touches only the authenticated user's actual memberships", async () => {

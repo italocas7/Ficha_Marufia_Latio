@@ -35,7 +35,7 @@
     const receive = (event) => {
       if (!validMessage(event, token, view.parent)) return;
       try {
-        const loaded = view.MARUFIA_APP_BRIDGE?.loadGmViewSnapshot?.(event.data.state);
+        const loaded = view.MARUFIA_APP_BRIDGE?.loadGmViewSnapshot?.(event.data.state, event.data.ageEnabled !== false);
         if (loaded) view.document.querySelector("#app")?.setAttribute("aria-busy", "false");
       } catch {
         const status = view.document.querySelector("#statusLine");

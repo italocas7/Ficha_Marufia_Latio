@@ -38,14 +38,28 @@
     let generation = 0;
     let destroyed = false;
     let failureKey = "";
+    let subscribedCampaignId = "";
+    let campaignChannel = null;
     const canRefresh = () => !destroyed && account.dataset.authState === "online" && characterService && campaignService && view.navigator?.onLine !== false;
     let retryScheduler = null;
+
+    function watchCampaign(campaignId) {
+      if (subscribedCampaignId === campaignId && (campaignChannel || !canRefresh())) return;
+      if (campaignChannel) void client?.removeChannel?.(campaignChannel);
+      campaignChannel = null;
+      subscribedCampaignId = campaignId;
+      if (!campaignId || !client?.channel || !canRefresh()) return;
+      campaignChannel = client.channel(`campaign-rules:${campaignId}`)
+        .on("postgres_changes", { event: "UPDATE", schema: "public", table: "campaigns", filter: `id=eq.${campaignId}` }, () => void refresh())
+        .subscribe();
+    }
 
     async function refresh() {
       if (destroyed) return true;
       const token = ++generation;
       const slot = store.active();
       if (!slot?.remoteId) {
+        watchCampaign("");
         bridge.setCampaignSkillPolicy(null);
         return true;
       }
@@ -53,16 +67,20 @@
       const key = `${slot.scope}|${slot.remoteId}`;
       const fallback = cachedPolicy(storage, key);
       // Atualizar a regra não deve apagar o último limite confirmado desta ficha.
-      bridge.setCampaignSkillPolicy(fallback?.none ? null : fallback ?? {
-        campaignId: `pending:${slot.remoteId}`, name: "Campanha: limite aguardando sincronização", limit: 1, revision: 1,
+      bridge.setCampaignSkillPolicy(fallback?.none ? null : fallback ? {
+        ...fallback, ageEnabled: typeof fallback.ageEnabled === "boolean" ? fallback.ageEnabled : null,
+      } : {
+        campaignId: `pending:${slot.remoteId}`, name: "Campanha: regras aguardando sincronização", limit: 1, revision: 1, ageEnabled: null,
       });
-      if (!canRefresh()) return true;
+      watchCampaign(fallback?.campaignId || "");
+      if (!canRefresh()) { watchCampaign(""); return true; }
       try {
         const userId = await characterService.currentUserId();
         if (!isCurrent() || slot.scope !== `${view.MARUFIA_OFFLINE?.backendScope?.(view.MARUFIA_ONLINE_CONFIG) ?? "unconfigured"}|${userId}`) return true;
         const character = await characterService.loadOwn(slot.remoteId);
         if (!isCurrent()) return true;
         if (!character.campaign_id) {
+          watchCampaign("");
           rememberPolicy(storage, key, { none: true });
           bridge.setCampaignSkillPolicy(null);
           failureKey = "";
@@ -73,10 +91,12 @@
         if (!isCurrent()) return true;
         const campaign = campaigns.find((item) => item.id === character.campaign_id);
         if (!campaign) throw new Error("Não foi possível consultar o limite desta campanha.");
-        const policy = { campaignId: campaign.id, name: campaign.name, limit: Number(campaign.skill_limit), revision: Number(campaign.rules_revision) || 1 };
+        const policy = { campaignId: campaign.id, name: campaign.name, limit: Number(campaign.skill_limit), revision: Number(campaign.rules_revision) || 1, ageEnabled: campaign.age_mechanic_enabled };
         if (!Number.isInteger(policy.limit) || policy.limit < 1 || policy.limit > 999) throw new Error("O limite da campanha é inválido.");
+        if (typeof policy.ageEnabled !== "boolean") throw new Error("A regra de idade da campanha é inválida.");
         rememberPolicy(storage, key, policy);
         bridge.setCampaignSkillPolicy(policy);
+        watchCampaign(policy.campaignId);
         failureKey = "";
         retryScheduler?.success();
         return true;
@@ -105,12 +125,19 @@
     for (const name of ["marufia:sheet-switched", "marufia:character-linked", "marufia:campaign-memberships-changed", "online", "offline"]) {
       view.addEventListener?.(name, onRefresh);
     }
+    const manualRefresh = (event) => event?.detail?.waitUntil?.(onRefresh().then((ok) => ({ source: "campaign", ok })));
+    view.addEventListener?.("marufia:manual-sync", manualRefresh);
+    const refreshOnVisible = () => { if (document.visibilityState === "visible") void onRefresh(); };
+    document.addEventListener?.("visibilitychange", refreshOnVisible);
     onRefresh();
     return Object.freeze({ refresh: onRefresh, destroy() {
       destroyed = true;
       generation += 1;
       retryScheduler?.destroy();
+      watchCampaign("");
       observer?.disconnect?.();
+      document.removeEventListener?.("visibilitychange", refreshOnVisible);
+      view.removeEventListener?.("marufia:manual-sync", manualRefresh);
       for (const name of ["marufia:sheet-switched", "marufia:character-linked", "marufia:campaign-memberships-changed", "online", "offline"]) {
         view.removeEventListener?.(name, onRefresh);
       }

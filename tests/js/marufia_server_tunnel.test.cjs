@@ -51,12 +51,15 @@ test("uses a private token file and never an environment token", () => {
   assert.match(common, /token -match "\\s"/);
 });
 
-test("publishes only Auth, REST, and Realtime through the permanent gateway", () => {
+test("publishes Auth, REST, Realtime, and only the private portrait object route", () => {
   assert.match(serviceSection("marufia-public-gateway"), /user: "101:101"/);
   for (const prefix of ["/auth/v1/", "/rest/v1/", "/realtime/v1/"]) {
     assert.match(publicGateway, new RegExp(`prefix: "${prefix.replaceAll("/", "\\/")}"`));
   }
-  assert.doesNotMatch(publicGateway, /storage\/v1|studio|pg\/|meta\/|5432/);
+  assert.match(publicGateway, /prefix: "\/storage\/v1\/object\/character-portraits\/"/);
+  assert.match(publicGateway, /path: "\/storage\/v1\/object\/character-portraits"/);
+  assert.match(publicGateway, /allow_headers: "[^"]*x-upsert[^"]*"/);
+  assert.doesNotMatch(publicGateway, /prefix: "\/storage\/v1\/"|\/storage\/v1\/bucket|studio|pg\/|meta\/|5432/);
   assert.match(publicGateway, /prefix: "\/"[\s\S]*status: 404/);
   assert.match(publicGateway, /upgrade_type: websocket/);
 });

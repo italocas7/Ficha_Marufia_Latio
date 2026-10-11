@@ -1,6 +1,6 @@
 # Marufia Online Alpha — Fase 50
 
-O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. A versão **0.4.4** corrige o carregamento do limite de perícias da campanha em conexões instáveis, preservando os dados e as regras da ficha. A compatibilidade com fichas anteriores, o check automático, o custo corrigido de Aptidão e os demais recursos online permanecem preservados.
+O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. A versão **0.4.5** reúne o controle de Auge por campanha, a sincronização manual com relatório e a recuperação do envio de retratos. A compatibilidade com fichas anteriores, o check automático, o custo corrigido de Aptidão e os demais recursos online permanecem preservados.
 
 ## Escopo obrigatório
 

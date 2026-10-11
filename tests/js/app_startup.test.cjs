@@ -27,11 +27,12 @@ function createElement() {
   };
 }
 
-function createSandbox(initialState = null) {
+function createSandbox(initialState = null, options = {}) {
   const elements = Object.fromEntries([
     "tabs", "statusLine", "app", "modalRoot", "toastRoot", "worldDurationTurns", "worldDurationFeedback",
     "combatRollSkill", "combatTargetCa", "combatSkillValue", "combatCaValue", "combatTargetValue",
     "parrySkill", "fissureSpend", "fissureChosenNumber", "fissureAttemptPreview",
+    ...(options.onlineAccount ? ["onlineAccountButton"] : []),
   ].map((id) => [id, createElement()]));
   const body = createElement();
   const document = {
@@ -450,6 +451,32 @@ test("age skill grants are separate, suspended from newest first, and restored l
   assert.equal(vm.runInContext('skillFinal("Tática")', sandbox), tacticsAt65);
 });
 
+test("campaign Auge switch suspends and restores age effects without changing saved grants", () => {
+  const { sandbox } = createSandbox();
+  vm.runInContext('state.character.age = "65"; state.ageMechanic.skillGrants = ["Percepção"]; normalizeAgeLosses()', sandbox);
+  const before = vm.runInContext('({ con: attr("CON"), perception: skillFinal("Percepção"), grants: state.ageMechanic.skillGrants.length })', sandbox);
+  vm.runInContext('window.MARUFIA_APP_BRIDGE.setCampaignSkillPolicy({ campaignId: "mesa", name: "Mesa", limit: 70, ageEnabled: false })', sandbox);
+  assert.equal(vm.runInContext('attr("CON")', sandbox), 50);
+  assert.equal(vm.runInContext('skillFinal("Percepção")', sandbox), before.perception - 5);
+  assert.equal(vm.runInContext('state.ageMechanic.skillGrants.length', sandbox), before.grants);
+  vm.runInContext('window.MARUFIA_APP_BRIDGE.setCampaignSkillPolicy({ campaignId: "mesa", name: "Mesa", limit: 70, ageEnabled: true })', sandbox);
+  assert.equal(vm.runInContext('attr("CON")', sandbox), before.con);
+  assert.equal(vm.runInContext('skillFinal("Percepção")', sandbox), before.perception);
+});
+
+test("legacy sheet waits for campaign age decision before requesting peak review", () => {
+  const fixture = JSON.parse(fs.readFileSync(path.join(root, "tests", "fixtures", "state-v1.json"), "utf8"));
+  fixture.meta.started = true;
+  fixture.character.age = "65";
+  const { sandbox, elements } = createSandbox(fixture, { onlineAccount: true });
+  assert.doesNotMatch(elements.modalRoot.innerHTML, /Revisar auge físico/);
+  vm.runInContext('window.MARUFIA_APP_BRIDGE.setCampaignSkillPolicy({ campaignId: "mesa", name: "Mesa", limit: 70, ageEnabled: false })', sandbox);
+  assert.equal(vm.runInContext('attr("CON")', sandbox), 60);
+  assert.doesNotMatch(elements.modalRoot.innerHTML, /Revisar auge físico/);
+  vm.runInContext('window.MARUFIA_APP_BRIDGE.setCampaignSkillPolicy({ campaignId: "mesa", name: "Mesa", limit: 70, ageEnabled: true })', sandbox);
+  assert.match(elements.modalRoot.innerHTML, /Revisar auge físico/);
+});
+
 test("legacy aged sheets stay unchanged until reviewed with a backup", () => {
   const fixture = JSON.parse(fs.readFileSync(path.join(root, "tests", "fixtures", "state-v1.json"), "utf8"));
   fixture.meta.started = true;
@@ -487,7 +514,7 @@ test("an aging player can redistribute loss but cannot put over half on one attr
 
 test("age skill controls enforce five-point blocks and campaign ceiling", () => {
   const { sandbox } = createSandbox();
-  vm.runInContext('state.character.age = "65"; campaignSkillPolicy = { campaignId: "campaign", name: "Mesa", limit: 25 }', sandbox);
+  vm.runInContext('state.character.age = "65"; campaignSkillPolicy = { campaignId: "campaign", name: "Mesa", limit: 25, ageEnabled: true }', sandbox);
   const field = { dataset: { ageSkill: "Percepção" }, value: "5" };
   sandbox.ageSkillField = field;
   vm.runInContext('updateAgeSkillPoints(ageSkillField)', sandbox);

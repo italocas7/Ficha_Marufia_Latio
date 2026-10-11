@@ -47,7 +47,7 @@ static_resources:
                           allow_origin_string_match:
 __MARUFIA_CORS_ORIGIN_MATCHERS__
                           allow_methods: "GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD"
-                          allow_headers: "authorization,apikey,content-type,x-client-info,x-supabase-api-version,accept-profile,content-profile,prefer,range"
+                          allow_headers: "authorization,apikey,content-type,cache-control,x-upsert,x-client-info,x-supabase-api-version,accept-profile,content-profile,prefer,range"
                           expose_headers: "content-range,location,x-supabase-api-version"
                           max_age: "3600"
                           allow_credentials: false
@@ -89,6 +89,11 @@ __MARUFIA_CORS_ORIGIN_MATCHERS__
                         - match: { prefix: "/auth/v1/" }
                           route: { cluster: supabase_api, timeout: 60s }
                         - match: { prefix: "/rest/v1/" }
+                          route: { cluster: supabase_api, timeout: 60s }
+                        # Apenas os objetos do bucket privado de retratos chegam ao Storage.
+                        - match: { prefix: "/storage/v1/object/character-portraits/" }
+                          route: { cluster: supabase_api, timeout: 60s }
+                        - match: { path: "/storage/v1/object/character-portraits" }
                           route: { cluster: supabase_api, timeout: 60s }
                         - match: { prefix: "/realtime/v1/" }
                           route: { cluster: supabase_api, timeout: 0s }

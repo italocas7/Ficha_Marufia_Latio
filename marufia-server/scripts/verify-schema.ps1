@@ -93,6 +93,7 @@ try {
         "public.clear_campaign_roll_history(uuid)",
         "public.roll_dice_tray(uuid,uuid,jsonb,text,text)",
         "public.update_campaign_details(uuid,text,text,integer)",
+        "public.update_campaign_details(uuid,text,text,integer,boolean)",
         "public.delete_character(uuid,text,bigint)",
         "public.list_campaign_party_summary(uuid)"
         "public.can_upload_character_portrait(text)"

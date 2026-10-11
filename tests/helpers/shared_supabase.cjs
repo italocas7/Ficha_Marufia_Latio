@@ -209,6 +209,9 @@ class SharedSupabaseServer {
         description: String(query.payload?.description ?? ""),
         owner_id: query.userId,
         join_code: JOIN_CODE,
+        skill_limit: Number(query.payload?.skill_limit ?? 70),
+        rules_revision: 1,
+        age_mechanic_enabled: query.payload?.age_mechanic_enabled === true,
         created_at: createdAt,
         updated_at: createdAt,
       };

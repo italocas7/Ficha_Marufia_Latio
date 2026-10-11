@@ -112,8 +112,17 @@ try {
     $null = New-Item -ItemType Directory -Path $logDirectory -Force
     Push-Location $projectRoot
     try {
-        & $nodePath "tools\build_windows.cjs" *> $logPath
-        $exitCode = $LASTEXITCODE
+        $savedErrorActionPreference = $ErrorActionPreference
+        try {
+            # O Tauri escreve mensagens informativas em stderr. No Windows
+            # PowerShell 5.1 isso não pode ser confundido com falha do build.
+            $ErrorActionPreference = "Continue"
+            & $nodePath "tools\build_windows.cjs" *> $logPath
+            $exitCode = $LASTEXITCODE
+        }
+        finally {
+            $ErrorActionPreference = $savedErrorActionPreference
+        }
     }
     finally {
         Pop-Location
@@ -132,6 +141,12 @@ try {
 catch {
     $message = $_.Exception.Message
     if ($message.Length -gt 1800) { $message = $message.Substring(0, 1800) + "..." }
+    if ($message -match "(?i)password|secret|token|private.?key") {
+        $message = "O build retornou um diagnóstico relacionado à assinatura. Consulte o relatório sanitizado sem compartilhar a senha."
+    }
+    $diagnosticDirectory = Join-Path (Split-Path -Parent $PSScriptRoot) "tmp"
+    $null = New-Item -ItemType Directory -Path $diagnosticDirectory -Force
+    Set-Content -LiteralPath (Join-Path $diagnosticDirectory "windows-signing-gui-error.log") -Value $message -Encoding UTF8
     Show-Message "O build assinado não foi concluído:`n`n$message" "Build interrompido" ([System.Windows.Forms.MessageBoxIcon]::Error)
     exit 1
 }

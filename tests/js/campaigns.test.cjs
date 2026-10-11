@@ -23,7 +23,7 @@ function fakeClient(options = {}) {
         if (name === "list_campaign_party_summary") return { data: options.partySummary ?? [], error: options.partyError ?? null };
         if (name === "update_campaign_details") {
           return {
-            data: options.updated ?? { id: args.p_campaign_id, name: args.p_name, description: args.p_description, skill_limit: args.p_skill_limit, rules_revision: 2, owner_id: "user-1", join_code: "MRF-K7P4-N2" },
+            data: options.updated ?? { id: args.p_campaign_id, name: args.p_name, description: args.p_description, skill_limit: args.p_skill_limit, age_mechanic_enabled: args.p_age_mechanic_enabled, rules_revision: 2, owner_id: "user-1", join_code: "MRF-K7P4-N2" },
             error: options.updateError ?? null,
           };
         }
@@ -104,8 +104,10 @@ test("validates campaign fields without changing their meaning", () => {
     name: "A Coroa Partida",
     description: "Jornada inicial",
     skill_limit: 70,
+    age_mechanic_enabled: false,
   });
   assert.equal(campaignTools.validateCampaignInput({ name: "Válida", skillLimit: 85 }).skill_limit, 85);
+  assert.equal(campaignTools.validateCampaignInput({ name: "Válida", ageEnabled: "on" }).age_mechanic_enabled, true);
   assert.throws(() => campaignTools.validateCampaignInput({ name: "Válida", skillLimit: 0 }), /limite/i);
   assert.throws(() => campaignTools.validateCampaignInput({ name: "" }), /nome/i);
   assert.throws(() => campaignTools.validateCampaignInput({ name: "a".repeat(101) }), /100/);
@@ -150,7 +152,7 @@ test("lists visible campaign memberships with an explicit campaign filter", asyn
 test("creates campaigns without sending owner or invitation code", async () => {
   const { client, calls } = fakeClient();
   const campaign = await campaignTools.createCampaignService(client).create({ name: "A Coroa Partida", description: "Teste" });
-  assert.deepEqual(calls.insert[0], { name: "A Coroa Partida", description: "Teste", skill_limit: 70 });
+  assert.deepEqual(calls.insert[0], { name: "A Coroa Partida", description: "Teste", skill_limit: 70, age_mechanic_enabled: false });
   assert.equal(campaign.owner_id, "user-1");
   assert.match(campaign.join_code, campaignTools.JOIN_CODE_PATTERN);
 });
@@ -219,6 +221,7 @@ test("edits campaigns through the owner-only operation", async () => {
       p_name: "A Coroa Restaurada",
       p_description: "Segundo arco",
       p_skill_limit: 70,
+      p_age_mechanic_enabled: false,
     },
   }]);
 });

@@ -705,6 +705,9 @@ body:not(.dark) {
 .online-settings-card > strong { overflow-wrap: anywhere; }
 .online-settings-card p { color: var(--muted); font-size: 12px; line-height: 1.5; }
 .online-settings-card button { width: fit-content; margin-top: 3px; }
+.online-settings-report { display: block !important; min-width: 0; }
+.online-settings-report p { margin: 0; }
+.online-settings-report ul { margin: 6px 0 0; padding-left: 18px; color: var(--ink); font-size: 12px; line-height: 1.5; }
 
 .online-settings-dot {
   width: 9px;

@@ -21,6 +21,7 @@ function server() {
   return http.createServer((request, response) => {
     const requestPath = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
     const relative = requestPath === "/" ? "index.html" : requestPath.slice(1);
+    if (relative === "favicon.ico") { response.writeHead(204).end(); return; }
     const fakeSupabase = relative === "vendor/supabase.js";
     const target = fakeSupabase
       ? path.resolve(projectRoot, "tests", "e2e", "fake_supabase.js")
@@ -54,8 +55,8 @@ async function exercise(page, url, viewport) {
   await page.goto(url);
   await page.waitForTimeout(50);
   const versionLabel = page.locator("[data-marufia-version]");
-  assert.equal(await versionLabel.textContent(), "v0.4.4", "O cabeçalho deve mostrar a versão atual da ficha.");
-  assert.equal(await versionLabel.getAttribute("aria-label"), "Versão 0.4.4 do Marufia Online");
+  assert.equal(await versionLabel.textContent(), "v0.4.5", "O cabeçalho deve mostrar a versão atual da ficha.");
+  assert.equal(await versionLabel.getAttribute("aria-label"), "Versão 0.4.5 do Marufia Online");
   assert.equal(updateManifestRequests, 0, "O navegador comum não pode consultar atualizações do aplicativo Windows.");
   assert.equal(await page.locator("[data-online-app-update-modal]").count(), 0, "O navegador comum não pode receber o aviso do aplicativo Windows.");
   await page.getByRole("button", { name: "Criar ficha nova" }).click();
@@ -301,7 +302,10 @@ async function exercise(page, url, viewport) {
   assert.match(await onlineSettings.innerText(), /Sincronização/i);
   assert.match(await onlineSettings.innerText(), /ficha (?:está )?vinculada/i);
   assert.match(await onlineSettings.innerText(), /Dados locais/i);
-  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.4\.4/i);
+  assert.match(await onlineSettings.innerText(), /Marufia Online Alpha · v0\.4\.5/i);
+  await onlineSettings.getByRole("button", { name: "Atualizar" }).click();
+  await page.waitForFunction(() => document.querySelector(".online-settings-report")?.textContent?.includes("Verificação concluída."));
+  assert.match(await onlineSettings.locator(".online-settings-report").innerText(), /atualizada no servidor/i);
   await settingsModal.getByRole("button", { name: "Modo Escuro" }).click();
   assert.equal(await page.locator("body").evaluate((body) => body.classList.contains("dark")), true);
   assert.equal(await settingsModal.getByRole("button", { name: "Modo Escuro" }).getAttribute("aria-pressed"), "true");
@@ -587,6 +591,18 @@ async function exercise(page, url, viewport) {
   assert.deepEqual(associationStatus, { sync: "online", realtime: "subscribed", conflict: false }, "A associação não pode criar conflito com um estado de ficha idêntico.");
   await page.locator("#modalRoot").getByRole("button", { name: "Fechar" }).last().click();
   await page.waitForFunction(() => window.MARUFIA_APP_BRIDGE.campaignSkillPolicy()?.limit === 90);
+  assert.equal(await page.evaluate(() => window.MARUFIA_APP_BRIDGE.campaignSkillPolicy()?.ageEnabled), false);
+  await campaignsButton.click();
+  await ownedCampaign.getByRole("button", { name: "Editar campanha" }).click();
+  await page.locator('#onlineCampaignEditForm input[name="ageEnabled"]').check();
+  await page.getByRole("button", { name: "Salvar alterações" }).click();
+  await page.waitForFunction(() => window.MARUFIA_APP_BRIDGE.campaignSkillPolicy()?.ageEnabled === true);
+  assert.match(await page.locator(".campaign-overview").innerText(), /Auge: ligado/);
+  await page.locator(".campaign-overview").getByRole("button", { name: "Editar campanha" }).click();
+  await page.locator('#onlineCampaignEditForm input[name="ageEnabled"]').uncheck();
+  await page.getByRole("button", { name: "Salvar alterações" }).click();
+  await page.waitForFunction(() => window.MARUFIA_APP_BRIDGE.campaignSkillPolicy()?.ageEnabled === false);
+  await page.locator("#modalRoot").getByRole("button", { name: "Fechar" }).last().click();
   await page.getByRole("tab", { name: /^P&T/ }).click();
   assert.match(await page.locator("#app").innerText(), /Definido por A Coroa Partida/);
   await page.getByRole("tab", { name: /^Resumo/ }).click();
@@ -916,7 +932,12 @@ async function exercise(page, url, viewport) {
   await gmViewer.waitFor({ state: "visible" });
   assert.match(await page.locator("#modalRoot .modal header").innerText(), /VISUALIZAÇÃO DO MÆSTRE/);
   const viewedSheet = page.frameLocator(".gm-character-view-frame");
-  await viewedSheet.locator("body.gm-view-ready").waitFor({ state: "attached" });
+  try {
+    await viewedSheet.locator("body.gm-view-ready").waitFor({ state: "attached" });
+  } catch (error) {
+    const status = await viewedSheet.locator("#statusLine").textContent().catch(() => "sem status");
+    throw new Error(`Visualização do Mæstre não carregou: ${status}; console: ${errors.join(" | ")}`, { cause: error });
+  }
   assert.match(await viewedSheet.locator(".gm-view-badge").innerText(), /VISUALIZAÇÃO DO MÆSTRE/);
   assert.equal(await viewedSheet.locator('[data-path="character.name"]').inputValue(), "Kael");
   assert.equal(await viewedSheet.locator('[data-path="character.name"]').isDisabled(), true, "A ficha vista pelo Mæstre deve permanecer somente leitura.");
@@ -1175,7 +1196,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
         check() {
           window.__marufiaUpdateState.checks += 1;
           return Promise.resolve({
-            version: "0.4.5",
+            version: "0.4.6",
             body: "Versão futura usada somente pelo teste local.",
             close() { window.__marufiaUpdateState.closed += 1; return Promise.resolve(); },
             downloadAndInstall(listener) {
@@ -1241,7 +1262,7 @@ async function exerciseWindowsUpdate(browser, url, viewport) {
         check() {
           window.__marufiaUpdateState.checks += 1;
           return Promise.resolve({
-            version: "0.4.5",
+            version: "0.4.6",
             body: "Versão futura usada somente pelo teste local.",
             close() { window.__marufiaUpdateState.closed += 1; return Promise.resolve(); },
             downloadAndInstall(listener) {

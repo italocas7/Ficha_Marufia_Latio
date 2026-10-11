@@ -87,7 +87,7 @@ test("renders safe actionable settings without cache deletion", () => {
   assert.match(html, /Sincronização/);
   assert.match(html, /Dados locais/);
   assert.match(html, /Sobre/);
-  assert.match(html, /Marufia Online Alpha · v0\.4\.4/);
+  assert.match(html, /Marufia Online Alpha · v0\.4\.5/);
   assert.match(html, /somente páginas oficiais de atualização/i);
   assert.match(html, /&lt;Artemis&gt;/);
   assert.doesNotMatch(html, /<Artemis>|limpar cache|apagar cache|clear-cache/i);
@@ -106,4 +106,47 @@ test("loads the settings module in the validated web build", () => {
   assert.match(app, /data-online-settings-slot/);
   assert.match(app, /marufia:settings-opened/);
   assert.equal(settingsTools.PRODUCT_VERSION, tauriConfig.version);
+});
+
+test("Atualizar is single-flight and reports each sheet without overwriting conflicts", async () => {
+  const base = fakeDocument();
+  const slot = { innerHTML: "", hidden: true };
+  const listeners = new Map();
+  const viewListeners = new Map();
+  let finish;
+  let dispatches = 0;
+  let flushes = 0;
+  const document = {
+    documentElement: { dataset: {} },
+    querySelector(selector) { return selector === "[data-online-settings-slot]" ? slot : base.querySelector(selector); },
+    addEventListener(name, callback) { listeners.set(name, callback); },
+    removeEventListener(name) { listeners.delete(name); },
+  };
+  const view = {
+    CustomEvent: class { constructor(type, options) { this.type = type; this.detail = options.detail; } },
+    addEventListener(name, callback) { viewListeners.set(name, callback); }, removeEventListener(name) { viewListeners.delete(name); },
+    dispatchEvent(event) {
+      dispatches += 1;
+      event.detail.waitUntil(new Promise((resolve) => { finish = resolve; }));
+      event.detail.waitUntil(Promise.resolve({ source: "portraits", items: [{ id: "a", status: "error" }] }));
+    },
+  };
+  const bridge = { flushCurrent() { flushes += 1; }, hasExistingSheet: () => true, snapshot: () => ({ meta: { schemaVersion: 7 } }) };
+  const instance = settingsTools.init(document, bridge, view);
+  assert.ok(instance);
+  const control = { dataset: { onlineSettingsAction: "update" } };
+  viewListeners.get(settingsTools.SETTINGS_OPEN_EVENT)();
+  listeners.get("click")({ target: { closest: () => control } });
+  listeners.get("click")({ target: { closest: () => control } });
+  assert.equal(dispatches, 1);
+  assert.equal(flushes, 1);
+  assert.match(slot.innerHTML, /Atualizando/);
+  finish({ source: "characters", online: true, items: [
+    { id: "a", name: "Primeira", status: "updated" },
+    { id: "b", name: "Segunda", status: "conflict" },
+  ] });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.match(slot.innerHTML, /Primeira: ficha salva, mas a imagem não foi enviada/);
+  assert.match(slot.innerHTML, /Segunda: conflito/);
+  instance.destroy();
 });

@@ -35,9 +35,9 @@
       .find((core) => core.id === state?.magicCore?.selectedId);
   }
 
-  function attributeValue(state, name, database, rules = root?.LATIO_RULES) {
+  function attributeValue(state, name, database, rules = root?.LATIO_RULES, ageEnabled = true) {
     let value = number(state?.attributes?.[name], 0);
-    if (state?.ageMechanic?.status === "active" && rules?.PHYSICAL_ATTRIBUTES?.includes(name)) {
+    if (ageEnabled && state?.ageMechanic?.status === "active" && rules?.PHYSICAL_ATTRIBUTES?.includes(name)) {
       const profile = rules.ageProfile(state?.character?.age);
       const distribution = rules.distributeAgingLoss(state?.attributes, profile.agingLoss, state?.ageMechanic?.losses);
       value = rules.agedPhysicalValue(value, profile, distribution.loss[name]);
@@ -60,6 +60,7 @@
     rules = root?.LATIO_RULES,
     database = root?.MARUFIA_DB,
     magicCores = root?.MARUFIA_MAGIC_CORES,
+    ageEnabled = true,
   ) {
     if (typeof rules?.calculateMaxHp !== "function" || typeof rules?.calculateMaxPm !== "function") {
       throw new TypeError("As regras de recursos não estão disponíveis.");
@@ -68,7 +69,7 @@
     const talents = knownTalents(state, database);
     const robust = talents.find((talent) => talent.name === "Robusto");
     const calculatedHp = rules.calculateMaxHp({
-      con: attributeValue(state, "CON", database, rules),
+      con: attributeValue(state, "CON", database, rules, ageEnabled),
       level,
       robustAcquiredLevel: robust?.level ?? null,
     });

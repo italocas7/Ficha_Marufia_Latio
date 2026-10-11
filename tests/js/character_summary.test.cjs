@@ -53,6 +53,7 @@ test("preserves core, robust, passive, and conditional resource effects", () => 
 test("campaign summary uses the same age-adjusted CON as the sheet", () => {
   const young = state({ character: { level: 3, age: "10" }, ageMechanic: { status: "active", losses: { FOR: 0, DES: 0, CON: 0 } } });
   assert.equal(summary.resourceSummary(young, rules, { talents: [] }, []).hp.maximum, 21);
+  assert.equal(summary.resourceSummary(young, rules, { talents: [] }, [], false).hp.maximum, 33);
   young.ageMechanic.status = "review";
   assert.equal(summary.resourceSummary(young, rules, { talents: [] }, []).hp.maximum, 33);
 });

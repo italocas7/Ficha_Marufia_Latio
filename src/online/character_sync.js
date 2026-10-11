@@ -855,6 +855,7 @@
     };
     view.addEventListener?.(CHARACTER_CONFLICT_RESOLUTION_EVENT, resolveConflict);
     let resumingOffline = false;
+    const inactiveConflicts = new Set();
     const resumeOfflineSave = async () => {
       if (resumingOffline || view.navigator?.onLine === false || accountButton.dataset.authState !== "online") return false;
       resumingOffline = true;
@@ -878,15 +879,18 @@
           if (stateContentSignature(remote.state) === stateContentSignature(pending.state)) {
             rememberSyncedCharacter(storage, userId, remote, backendId);
             removeOfflineSave(storage, userId, characterId, backendId);
+            inactiveConflicts.delete(characterId);
             continue;
           }
           if (pending.expectedRevision !== remote.revision) {
+            inactiveConflicts.add(characterId);
             dispatchCharacterConflict(view, { characterId, userId, backendId, local: pending.state, remote, inactive: true });
             continue;
           }
           const saved = await service.saveState(characterId, pending.state, pending.expectedRevision);
           rememberSyncedCharacter(storage, userId, saved, backendId);
           removeOfflineSave(storage, userId, characterId, backendId);
+          inactiveConflicts.delete(characterId);
         }
         return true;
       } catch (error) {
@@ -907,6 +911,36 @@
       setTimer: view.setTimeout?.bind?.(view),
       clearTimer: view.clearTimeout?.bind?.(view),
     }) ?? null;
+    const manualSync = async () => {
+      appBridge.flushCurrent?.();
+      await debouncer.flush();
+      if (view.navigator?.onLine !== false && accountButton.dataset.authState === "online") {
+        await (retryScheduler?.wake?.() ?? resumeOfflineSave());
+      }
+      let userId = "";
+      if (accountButton.dataset.authState === "online") {
+        try { userId = await service.currentUserId(); } catch { /* A fila local permanece intacta. */ }
+      }
+      const scope = `${backendId}|${userId}`;
+      const pending = readOfflineQueue(storage);
+      const conflict = queue.currentConflict?.();
+      const online = Boolean(userId) && view.navigator?.onLine !== false;
+      const slotStore = view.MARUFIA_SHEET_SLOTS_STORE;
+      const visibleScope = userId ? scope : slotStore?.active?.()?.scope;
+      const items = (slotStore?.all?.() ?? [])
+        .filter((slot) => slot.scope === visibleScope)
+        .map((slot) => {
+          const name = String(slot.state?.character?.name || "Personagem sem nome");
+          if (!slot.remoteId) return { id: slot.id, name, status: "local" };
+          const queued = Object.values(pending).some((entry) => entry?.userId === userId && entry?.characterId === slot.remoteId && entry?.backendId === backendId);
+          const status = conflict?.characterId === slot.remoteId || inactiveConflicts.has(slot.remoteId)
+            ? "conflict" : !online || queued ? "pending" : queue.lastError?.() && slot.id === slotStore?.active?.()?.id ? "error" : "updated";
+          return { id: slot.id, name, status };
+        });
+      return { source: "characters", items, online };
+    };
+    const handleManualSync = (event) => event?.detail?.waitUntil?.(manualSync());
+    view.addEventListener?.("marufia:manual-sync", handleManualSync);
     const resumeWhenOnline = () => void (retryScheduler?.wake?.() ?? resumeOfflineSave());
     const pauseWhenOffline = () => retryScheduler?.pause?.();
     view.addEventListener?.("online", resumeWhenOnline);
@@ -927,6 +961,7 @@
       statusController,
       realtimeCoordinator,
       retryScheduler,
+      manualSync,
       backendId,
       destroy() {
         unsubscribe?.();
@@ -938,6 +973,7 @@
         view.removeEventListener?.("online", resumeWhenOnline);
         view.removeEventListener?.("marufia:sheet-switched", refreshAfterSwitch);
         view.removeEventListener?.("offline", pauseWhenOffline);
+        view.removeEventListener?.("marufia:manual-sync", handleManualSync);
         resumeObserver?.disconnect?.();
         retryScheduler?.destroy?.();
         debouncer.destroy();

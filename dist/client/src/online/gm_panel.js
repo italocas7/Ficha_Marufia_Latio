@@ -204,7 +204,7 @@
         .eq("campaign_id", id)
         .order("started_at", { ascending: false });
       const sessionsRequest = typeof orderedSessions?.limit === "function" ? orderedSessions.limit(30) : orderedSessions;
-      const [charactersResult, memberships, presenceResult, historyResult, sessionsResult, party] = await Promise.all([
+      const [charactersResult, memberships, presenceResult, historyResult, sessionsResult, party, campaignRows] = await Promise.all([
         client.from("characters")
           .select(characterTools.CHARACTER_COLUMNS)
           .eq("campaign_id", id)
@@ -218,11 +218,15 @@
         historyRequest,
         sessionsRequest,
         (typeof campaignService.listPartySummary === "function" ? campaignService.listPartySummary(id).catch(() => []) : Promise.resolve([])),
+        campaignService.listVisible([id]),
       ]);
       if (charactersResult.error) throw gmPanelError("LAT-GM-PANEL-CHARACTERS-001", friendlyGmPanelMessage(charactersResult.error));
       if (presenceResult.error) throw gmPanelError("LAT-GM-PANEL-PRESENCE-002", friendlyGmPanelMessage(presenceResult.error));
       if (historyResult.error) throw gmPanelError("LAT-GM-PANEL-HISTORY-001", friendlyGmPanelMessage(historyResult.error));
       if (sessionsResult.error) throw gmPanelError("LAT-GM-PANEL-SESSIONS-001", friendlyGmPanelMessage(sessionsResult.error));
+      const campaign = campaignRows.find((item) => item.id === id);
+      if (!campaign || typeof campaign.age_mechanic_enabled !== "boolean") throw gmPanelError("LAT-GM-PANEL-CAMPAIGN-001", "A regra de idade da campanha ainda não está disponível.");
+      const ageEnabled = campaign.age_mechanic_enabled;
 
       const characterRows = (Array.isArray(charactersResult.data) ? charactersResult.data : []).map((value) => {
         const character = characterTools.normalizedCharacter(value);
@@ -245,7 +249,7 @@
       const publicById = new Map(party.map((item) => [item.id, item]));
       const characters = characterRows.map((character) => Object.freeze({
         character,
-        resources: summaryTools.resourceSummary(character.state, rules, database, magicCores),
+        resources: summaryTools.resourceSummary(character.state, rules, database, magicCores, ageEnabled),
         presence: statusByUser.get(character.owner_id) ?? presenceStatus(presenceByUser.get(character.owner_id), now()),
         playerName: publicById.get(character.id)?.playerName || "Não informado",
         portraitPath: publicById.get(character.id)?.portraitPath || "",
@@ -256,6 +260,7 @@
         .map((value) => normalizedCampaignSession(value, id));
       return Object.freeze({
         campaignId: id,
+        ageEnabled,
         characters: Object.freeze(characters),
         players: Object.freeze(players),
         playersOnline: players.filter((player) => player.status === "online").length,
@@ -795,7 +800,7 @@
         const events = state.historyExpanded
           ? [...result.events, ...state.events.filter((event) => !result.events.some((latest) => latest.id === event.id))]
           : result.events;
-        state = { ...state, loading: false, characters: result.characters, players: result.players, playersOnline: result.playersOnline, playersAway: result.playersAway, playersTotal: result.playersTotal, events, historyHasMore: state.historyExpanded ? state.historyHasMore : result.events.length === 80, sessions: result.sessions, activeSession: result.activeSession, message: "" };
+        state = { ...state, loading: false, ageEnabled: result.ageEnabled, characters: result.characters, players: result.players, playersOnline: result.playersOnline, playersAway: result.playersAway, playersTotal: result.playersTotal, events, historyHasMore: state.historyExpanded ? state.historyHasMore : result.events.length === 80, sessions: result.sessions, activeSession: result.activeSession, message: "" };
         updatePanel();
       } catch (error) {
         if (!state || token !== generation) return;
@@ -852,6 +857,7 @@
       const id = String(characterId ?? "").toLowerCase();
       const item = state.characters.find((entry) => entry.character.id === id);
       if (!item) return false;
+      const ageEnabled = state.ageEnabled;
       const token = view.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
       const source = `gm_view.html?token=${encodeURIComponent(token)}`;
       const body = `<div class="gm-character-view" data-online-gm-character-view data-character-id="${escapeHtml(id)}"><p class="gm-character-view-context"><strong>${escapeHtml(item.character.name)}</strong><span>Somente leitura · campanha ${escapeHtml(state.campaignName)}</span></p><iframe class="gm-character-view-frame" title="Ficha completa de ${escapeHtml(item.character.name)}" src="${escapeHtml(source)}"></iframe></div>`;
@@ -861,7 +867,7 @@
       modalRoot.querySelector(".modal")?.classList.add("gm-character-view-modal");
       const frame = modalRoot.querySelector(".gm-character-view-frame");
       frame?.addEventListener("load", () => {
-        frame.contentWindow?.postMessage({ type: GM_VIEW_MESSAGE_TYPE, token, state: item.character.state }, "*");
+        frame.contentWindow?.postMessage({ type: GM_VIEW_MESSAGE_TYPE, token, state: item.character.state, ageEnabled }, "*");
       }, { once: true });
       void stop();
       return true;
@@ -882,7 +888,7 @@
       control.disabled = true;
       try {
         const character = await service.setCharacterHp(id, nextHp, item.character.revision);
-        const updated = Object.freeze({ ...item, character, resources: summaryTools.resourceSummary(character.state, rules, database, magicCores) });
+        const updated = Object.freeze({ ...item, character, resources: summaryTools.resourceSummary(character.state, rules, database, magicCores, state.ageEnabled) });
         state = {
           ...state,
           characters: Object.freeze(state.characters.map((entry) => entry.character.id === id ? updated : entry)),
@@ -907,7 +913,7 @@
         const updated = Object.freeze({
           ...item,
           character,
-          resources: summaryTools.resourceSummary(character.state, rules, database, magicCores),
+          resources: summaryTools.resourceSummary(character.state, rules, database, magicCores, state.ageEnabled),
         });
         state = {
           ...state,

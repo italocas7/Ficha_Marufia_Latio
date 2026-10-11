@@ -3,8 +3,8 @@ const assert = require("node:assert/strict");
 const policyTools = require("../../src/online/campaign_skill_policy.js");
 const offlineTools = require("../../src/online/offline.js");
 
-const campaign = { id: "campaign-one", name: "Mesa", skill_limit: 71, rules_revision: 2 };
-const knownPolicy = { campaignId: campaign.id, name: campaign.name, limit: 71, revision: 2 };
+const campaign = { id: "campaign-one", name: "Mesa", skill_limit: 71, rules_revision: 2, age_mechanic_enabled: false };
+const knownPolicy = { campaignId: campaign.id, name: campaign.name, limit: 71, revision: 2, ageEnabled: false };
 const settle = () => new Promise((resolve) => setImmediate(resolve));
 
 function harness(options = {}) {
@@ -15,6 +15,7 @@ function harness(options = {}) {
   const cache = {};
   const applied = [];
   const warnings = [];
+  let onCampaignUpdate = null;
   if (options.cached) cache[`${slot.scope}|${slot.remoteId}`] = options.cached;
   const account = { dataset: { authState: options.authState ?? "online" } };
   const view = {
@@ -24,7 +25,10 @@ function harness(options = {}) {
       saveLocal: (_key, value) => Object.assign(cache, structuredClone(value)),
     },
     MARUFIA_SHEET_SLOTS_STORE: { active: () => slot },
-    MARUFIA_SUPABASE: { getSupabaseClient: () => ({}) },
+    MARUFIA_SUPABASE: { getSupabaseClient: () => options.realtime ? {
+      channel() { return { on(_type, _filter, callback) { onCampaignUpdate = callback; return this; }, subscribe() { return this; } }; },
+      removeChannel() { onCampaignUpdate = null; },
+    } : ({}) },
     MARUFIA_CHARACTERS: { createCharacterService: () => ({
       currentUserId: async () => "isa",
       loadOwn: options.loadCharacter ?? (async () => ({ campaign_id: campaign.id })),
@@ -47,6 +51,7 @@ function harness(options = {}) {
     current: () => applied.at(-1),
     switchSlot(next) { slot = next; events.get("marufia:sheet-switched")?.(); },
     emit(name) { events.get(name)?.(); },
+    emitCampaign() { onCampaignUpdate?.(); },
     async retry() {
       const [id, timer] = timers.entries().next().value ?? [];
       assert.ok(timer, "A consulta que falhou precisa ter uma nova tentativa agendada.");
@@ -64,6 +69,29 @@ test("keeps the known campaign ceiling while an online refresh fails", async (t)
   assert.equal(env.current().limit, 71);
   assert.equal(env.current().campaignId, campaign.id);
   assert.equal(env.timers.size, 1);
+});
+
+test("uses the confirmed Auge switch, updates on Realtime, and keeps it offline", async (t) => {
+  let enabled = false;
+  const env = harness({ realtime: true, loadCampaigns: async () => [{ ...campaign, age_mechanic_enabled: enabled }] });
+  t.after(() => env.controller.destroy());
+  await settle();
+  assert.equal(env.current().ageEnabled, false);
+  enabled = true;
+  env.emitCampaign();
+  await settle();
+  assert.equal(env.current().ageEnabled, true);
+  env.account.dataset.authState = "offline";
+  env.emit("offline");
+  await settle();
+  assert.equal(env.current().ageEnabled, true);
+});
+
+test("old cached policy without Auge flag suspends age until confirmed", async (t) => {
+  const env = harness({ cached: { campaignId: campaign.id, name: campaign.name, limit: 70, revision: 1 }, authState: "offline" });
+  t.after(() => env.controller.destroy());
+  await settle();
+  assert.equal(env.current().ageEnabled, null);
 });
 
 test("recovers the real campaign ceiling after a failed first load without a cache", async (t) => {

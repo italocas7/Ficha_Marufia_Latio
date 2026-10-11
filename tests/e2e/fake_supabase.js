@@ -37,6 +37,7 @@
       name: "Campanha Convidada",
       description: "Campanha preparada para validar a entrada por código.",
       skill_limit: 70,
+      age_mechanic_enabled: false,
       rules_revision: 1,
       owner_id: "e2e-external-owner",
       join_code: "MRF-PLAY-ER",
@@ -679,13 +680,15 @@
           const nameValue = String(args?.p_name ?? "").trim();
           const description = String(args?.p_description ?? "").trim();
           const skillLimit = Number(args?.p_skill_limit);
-          if (!nameValue || nameValue.length > 100 || description.length > 5000 || !Number.isInteger(skillLimit) || skillLimit < 1 || skillLimit > 999) {
+          const ageEnabled = args?.p_age_mechanic_enabled;
+          if (!nameValue || nameValue.length > 100 || description.length > 5000 || !Number.isInteger(skillLimit) || skillLimit < 1 || skillLimit > 999 || typeof ageEnabled !== "boolean") {
             return { data: null, error: { code: "22023", message: "invalid campaign fields" } };
           }
           campaign.name = nameValue;
           campaign.description = description;
-          if (campaign.skill_limit !== skillLimit) campaign.rules_revision = (campaign.rules_revision ?? 1) + 1;
+          if (campaign.skill_limit !== skillLimit || campaign.age_mechanic_enabled !== ageEnabled) campaign.rules_revision = (campaign.rules_revision ?? 1) + 1;
           campaign.skill_limit = skillLimit;
+          campaign.age_mechanic_enabled = ageEnabled;
           campaign.updated_at = new Date().toISOString();
           write(CAMPAIGNS_KEY, campaigns);
           emitCampaignChange(campaign, previous);
@@ -803,6 +806,7 @@
                 name: inserted?.name ?? "",
                 description: inserted?.description ?? "",
                 skill_limit: Number(inserted?.skill_limit ?? 70),
+                age_mechanic_enabled: inserted?.age_mechanic_enabled === true,
                 rules_revision: 1,
                 owner_id: session.user.id,
                 join_code: `MRF-K7P4-N${(campaigns.length % 8) + 2}`,

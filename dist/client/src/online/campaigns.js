@@ -11,7 +11,7 @@
 
   const workspaceTools = workspaceToolsInput ?? {};
 
-  const CAMPAIGN_COLUMNS = "id,name,description,skill_limit,rules_revision,owner_id,join_code,created_at,updated_at";
+  const CAMPAIGN_COLUMNS = "id,name,description,skill_limit,age_mechanic_enabled,rules_revision,owner_id,join_code,created_at,updated_at";
   const MEMBERSHIP_COLUMNS = "campaign_id,user_id,role,joined_at";
   const JOIN_CODE_PATTERN = /^MRF-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{2}$/;
   const MEMBER_ROLE_LABELS = Object.freeze({
@@ -36,11 +36,12 @@
     const name = String(input.name ?? "").trim();
     const description = String(input.description ?? "").trim();
     const skillLimit = Number(input.skillLimit ?? 70);
+    const ageEnabled = input.ageEnabled === true || input.ageEnabled === "on";
     if (!name) throw campaignError("LAT-CAMPAIGN-INPUT-001", "Informe o nome da campanha.");
     if (name.length > 100) throw campaignError("LAT-CAMPAIGN-INPUT-002", "O nome pode ter no máximo 100 caracteres.");
     if (description.length > 5000) throw campaignError("LAT-CAMPAIGN-INPUT-003", "A descrição pode ter no máximo 5.000 caracteres.");
     if (!Number.isInteger(skillLimit) || skillLimit < 1 || skillLimit > 999) throw campaignError("LAT-CAMPAIGN-INPUT-004", "Informe um limite de perícias entre 1 e 999.");
-    return Object.freeze({ name, description, skill_limit: skillLimit });
+    return Object.freeze({ name, description, skill_limit: skillLimit, age_mechanic_enabled: ageEnabled });
   }
 
   function normalizeJoinCode(value) {
@@ -214,6 +215,7 @@
         p_name: payload.name,
         p_description: payload.description,
         p_skill_limit: payload.skill_limit,
+        p_age_mechanic_enabled: payload.age_mechanic_enabled,
       });
       if (result.error) throw campaignError("LAT-CAMPAIGN-UPDATE-001", friendlyCampaignMessage(result.error));
       return normalizedCampaign(result.data);
@@ -314,14 +316,14 @@
         <button class="button" type="button" data-online-live-rolls-action="open" data-campaign-id="${escapeHtml(campaign.id)}" data-campaign-name="${escapeHtml(campaign.name)}">Rolagens da campanha</button>
         ${membership.role === "gm" ? `<button class="button" type="button" data-online-gm-panel-action="open" data-campaign-id="${escapeHtml(campaign.id)}" data-campaign-name="${escapeHtml(campaign.name)}">Painel do Mæstre</button>` : ""}`;
     if (options.detail) return `<div class="campaign-overview" data-campaign-id="${escapeHtml(campaign.id)}">
-      <div class="campaign-overview-top"><section class="campaign-overview-intro"><span class="muted small">Campanha atual</span><h3>${escapeHtml(campaign.name)}</h3>${campaign.description ? `<p>${escapeHtml(campaign.description)}</p>` : ""}<div class="campaign-members-summary">${participantCount}<span>Você: ${escapeHtml(membership.roleLabel)}</span><span>Limite de perícias: ${escapeHtml(campaign.skill_limit ?? 70)}</span><span>● Campanha ativa</span></div></section>
+      <div class="campaign-overview-top"><section class="campaign-overview-intro"><span class="muted small">Campanha atual</span><h3>${escapeHtml(campaign.name)}</h3>${campaign.description ? `<p>${escapeHtml(campaign.description)}</p>` : ""}<div class="campaign-members-summary">${participantCount}<span>Você: ${escapeHtml(membership.roleLabel)}</span><span>Limite de perícias: ${escapeHtml(campaign.skill_limit ?? 70)}</span><span>Auge: ${campaign.age_mechanic_enabled === true ? "ligado" : "desligado"}</span><span>● Campanha ativa</span></div></section>
       <section class="campaign-code-block"><span class="muted small">Código de convite</span><code>${escapeHtml(campaign.join_code)}</code><button class="button" type="button" data-online-campaign-action="copy" data-code="${escapeHtml(campaign.join_code)}">Copiar código</button></section></div>
       ${partySummaryHtml(campaign, state)}
       ${characterAssociationHtml(campaign, state.characters, state.busy)}
       ${ownsCampaign ? `<section class="campaign-administration"><h3>Administração da campanha</h3><button class="ghost" type="button" data-online-campaign-action="edit" data-campaign-id="${escapeHtml(campaign.id)}">Editar campanha</button><div class="campaign-danger-zone"><strong>Zona de perigo</strong><button class="danger" type="button" data-online-campaign-action="delete" data-campaign-id="${escapeHtml(campaign.id)}">Excluir campanha</button></div></section>` : ""}
     </div>`;
     return `<article class="campaign-card ${campaign.id === state.createdId ? "campaign-card-new" : ""}" data-campaign-id="${escapeHtml(campaign.id)}">
-      <div><h3>${escapeHtml(campaign.name)}</h3>${campaign.description ? `<p>${escapeHtml(campaign.description)}</p>` : `<p class="muted">Sem descrição.</p>`}<div class="campaign-members-summary">${participantCount}<span>Você: ${escapeHtml(membership.roleLabel)}</span><span>Limite de perícias: ${escapeHtml(campaign.skill_limit ?? 70)}</span></div>${characterAssociationHtml(campaign, state.characters, state.busy)}${partySummaryHtml(campaign, state)}</div>
+      <div><h3>${escapeHtml(campaign.name)}</h3>${campaign.description ? `<p>${escapeHtml(campaign.description)}</p>` : `<p class="muted">Sem descrição.</p>`}<div class="campaign-members-summary">${participantCount}<span>Você: ${escapeHtml(membership.roleLabel)}</span><span>Limite de perícias: ${escapeHtml(campaign.skill_limit ?? 70)}</span><span>Auge: ${campaign.age_mechanic_enabled === true ? "ligado" : "desligado"}</span></div>${characterAssociationHtml(campaign, state.characters, state.busy)}${partySummaryHtml(campaign, state)}</div>
       <div class="campaign-code-block">
         <span class="muted small">Código de convite</span>
         <code>${escapeHtml(campaign.join_code)}</code>
@@ -345,6 +347,7 @@
           <div class="field"><label for="campaignName">Nome da campanha</label><input id="campaignName" name="name" type="text" maxlength="100" required></div>
           <div class="field"><label for="campaignDescription">Descrição</label><textarea id="campaignDescription" name="description" maxlength="5000" rows="5"></textarea></div>
           <div class="field"><label for="campaignSkillLimit">Limite de perícias</label><input id="campaignSkillLimit" name="skillLimit" type="number" min="1" max="999" step="1" value="70" required></div>
+          <label class="field"><span>Mecânica de Idade (Auge)</span><input name="ageEnabled" type="checkbox" role="switch"><small>Obrigatória para fichas vinculadas quando ligada.</small></label>
           <div class="inline campaign-form-actions">
             <button class="button" type="submit" ${state.busy ? "disabled" : ""}>${state.busy ? "Criando…" : "Criar campanha"}</button>
             <button class="ghost" type="button" data-online-campaign-action="return" ${state.busy ? "disabled" : ""}>Cancelar</button>
@@ -388,12 +391,13 @@
 
     if (state.mode === "edit" && selectedCampaign) {
       return `<div class="campaign-dialog stack" data-online-campaign-modal>
-        <p class="muted">Altere o nome, a descrição e o limite de perícias. As fichas acima de um novo limite serão preservadas e sinalizadas.</p>
+        <p class="muted">Altere as regras da campanha. Pontos e distribuições de idade permanecem guardados quando o Auge é desligado.</p>
         ${message}
         <form id="onlineCampaignEditForm" class="stack" data-online-campaign-edit-form>
           <div class="field"><label for="campaignEditName">Nome da campanha</label><input id="campaignEditName" name="name" type="text" maxlength="100" value="${escapeHtml(selectedCampaign.name)}" required></div>
           <div class="field"><label for="campaignEditDescription">Descrição</label><textarea id="campaignEditDescription" name="description" maxlength="5000" rows="5">${escapeHtml(selectedCampaign.description)}</textarea></div>
           <div class="field"><label for="campaignEditSkillLimit">Limite de perícias</label><input id="campaignEditSkillLimit" name="skillLimit" type="number" min="1" max="999" step="1" value="${escapeHtml(selectedCampaign.skill_limit ?? 70)}" required></div>
+          <label class="field"><span>Mecânica de Idade (Auge)</span><input name="ageEnabled" type="checkbox" role="switch" ${selectedCampaign.age_mechanic_enabled === true ? "checked" : ""}><small>Obrigatória para as fichas desta campanha quando ligada.</small></label>
           <div class="inline campaign-form-actions">
             <button class="button" type="submit" ${state.busy ? "disabled" : ""}>${state.busy ? "Salvando…" : "Salvar alterações"}</button>
             <button class="ghost" type="button" data-online-campaign-action="return" ${state.busy ? "disabled" : ""}>Cancelar</button>

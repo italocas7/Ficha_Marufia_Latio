@@ -131,10 +131,35 @@ async function runInitial() {
       .select("id")
       .single(), "Criação da campanha isolada");
 
+    const ageRule = requireResult(await gm.rpc("update_campaign_details", {
+      p_campaign_id: campaign.id,
+      p_name: `Aceitação ${config.runId}`,
+      p_description: "Teste público descartável",
+      p_skill_limit: 70,
+      p_age_mechanic_enabled: true,
+    }), "Configuração de Auge pelo Mestre");
+    assert.equal(ageRule.age_mechanic_enabled, true);
+    assert.equal(ageRule.rules_revision, 2);
+
     await Promise.all(players.map(async (target) => requireResult(
       await target.rpc("join_campaign", { p_join_code: campaign.join_code }),
       "Entrada de jogador",
     )));
+
+    const visibleRule = requireResult(await players[0].from("campaigns")
+      .select("age_mechanic_enabled,rules_revision")
+      .eq("id", campaign.id)
+      .single(), "Leitura da regra de Auge pelo jogador");
+    assert.equal(visibleRule.age_mechanic_enabled, true);
+    assert.equal(visibleRule.rules_revision, 2);
+    const deniedRuleChange = await players[0].rpc("update_campaign_details", {
+      p_campaign_id: campaign.id,
+      p_name: `Aceitação ${config.runId}`,
+      p_description: "Teste público descartável",
+      p_skill_limit: 70,
+      p_age_mechanic_enabled: false,
+    });
+    assert.ok(deniedRuleChange.error, "Jogador não pode alterar o Auge da campanha.");
 
     const characters = [];
     for (let index = 0; index < players.length; index += 1) {
@@ -192,14 +217,27 @@ async function runInitial() {
       subscribe(outsiderChannel, "Canal isolado"),
     ]);
 
-    const initialBarrier = requireResult(await players[0].rpc("save_character_state", {
-      p_character_id: characters[0].id,
-      p_state: state(characters[0].name, characters[0].hp),
-      p_expected_revision: characters[0].revision,
-    }), "Barreira inicial de Realtime");
-    characters[0].revision = initialBarrier.revision;
-    await waitUntil(() => received.characters.some((event) => event.new?.revision === initialBarrier.revision)
-      && received.player.some((event) => event.new?.revision === initialBarrier.revision), "Barreira inicial de Realtime");
+    let realtimeReady = false;
+    for (let attempt = 1; attempt <= 4; attempt += 1) {
+      const initialBarrier = requireResult(await players[0].rpc("save_character_state", {
+        p_character_id: characters[0].id,
+        p_state: state(characters[0].name, characters[0].hp),
+        p_expected_revision: characters[0].revision,
+      }), "Barreira inicial de Realtime");
+      characters[0].revision = initialBarrier.revision;
+      try {
+        await waitUntil(() => received.characters.some((event) => event.new?.revision === initialBarrier.revision)
+          && received.player.some((event) => event.new?.revision === initialBarrier.revision), "Barreira inicial de Realtime", 15_000);
+        realtimeReady = true;
+        break;
+      } catch (error) {
+        if (attempt === 4) {
+          throw new Error(`${error.message} Mestre: ${received.characters.length}; jogador: ${received.player.length}.`);
+        }
+        process.stdout.write(`Realtime inicializando; nova tentativa ${attempt + 1}/4.\n`);
+      }
+    }
+    assert.ok(realtimeReady);
     for (const events of Object.values(received)) events.length = 0;
 
     await Promise.all(players.map(async (target, index) => {

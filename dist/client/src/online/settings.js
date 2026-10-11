@@ -100,22 +100,23 @@
     });
   }
 
-  function settingsPanelHtml(snapshot) {
+  function settingsPanelHtml(snapshot, manual = {}) {
+    const report = Array.isArray(manual.items) ? manual.items.map((item) => `<li>${escapeHtml(item.name)}: ${escapeHtml(item.message)}</li>`).join("") : "";
     return `<section class="online-settings-overview stack" data-online-settings>
       <div class="online-settings-heading"><div><span class="online-home-eyebrow">MARUFIA ONLINE</span><h3>Conta e dados</h3></div><p>Somente estados e ações que afetam esta instalação aparecem aqui.</p></div>
       <div class="online-settings-grid">
         <article class="online-settings-card" data-settings-state="${escapeHtml(snapshot.account.state)}"><div><span class="online-settings-dot" aria-hidden="true"></span><h4>Conta</h4></div><strong>${escapeHtml(snapshot.account.label)}</strong><p>${escapeHtml(snapshot.account.detail)}</p><button class="ghost" type="button" data-online-settings-action="account">${escapeHtml(snapshot.account.action)}</button></article>
-        <article class="online-settings-card" data-settings-state="${escapeHtml(snapshot.sync.state)}"><div><span class="online-settings-dot" aria-hidden="true"></span><h4>Sincronização</h4></div><strong>${escapeHtml(snapshot.sync.label)}</strong><p>${escapeHtml(snapshot.sync.detail)}</p></article>
+        <article class="online-settings-card" data-settings-state="${escapeHtml(snapshot.sync.state)}"><div><span class="online-settings-dot" aria-hidden="true"></span><h4>Sincronização</h4></div><strong>${escapeHtml(snapshot.sync.label)}</strong><p>${escapeHtml(snapshot.sync.detail)}</p><button class="button" type="button" data-online-settings-action="update" ${manual.busy ? "disabled" : ""}>${manual.busy ? "Atualizando…" : "Atualizar"}</button><div class="online-settings-report" role="status" aria-live="polite">${manual.message ? `<p>${escapeHtml(manual.message)}</p>` : ""}${report ? `<ul>${report}</ul>` : ""}</div></article>
         <article class="online-settings-card" data-settings-state="${escapeHtml(snapshot.local.state)}"><div><span class="online-settings-dot" aria-hidden="true"></span><h4>Dados locais</h4></div><strong>${escapeHtml(snapshot.local.label)}</strong><p>${escapeHtml(snapshot.local.detail)}</p></article>
         <article class="online-settings-card" data-settings-state="about"><div><span class="online-settings-dot" aria-hidden="true"></span><h4>Sobre</h4></div><strong>${escapeHtml(snapshot.about.productDisplayName)} · v${escapeHtml(snapshot.about.productVersion)}</strong><p>Ficha schema v${escapeHtml(snapshot.about.schemaVersion)}. No Windows, somente páginas oficiais de atualização podem ser abertas fora do aplicativo.</p></article>
       </div>
     </section>`;
   }
 
-  function renderSettings(document, view = globalThis, appBridge = view?.MARUFIA_APP_BRIDGE) {
+  function renderSettings(document, view = globalThis, appBridge = view?.MARUFIA_APP_BRIDGE, manual = {}) {
     const slot = document?.querySelector?.("[data-online-settings-slot]");
     if (!slot) return false;
-    slot.innerHTML = settingsPanelHtml(settingsSnapshot(document, view, appBridge));
+    slot.innerHTML = settingsPanelHtml(settingsSnapshot(document, view, appBridge), manual);
     slot.hidden = false;
     return true;
   }
@@ -127,10 +128,11 @@
     const accountButton = document.querySelector?.("#onlineAccountButton");
     const syncStatus = document.querySelector?.("#onlineSyncStatus");
     let open = false;
+    let manual = { busy: false, message: "", items: [] };
 
     const refresh = () => {
       if (!open) return false;
-      const rendered = renderSettings(document, view, appBridge);
+      const rendered = renderSettings(document, view, appBridge, manual);
       if (!rendered) open = false;
       return rendered;
     };
@@ -139,8 +141,49 @@
       refresh();
     };
     const handleConnection = () => refresh();
+    const runUpdate = async () => {
+      if (manual.busy) return;
+      manual = { busy: true, message: "Verificando fichas e imagens…", items: [] };
+      refresh();
+      try {
+        appBridge?.flushCurrent?.();
+        const jobs = [];
+        view.dispatchEvent?.(new view.CustomEvent("marufia:manual-sync", {
+          detail: { waitUntil(promise) { jobs.push(Promise.resolve(promise)); } },
+        }));
+        if (!jobs.length) throw new Error("A sincronização ainda não está disponível neste dispositivo.");
+        const settled = await Promise.allSettled(jobs);
+        const results = settled.filter((item) => item.status === "fulfilled").map((item) => item.value);
+        const characters = results.find((item) => item?.source === "characters");
+        const portraits = results.find((item) => item?.source === "portraits");
+        const activeScope = view.MARUFIA_SHEET_SLOTS_STORE?.active?.()?.scope;
+        const fallback = (view.MARUFIA_SHEET_SLOTS_STORE?.all?.() ?? [])
+          .filter((slot) => slot.scope === activeScope)
+          .map((slot) => ({ id: slot.id, name: slot.state?.character?.name || "Personagem sem nome", status: slot.remoteId ? "pending" : "local" }));
+        const byId = new Map((characters?.items ?? fallback).map((item) => [item.id, { ...item }]));
+        for (const image of portraits?.items ?? []) {
+          const entry = byId.get(image.id);
+          if (entry && image.status === "error" && entry.status !== "conflict") entry.status = "image-error";
+          else if (entry && image.status === "pending" && entry.status === "updated") entry.status = "image-pending";
+        }
+        const labels = {
+          updated: "atualizada no servidor", pending: "envio pendente; dados locais preservados",
+          conflict: "conflito; escolha a versão na janela de revisão", error: "erro no envio; tente novamente",
+          local: "somente neste aparelho; sem vínculo online", "image-error": "ficha salva, mas a imagem não foi enviada",
+          "image-pending": "ficha salva; imagem pendente",
+        };
+        const items = [...byId.values()].map((item) => ({ name: item.name, message: labels[item.status] ?? labels.error }));
+        const failed = settled.some((item) => item.status === "rejected") || results.some((item) => item?.ok === false || item?.error);
+        const pending = [...byId.values()].some((item) => !["updated", "local"].includes(item.status));
+        manual = { busy: false, message: failed || pending ? "Verificação concluída com pendências; seus dados locais foram preservados." : characters?.online ? "Verificação concluída." : "Sem conexão com a conta; alterações continuam neste aparelho.", items };
+      } catch (error) {
+        manual = { busy: false, message: error?.message || "Não foi possível concluir a atualização; dados locais preservados.", items: [] };
+      }
+      refresh();
+    };
     const handleClick = (event) => {
       const control = event.target.closest?.("[data-online-settings-action]");
+      if (control?.dataset?.onlineSettingsAction === "update") { void runUpdate(); return; }
       if (control?.dataset?.onlineSettingsAction !== "account") return;
       open = false;
       accountButton?.click?.();

@@ -98,6 +98,8 @@ const databaseStartupError = !STORAGE ? "O módulo de armazenamento não foi car
 let sessionUi = createDefaultSessionUi();
 let state = databaseStartupError ? null : loadState();
 let campaignSkillPolicy = null;
+let campaignAgePolicyReady = !document.querySelector("#onlineAccountButton");
+let gmViewAgeEnabled = true;
 let lastBlankCreatedAtMs = 0;
 let previousWorldUnlocked = databaseStartupError ? false : worldUnlocked();
 let pdfLibraryPromise = null;
@@ -484,15 +486,16 @@ function magicCostAfterCore(amount) {
 
 function ageInfo(source = state) {
   const profile = RULES.ageProfile(source.character?.age);
-  const active = source.ageMechanic?.status !== "review";
+  const enabled = GM_VIEW_MODE ? gmViewAgeEnabled : campaignAgePolicyReady && (!campaignSkillPolicy || campaignSkillPolicy.ageEnabled === true);
+  const active = enabled && source.ageMechanic?.status !== "review";
   const distribution = RULES.distributeAgingLoss(source.attributes, active ? profile.agingLoss : 0, source.ageMechanic?.losses);
-  return { ...profile, active, distribution };
+  return { ...profile, active, enabled, distribution };
 }
 
 function normalizeAgeLosses() {
   if (!state.ageMechanic || state.ageMechanic.status === "review") return;
   const info = ageInfo();
-  if (info.agingLoss) state.ageMechanic.losses = info.distribution.loss;
+  if (info.active && info.agingLoss) state.ageMechanic.losses = info.distribution.loss;
 }
 
 function savedAgeSkillGrants(source = state) {
@@ -1034,10 +1037,11 @@ function applyGmViewLock(app = $("#app")) {
   }
 }
 
-function loadGmViewSnapshot(raw) {
+function loadGmViewSnapshot(raw, ageEnabled = true) {
   if (!GM_VIEW_MODE) return false;
   const prepared = prepareStateImport(raw);
   state = prepared.state;
+  gmViewAgeEnabled = ageEnabled === true;
   sessionUi = createDefaultSessionUi();
   previousWorldUnlocked = worldUnlocked();
   closeModal(true);
@@ -1134,7 +1138,7 @@ function renderResumo() {
 
     <section class="panel age-panel" aria-label="Desenvolvimento por idade">
       <div class="section-title"><h2>Idade e desenvolvimento</h2>${age.active && age.agingLoss ? `<button class="ghost" type="button" data-action="open-age-loss">Redistribuir perda</button>` : ""}</div>
-      ${!age.valid ? `<p class="muted">Informe uma idade válida a partir de 10 anos para aplicar a regra.</p>` : state.ageMechanic.status === "review" ? `<p>Esta ficha antiga precisa confirmar os valores de auge antes de aplicar a idade. Os atributos atuais foram preservados.</p><button class="button" type="button" data-action="review-age">Revisar auge físico</button>` : `<div class="age-summary"><span>${age.growthPenalty ? `Crescimento: −${age.growthPenalty} em FOR, DES e CON` : age.agingLoss ? `Envelhecimento: −${age.distribution.applied} distribuídos entre FOR, DES e CON` : "Auge físico: sem redução"}</span><span>Pontos de perícia por idade: +${age.skillPoints}</span></div>${age.distribution.limited ? `<p class="muted">O mínimo de 25% do auge impede aplicar toda a perda prevista (${age.distribution.requested}).</p>` : ""}`}
+      ${!age.enabled ? `<p class="muted">${!campaignAgePolicyReady || campaignSkillPolicy?.ageEnabled === null ? "Aguardando confirmação da regra de idade da campanha. Os valores atuais estão preservados." : "O Mæstre desligou o Auge nesta campanha. Perdas e pontos por idade estão suspensos; suas distribuições permanecem guardadas."}</p>` : !age.valid ? `<p class="muted">Informe uma idade válida a partir de 10 anos para aplicar a regra.</p>` : state.ageMechanic.status === "review" ? `<p>Esta ficha antiga precisa confirmar os valores de auge antes de aplicar a idade. Os atributos atuais foram preservados.</p><button class="button" type="button" data-action="review-age">Revisar auge físico</button>` : `<div class="age-summary"><span>${age.growthPenalty ? `Crescimento: −${age.growthPenalty} em FOR, DES e CON` : age.agingLoss ? `Envelhecimento: −${age.distribution.applied} distribuídos entre FOR, DES e CON` : "Auge físico: sem redução"}</span><span>Pontos de perícia por idade: +${age.skillPoints}</span></div>${age.distribution.limited ? `<p class="muted">O mínimo de 25% do auge impede aplicar toda a perda prevista (${age.distribution.requested}).</p>` : ""}`}
     </section>
 
     ${renderCorePanel("compact")}
@@ -1146,7 +1150,7 @@ function renderResumo() {
           ${DB.attributes.map((name) => `
             <div class="attribute-card card compact-attribute-card">
               <button class="ghost" type="button" data-action="open-attribute" data-attribute="${name}"><strong>${name}</strong></button>
-              ${RULES.PHYSICAL_ATTRIBUTES.includes(name) ? `<span class="muted small">Auge</span>` : ""}<input class="number-input" type="number" min="0" max="200" data-path="attributes.${name}" value="${esc(state.attributes[name])}">
+              ${RULES.PHYSICAL_ATTRIBUTES.includes(name) ? `<span class="muted small">${age.enabled ? "Auge" : "Valor base"}</span>` : ""}<input class="number-input" type="number" min="0" max="200" data-path="attributes.${name}" value="${esc(state.attributes[name])}">
               ${RULES.PHYSICAL_ATTRIBUTES.includes(name) ? `<span class="age-current">Atual: <strong>${attr(name)}</strong></span>` : ""}
               <span class="muted small">${esc(successText(attr(name)))}</span>
             </div>`).join("")}
@@ -1341,7 +1345,7 @@ function renderPT() {
     ${inspirationPanel()}
     <section class="panel">
       <div class="section-title"><h2>P&T</h2><span class="tag ${remaining < 0 ? "warn" : "ok"}">Pontos de perícia: ${remaining}/${skillPointsTotal()}</span></div>
-      <p class="muted small">Pontos por idade: ${ageBudget - ageUsed}/${ageBudget} disponíveis${ageSaved > ageUsed ? ` · ${ageSaved - ageUsed} suspensos até uma faixa etária maior` : ""}. São distribuídos em blocos de 5, até +20 por perícia.</p>
+      <p class="muted small">Pontos por idade: ${ageBudget - ageUsed}/${ageBudget} disponíveis${ageSaved > ageUsed ? ` · ${ageSaved - ageUsed} suspensos${age.enabled ? " até uma faixa etária maior" : " pela campanha"}` : ""}. São distribuídos em blocos de 5, até +20 por perícia.</p>
       <div class="grid three">
         ${field("Pontos extras", "skillExtraPoints", "number")}
         <label class="field">Base de pontos<select data-path="character.useIntForSkillPoints"><option value="false" ${!state.character.useIntForSkillPoints ? "selected" : ""}>SAB + CON</option><option value="true" ${state.character.useIntForSkillPoints ? "selected" : ""}>INT + CON</option></select></label>
@@ -2324,7 +2328,7 @@ function openAttributeModal(name) {
   const otherMods = value - agedBase;
   openModal(name, `<div class="stack">
     <div class="stat"><span class="muted">Valor atual</span><strong>${value}</strong></div>
-    ${physical ? `<div class="age-attribute-detail"><div><span>${age.active ? "Auge físico" : "Valor registrado"}</span><strong>${peak}</strong></div><div><span>Redução efetiva por idade</span><strong>−${ageLoss}</strong></div><div><span>Outros modificadores</span><strong>${otherMods >= 0 ? "+" : ""}${otherMods}</strong></div></div>${age.active && age.growthPenalty && peak < age.growthPenalty ? `<p class="muted">A regra prevê −${age.growthPenalty}; o valor atual tem mínimo zero.</p>` : ""}${!age.valid ? `<p class="muted">Informe uma idade válida a partir de 10 anos.</p>` : !age.active ? `<p class="muted">Confirme o auge físico desta ficha antiga para aplicar a idade.</p>` : ""}` : ""}
+    ${physical ? `<div class="age-attribute-detail"><div><span>${age.active ? "Auge físico" : "Valor registrado"}</span><strong>${peak}</strong></div><div><span>Redução efetiva por idade</span><strong>−${ageLoss}</strong></div><div><span>Outros modificadores</span><strong>${otherMods >= 0 ? "+" : ""}${otherMods}</strong></div></div>${age.active && age.growthPenalty && peak < age.growthPenalty ? `<p class="muted">A regra prevê −${age.growthPenalty}; o valor atual tem mínimo zero.</p>` : ""}${!age.enabled ? `<p class="muted">Auge ${campaignSkillPolicy?.ageEnabled === null ? "aguardando confirmação da campanha" : "desligado pelo Mæstre"}; redução por idade suspensa.</p>` : !age.valid ? `<p class="muted">Informe uma idade válida a partir de 10 anos.</p>` : !age.active ? `<p class="muted">Confirme o auge físico desta ficha antiga para aplicar a idade.</p>` : ""}` : ""}
     <p>${esc(successText(value))}</p>
     <div class="inline">
       <button class="button" type="button" data-action="roll-attribute" data-attribute="${esc(name)}" data-mode="normal">Rolar d100</button>
@@ -2335,15 +2339,16 @@ function openAttributeModal(name) {
 }
 
 function openAgeReviewModal() {
-  if (state.ageMechanic?.status !== "review") return;
+  if (!ageInfo().enabled || state.ageMechanic?.status !== "review") return;
   openModal("Revisar auge físico", `<p>Esta ficha foi criada antes da regra de idade. Confira os valores que o personagem teria no auge. Nada mudará até confirmar; antes da alteração, será criado um backup.</p><div class="grid three">${RULES.PHYSICAL_ATTRIBUTES.map((name) => `<div class="field"><label for="agePeak${name}">Auge ${name}</label><input id="agePeak${name}" type="number" min="0" max="200" step="1" value="${esc(state.attributes[name])}"></div>`).join("")}</div>`, `<button class="button" type="button" data-action="confirm-age-review">Confirmar auge</button><button class="ghost" type="button" data-action="close-modal">Decidir depois</button>`);
 }
 
 function maybePromptAgeReview() {
-  if (!GM_VIEW_MODE && state.ageMechanic?.status === "review" && ageInfo().valid) openAgeReviewModal();
+  if (!GM_VIEW_MODE && ageInfo().enabled && state.ageMechanic?.status === "review" && ageInfo().valid) openAgeReviewModal();
 }
 
 function confirmAgeReview() {
+  if (!ageInfo().enabled || state.ageMechanic?.status !== "review") return;
   const peaks = Object.fromEntries(RULES.PHYSICAL_ATTRIBUTES.map((name) => [name, Number($(`#agePeak${name}`)?.value)]));
   if (Object.values(peaks).some((value) => !Number.isInteger(value) || value < 0 || value > 200)) return toast("Informe valores de auge entre 0 e 200.", "warn");
   const backup = createBackup("Antes de aplicar a regra de idade");
@@ -4691,11 +4696,14 @@ if (databaseStartupError) {
     },
     loadGmViewSnapshot,
     setCampaignSkillPolicy: (policy) => {
+      const wasEnabled = ageInfo().enabled;
       const limit = Number(policy?.limit);
       campaignSkillPolicy = policy?.campaignId && Number.isInteger(limit) && limit >= 1 && limit <= 999
-        ? { campaignId: String(policy.campaignId), name: String(policy.name || "Campanha"), limit, revision: Number(policy.revision) || 1 }
+        ? { campaignId: String(policy.campaignId), name: String(policy.name || "Campanha"), limit, revision: Number(policy.revision) || 1, ageEnabled: typeof policy.ageEnabled === "boolean" ? policy.ageEnabled : null }
         : null;
+      campaignAgePolicyReady = true;
       render();
+      if (!wasEnabled && ageInfo().enabled) maybePromptAgeReview();
       return campaignSkillPolicy;
     },
     campaignSkillPolicy: () => campaignSkillPolicy,
@@ -4710,6 +4718,7 @@ if (databaseStartupError) {
       }
       state = nextState;
       campaignSkillPolicy = null;
+      campaignAgePolicyReady = false;
       clearTimeout(saveTimer);
       saveTimer = null;
       previousWorldUnlocked = worldUnlocked();
@@ -4747,5 +4756,5 @@ if (databaseStartupError) {
   applyTheme();
   render();
   if (!GM_VIEW_MODE && !state.meta.started) openStartModal();
-  else maybePromptAgeReview();
+  else if (campaignAgePolicyReady) maybePromptAgeReview();
 }
