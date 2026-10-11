@@ -1,6 +1,6 @@
 # Marufia Online Alpha — Fase 50
 
-O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. A versão **0.4.3** acrescenta o tratamento de idade com migração protegida e corrige a conversão de retratos. A compatibilidade com fichas anteriores, o check automático, o custo corrigido de Aptidão e os demais recursos online permanecem preservados.
+O primeiro Alpha permanece registrado historicamente como **Marufia Online Alpha 0.1.0**. A versão **0.4.4** corrige o carregamento do limite de perícias da campanha em conexões instáveis, preservando os dados e as regras da ficha. A compatibilidade com fichas anteriores, o check automático, o custo corrigido de Aptidão e os demais recursos online permanecem preservados.
 
 ## Escopo obrigatório
 

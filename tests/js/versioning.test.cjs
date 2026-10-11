@@ -15,7 +15,7 @@ const versionSource = fs.readFileSync(path.join(root, "src", "online", "version.
 
 test("adopts one consistent Semantic Version for the Alpha product", () => {
   const contract = versionTools.assertVersionContract();
-  assert.equal(contract.packageVersion, "0.4.3");
+  assert.equal(contract.packageVersion, "0.4.4");
   assert.equal(contract.runtime.displayName, "Marufia Online Alpha");
   assert.match(contract.packageVersion, versionTools.SEMVER_PATTERN);
 });
@@ -36,9 +36,9 @@ test("shows the canonical version below the sheet name", () => {
   };
   vm.runInNewContext(versionSource, { window });
   assert.match(index, /data-marufia-version/);
-  assert.equal(label.textContent, "v0.4.3");
-  assert.equal(label.attributes["aria-label"], "Versão 0.4.3 do Marufia Online");
-  assert.equal(window.MARUFIA_VERSION.version, "0.4.3");
+  assert.equal(label.textContent, "v0.4.4");
+  assert.equal(label.attributes["aria-label"], "Versão 0.4.4 do Marufia Online");
+  assert.equal(window.MARUFIA_VERSION.version, "0.4.4");
 });
 
 test("loads the version contract before online consumers", () => {
@@ -48,7 +48,7 @@ test("loads the version contract before online consumers", () => {
 });
 
 test("keeps product, sheet schema, backup, and database versions independent", () => {
-  assert.match(versioningDocument, /Produto.*0\.4\.3/is);
+  assert.match(versioningDocument, /Produto.*0\.4\.4/is);
   assert.match(versioningDocument, /schema da ficha.*v7/is);
   assert.match(versioningDocument, /backup online.*v1/is);
   assert.match(versioningDocument, /migrations.*timestamp/is);
