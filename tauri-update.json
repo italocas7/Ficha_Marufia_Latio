@@ -1,11 +1,11 @@
 {
-  "version": "0.4.4",
-  "notes": "# Marufia Online Alpha 0.4.4\n\n- O aplicativo mantém o último limite de perícias confirmado pela campanha durante falhas de conexão.\n- O carregamento da política da campanha tenta novamente automaticamente quando a conexão falha.\n- Respostas atrasadas de outra ficha não substituem a política do personagem atual.",
-  "pub_date": "2026-10-11T05:57:58.646Z",
+  "version": "0.4.5",
+  "notes": "# Marufia Online Alpha 0.4.5\n\n- O Mæstre pode ligar ou desligar a Mecânica de Idade (Auge) para cada campanha; perdas e pontos ficam suspensos sem apagar as distribuições salvas.\n- A área de Configurações recebe a ação **Atualizar**, que verifica fichas e imagens e informa o estado de cada personagem sem descartar alterações locais.\n- O envio de retratos pelo servidor oficial foi recuperado com uma rota pública estritamente limitada ao bucket privado de personagens.\n- Mudanças nas regras da campanha chegam em tempo real e a ficha recupera automaticamente a sincronização após falhas de conexão.\n- O Painel do Mæstre e a visualização completa calculam os recursos com a mesma configuração de Auge da campanha.",
+  "pub_date": "2026-10-11T19:15:19.319Z",
   "platforms": {
     "windows-x86_64": {
-      "url": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/download/v0.4.4/Marufia-Setup.exe",
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTR203cEVudWhOcEF0eFJtNFZqZVpmZnYyZWZCcGZxd0l1UVk3TjFISlpOckdjaUl3L20wNUx6cVV4bzNsdFhRWENpY3doM2YyK1hiUzZtbkhOT2ZwNXI0enNVd3V5SXdzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzkxNjk4Mjc3CWZpbGU6TWFydWZpYSBPbmxpbmVfMC40LjRfeDY0LXNldHVwLmV4ZQowN05uUksrWm1xWnQ2RVd1UGF1SFhvcGF6djhvcUtkVmlFTWRCbnVrandvZzBycHlhRFUvanpjUjJvZ3JXSEZtZHQxd25TUlZLeUs1cG55am03QWVBUT09Cg=="
+      "url": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/download/v0.4.5/Marufia-Setup.exe",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTR203cEVudWhOcE1jNWV0MXlqL0JSUnNRR3JhbUNNVEFTeUlrdlkraVNFTGlJYnI3Y0tXNmxldGpMOUlOVmErTzJkNTM5TmFnNGtRY004V1h2T1paeUJIUVQyZjdwT2drPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzkxNzQ2MTE4CWZpbGU6TWFydWZpYSBPbmxpbmVfMC40LjVfeDY0LXNldHVwLmV4ZQpaa0V0Wlh3azNXUCtjSEJBVk5hUEdtaDBhdXNOTDZxeFRDMDJFV1RhZXBlV3U3QWNKSnFMY1kxempra004TjdFcHk5Qm9iK3FOSFN3SUVvUHNzcVBCdz09Cg=="
     }
   }
 }

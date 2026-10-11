@@ -1,10 +1,10 @@
 # GitHub Releases
 
-O **pré-lançamento** `v0.4.4` está publicado:
+O **pré-lançamento** `v0.4.5` está publicado:
 
-- tag: `v0.4.4`;
-- título: **Marufia Online Alpha 0.4.4**;
-- notas: `docs/releases/v0.4.4.md`;
+- tag: `v0.4.5`;
+- título: **Marufia Online Alpha 0.4.5**;
+- notas: `docs/releases/v0.4.5.md`;
 - portátil: `src-tauri/target/release/Marufia.exe`;
 - instalador: `src-tauri/target/release/bundle/Marufia-Setup.exe`;
 - assinatura do atualizador: `src-tauri/target/release/bundle/Marufia-Setup.exe.sig`.

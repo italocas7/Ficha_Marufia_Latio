@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "appId": "com.marufia.online",
   "channel": "alpha",
-  "version": "0.4.4",
-  "notes": "Corrige o carregamento do limite de perícias da campanha e recupera automaticamente falhas de conexão, preservando fichas e regras.",
-  "publishedAt": "2026-10-11T05:57:58.646Z",
-  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.4.4"
+  "version": "0.4.5",
+  "notes": "Adiciona o controle de Auge por campanha, a sincronização manual com relatório e recupera o envio seguro de retratos e as regras em tempo real.",
+  "publishedAt": "2026-10-11T19:15:19.319Z",
+  "releaseUrl": "https://github.com/italocas7/Ficha_Marufia_Latio/releases/tag/v0.4.5"
 }
